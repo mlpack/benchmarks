@@ -33,28 +33,28 @@ class PCA(object):
 		self.dataset = dataset
 		self.path = path
 
-		description = '''Principal Components Analysis, or simply PCA is a 
-											statistical procedure that uses an orthogonal
-											transformation to convert a set of observations
-											of possibly correlated variables into a set of values
-											of linearly uncorrelated variables called principal 
-											components. In particular it allows us to identify 
-											the principal directions in which the data varies.
-											These statistical procedure has found application 
-											in fields such as face recognition and image 
-											compression, and is a common technique for finding
-											patterns in data of high dimension. In case where a
-											graphical representation is not available, PCA is a
-											powerful tool for analysing data, without much loss
-											of information.'''
+		# Get description from executable.
+		cmd = shlex.split(self.path + "pca -h")
+		s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
+
+		# Use regular expression pattern to get the description.
+		pattern = re.compile(r"""(.*?)Required.*?options:""", 
+				re.VERBOSE|re.MULTILINE|re.DOTALL)
+		
+		match = pattern.match(s)
+		if not match:
+			Log.Fatal("Can't parse description", self.verbose)
+			description = ''
+		else:
+			description = match.group(1)
 		
 		# Show method informations.
-		#Log.Notice(description)
-		#Log.Notice('\n')
+		# Log.Notice(description)
+		# Log.Notice('\n')
 
 	# Remove created files.
 	def __del__(self):		
-		Log.Info('Clean up.')
+		Log.Info('Clean up.', self.verbose)
 		filelist = ['gmon.out', 'output.csv']
 		for f in filelist:
 			if os.path.isfile(f):
@@ -75,7 +75,7 @@ class PCA(object):
 		# Return the elapsed time.
 		timer = self.parseTimer(s)
 		if not timer:
-			Log.Fatal("can't parse the timer", self.verbose)
+			Log.Fatal("Can't parse the timer", self.verbose)
 			return 0
 		else:
 			time = self.GetTime(timer)
