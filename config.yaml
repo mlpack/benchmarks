@@ -1,0 +1,9 @@
+#  MLPACK 1.0.6:
+#  A Scalable C++  Machine Learning Library
+library: mlpack
+methods:
+    PCA:
+        script: methods/mlpack/pca.py
+        dataset: ['datasets/cities.csv', 'datasets/faces.csv']
+        format: [csv, txt]
+        iteration: 1
