@@ -20,55 +20,72 @@ if cmd_subfolder not in sys.path:
 from log import *
 from system import *
 from loader import * 
+from parser import *
 
+from optparse import OptionParser
 
 if __name__ == '__main__':
+	parser = OptionParser(usage="usage: %prog [options] filename")
+	parser.add_option("-t", "--test", action="store", dest="config",
+			type="string", help="Don't run, just test the configuration file.")
 
-	# Show system informations.
-	Log.Info('CPU Model: ' + SystemInfo.GetCPUModel())
-	Log.Info('Distribution: ' + SystemInfo.GetDistribution())
-	Log.Info('Platform: ' + SystemInfo.GetPlatform())
-	Log.Info('Memory: ' + SystemInfo.GetMemory())
-	Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
+	(options, args) = parser.parse_args()
 
-	# Here we read the config file, but there is more work todo,
-	# for that reason we define the necessary here.
-	script = 'methods/mlpack/pca.py'
-	datasets = ['datasets/cities.csv', 'datasets/faces.csv']
-	method = 'PCA'
+	if options.config:
+		config = Parser(options.config)
+		config.CheckConfig()
+	else:
+		# Read Config.
+		config = Parser('config.yaml')
 
-	# This is not part of the config but should be set correctly.
-	mlpackPath = '/usr/local/bin/'
+		# Show system informations.
+		Log.Info('CPU Model: ' + SystemInfo.GetCPUModel())
+		Log.Info('Distribution: ' + SystemInfo.GetDistribution())
+		Log.Info('Platform: ' + SystemInfo.GetPlatform())
+		Log.Info('Memory: ' + SystemInfo.GetMemory())
+		Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
 
-	# Create table.
-	table = []
-	# set table header.
-	header = ['', 'mlpack', 'matlab', 'shougun']
-	table.append(header)
+		# Iterate through all libraries.
+		libAttr = config.GetConfigLibraryMethods()
+		while libAttr:		
+			# Iterate through all methods.
+			methAttr = config.GetConfigMethod(libAttr.methods)			
+			while methAttr and libAttr:
+				if methAttr.run:
 
-	# Load script.
-	module = Loader.ImportModuleFromPath('methods/mlpack/pca.py')
-	Log.Info('Loading ' + script)
-	methodCall = getattr(module, method)
+					# Create table.
+					table = []
+					# set table header.
+					header = ['', libAttr.libraryName, 'matlab', 'shougun']
+					table.append(header)
 
-	# Perform method on dataset.
-	for dataset in datasets:
-		row = ['-'] * 4;
-		# Get dataset name.
-		row[0] = os.path.splitext(os.path.basename(dataset))[0]
+					# Load script.
+					module = Loader.ImportModuleFromPath(methAttr.script)
+					methodCall = getattr(module, methAttr.methodName)
 
-		# Perform PCA.
-		Log.Info('Dataset: ' + row[0])
-		instance = methodCall(dataset, path=mlpackPath)
-		time = instance.RunMethod();
+					# Perform method on dataset.
+					for dataset in methAttr.dataset:
+						row = ['-'] * 4;
+						# Get dataset name.
+						row[0] = os.path.splitext(os.path.basename(dataset))[0]
 
-		# Delete instance and call the destructor.
-		del instance
+						# Perform PCA.
+						Log.Info('Dataset: ' + row[0])
+						time = 0
+						for num in range(methAttr.iteration):
+							instance = methodCall(dataset)
+							time += instance.RunMethod();
 
-		# Set time.
-		row[1] = time
-		table.append(row)
-	
-	# Show results in a table.
-	Log.Notice('')
-	Log.PrintTable(table)
+							# Delete instance and call the destructor.
+							del instance
+							
+						# Set time.
+						row[1] = time / methAttr.iteration
+						table.append(row)
+					
+					# Show results in a table.
+					Log.Notice('')
+					Log.PrintTable(table)
+
+				methAttr = config.GetConfigMethod(libAttr.methods)
+			libAttr = config.GetConfigLibraryMethods()
