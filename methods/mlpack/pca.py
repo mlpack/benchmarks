@@ -28,7 +28,7 @@ class PCA(object):
 
 	# Create the Principal Components Analysis instance, show some informations 
 	# and return the instance.
-	def __init__(self, dataset, path='', verbose=True): 
+	def __init__(self, dataset, path='/usr/local/bin/', verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
