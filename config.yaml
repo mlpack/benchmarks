@@ -4,6 +4,21 @@ library: mlpack
 methods:
     PCA:
         script: methods/mlpack/pca.py
-        dataset: ['datasets/cities.csv', 'datasets/faces.csv']
         format: [csv, txt]
-        iteration: 1
+        datasets:
+            - files: ['datasets/cities.csv', 'datasets/faces.csv']
+
+            - files: ['datasets/cities.csv']
+              options: '-d 2'
+    NMF:
+        script: methods/mlpack/nmf.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/piano_magnitude_spectogram.csv']
+              options: '-r 6 -s 42 -u multdist'
+
+            - files: ['datasets/piano_magnitude_spectogram.csv']
+              options: '-r 6 -s 42 -u multdiv'
+
+            - files: ['datasets/piano_magnitude_spectogram.csv']
+              options: '-r 6 -s 42 -u als'
