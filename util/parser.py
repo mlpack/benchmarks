@@ -30,8 +30,8 @@ class Parser(object):
 
 		# Default values.
 		self.RUN = True
-		self.ITERATION = 2
-		self.PLOT = []
+		self.ITERATION = 1
+		self.OPTIONS = ''
 
 		try:
 			Log.Info('Load config file: ' + config, verbose)
@@ -92,11 +92,15 @@ class Parser(object):
 		else:
 			return self.ConfigKeyErrorMsg('format')
 
-		if attributes.has_key('dataset'):
-			dataset = attributes['dataset']
-			Log.Info('Dataset: ' + str(dataset), self.verbose)
+		if attributes.has_key('datasets'):
+			datasets = attributes['datasets']
+			for dataset in datasets:
+				Log.Info('Dataset: ' + str(dataset["files"]), self.verbose)
+				if not dataset.has_key("options"):
+					dataset["options"] = self.OPTIONS
+
 		else:
-			return self.ConfigKeyErrorMsg('dataset')
+			return self.ConfigKeyErrorMsg('datasets')
 
 		# Check the optional attributes. 
 		if attributes.has_key('run'):
@@ -113,17 +117,10 @@ class Parser(object):
 			self.ConfigKeyWarnMsg('iteration')
 			iteration = self.ITERATION
 
-		if attributes.has_key('plot'):
-			plot = attributes['plot']
-			Log.Info('plot: ' + str(plot), self.verbose)
-		else:
-			self.ConfigKeyWarnMsg('plot')
-			plot = self.PLOT
-
 		attr = collections.namedtuple('attributes', ['methodName', 'script', 
-				'format', 'dataset', 'run', 'iteration', 'plot'])
+				'format', 'datasets', 'run', 'iteration'])
 
-		return attr(methodName, script, format, dataset, run, iteration, plot)
+		return attr(methodName, script, format, datasets, run, iteration)
 
 	# Return key error message.
 	def ConfigKeyErrorMsg(self, key, streamNum = 0):
@@ -172,17 +169,16 @@ class Parser(object):
 						if not value.has_key('iteration'):
 							self.ConfigKeyWarnMsg('iteration', streamNum)
 
-						if value.has_key('plot'):
-							if not value['plot']:
-								return self.ConfigEmptyErrorMsg('plot', streamNum)
-						else:
-							self.ConfigKeyWarnMsg('plot', streamNum)
+						if value.has_key('datasets'):
+							if not value['datasets']:
+								return self.ConfigEmptyErrorMsg('datasets', streamNum)
+							else:
+								for dataset in value['datasets']:
+									if not dataset.has_key('options'):
+										self.ConfigKeyWarnMsg('options', streamNum)
 
-						if value.has_key('dataset'):
-							if not value['dataset']:
-								return self.ConfigEmptyErrorMsg('dataset', streamNum)
 						else:
-							return self.ConfigKeyErrorMsg('dataset', streamNum)
+							return self.ConfigKeyErrorMsg('datasets', streamNum)									
 
 				except AttributeError, e:
 					return self.ConfigKeyErrorMsg('methods', streamNum)
