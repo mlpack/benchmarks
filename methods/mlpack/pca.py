@@ -2,14 +2,14 @@
   @file pca.py
   @author Marcus Edel
 
-  Class to benchmark the mlpack Principal Components Analysis.
+  Class to benchmark the mlpack Principal Components Analysis method.
 '''
 
 import os
 import sys
 import inspect
 
-# import the util path, this method even works if the path contains
+# Import the util path, this method even works if the path contains
 # symlinks to modules.
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 	os.path.split(inspect.getfile(inspect.currentframe()))[0], '../../util')))
@@ -22,7 +22,6 @@ import shlex
 import subprocess
 import re
 import collections
-
 
 class PCA(object):
 
@@ -43,7 +42,7 @@ class PCA(object):
 		
 		match = pattern.match(s)
 		if not match:
-			Log.Fatal("Can't parse description", self.verbose)
+			Log.Warn("Can't parse description", self.verbose)
 			description = ''
 		else:
 			description = match.group(1)
@@ -61,11 +60,11 @@ class PCA(object):
 				os.remove(f)				
 
 	# Perform Principal Components Analysis and return the elapsed time.
-	def RunMethod(self):
+	def RunMethod(self, options):
 		Log.Info('Perform PCA.', self.verbose)
 
 		# Split the command using shell-like syntax.
-		cmd = shlex.split(self.path + "pca -i " + self.dataset + " -o output.csv -v")
+		cmd = shlex.split(self.path + "pca -i " + self.dataset + " -o output.csv -v " + options)
 
 		# Run command with the nessecary arguments and return its output as
 		# a byte string. We have untrusted input so we disables all shell 
@@ -95,7 +94,7 @@ class PCA(object):
 		
 		match = pattern.match(data)
 		if not match:
-			print "can't parse the data: wrong format"
+			print "Can't parse the data: wrong format"
 			return False
 		else:
 			# Create a namedtuple and return the timer data.
