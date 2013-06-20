@@ -63,7 +63,10 @@ def Main():
 
 					row = ['-'] * 4;
 					# Get dataset name.
-					row[0] = os.path.splitext(os.path.basename(files))[0]
+					if  not isinstance(files, basestring):
+						row[0] = os.path.splitext(os.path.basename(files[0]))[0]	
+					else:
+						row[0] = os.path.splitext(os.path.basename(files))[0]	
 
 					Log.Info('Dataset: ' + row[0])
 
