@@ -42,4 +42,25 @@ methods:
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'] ]
+    KPCA:
+        script: methods/mlpack/kernel_pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/circle_data.csv']
+              options: '-k linear'
+
+            - files: ['datasets/circle_data.csv']
+              options: '-k gaussian'
+
+            - files: ['datasets/circle_data.csv']
+              options: '-k polynomial'
+
+            - files: ['datasets/circle_data.csv']
+              options: '-k hyptan'
+
+            - files: ['datasets/circle_data.csv']
+              options: '-k laplacian'
+
+            - files: ['datasets/circle_data.csv']
+              options: '-k cosine'
 
