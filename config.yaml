@@ -6,10 +6,13 @@ methods:
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv']
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv', 'datasets/wine.csv', 'datasets/artificial_data.csv']
 
-            - files: ['datasets/cities.csv']
+            - files: ['datasets/cities.csv', 'datasets/iris.csv', 'datasets/wine.csv', 'datasets/artificial_data.csv']
               options: '-d 2'
+
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv', 'datasets/wine.csv', 'datasets/artificial_data.csv']
+              options: '-d 2 -s'
     NMF:
         script: methods/mlpack/nmf.py
         format: [csv, txt]
@@ -20,5 +23,23 @@ methods:
             - files: ['datasets/piano_magnitude_spectogram.csv']
               options: '-r 6 -s 42 -u multdiv'
 
-            - files: ['datasets/piano_magnitude_spectogram.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u als'
+    KMeans:
+        script: methods/mlpack/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 6'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 8'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 12'
+    NBC:
+        script: methods/mlpack/nbc.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'] ]
+
