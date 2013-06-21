@@ -33,7 +33,7 @@ class KPCA(object):
 		self.path = path
 
 		# Get description from executable.
-		cmd = shlex.split(self.path + "pca -h")
+		cmd = shlex.split(self.path + "kernel_pca -h")
 		s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
 
 		# Use regular expression pattern to get the description.
