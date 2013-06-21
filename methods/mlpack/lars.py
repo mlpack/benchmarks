@@ -76,8 +76,6 @@ class LARS(object):
 		# based features.
 		s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
 
-		print s
-
 		# Return the elapsed time.
 		timer = self.parseTimer(s)
 		if not timer:

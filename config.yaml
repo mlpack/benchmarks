@@ -29,14 +29,26 @@ methods:
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
+            - files: ['datasets/wine.csv']
+              options: '-c 3'
+
+            - files: ['datasets/cloud.csv']
+              options: '-c 5'
+
             - files: ['datasets/USCensus1990.csv']
               options: '-c 6'
+
+            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+              options: '-c 7'
 
             - files: ['datasets/USCensus1990.csv']
               options: '-c 8'
 
             - files: ['datasets/USCensus1990.csv']
               options: '-c 12'
+
+            - files: ['datasets/isolet.csv']
+              options: '-c 26'
     NBC:
         script: methods/mlpack/nbc.py
         format: [csv, txt]
@@ -49,19 +61,19 @@ methods:
             - files: ['datasets/circle_data.csv']
               options: '-k linear'
 
-            - files: ['datasets/circle_data.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k gaussian'
 
-            - files: ['datasets/circle_data.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k polynomial'
 
-            - files: ['datasets/circle_data.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k hyptan'
 
-            - files: ['datasets/circle_data.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k laplacian'
 
-            - files: ['datasets/circle_data.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k cosine'
     LARS:
         script: methods/mlpack/lars.py
@@ -72,4 +84,10 @@ methods:
 
             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
               options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
+    LSH:
+        script: methods/mlpack/lsh.py
+        format: [csv, txt]
+        datasets:
+         - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv', 'covtype.csv', 'datasets/wine_qual.csv']
+           options: '-k 3 -s 42'
 
