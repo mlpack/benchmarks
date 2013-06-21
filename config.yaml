@@ -63,4 +63,13 @@ methods:
 
             - files: ['datasets/circle_data.csv']
               options: '-k cosine'
+    LARS:
+        script: methods/mlpack/lars.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+              options: '--lambda1 0.01 --lambda2 0.005'
+
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+              options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
 
