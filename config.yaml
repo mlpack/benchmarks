@@ -29,7 +29,10 @@ methods:
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/waveform.csv']
+              options: '-c 2'
+
+            - files: ['datasets/wine.csv', 'datasets/iris.csv']
               options: '-c 3'
 
             - files: ['datasets/cloud.csv']
@@ -88,6 +91,74 @@ methods:
         script: methods/mlpack/lsh.py
         format: [csv, txt]
         datasets:
-         - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv', 'covtype.csv', 'datasets/wine_qual.csv']
+         - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv', 'dataset/covtype.csv', 'datasets/wine_qual.csv']
            options: '-k 3 -s 42'
+    ALLKNN:
+        script: methods/mlpack/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -s 42'
 
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -s 42 -S'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -s 42 -c'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -s 42 -c -S'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -s 42 -N'
+    ALLKFN:
+        script: methods/mlpack/allkfn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -s'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+              options: '-k 3 -N'
+    RANGESEARCH:
+        script: methods/mlpack/range_search.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
+              options: '--min=1.3 --max=20.3'
+
+            - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
+              options: '--min=1.3 --max=20.3 -N'
+
+            - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
+              options: '--min=1.3 --max=20.3 -s'
+    GMM:
+        script: methods/mlpack/gmm.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv', 'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv', 'datasets/USCensus1990.csv', 'datasets/optdigits.csv', 'datasets/isolet.csv']
+              options: '-s 42'
+
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv', 'datasets/USCensus1990.csv', 'datasets/isolet.csv']
+              options: '-P -s 42'
+    DET:
+        script: methods/mlpack/det.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/cloud.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/cloud.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-f 0'
+
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+    EMST:
+        script: methods/mlpack/emst.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/waveform.csv']
+
+            - files: ['datasets/iris.csv']
+              options: '-n'
