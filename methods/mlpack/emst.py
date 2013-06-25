@@ -54,7 +54,7 @@ class EMST(object):
 	# Remove created files.
 	def __del__(self):		
 		Log.Info('Clean up.', self.verbose)
-		filelist = ['gmon.out', 'leaf_class_membership.txt']
+		filelist = ['gmon.out', 'leaf_class_membership.txt', 'emst_output.csv']
 		for f in filelist:
 			if os.path.isfile(f):
 				os.remove(f)				

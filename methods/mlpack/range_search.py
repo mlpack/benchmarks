@@ -59,8 +59,7 @@ class RANGESEARCH(object):
 			if os.path.isfile(f):
 				os.remove(f)				
 
-	# Perform Range Search and return
-	# the elapsed time.
+	# Perform Range Search and return the elapsed time.
 	def RunMethod(self, options):
 		Log.Info('Perform RANGE SEARCH.', self.verbose)
 
