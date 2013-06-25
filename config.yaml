@@ -97,32 +97,51 @@ methods:
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42 -S'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42 -c'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42 -c -S'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42 -N'
     ALLKFN:
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -N'
+    ALLKRANN:
+        script: methods/mlpack/allkrann.py
+        format: [csv, txt]
+        run: false
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+              options: '-k 3 -t 10'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+              options: '-k 3 -t 10 -N'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+              options: '-k 3 -t 10 -s'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+              options: '-k 3 -t 10 -L'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+              options: '-k 3 -t 10 -X'
     RANGESEARCH:
         script: methods/mlpack/range_search.py
         format: [csv, txt]
@@ -162,3 +181,65 @@ methods:
 
             - files: ['datasets/iris.csv']
               options: '-n'
+    LinearRegression:
+        script: methods/mlpack/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], 'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv', 'datasets/Twitter.csv']
+    LocalCoordinateCoding:
+        script: methods/mlpack/local_coordinate_coding.py
+        format: [csv, txt]
+        datasets:
+             - files: ['datasets/pendigits.csv']
+               options: '-k 12 -s 42'
+
+             - files: ['datasets/pendigits.csv']
+               options: '-k 12 -s 42 -N'
+    SparseCoding:
+        script: methods/mlpack/sparse_coding.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/pendigits.csv']
+              options: '-k 12 -s 42 -n 100'
+
+            - files: ['datasets/pendigits.csv']
+              options: '-k 12 -s 42'
+
+            - files: ['datasets/pendigits.csv']
+              options: '-k 12 -s 42 -N'
+    FastMKS:
+        script: methods/mlpack/fastmks.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 1 -K linear'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -K linear'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -S -K linear'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -N -K linear'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -N -S -K linear'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -N -S -K polynomial -d 10'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -N -S -K hyptan -d 10'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -K cosine'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -K gaussian'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -K epanechnikov'
+
+            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+              options: '-k 10 -K triangular'
