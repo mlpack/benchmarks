@@ -3,29 +3,35 @@
 library: mlpack
 methods:
     PCA:
+        run: false
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv', 'datasets/wine.csv', 'datasets/artificial_data.csv']
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
+                      'datasets/wine.csv', 'datasets/artificial_data.csv']
 
-            - files: ['datasets/cities.csv', 'datasets/iris.csv', 'datasets/wine.csv', 'datasets/artificial_data.csv']
+            - files: ['datasets/cities.csv', 'datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/artificial_data.csv']
               options: '-d 2'
 
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv', 'datasets/wine.csv', 'datasets/artificial_data.csv']
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
+                      'datasets/wine.csv', 'datasets/artificial_data.csv']
               options: '-d 2 -s'
     NMF:
+        run: false
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u multdist'
 
-            - files: ['datasets/piano_magnitude_spectogram.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u multdiv'
 
             - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u als'
     KMeans:
+        run: false
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
@@ -53,47 +59,64 @@ methods:
             - files: ['datasets/isolet.csv']
               options: '-c 26'
     NBC:
+        run: false
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'] ]
     KPCA:
+        run: false
         script: methods/mlpack/kernel_pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/circle_data.csv']
               options: '-k linear'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
+                      'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k gaussian'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
+                      'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k polynomial'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
+                      'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k hyptan'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
+                      'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k laplacian'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv', 'datasets/bank8FM.csv', 'datasets/stock.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
+                      'datasets/bank8FM.csv', 'datasets/stock.csv']
               options: '-k cosine'
     LARS:
+        run: false
         script: methods/mlpack/lars.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
               options: '--lambda1 0.01 --lambda2 0.005'
 
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
               options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
     LSH:
+        run: false
         script: methods/mlpack/lsh.py
         format: [csv, txt]
         datasets:
-         - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv', 'dataset/covtype.csv', 'datasets/wine_qual.csv']
+         - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv',
+                   'dataset/covtype.csv', 'datasets/wine_qual.csv']
            options: '-k 3 -s 42'
     ALLKNN:
+        run: false
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
@@ -112,6 +135,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42 -N'
     ALLKFN:
+        run: false
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
@@ -124,6 +148,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -N'
     ALLKRANN:
+        run: false
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         run: false
@@ -143,6 +168,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
               options: '-k 3 -t 10 -X'
     RANGESEARCH:
+        run: false
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:
@@ -155,25 +181,34 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
               options: '--min=1.3 --max=20.3 -s'
     GMM:
+        run: false
         script: methods/mlpack/gmm.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv', 'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv', 'datasets/USCensus1990.csv', 'datasets/optdigits.csv', 'datasets/isolet.csv']
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
+                      'datasets/USCensus1990.csv', 'datasets/optdigits.csv',
+                      'datasets/isolet.csv']
               options: '-s 42'
 
-            - files: ['datasets/artificial_2DSignal.csv', 'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv', 'datasets/USCensus1990.csv', 'datasets/isolet.csv']
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/iris.csv', 'datasets/vehicle.csv',
+                      'datasets/wine.csv', 'datasets/USCensus1990.csv', 'datasets/isolet.csv']
               options: '-P -s 42'
     DET:
+        run: false
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris.csv', 'datasets/cloud.csv']
 
-            - files: ['datasets/iris.csv', 'datasets/cloud.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris.csv', 'datasets/cloud.csv',
+                     ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
               options: '-f 0'
 
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
     EMST:
+        run: false
         script: methods/mlpack/emst.py
         format: [csv, txt]
         datasets:
@@ -182,11 +217,18 @@ methods:
             - files: ['datasets/iris.csv']
               options: '-n'
     LinearRegression:
+        run: false
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'], ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'], ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'], ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'], 'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv', 'datasets/Twitter.csv']
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                        'datasets/Twitter.csv']
     LocalCoordinateCoding:
+        run: false
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
         datasets:
@@ -196,6 +238,7 @@ methods:
              - files: ['datasets/pendigits.csv']
                options: '-k 12 -s 42 -N'
     SparseCoding:
+        run: false
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
         datasets:
@@ -208,6 +251,7 @@ methods:
             - files: ['datasets/pendigits.csv']
               options: '-k 12 -s 42 -N'
     FastMKS:
+        run: false
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
@@ -243,3 +287,56 @@ methods:
 
             - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
               options: '-k 10 -K triangular'
+    NCA:
+        run: false
+        script: methods/mlpack/nca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-n 2000 -O sgd -s 42'
+
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-n 2000 -O lbfgs -s 42'
+
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-n 2000 -O lbfgs -s 42 -w 0.5'
+
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-n 2000 -O lbfgs -s 42 -w 0.5 -B 5'
+
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-n 2000 -O lbfgs -s 42 -B 5'
+
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+              options: '-n 2000 -N -s 42'
+    HMMTRAIN:
+        run: false
+        script: methods/mlpack/hmm_train.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal.csv']
+              options: '-t gaussian -n 20 -s 42'
+
+            - files: ['datasets/artificial_1DSignal.csv']
+              options: '-t discrete -n 20 -s 42'
+    HMMGENERATE:
+        run: false
+        script: methods/mlpack/hmm_generate.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal_hmm.xml', 'datasets/artificial_1DSignal_hmm.xml']
+              options: '-l 10000'
+    HMMLOGLIK:
+       run: false
+       script: methods/mlpack/hmm_loglik.py
+       format: [csv, txt]
+       datasets:
+           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
+                      ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
+    HMMVITERBI:
+       run: true
+       script: methods/mlpack/hmm_viterbi.py
+       format: [csv, txt]
+       datasets:
+           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
+                      ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
