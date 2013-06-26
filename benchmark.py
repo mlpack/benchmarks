@@ -2,7 +2,8 @@
   @file benchmark.py
   @author Marcus Edel
 
-  In this file we read the config file and start the benchmark.
+  In this file we read the config file and start the benchmark or test the 
+  config.
 '''
 
 
@@ -34,7 +35,7 @@ def SystemInformation():
 
 def Main():
 	# Read Config.
-	config = Parser('config.yaml')
+	config = Parser('config.yaml', verbose=False)
 
 	# Iterate through all libraries.
 	libraryMapping = config.GetConfigLibraryMethods()
@@ -44,48 +45,53 @@ def Main():
 		methodMapping = config.GetConfigMethod(libraryMapping.methods)			
 		while methodMapping and libraryMapping:
 
-			# Load script.
-			module = Loader.ImportModuleFromPath(methodMapping.script)
-			methodCall = getattr(module, methodMapping.methodName)
+			if methodMapping.run:
 
-			for dataset in methodMapping.datasets:
+				Log.Info('Method: ' + methodMapping.methodName)
 
-				#! TEMPORARY
-				# Create table.
-				table = []
-				# set table header.
-				header = ['', libraryMapping.libraryName, 'matlab', 'shougun']
-				table.append(header)		
+				# Load script.
+				module = Loader.ImportModuleFromPath(methodMapping.script)
+				methodCall = getattr(module, methodMapping.methodName)
 
-				Log.Info('Options: ' + (dataset["options"] if dataset["options"] != '' else 'None'))
+				for dataset in methodMapping.datasets:
 
-				for files in dataset["files"]:
+					#! TEMPORARY
+					# Create table.
+					table = []
+					# set table header.
+					header = ['', libraryMapping.libraryName, 'matlab', 'shougun']
+					table.append(header)		
 
-					row = ['-'] * 4;
-					# Get dataset name.
-					if  not isinstance(files, basestring):
-						row[0] = os.path.splitext(os.path.basename(files[0]))[0]	
-					else:
-						row[0] = os.path.splitext(os.path.basename(files))[0]	
+					Log.Info('Options: ' + (dataset["options"] if dataset["options"] != '' 
+						else 'None'))
 
-					Log.Info('Dataset: ' + row[0])
+					for files in dataset["files"]:
 
-					time = 0
-					for num in range(methodMapping.iteration):
-						instance = methodCall(files, verbose=False)
-						time += instance.RunMethod(dataset["options"]);
+						row = ['-'] * 4;
+						# Get dataset name.
+						if  not isinstance(files, basestring):
+							row[0] = os.path.splitext(os.path.basename(files[0]))[0]	
+						else:
+							row[0] = os.path.splitext(os.path.basename(files))[0]	
 
-						# Call the destructor.
-						del instance
+						Log.Info('Dataset: ' + row[0])
 
-					# Set time.
-					row[1] = time / methodMapping.iteration
-					table.append(row)
+						time = 0
+						for num in range(methodMapping.iteration):
+							instance = methodCall(files, verbose=False)
+							time += instance.RunMethod(dataset["options"]);
 
-				# Show results in a table.
-				Log.Notice('')
-				Log.PrintTable(table)
-				Log.Notice('')
+							# Call the destructor.
+							del instance
+
+						# Set time.
+						row[1] = time / methodMapping.iteration
+						table.append(row)
+
+					# Show results in a table.
+					Log.Notice('')
+					Log.PrintTable(table)
+					Log.Notice('')
 
 			methodMapping = config.GetConfigMethod(libraryMapping.methods)
 		libraryMapping = config.GetConfigLibraryMethods()

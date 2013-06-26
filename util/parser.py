@@ -75,7 +75,7 @@ class Parser(object):
 			return False
 
 		methodName = method[0]
-		Log.Info('Method: ' + methodName)
+		Log.Info('Method: ' + methodName, self.verbose)
 
 		attributes = method[1]
 
@@ -133,14 +133,14 @@ class Parser(object):
 
 	# Return empty list error message.
 	def ConfigEmptyErrorMsg(self, key, streamNum):
-		Log.Fatal('Stream number: ' + str(streamNum) + ' the [' + key +  '] list is empty.' )
+		Log.Fatal('Stream number: ' + str(streamNum) + ' the [' + key +  '] list is empty.')
 		return False
 
 	def ConfigKeyWarnMsg(self, key, streamNum = 0):
 		if streamNum == 0:
-			Log.Warn('No [' + key + '] key, use default value.')
+			Log.Warn('No [' + key + '] key, use default value.', self.verbose)
 		else:	
-			Log.Warn('Stream number: ' + str(streamNum) + ' has no [' + key + '] key, use default value.')
+			Log.Warn('Stream number: ' + str(streamNum) + ' has no [' + key + '] key, use default value.', self.verbose)
 	
 	# Check config attributes and keys.	
 	def CheckConfig(self):
