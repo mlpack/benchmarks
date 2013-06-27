@@ -151,7 +151,6 @@ methods:
         run: false
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
-        run: false
         datasets:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
               options: '-k 3 -t 10'
@@ -334,7 +333,7 @@ methods:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
                       ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
     HMMVITERBI:
-       run: true
+       run: false
        script: methods/mlpack/hmm_viterbi.py
        format: [csv, txt]
        datasets:
