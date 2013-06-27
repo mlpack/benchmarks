@@ -3,7 +3,7 @@
 library: mlpack
 methods:
     PCA:
-        run: false
+        run: true
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -59,7 +59,7 @@ methods:
             - files: ['datasets/isolet.csv']
               options: '-c 26'
     NBC:
-        run: true
+        run: false
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
@@ -67,7 +67,7 @@ methods:
                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'],
                        ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
-                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv']
+                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
         run: false
@@ -173,15 +173,15 @@ methods:
                       'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -N'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -s'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -L'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -X'
     RANGESEARCH:
