@@ -59,11 +59,16 @@ methods:
             - files: ['datasets/isolet.csv']
               options: '-c 26'
     NBC:
-        run: false
+        run: true
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'] ]
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'],
+                       ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv']
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
         run: false
         script: methods/mlpack/kernel_pca.py
@@ -113,58 +118,71 @@ methods:
         format: [csv, txt]
         datasets:
          - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv',
-                   'dataset/covtype.csv', 'datasets/wine_qual.csv']
+                   'datasets/covtype.csv', 'datasets/wine_qual.csv']
            options: '-k 3 -s 42'
     ALLKNN:
         run: false
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -s 42'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -s 42 -S'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -s 42 -c'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -s 42 -c -S'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -s 42 -N'
     ALLKFN:
         run: false
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -s'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -N'
     ALLKRANN:
         run: false
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -N'
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -s'
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -L'
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv']
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
               options: '-k 3 -t 10 -X'
     RANGESEARCH:
         run: false
@@ -198,14 +216,13 @@ methods:
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris.csv', 'datasets/cloud.csv']
+            - files: ['datasets/iris.csv', 'datasets/cloud.csv',
+                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
 
             - files: ['datasets/iris.csv', 'datasets/cloud.csv',
                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
-              options: '-f 0'
-
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+              options: '-f 20'
     EMST:
         run: false
         script: methods/mlpack/emst.py
@@ -224,8 +241,8 @@ methods:
                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                        'datasets/Twitter.csv']
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                         'datasets/Twitter.csv']
     LocalCoordinateCoding:
         run: false
         script: methods/mlpack/local_coordinate_coding.py
