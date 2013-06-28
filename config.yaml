@@ -9,16 +9,16 @@ methods:
         datasets:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
                       'datasets/wine.csv', 'datasets/artificial_data.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X', 'datasets/ionosphere']
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/ionosphere.csv']
 
             - files: ['datasets/cities.csv', 'datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/artificial_data.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
-                      'datasets/diabetes_X', 'datasets/ionosphere']
+                      'datasets/diabetes_X.csv', 'datasets/ionosphere.csv']
               options: '-d 2'
 
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
                       'datasets/wine.csv', 'datasets/artificial_data.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X', 'datasets/ionosphere']
+                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/ionosphere.csv']
               options: '-d 2 -s'
     NMF:
         run: false
@@ -64,10 +64,7 @@ methods:
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
-                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'],
-                       ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
-                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
         run: false
@@ -318,33 +315,33 @@ methods:
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
-                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
+                      'datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -O sgd -s 42'
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
-                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
+                      'datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -O lbfgs -s 42'
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
-                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
+                      'datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -O lbfgs -s 42 -w 0.5'
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
-                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
+                      'datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -O lbfgs -s 42 -w 0.5 -B 5'
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
-                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
+                      'datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -O lbfgs -s 42 -B 5'
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
-                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
+                      'datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -N -s 42'
     HMMTRAIN:
         run: false
