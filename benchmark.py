@@ -25,14 +25,21 @@ from parser import *
 
 from optparse import OptionParser
 
+'''
+Show system informations. Are there no data available, the value is 'N/A'.
+'''
 def SystemInformation():
-	# Show system informations.
+	
 	Log.Info('CPU Model: ' + SystemInfo.GetCPUModel())
 	Log.Info('Distribution: ' + SystemInfo.GetDistribution())
 	Log.Info('Platform: ' + SystemInfo.GetPlatform())
 	Log.Info('Memory: ' + SystemInfo.GetMemory())
 	Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
 
+'''
+Start the main benchmark routine. The method shows some DEBUG information and 
+prints a table with the runtime information.
+'''
 def Main():
 	# Read Config.
 	config = Parser('config.yaml', verbose=False)
@@ -72,7 +79,10 @@ def Main():
 						if  not isinstance(files, basestring):
 							row[0] = os.path.splitext(os.path.basename(files[0]))[0]	
 						else:
-							row[0] = os.path.splitext(os.path.basename(files))[0]	
+							row[0] = os.path.splitext(os.path.basename(files))[0]
+
+						if row[0].count('_') != 0:
+							row[0] = row[0].split("_")[0]
 
 						Log.Info('Dataset: ' + row[0])
 
