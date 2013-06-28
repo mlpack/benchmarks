@@ -3,32 +3,37 @@
 library: mlpack
 methods:
     PCA:
-        run: true
+        run: false
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
-                      'datasets/wine.csv', 'datasets/artificial_data.csv']
+                      'datasets/wine.csv', 'datasets/artificial_data.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
 
             - files: ['datasets/cities.csv', 'datasets/iris.csv', 'datasets/wine.csv',
-                      'datasets/artificial_data.csv']
+                      'datasets/artificial_data.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X.csv']
               options: '-d 2'
 
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
-                      'datasets/wine.csv', 'datasets/artificial_data.csv']
+                      'datasets/wine.csv', 'datasets/artificial_data.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-d 2 -s'
     NMF:
         run: false
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
+                      'datasets/ionosphere.csv', 'datasets/waveform.csv']
               options: '-r 6 -s 42 -u multdist'
 
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
+                      'datasets/ionosphere.csv', 'datasets/waveform.csv']
               options: '-r 6 -s 42 -u multdiv'
 
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
+                      'datasets/ionosphere.csv', 'datasets/waveform.csv']
               options: '-r 6 -s 42 -u als'
     KMeans:
         run: false
@@ -50,12 +55,6 @@ methods:
             - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
               options: '-c 7'
 
-            - files: ['datasets/USCensus1990.csv']
-              options: '-c 8'
-
-            - files: ['datasets/USCensus1990.csv']
-              options: '-c 12'
-
             - files: ['datasets/isolet.csv']
               options: '-c 26'
     NBC:
@@ -74,27 +73,34 @@ methods:
         script: methods/mlpack/kernel_pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/circle_data.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
+                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-k linear'
 
             - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv']
+                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-k gaussian'
 
             - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv']
+                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-k polynomial'
 
             - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv']
+                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-k hyptan'
 
             - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv']
+                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-k laplacian'
 
             - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv']
+                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv']
               options: '-k cosine'
     LARS:
         run: false
@@ -189,13 +195,16 @@ methods:
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
+            - files: ['datasets/wine.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X',
+                      'datasets/ionosphere', 'datasets/cloud', 'datasets/vehicle']
               options: '--min=1.3 --max=20.3'
 
-            - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
+            - files: ['datasets/wine.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X',
+                      'datasets/ionosphere', 'datasets/cloud', 'datasets/vehicle']
               options: '--min=1.3 --max=20.3 -N'
 
-            - files: ['datasets/wine.csv', 'datasets/artificial_40D.csv']
+            - files: ['datasets/wine.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X',
+                      'datasets/ionosphere', 'datasets/cloud', 'datasets/vehicle']
               options: '--min=1.3 --max=20.3 -s'
     GMM:
         run: false
@@ -241,8 +250,7 @@ methods:
                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                         'datasets/Twitter.csv']
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv']
     LocalCoordinateCoding:
         run: false
         script: methods/mlpack/local_coordinate_coding.py
@@ -308,22 +316,34 @@ methods:
         script: methods/mlpack/nca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
+                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
               options: '-n 2000 -O sgd -s 42'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
+                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
               options: '-n 2000 -O lbfgs -s 42'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
+                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
               options: '-n 2000 -O lbfgs -s 42 -w 0.5'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
+                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
               options: '-n 2000 -O lbfgs -s 42 -w 0.5 -B 5'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
+                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
               options: '-n 2000 -O lbfgs -s 42 -B 5'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/dexter_train',
+                      'datasets/shuttle_train', 'datasets/arcene_train', 'datasets/madelon_train']
               options: '-n 2000 -N -s 42'
     HMMTRAIN:
         run: false
