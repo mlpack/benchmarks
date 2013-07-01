@@ -17,6 +17,7 @@ if cmd_subfolder not in sys.path:
 	sys.path.insert(0, cmd_subfolder)
 
 from log import *
+from profiler import *
 
 import shlex
 import subprocess
@@ -45,7 +46,7 @@ class PCA(object):
 		cmd = shlex.split(self.path + "pca -h")
 		try:
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
-		except Exception, e:
+		except Exception:
 			Log.Fatal("Could not execute command: " + str(cmd))
 			return -1
 
@@ -67,11 +68,29 @@ class PCA(object):
 	'''
 	def __del__(self):		
 		Log.Info("Clean up.", self.verbose)
-		filelist = ["gmon.out", "output.csv"]
+		filelist = ["gmon.out", "output.csv", "PCA.massif"]
 		for f in filelist:
 			if os.path.isfile(f):
-				os.remove(f)				
-	
+				os.remove(f)		
+
+	'''
+	Run valgrind massif profiler on the Principal Components Analysis method. If 
+	the method has been successfully completed the report is saved in the 
+	specified file.
+
+	@param options - Extra massif options.
+	@return Returns False if the method was not successful, if the method was 
+	successful save the report file in the specified file.
+	'''
+	def RunMemoryProfiling(self, options = "--depth=3"):
+		Log.Info("Perform PCA Memory Profiling.", self.verbose)
+
+		# Split the command using shell-like syntax.
+		cmd = shlex.split(self.path + "pca -i " + self.dataset + 
+				" -o output.csv -v " + options)
+
+		return Profiler.MassifMemoryUsage(cmd, "PCA.massif")
+		
 	'''
   Perform Principal Components Analysis. If the method has been successfully 
   completed return the elapsed time in seconds.
@@ -85,12 +104,12 @@ class PCA(object):
 		# Split the command using shell-like syntax.
 		cmd = shlex.split(self.path + "pca -i " + self.dataset + 
 				" -o output.csv -v " + options)
-
+	
 		# Run command with the nessecary arguments and return its output as a byte
 		# string. We have untrusted input so we disables all shell based features.
 		try:
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)		
-		except Exception, e:
+		except Exception:
 			Log.Fatal("Could not execute command: " + str(cmd))
 			return -1
 
@@ -101,7 +120,7 @@ class PCA(object):
 			return -1
 		else:
 			time = self.GetTime(timer)
-			Log.Info(("total time: %fs" % (time)), self.verbose)
+			Log.Info(("total time: %fs" % time), self.verbose)
 
 			return time
 
