@@ -1,16 +1,23 @@
 PYTHON_BIN := $(shell which python)
 PYTHON_VERSION := $(shell expr `$(PYTHON_BIN) -c 'import sys; print sys.version[:3]'` \>= 2.7)
+YAML_INSTALLED := $(shell $(PYTHON_BIN) -c 'import sys, yaml;' 2>&1)
 
 CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
 
 ifeq ($(PYTHON_VERSION), 0)
-  $(error Python version 2.7 required which was not found.)
+  $(error Python version 2.7 required which was not found)
+endif
+
+# This is empty unless there was a problem.
+ifdef YAML_INSTALLED
+  $(error Python 'yaml' module was not found)
 endif
 
 .PHONY: help test run memory
 
 help:
+	@echo "$(YAML_INSTALLED)"
 	@echo "Usage: make [option] [CONFIG=..]"
 	@echo "options:"
 	@echo "  help               Show this info."
@@ -30,4 +37,4 @@ run:
 
 memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG)
-	
+
