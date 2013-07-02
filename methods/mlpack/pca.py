@@ -68,7 +68,7 @@ class PCA(object):
 	'''
 	def __del__(self):		
 		Log.Info("Clean up.", self.verbose)
-		filelist = ["gmon.out", "output.csv", "PCA.massif"]
+		filelist = ["gmon.out", "output.csv", "PCA.mout"]
 		for f in filelist:
 			if os.path.isfile(f):
 				os.remove(f)		
@@ -82,14 +82,14 @@ class PCA(object):
 	@return Returns False if the method was not successful, if the method was 
 	successful save the report file in the specified file.
 	'''
-	def RunMemoryProfiling(self, options = "--depth=3"):
+	def RunMemoryProfiling(self, methodOptions, massifOptions = "--depth=3"):
 		Log.Info("Perform PCA Memory Profiling.", self.verbose)
 
 		# Split the command using shell-like syntax.
 		cmd = shlex.split(self.path + "pca -i " + self.dataset + 
-				" -o output.csv -v " + options)
+				" -o output.csv -v " + methodOptions)
 
-		return Profiler.MassifMemoryUsage(cmd, "PCA.massif")
+		return Profiler.MassifMemoryUsage(cmd, "PCA.mout", options = massifOptions)
 		
 	'''
   Perform Principal Components Analysis. If the method has been successfully 

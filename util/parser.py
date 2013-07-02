@@ -188,7 +188,7 @@ class Parser(object):
 	@ return False
 	'''
 	def NotAvailableErrorMsg(self, fileName):
-		Log.Fatal("The file: " + fileName + "is not available.")
+		Log.Fatal("The file: " + fileName + " is not available.")
 		return False
 
 	'''
