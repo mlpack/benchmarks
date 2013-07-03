@@ -1,5 +1,5 @@
 '''
-  @file log.py
+  @file timer.py
   @author Marcus Edel
 
   Implementation of the timer class.
