@@ -59,15 +59,14 @@ class PCA(object):
 
 		inputCmd = "-i " + self.dataset + " " + options
 		# Split the command using shell-like syntax.
-		cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, pca('" 
+		cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, PCA('" 
 				+ inputCmd + "'), catch, exit(1), end, exit(0)\"")
 		
 		# Run command with the nessecary arguments and return its output as a byte
 		# string. We have untrusted input so we disables all shell based features.
 		try:
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)		
-		except Exception, e:
-			print e
+		except Exception:
 			Log.Fatal("Could not execute command: " + str(cmd))
 			return -1
 
