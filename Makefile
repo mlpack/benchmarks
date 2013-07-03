@@ -6,7 +6,7 @@ CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
 
 # Export matlab path to execute matlab file in the methods directory.
-export MATLABPATH = methods/matlab/
+export MATLABPATH=methods/matlab/
 
 ifeq ($(PYTHON_VERSION), 0)
   $(error Python version 2.7 required which was not found)
