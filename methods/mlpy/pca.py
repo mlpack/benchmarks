@@ -1,4 +1,4 @@
- '''
+'''
   @file pca.py
   @author Marcus Edel
 
@@ -51,13 +51,12 @@ class PCA(object):
   '''
   def PCASMlpy(self, options):
     totalTimer = Timer()
-    loadTimer = Timer()
-    with totalTimer:
-      # Load input dataset.
-      with loadTimer:
-        Log.Info("Loading dataset", self.verbose)
-        data = np.genfromtxt(self.dataset, delimiter=',')
 
+    # Load input dataset.
+    Log.Info("Loading dataset", self.verbose)
+    data = np.genfromtxt(self.dataset, delimiter=',')
+
+    with totalTimer:
       # Find out what dimension we want.
       match = re.search('-d (\d+)', options)
 
@@ -78,7 +77,7 @@ class PCA(object):
       prep.learn(data)
       prep.transform(data)      
 
-    return (totalTimer.ElapsedTime() - loadTimer.ElapsedTime())
+    return totalTimer.ElapsedTime()
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 

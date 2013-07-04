@@ -1,4 +1,4 @@
- '''
+'''
   @file pca.py
   @author Marcus Edel
 
@@ -52,14 +52,13 @@ class PCA(object):
   '''
   def PCAShogun(self, options):
     totalTimer = Timer()
-    loadTimer = Timer()
-    with totalTimer:
-      # Load input dataset.
-      with loadTimer:
-        Log.Info("Loading dataset", self.verbose)
-        data = np.genfromtxt(self.dataset, delimiter=',')
-        feat = RealFeatures(data.T)
+    
+    # Load input dataset.
+    Log.Info("Loading dataset", self.verbose)
+    data = np.genfromtxt(self.dataset, delimiter=',')
+    feat = RealFeatures(data.T)
 
+    with totalTimer:
       # Find out what dimension we want.
       match = re.search('-d (\d+)', options)
 
@@ -81,7 +80,7 @@ class PCA(object):
       prep.init(feat)
       prep.apply_to_feature_matrix(feat)
 
-    return (totalTimer.ElapsedTime() - loadTimer.ElapsedTime())
+    return totalTimer.ElapsedTime()
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 
