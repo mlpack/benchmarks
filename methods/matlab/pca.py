@@ -36,7 +36,7 @@ class PCA(object):
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
 	'''
-	def __init__(self, dataset, path="/opt/matlab/bin/", verbose=True): 
+	def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
