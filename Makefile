@@ -8,6 +8,10 @@ BENCHMARKDDIR := benchmark
 # Export matlab path to execute matlab file in the methods directory.
 export MATLABPATH=methods/matlab/
 
+# Specify the path for the libraries.
+export MLPACK_BIN=/usr/local/bin/
+export MATLAB_BIN=/opt/matlab/bin/
+
 ifeq ($(PYTHON_VERSION), 0)
   $(error Python version 2.7 required which was not found)
 endif
