@@ -32,7 +32,7 @@ class HMMVITERBI(object):
 
 	# Create the HHidden Markov Model Viterbi State Prediction instance, show some
 	# informations and return the instance.
-	def __init__(self, dataset, path="", verbose=True): 
+	def __init__(self, dataset, path=os.environ["MLPACK_BIN"], verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
