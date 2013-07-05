@@ -92,7 +92,7 @@ class NMF(object):
 
       # Perform NMF with the specified update rules.
       if seed:
-        s = seed.group(1)
+        s = int(seed.group(1))
         model = ScikitNMF(n_components=2, init='random', max_iter = m, tol = e, random_state = s)
       else:
         model = ScikitNMF(n_components=2, init='nndsvdar', max_iter = m, tol = e)
