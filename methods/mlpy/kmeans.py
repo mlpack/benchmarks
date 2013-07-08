@@ -2,7 +2,7 @@
   @file kmeans.py
   @author Marcus Edel
 
-  K-Means Clustering with scikit.
+  K-Means Clustering with mlpy.
 '''
 
 import os
@@ -20,7 +20,7 @@ from log import *
 from timer import *
 
 import numpy as np
-from mlpy import Kmeans
+import mlpy
 
 '''
 This class implements the K-Means Clustering benchmark.
@@ -44,57 +44,37 @@ class KMEANS(object):
     pass
 
   '''
-  Use the scikit libary to implement K-Means Clustering.
+  Use the mlpy libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
-  def KMeansScikit(self, options):
+  def KMeansMlpy(self, options):
     totalTimer = Timer()
 
     # Load input dataset.
-    # If the dataset contains two files then the second file is the centroids 
-    # file. In this case we add this to the command line.
     Log.Info("Loading dataset", self.verbose)
-    if len(self.dataset) == 2:
-      data = np.genfromtxt(self.dataset[0], delimiter=',')
-      centroids = np.genfromtxt(self.dataset[1], delimiter=',')
-    else:
-      data = np.genfromtxt(self.dataset, delimiter=',')
+    data = np.genfromtxt(self.dataset, delimiter=',')
 
     # Gather parameters.
-    clusters = re.search("-c (\d+)", options)
-    maxIterations = re.search("-m (\d+)", options)
+    clusters = re.search('-c (\d+)', options)
     seed = re.search("-s (\d+)", options)
 
     # Now do validation of options.
-    if not clusters and len(self.dataset) != 2:
+    if not clusters:
       Log.Fatal("Required option: Number of clusters or cluster locations.")
       return -1
-    elif (not clusters or clusters.group(1) < 1) and len(self.dataset) != 2:
+    elif clusters.group(1) < 1:
       Log.Fatal("Invalid number of clusters requested! Must be greater than or "
           + "equal to 1.")
       return -1
 
-    if not maxIterations:
-      m = 1000
-    else:
-      m = maxIterations.group(1)
-
-    # Create the KMeans object and perform K-Means clustering.
     with totalTimer:
-      if len(self.dataset) == 2:
-        kmeans = KMeans(k=centroids.shape[1], init=centroids, n_init=1, 
-            max_iter=m)
-      elif seed:
-        kmeans = KMeans(k=int(clusters.group(1)), init='random', n_init=1, 
-            max_iter=m, random_state=int(seed.group(1)))
+      # Create the KMeans object and perform K-Means clustering.
+      if seed:
+        kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
       else:
-        kmeans = KMeans(k=int(clusters.group(1)), n_init=1, max_iter=m)      
-
-      kmeans.fit(data)
-      labels = kmeans.labels_
-      centers = kmeans.cluster_centers_
+        kmeans = mlpy.kmeans(data, int(clusters.group(1)))
 
     return totalTimer.ElapsedTime()
 
@@ -108,4 +88,4 @@ class KMEANS(object):
   def RunMethod(self, options):
     Log.Info("Perform K-Means.", self.verbose)
 
-    return self.KMeansScikit(options)
+    return self.KMeansMlpy(options)
