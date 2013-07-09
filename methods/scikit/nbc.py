@@ -58,7 +58,7 @@ class NBC(object):
     testData = np.genfromtxt(self.dataset[1], delimiter=',')
 
     # Labels are the last row of the training set.
-    labels = trainData[:,4]
+    labels = trainData[:, (trainData.shape[1] - 1)]
     trainData = trainData[:,:-1]
 
     with totalTimer:      

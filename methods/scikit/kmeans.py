@@ -20,7 +20,7 @@ from log import *
 from timer import *
 
 import numpy as np
-from mlpy import Kmeans
+from sklearn.cluster import KMeans
 
 '''
 This class implements the K-Means Clustering benchmark.

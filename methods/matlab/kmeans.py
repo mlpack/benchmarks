@@ -48,7 +48,7 @@ class KMEANS(object):
 		pass	
 		
 	'''
-  Non-negative Matrix Factorization. If the method has been successfully 
+  K-Means Clustering benchmark instance. If the method has been successfully 
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.

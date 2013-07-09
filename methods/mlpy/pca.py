@@ -49,7 +49,7 @@ class PCA(object):
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
-  def PCASMlpy(self, options):
+  def PCAMlpy(self, options):
     totalTimer = Timer()
 
     # Load input dataset.
@@ -89,4 +89,4 @@ class PCA(object):
   def RunMethod(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
-    return self.PCASMlpy(options)
+    return self.PCAMlpy(options)
