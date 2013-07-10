@@ -33,14 +33,14 @@ if ~isempty(queryFile)
   queryData = csvread(queryFile{:});
 end
 
+total_time = tic;
 if ~isempty(k)
-  k = str2double(k)
+  k = str2double(k);
 else
   disp('[Fatal] Required options: Number of furthest neighbors to find.');
   return;
 end
 
-total_time = tic;
 % Sanity check on k value: must be greater than 0, must be less than the
 % number of reference points.
 if k > size(referenceData, 2)

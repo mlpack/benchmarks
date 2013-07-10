@@ -91,7 +91,7 @@ class ALLKNN(object):
     return totalTimer.ElapsedTime()
 
   '''
-  Perform K-Means Clustering. If the method has been successfully completed 
+  Perform All K-Nearest-Neighbors. If the method has been successfully completed 
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
