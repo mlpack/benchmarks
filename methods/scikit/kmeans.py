@@ -87,10 +87,10 @@ class KMEANS(object):
         kmeans = KMeans(k=centroids.shape[1], init=centroids, n_init=1, 
             max_iter=m)
       elif seed:
-        kmeans = KMeans(k=int(clusters.group(1)), init='random', n_init=1, 
+        kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', n_init=1, 
             max_iter=m, random_state=int(seed.group(1)))
       else:
-        kmeans = KMeans(k=int(clusters.group(1)), n_init=1, max_iter=m)      
+        kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)      
 
       kmeans.fit(data)
       labels = kmeans.labels_

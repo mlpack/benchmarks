@@ -82,7 +82,7 @@ methods:
         format: [csv, txt]
         datasets:
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv']
-              options: '-m 0 -M 20.3'
+              options: '-M 20.3'
 
     GMM:
         run: false
@@ -185,20 +185,20 @@ methods:
 library: matlab
 methods:
     PCA:
-        run: false
+        run: true
         script: methods/matlab/pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' , 'datasets/wine.csv']
     NMF:
-        run: false
+        run: true
         script: methods/matlab/nmf.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv']
               options: '-r 6 -s 42 -u multdist'
-    KMeans:
-        run: false
+    KMEANS:
+        run: true
         script: methods/matlab/kmeans.py
         format: [csv, txt]
         datasets:
@@ -206,7 +206,7 @@ methods:
               options: '-c 3'
 
     NBC:
-        run: false
+        run: true
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
@@ -214,7 +214,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
 
     ALLKNN:
-        run: false
+        run: true
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
@@ -222,7 +222,7 @@ methods:
               options: '-k 3 -s 42'
 
     RANGESEARCH:
-        run: false
+        run: true
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:

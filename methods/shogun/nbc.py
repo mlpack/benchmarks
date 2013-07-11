@@ -20,7 +20,7 @@ from log import *
 from timer import *
 
 import numpy as np
-from shogun.Features import RealFeatures, Labels
+from shogun.Features import RealFeatures, MulticlassLabels
 from shogun.Classifier import GaussianNaiveBayes
 
 '''
@@ -59,7 +59,7 @@ class NBC(object):
     testData = np.genfromtxt(self.dataset[1], delimiter=',')
 
     # Labels are the last row of the training set.
-    labels = Labels(trainData[:, (trainData.shape[1] - 1)])
+    labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
 
     with totalTimer:
       # Transform into features.

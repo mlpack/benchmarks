@@ -20,9 +20,9 @@ from log import *
 from timer import *
 
 import numpy as np
-from shogun.Features import RealFeatures, Labels
+from shogun.Features import RealFeatures, MulticlassLabels
 from shogun.Classifier import KNN as SKNN
-from shogun.Distance import EuclidianDistance
+from shogun.Distance import EuclideanDistance
 
 '''
 This class implements the All K-Nearest-Neighbors benchmark.
@@ -66,7 +66,7 @@ class ALLKNN(object):
       referenceData = np.genfromtxt(self.dataset, delimiter=',')
 
     # Labels are the last row of the dataset.
-    labels = Labels(referenceData[:, (referenceData.shape[1] - 1)])
+    labels = MulticlassLabels(referenceData[:, (referenceData.shape[1] - 1)])
     referenceData = referenceData[:,:-1]
 
     with totalTimer:
@@ -83,7 +83,7 @@ class ALLKNN(object):
           return -1
 
       referenceFeat = RealFeatures(referenceData.T)
-      distance = EuclidianDistance(referenceFeat, referenceFeat)
+      distance = EuclideanDistance(referenceFeat, referenceFeat)
 
       # Perform All K-Nearest-Neighbors.
       model = SKNN(k, distance, labels)
