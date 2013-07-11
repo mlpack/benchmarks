@@ -26,7 +26,7 @@ import collections
 '''
 This class implements the K-Means clustering benchmark.
 '''
-class KMeans(object):
+class KMEANS(object):
 
 	''' 
 	Create the K-Means Clustering benchmark instance, show some informations and

@@ -59,7 +59,7 @@ class NBC(object):
     testData = np.genfromtxt(self.dataset[1], delimiter=',')
 
     # Labels are the last row of the training set.
-    labels = Labels(trainData[:, (referenceData.shape[1] - 1)])
+    labels = Labels(trainData[:, (trainData.shape[1] - 1)])
 
     with totalTimer:
       # Transform into features.

@@ -60,7 +60,7 @@ class KPCA(object):
       # Get the new dimensionality, if it is necessary.
       dimension = re.search('-d (\d+)', options)
       if not dimension:
-        d = data.shape[1]
+        d = data.shape[0]
       else:
         d = int(dimension.group(1))      
         if (d > data.shape[1]):
@@ -98,49 +98,7 @@ class KPCA(object):
       model.learn(kernel)
       out = model.transform(kernel, k=d)
 
-      print out
-
-
-
-    return 0
-
-    # # Load input dataset.
-    # # If the dataset contains two files then the second file is the query file 
-    # # In this case we add this to the command line.
-    # Log.Info("Loading dataset", self.verbose)
-    # if len(self.dataset) == 2:
-    #   referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
-    #   queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-    # else:
-    #   referenceData = np.genfromtxt(self.dataset, delimiter=',')
-
-    # # Labels are the last row of the dataset.
-    # labels = referenceData[:, (referenceData.shape[1] - 1)]
-    # referenceData = referenceData[:,:-1]
-
-    # with totalTimer:
-    #   # Get all the parameters.
-    #   k = re.search("-k (\d+)", options)
-    #   if not k:
-    #     Log.Fatal("Required option: Number of furthest neighbors to find.")
-    #     return -1
-    #   else:
-    #     k = int(k.group(1))
-    #     if (k < 1 or k > referenceData.shape[0]):
-    #       Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
-    #         + "less ")
-    #       return -1
-
-    #   # Perform All K-Nearest-Neighbors.
-    #   model = mlpy.KNN(k)
-    #   model.learn(referenceData, labels)
-
-    #   if len(self.dataset) == 2:
-    #     out = model.pred(queryData)
-    #   else:
-    #     out = model.pred(referenceData)
-
-    # return totalTimer.ElapsedTime()
+    return totalTimer.ElapsedTime()
 
   '''
   Perform Kernel Principal Components Analysis. If the method has been 
