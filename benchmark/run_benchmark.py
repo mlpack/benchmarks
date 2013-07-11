@@ -5,7 +5,6 @@
   Perform the timing benchmark.
 '''
 
-
 import os, sys, inspect
 
 # Import the util path, this method even works if the path contains
@@ -34,74 +33,84 @@ def SystemInformation():
   Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
 
 '''
+Normalize the dataset name. If the dataset is a list of datasets, take the first
+dataset as name. If necessary remove characters like '.', '_'.
+'''
+def NormalizeDatasetName(dataset):
+  if  not isinstance(dataset, basestring):
+    return os.path.splitext(os.path.basename(dataset[0]))[0]  
+  else:
+    return os.path.splitext(os.path.basename(dataset))[0]
+
+def AddMatrixToTable(matrix, table):
+  for row in matrix:
+    table.append(row)
+  return table
+
+'''
 Start the main benchmark routine. The method shows some DEBUG information and 
 prints a table with the runtime information.
 '''
-def Main(configfile):
+def Main(configfile): 
+
   # Read Config.
   config = Parser(configfile, verbose=False)
+  streamData = config.StreamMerge()
 
   # Iterate through all libraries.
-  libraryMapping = config.GetConfigLibraryMethods()
-  while libraryMapping: 
+  for method, sets in streamData.items():
+    Log.Info("Method: " + method)    
+    for options, libraries in sets.items():
+      Log.Info('Options: ' + (options if options != '' else 'None'))
 
-    # Iterate through all methods.
-    methodMapping = config.GetConfigMethod(libraryMapping.methods)      
-    while methodMapping and libraryMapping:
+      # Create the Table.
+      table = []
+      header = ['']
+      table.append(header)
 
-      if methodMapping.run:
+      # Count the Datasets.
+      datasetCount = 0
+      for libary in libraries:
+        datasetCount = max(datasetCount, len(libary[1]))
 
-        Log.Info('Method: ' + methodMapping.methodName)
+      # Create the matrix which contains the time and dataset informations.
+      dataMatrix = [['-' for x in xrange(len(libraries) + 1)] for x in 
+          xrange(datasetCount)] 
+
+      col = 1
+      for libary in libraries:
+        name = libary[0]
+        datsets = libary[1]
+        trials = libary[2]
+        script = libary[3]
+
+        Log.Info("Libary: " + name)
+        header.append(name)
 
         # Load script.
-        module = Loader.ImportModuleFromPath(methodMapping.script)
-        methodCall = getattr(module, methodMapping.methodName)
+        module = Loader.ImportModuleFromPath(script)
+        methodCall = getattr(module, method)       
 
-        for dataset in methodMapping.datasets:
+        row = 0
+        for dataset in datsets:          
+          dataMatrix[row][0] = NormalizeDatasetName(dataset)
+          Log.Info("Dataset: " + dataMatrix[row][0])        
 
-          #! TEMPORARY
-          # Create table.
-          table = []
-          # set table header.
-          header = ['', libraryMapping.libraryName, 'matlab', 'shougun']
-          table.append(header)    
+          time = 0
+          for trial in range(trials + 1):
+            instance = methodCall(dataset, verbose=False)
+            if trial > 0:
+              time += instance.RunMethod(options);
 
-          Log.Info('Options: ' + (dataset["options"] if dataset["options"] != '' 
-            else 'None'))
+          # Set time.
+          dataMatrix[row][col] = "{0:.6f}".format(time / trials)
+          row += 1
+        col += 1
 
-          for files in dataset["files"]:
-
-            row = ['-'] * 4;
-            # Get dataset name.
-            if  not isinstance(files, basestring):
-              row[0] = os.path.splitext(os.path.basename(files[0]))[0]  
-            else:
-              row[0] = os.path.splitext(os.path.basename(files))[0]
-
-            if row[0].count('_') != 0:
-              row[0] = row[0].split("_")[0]
-
-            Log.Info('Dataset: ' + row[0])
-
-            time = 0
-            for num in range(methodMapping.iteration):
-              instance = methodCall(files, verbose=False)
-              time += instance.RunMethod(dataset["options"]);
-
-              # Call the destructor.
-              del instance
-
-            # Set time.
-            row[1] = time / methodMapping.iteration
-            table.append(row)
-
-          # Show results in a table.
-          Log.Notice('')
-          Log.PrintTable(table)
-          Log.Notice('')
-
-      methodMapping = config.GetConfigMethod(libraryMapping.methods)
-    libraryMapping = config.GetConfigLibraryMethods()
+      # Show results in a table.
+      Log.Notice("\n\n")
+      Log.PrintTable(AddMatrixToTable(dataMatrix, table))
+      Log.Notice("\n\n")
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
