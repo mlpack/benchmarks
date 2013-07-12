@@ -35,21 +35,62 @@ def SystemInformation():
 '''
 Normalize the dataset name. If the dataset is a list of datasets, take the first
 dataset as name. If necessary remove characters like '.', '_'.
+
+@para dataset - Dataset file or a list of datasets files.
+@return Normalized dataset name.
 '''
 def NormalizeDatasetName(dataset):
   if  not isinstance(dataset, basestring):
-    return os.path.splitext(os.path.basename(dataset[0]))[0]  
+    return os.path.splitext(os.path.basename(dataset[0]))[0].split('_')[0]
   else:
-    return os.path.splitext(os.path.basename(dataset))[0]
+    return os.path.splitext(os.path.basename(dataset))[0].split('_')[0]
 
+'''
+Add all rows from a given matrix to a given table.
+
+@para matrix - 2D array contains the row.
+@para table - Table in which the rows are inserted.
+@return Table with the inserted rows.
+'''
 def AddMatrixToTable(matrix, table):
   for row in matrix:
     table.append(row)
   return table
 
 '''
+Count all datasets to determine the dataset size.
+
+@para libraries - Contains the Dataset List.
+@return Dataset count.
+'''
+def CountLibrariesDatasets(libraries):
+  datasetList = []
+  for libary in libraries:
+    for dataset in libary[1]:
+      name = NormalizeDatasetName(dataset)
+      if not name in datasetList:
+        datasetList.append(name)
+
+  return len(datasetList)
+
+'''
+Search the correct row to insert the new data. We look at the left column for
+a free place or for the matching name.
+
+@para dataMatrix - In this Matrix we search for the right position.
+@para datasetName - Name of the dataset.
+@para datasetCount - Maximum dataset count.
+'''
+def FindRightRow(dataMatrix, datasetName, datasetCount):
+  for row in range(datasetCount):
+    if (dataMatrix[row][0] == datasetName) or (dataMatrix[row][0] == "-"):
+      return row
+
+'''
 Start the main benchmark routine. The method shows some DEBUG information and 
 prints a table with the runtime information.
+
+@para configfile - Start the benchmark with this configuration file.
 '''
 def Main(configfile): 
 
@@ -69,9 +110,7 @@ def Main(configfile):
       table.append(header)
 
       # Count the Datasets.
-      datasetCount = 0
-      for libary in libraries:
-        datasetCount = max(datasetCount, len(libary[1]))
+      datasetCount = CountLibrariesDatasets(libraries)
 
       # Create the matrix which contains the time and dataset informations.
       dataMatrix = [['-' for x in xrange(len(libraries) + 1)] for x in 
@@ -91,8 +130,10 @@ def Main(configfile):
         module = Loader.ImportModuleFromPath(script)
         methodCall = getattr(module, method)       
 
-        row = 0
-        for dataset in datsets:          
+        for dataset in datsets:  
+          datasetName = NormalizeDatasetName(dataset)          
+          row = FindRightRow(dataMatrix, datasetName, datasetCount)      
+
           dataMatrix[row][0] = NormalizeDatasetName(dataset)
           Log.Info("Dataset: " + dataMatrix[row][0])        
 
