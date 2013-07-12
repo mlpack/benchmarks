@@ -11,6 +11,7 @@ export MATLABPATH=methods/matlab/
 # Specify the path for the libraries.
 export MLPACK_BIN=/usr/local/bin/
 export MATLAB_BIN=/opt/matlab/bin/
+export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
 
 ifeq ($(PYTHON_VERSION), 0)
   $(error Python version 2.7 required which was not found)
@@ -35,6 +36,7 @@ help:
 	@echo "                     Default '$(CONFIG)'."
 	@echo "  memory [CONFIG]    Get memory profiling information with the given "
 	@echo "                     config. Default '$(CONFIG)'."
+	@echo "  scripts            Compile the java files for the weka methods."
 
 test:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
@@ -45,3 +47,6 @@ run:
 memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG)
 
+scripts:
+	# Compile the java files for the weka methods.
+	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
