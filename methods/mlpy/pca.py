@@ -75,7 +75,7 @@ class PCA(object):
       # Perform PCA.
       prep = mlpy.PCA(whiten = s)
       prep.learn(data)
-      prep.transform(data)      
+      out = prep.transform(data, k)      
 
     return totalTimer.ElapsedTime()
 
