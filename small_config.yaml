@@ -361,3 +361,36 @@ methods:
         datasets:
             - files: ['datasets/wine.csv']
               options: '-k 3 -s 42'
+---
+# Weka: Data Mining Software in Java
+library: weka
+methods:
+    PCA:
+        run: true
+        script: methods/weka/pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.arff']
+
+    NBC:
+        run: true
+        script: methods/weka/nbc.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.arff', 'datasets/iris_test.arff'] ]
+
+    KMEANS:
+        run: true
+        script: methods/weka/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.arff']
+              options: '-c 3'
+
+    ALLKNN:
+        run: true
+        script: methods/weka/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.arff']
+              options: '-k 3 -s 42'
