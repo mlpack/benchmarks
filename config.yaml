@@ -36,7 +36,7 @@ methods:
             - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
                       'datasets/ionosphere.csv', 'datasets/waveform.csv']
               options: '-r 6 -s 42 -u als'
-    KMeans:
+    KMEANS:
         run: false
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
