@@ -59,9 +59,9 @@ class LARS(object):
 
     with totalTimer:
       # Get all the parameters.
-      lambda1 = re.search("-k (\d+)", options)
+      lambda1 = re.search("-l (\d+)", options)
       if not lambda1:
-        lambda1 = 0.
+        lambda1 = 0.0
       else:
         lambda1 = int(lambda1.group(1))
 
@@ -81,5 +81,9 @@ class LARS(object):
   '''
   def RunMethod(self, options):
     Log.Info("Perform LARS.", self.verbose)
+
+    if len(self.dataset) < 2:
+      Log.Fatal("The method need two datasets.")
+      return -1
 
     return self.LARSScikit(options)
