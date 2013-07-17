@@ -82,8 +82,14 @@ class SparseCoding(object):
 	def RunMethod(self, options):
 		Log.Info("Perform Sparse Coding.", self.verbose)
 
-		cmd = shlex.split(self.path + "sparse_coding -i " + self.dataset + " -v " + 
-				options)
+		# If the dataset contains two files then the second file is the initial 
+		# dictionary. In this case we add this to the command line.
+		if len(self.dataset) == 2:
+			cmd = shlex.split(self.path + "sparse_coding -i " + self.dataset[0] + 
+					" -D " + self.dataset[1] + " -v " + options)
+		else:
+				cmd = shlex.split(self.path + "sparse_coding -i " + self.dataset + 
+						" -v " + options)
 
 		# Run command with the nessecary arguments and return its output as a byte 
 		# string. We have untrusted input so we disables all shell based features.
@@ -114,9 +120,8 @@ class SparseCoding(object):
 		# Compile the regular expression pattern into a regular expression object to
 		# parse the timer data.
 		pattern = re.compile(r"""
-				.*?loading_data: (?P<loading_data>.*?)s.*?
-				.*?saving_data: (?P<saving_data>.*?)s.*?
-				.*?total_time: (?P<total_time>.*?)s.*?
+				.*?lars_regression: (?P<lars_regression>.*?)s.*?
+				.*?sparse_coding: (?P<sparse_coding>.*?)s.*?
 				""", re.VERBOSE|re.MULTILINE|re.DOTALL)
 		
 		match = pattern.match(data)
@@ -125,12 +130,11 @@ class SparseCoding(object):
 			return -1
 		else:
 			# Create a namedtuple and return the timer data.
-			timer = collections.namedtuple("timer", ["loading_data", "saving_data", 
-					"total_time"])
+			timer = collections.namedtuple("timer", ["lars_regression", 
+					"sparse_coding"])
 			
-			return timer(float(match.group("loading_data")),
-					float(match.group("saving_data")),
-					float(match.group("total_time")))
+			return timer(float(match.group("lars_regression")),
+					float(match.group("sparse_coding")))
 
 	'''
 	Return the elapsed time in seconds.
@@ -139,6 +143,6 @@ class SparseCoding(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.total_time - timer.loading_data - timer.saving_data
+		time = timer.lars_regression + timer.sparse_coding
 		return time
 		
