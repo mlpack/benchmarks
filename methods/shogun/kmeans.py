@@ -19,6 +19,11 @@ if cmd_subfolder not in sys.path:
 from log import *
 from timer import *
 
+import shlex
+import subprocess
+import re
+import collections
+
 '''
 This class implements the K-Means Clustering benchmark.
 '''
@@ -73,8 +78,9 @@ class KMEANS(object):
 
       # Run command with the nessecary arguments and return its output as a byte 
       # string. We have untrusted input so we disables all shell based features.
-      cmd = shlex.split(self.path + "methods/shogun/kmeans " + self.dataset[0] 
-          + " " + self.dataset[1] + clusters.group(1) + str(maxIterations))
+      cmd = shlex.split("methods/shogun/kmeans " + self.dataset[0] 
+          + " " + self.dataset[1] + " " + clusters.group(1) + " " 
+          + str(maxIterations))
       try:
         s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
       except Exception, e:
