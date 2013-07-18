@@ -15,7 +15,7 @@ export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
 export SHOGUN_PATH=/opt/shogun/shogun-2.1.0-mod
 
 ifeq ($(PYTHON_VERSION), 0)
-  $(error Python version 2.7 required which was not found)
+	$(error Python version 2.7 required which was not found)
 endif
 
 # This is empty unless there was a problem.
@@ -52,4 +52,4 @@ scripts:
 	# Compile the java files for the weka methods.
 	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
 	# Compile the shogun K-Means (with initial centroids) Clustering method.
-  g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
+	g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
