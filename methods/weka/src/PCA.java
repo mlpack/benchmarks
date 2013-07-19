@@ -86,7 +86,7 @@ public class PCA {
       // Ranking the attributes.
       Ranker ranker = new Ranker();
       // Specify the number of attributes to select from the ranked list.
-      ranker.setNumToSelect(k);
+      ranker.setNumToSelect(k - 1);
 
       AttributeSelection selector = new AttributeSelection();
       selector.setSearch(ranker);
