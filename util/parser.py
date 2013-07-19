@@ -310,7 +310,6 @@ class Parser(object):
       # Iterate through all methods.
       methodMapping = self.GetConfigMethod(libraryMapping.methods)      
       while methodMapping and libraryMapping:
-
         # Collect data only from method with run value = true.
         if methodMapping.run:
           for dataset in methodMapping.datasets:     
@@ -320,16 +319,19 @@ class Parser(object):
 
               if dataset["options"] in tempDict:              
                 t = (libraryMapping.libraryName, dataset["files"], 
-                  methodMapping.iteration, methodMapping.script)  
+                  methodMapping.iteration, methodMapping.script, 
+                  methodMapping.format)  
                 tempDict[dataset["options"]].append(t)          
               else:
                 t = (libraryMapping.libraryName, dataset["files"], 
-                  methodMapping.iteration, methodMapping.script)            
+                  methodMapping.iteration, methodMapping.script, 
+                  methodMapping.format)            
                 tempDict[dataset["options"]] = [t]
             else:
               d = {}
               t = (libraryMapping.libraryName, dataset["files"], 
-                methodMapping.iteration, methodMapping.script)            
+                methodMapping.iteration, methodMapping.script, 
+                methodMapping.format)            
               d[dataset["options"]] = [t]
               streamData[methodMapping.methodName] = d          
 

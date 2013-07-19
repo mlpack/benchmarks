@@ -18,6 +18,7 @@ from log import *
 from system import *
 from loader import * 
 from parser import *
+from convert import *
 
 import argparse
 
@@ -40,10 +41,78 @@ dataset as name. If necessary remove characters like '.', '_'.
 @return Normalized dataset name.
 '''
 def NormalizeDatasetName(dataset):
-  if  not isinstance(dataset, basestring):
+  if not isinstance(dataset, basestring):
     return os.path.splitext(os.path.basename(dataset[0]))[0].split('_')[0]
   else:
     return os.path.splitext(os.path.basename(dataset))[0].split('_')[0]
+
+'''
+Check if the file is available in one of the given formats.
+
+@para dataset - Datsets which should be checked.
+@para formats - List of supported file formats.
+@return Orginal dataset or dataset with new file format.
+'''
+def CheckFileExtension(dataset, formats):
+  dataExtension = os.path.splitext(dataset)[1][1:]
+  if dataExtension in formats:
+    return dataset
+  else:
+    return dataset[0:len(dataset) - len(dataExtension)] + formats[0]
+
+'''
+Return a list with modified dataset.
+
+@para dataset - Datasets to be modified.
+@para format - List of file formats to be converted to.
+@return List of modified datasets.
+'''
+def GetDataset(dataset, format):
+  # Check if the given dataset is a list or a single dataset.
+  if not isinstance(dataset, basestring):
+    datasetList = []
+    modifiedList = []
+
+    for data in dataset:  
+      mdata = CheckFileExtension(data, format)
+
+      # Check if the dataset is available.
+      if os.path.isfile(mdata):
+        datasetList.append(mdata)
+      else:
+        # Check if the dataset is available.
+        convert = Convert(data, format[0])
+        datasetList.append(convert.modifiedDataset)
+        modifiedList.append(convert.modifiedDataset)
+  else:
+    datasetList = ""
+    modifiedList = ""
+
+    mdataset = CheckFileExtension(dataset, format)
+
+    # Check if the dataset is available.
+    if os.path.isfile(mdataset):
+      datasetList = mdataset
+    else:
+      # Convert the Dataset.
+      convert = Convert(dataset, format[0])
+      datasetList = convert.modifiedDataset
+      modifiedList = convert.modifiedDataset
+
+  return (datasetList, modifiedList)
+
+'''
+This function Remove a given file or list of files.
+
+@para dataset - File or list of file which should be deleted.
+'''
+def RemoveDataset(dataset):
+  if isinstance(dataset, basestring):
+    dataset = [dataset]
+
+  for f in dataset:
+    if os.path.isfile(f):
+      os.remove(f)  
 
 '''
 Add all rows from a given matrix to a given table.
@@ -122,29 +191,35 @@ def Main(configfile):
         datsets = libary[1]
         trials = libary[2]
         script = libary[3]
+        format = libary[4]
 
         Log.Info("Libary: " + name)
         header.append(name)
 
         # Load script.
         module = Loader.ImportModuleFromPath(script)
-        methodCall = getattr(module, method)       
+        methodCall = getattr(module, method)            
 
         for dataset in datsets:  
           datasetName = NormalizeDatasetName(dataset)          
           row = FindRightRow(dataMatrix, datasetName, datasetCount)      
 
           dataMatrix[row][0] = NormalizeDatasetName(dataset)
-          Log.Info("Dataset: " + dataMatrix[row][0])        
+          Log.Info("Dataset: " + dataMatrix[row][0])    
+
+          modifiedDataset = GetDataset(dataset, format)
 
           time = 0
           for trial in range(trials + 1):
-            instance = methodCall(dataset, verbose=False)
+            instance = methodCall(modifiedDataset[0], verbose=False)
             if trial > 0:
               time += instance.RunMethod(options);
 
           # Set time.
           dataMatrix[row][col] = "{0:.6f}".format(time / trials)
+
+          # Remove temporary datasets.
+          RemoveDataset(modifiedDataset[1])
           row += 1
         col += 1
 
