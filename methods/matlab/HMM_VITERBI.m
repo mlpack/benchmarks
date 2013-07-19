@@ -14,7 +14,7 @@ function hmm_viterbi(cmd)
 
 
 % Load observations file.
-observationFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
+observationFile = regexp(cmd, '.*?-i ([^\s]+)', 'tokens', 'once');
 observationData = csvread(observationFile{:});
 
 % Load trans and emis values.

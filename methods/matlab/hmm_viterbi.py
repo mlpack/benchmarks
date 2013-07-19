@@ -100,8 +100,7 @@ class HMMVITERBI(object):
         fidTrans.write(m)
       fidTrans.close()
 
-    inputCmd = "-i " + self.dataset[0] + " -e emis_tmp.csv -t trans_tmp.csv " 
-        + options
+    inputCmd = "-i " + self.dataset[0] + " -e emis_tmp.csv -t trans_tmp.csv " + options
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
       "HMM_VITERBI('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")   
