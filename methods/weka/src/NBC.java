@@ -10,6 +10,8 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instances;
 import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 /**
  * This class use the weka libary to implement Naive Bayes Classifier.
@@ -25,19 +27,30 @@ public class NBC {
       + "-t [string]     A file containing the training set.");
   
   public static void main(String args[]) {
-	Timers timer = new Timers();	  
+  Timers timer = new Timers();    
     try {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
       String testFile = Utils.getOption('T', args);
       if (trainFile.length() == 0 || testFile.length() == 0)
-    	  throw new IllegalArgumentException();
+        throw new IllegalArgumentException();
         
       // Load train and test dataset. 
       DataSource source = new DataSource(trainFile);
       Instances trainData = source.getDataSet();
+      
+      // Transform numeric class to nominal class because the 
+      // classifier cannot handle numeric classes.
+      NumericToNominal nm = new NumericToNominal();
+      String[] options = new String[2];
+      options[0] = "-R";
+      options[1] = "last"; //set the attributes from indices 1 to 2 as
+      nm.setOptions(options);
+      nm.setInputFormat(trainData);
+      trainData = Filter.useFilter(trainData, nm);
+      
       // Use the last row of the training data as the labels.
-      trainData.setClassIndex((trainData.numAttributes() - 1));
+      trainData.setClassIndex((trainData.numAttributes() - 1));      
       
       source = new DataSource(testFile);
       Instances testData = source.getDataSet(); 
