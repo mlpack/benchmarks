@@ -3,27 +3,32 @@
 library: mlpack
 methods:
     PCA:
-        run: true
+        run: false
+        iteration: 3
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' , 'datasets/wine.csv']
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
         run: true
+        iteration: 3
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u multdist'
     KMEANS:
         run: true
+        iteration: 3
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
     NBC:
         run: true
+        iteration: 3
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
@@ -31,122 +36,133 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
         run: true
+        iteration: 3
         script: methods/mlpack/kernel_pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
-
     LARS:
         run: true
+        iteration: 3
         script: methods/mlpack/lars.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
-
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'] ]
     LSH:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/lsh.py
         format: [csv, txt]
         datasets:
-         - files: ['datasets/wine.csv']
+         - files: ['datasets/wine.csv', 'datasets/cloud.csv']
            options: '-k 3 -s 42'
 
     ALLKNN:
         run: true
+        iteration: 3
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42'
-
     ALLKFN:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3'
-
     ALLKRANN:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -t 10'
-
     RANGESEARCH:
         run: true
+        iteration: 3
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv']
+            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv']
               options: '-M 20.3'
-
     GMM:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/gmm.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv', 'datasets/iris.csv']
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
+                      'datasets/USCensus1990.csv']
               options: '-s 42'
     DET:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris.csv', 'datasets/cloud.csv']
-
     EMST:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/emst.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris.csv']
-
     LinearRegression:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
              - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']]
-
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     LocalCoordinateCoding:
         run: false
+        iteration: 3
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
         datasets:
              - files: ['datasets/wine.csv']
                options: '-k 12 -s 42'
-
     SparseCoding:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-k 12 -s 42 -n 100'
-
     FastMKS:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/wine.csv']
               options: '-k 1 -K linear'
-
     NCA:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/nca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
               options: '-n 2000 -O sgd -s 42'
-
     HMMTRAIN:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/hmm_train.py
         format: [csv, txt]
         datasets:
@@ -155,30 +171,28 @@ methods:
 
             - files: ['datasets/artificial_1DSignal.csv']
               options: '-t discrete -n 20 -s 42'
-
     HMMGENERATE:
-        run: false
+        run: true
+        iteration: 3
         script: methods/mlpack/hmm_generate.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/artificial_2DSignal_hmm.xml', 'datasets/artificial_1DSignal_hmm.xml']
+            - files: ['datasets/artificial_2DSignal_hmm.xml']
               options: '-l 10000'
-
     HMMLOGLIK:
-       run: false
+       run: true
+       iteration: 3
        script: methods/mlpack/hmm_loglik.py
        format: [csv, txt]
        datasets:
-           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
-                      ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
-
+           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
     HMMVITERBI:
        run: false
+       iteration: 3
        script: methods/mlpack/hmm_viterbi.py
        format: [csv, txt]
        datasets:
-           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
-                      ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
+           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
 ---
 # MATLAB:
 # Numerical computing environment and programming language.
@@ -186,105 +200,169 @@ library: matlab
 methods:
     PCA:
         run: true
+        iteration: 3
         script: methods/matlab/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' , 'datasets/wine.csv']
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
         run: true
+        iteration: 3
         script: methods/matlab/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u multdist'
     KMEANS:
         run: true
+        iteration: 3
         script: methods/matlab/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
-
     NBC:
         run: true
-        script: methods/mlpack/nbc.py
+        iteration: 3
+        script: methods/matlab/nbc.py
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
-
     ALLKNN:
         run: true
-        script: methods/mlpack/allknn.py
+        iteration: 3
+        script: methods/matlab/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42'
-
     RANGESEARCH:
         run: true
-        script: methods/mlpack/range_search.py
+        iteration: 3
+        script: methods/matlab/range_search.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv']
+            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv']
               options: '-M 20.3'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/matlab/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+    HMMGENERATE:
+        run: true
+        iteration: 3
+        script: methods/matlab/hmm_generate.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal_hmm.xml']
+              options: '-l 10000'
+    HMMVITERBI:
+       run: false
+       iteration: 3
+       script: methods/matlab/hmm_viterbi.py
+       format: [csv, txt]
+       datasets:
+           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
 ---
 # Scikit-Learn: machine learning in Python
 library: scikit
 methods:
     PCA:
         run: true
+        iteration: 3
         script: methods/scikit/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' , 'datasets/wine.csv']
-
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
         run: true
+        iteration: 3
         script: methods/scikit/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-r 6 -u alspgrad'
-
     KMEANS:
         run: true
+        iteration: 3
         script: methods/scikit/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
-
     NBC:
         run: true
+        iteration: 3
         script: methods/scikit/nbc.py
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
-
     KPCA:
         run: true
+        iteration: 3
         script: methods/scikit/kernel_pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
-
     LARS:
         run: true
+        iteration: 3
         script: methods/scikit/lars.py
         format: [csv, txt]
         datasets:
-           - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
-
+           - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     ALLKNN:
         run: true
+        iteration: 3
         script: methods/scikit/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42'
+    GMM:
+        run: true
+        iteration: 3
+        script: methods/scikit/gmm.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
+                      'datasets/USCensus1990.csv']
+              options: '-s 42'
+
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/scikit/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+    SparseCoding:
+        run: true
+        iteration: 3
+        script: methods/scikit/sparse_coding.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/pendigits.csv']
+              options: '-k 12 -s 42 -n 100'
 ---
 # mlpy is a Python module for Machine Learning built on top of NumPy/SciPy 
 # and the GNU Scientific Libraries.
@@ -292,105 +370,162 @@ library: mlpy
 methods:
     PCA:
         run: true
+        iteration: 3
         script: methods/mlpy/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' , 'datasets/wine.csv']
-
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     KMEANS:
         run: true
+        iteration: 3
         script: methods/mlpy/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
-
     KPCA:
         run: true
+        iteration: 3
         script: methods/mlpy/kernel_pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
-
     LARS:
         run: true
+        iteration: 3
         script: methods/mlpy/lars.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
-
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     ALLKNN:
         run: true
+        iteration: 3
         script: methods/mlpy/allknn.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/wine.csv']
               options: '-k 3 -s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/mlpy/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
 ---
 # Shogun - A Large Scale Machine Learning Toolbox
 library: shogun
 methods:
     PCA:
         run: true
+        iteration: 3
         script: methods/shogun/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' , 'datasets/wine.csv']
-
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
+    KMEANS:
+        run: true
+        iteration: 3
+        script: methods/shogun/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+              options: '-c 3'
     KPCA:
         run: true
+        iteration: 3
         script: methods/shogun/kernel_pca.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
-
     NBC:
         run: true
+        iteration: 3
         script: methods/shogun/nbc.py
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
-
     ALLKNN:
         run: true
+        iteration: 3
         script: methods/shogun/allknn.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/wine.csv']
               options: '-k 3 -s 42'
+    GMM:
+        run: true
+        iteration: 3
+        script: methods/shogun/gmm.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv']
+              options: '-s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/shogun/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
 ---
 # Weka: Data Mining Software in Java
 library: weka
 methods:
     PCA:
         run: true
+        iteration: 3
         script: methods/weka/pca.py
-        format: [csv, txt]
+        format: [arff]
         datasets:
-            - files: ['datasets/iris.arff']
-
+            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
+                      'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NBC:
         run: true
+        iteration: 3
         script: methods/weka/nbc.py
-        format: [csv, txt]
+        format: [arff]
         datasets:
-            - files: [ ['datasets/iris_train.arff', 'datasets/iris_test.arff'] ]
-
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KMEANS:
         run: true
+        iteration: 3
         script: methods/weka/kmeans.py
-        format: [csv, txt]
+        format: [arff]
         datasets:
-            - files: ['datasets/iris.arff']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
-
     ALLKNN:
         run: true
+        iteration: 3
         script: methods/weka/allknn.py
-        format: [csv, txt]
+        format: [arff]
         datasets:
-            - files: ['datasets/wine.arff']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv']
               options: '-k 3 -s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/weka/linear_regression.py
+        format: [arff]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
