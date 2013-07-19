@@ -175,7 +175,7 @@ methods:
         run: true
         iteration: 3
         script: methods/mlpack/hmm_generate.py
-        format: [csv, txt]
+        format: [csv, txt, xml]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml']
               options: '-l 10000'
@@ -183,14 +183,14 @@ methods:
        run: true
        iteration: 3
        script: methods/mlpack/hmm_loglik.py
-       format: [csv, txt]
+       format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
     HMMVITERBI:
        run: false
        iteration: 3
        script: methods/mlpack/hmm_viterbi.py
-       format: [csv, txt]
+       format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
 ---
@@ -262,7 +262,7 @@ methods:
         run: true
         iteration: 3
         script: methods/matlab/hmm_generate.py
-        format: [csv, txt]
+        format: [csv, txt, xml]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml']
               options: '-l 10000'
@@ -270,7 +270,7 @@ methods:
        run: false
        iteration: 3
        script: methods/matlab/hmm_viterbi.py
-       format: [csv, txt]
+       format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
 ---
