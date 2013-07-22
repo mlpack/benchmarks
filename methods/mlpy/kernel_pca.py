@@ -38,12 +38,6 @@ class KPCA(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the mlpy libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
@@ -76,11 +70,8 @@ class KPCA(object):
           return -1
       elif kernel.group(1) == "polynomial":
         degree = re.search('-D (\d+)', options)
-        if not degree:
-          degree = 1
-        else:
-          degree = int(degree.group(1))
-        
+        degree = 1 if not degree else int(degree.group(1))
+
         kernel = mlpy.kernel_polynomial(data, data, d=degree)
       elif kernel.group(1) == "gaussian":
         kernel = mlpy.kernel_gaussian(data, data, sigma=2) 

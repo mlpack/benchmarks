@@ -38,12 +38,6 @@ class ALLKNN(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the mlpy libary to implement All K-Nearest-Neighbors.
 
   @param options - Extra options for the method.

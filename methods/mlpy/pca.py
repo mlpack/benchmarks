@@ -38,12 +38,6 @@ class PCA(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the mlpy libary to implement Principal Components Analysis.
 
   @param options - Extra options for the method.

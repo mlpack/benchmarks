@@ -38,12 +38,6 @@ class LARS(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the mlpy libary to implement Least Angle Regression.
 
   @param options - Extra options for the method.
@@ -76,7 +70,7 @@ class LARS(object):
     Log.Info("Perform LARS.", self.verbose)
 
     if len(self.dataset) < 2:
-      Log.Fatal("The method need two datasets.")
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     return self.LARSMlpy(options)

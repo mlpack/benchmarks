@@ -38,12 +38,6 @@ class KMEANS(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the mlpy libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
@@ -56,7 +50,7 @@ class KMEANS(object):
     Log.Info("Loading dataset", self.verbose)
     data = np.genfromtxt(self.dataset, delimiter=',')
 
-    # Gather parameters.
+    # Gather all parameters.
     clusters = re.search('-c (\d+)', options)
     seed = re.search("-s (\d+)", options)
 
@@ -64,7 +58,7 @@ class KMEANS(object):
     if not clusters:
       Log.Fatal("Required option: Number of clusters or cluster locations.")
       return -1
-    elif clusters.group(1) < 1:
+    elif int(clusters.group(1)) < 1:
       Log.Fatal("Invalid number of clusters requested! Must be greater than or "
           + "equal to 1.")
       return -1
