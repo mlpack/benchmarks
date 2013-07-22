@@ -32,7 +32,7 @@ class LinearRegression(object):
 	Create the Simple Linear Regression Prediction benchmark instance, show some
 	informations and return the instance.
   
-  @param dataset - Input dataset to perform PCA on.
+  @param dataset - Input dataset to perform Linear Regression Prediction on.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
 	'''
@@ -47,20 +47,19 @@ class LinearRegression(object):
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
 		except Exception, e:
 			Log.Fatal("Could not execute command: " + str(cmd))
-			return -1
-
-		# Use regular expression pattern to get the description.
-		pattern = re.compile(r"""(.*?)Required.*?options:""", 
-				re.VERBOSE|re.MULTILINE|re.DOTALL)
-		
-		match = pattern.match(s)
-		if not match:
-			Log.Warn("Can't parse description", self.verbose)
-			description = ""
 		else:
-			description = match.group(1)
-		
-		self.description = description
+			# Use regular expression pattern to get the description.
+			pattern = re.compile(r"""(.*?)Required.*?options:""", 
+					re.VERBOSE|re.MULTILINE|re.DOTALL)
+			
+			match = pattern.match(s)
+			if not match:
+				Log.Warn("Can't parse description", self.verbose)
+				description = ""
+			else:
+				description = match.group(1)
+			
+			self.description = description
 
 	'''
 	Destructor to clean up at the end. Use this method to remove created files.
@@ -140,6 +139,5 @@ class LinearRegression(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.regression
-		return time
+		return timer.regression
 		

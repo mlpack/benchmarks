@@ -32,7 +32,7 @@ class ALLKFN(object):
 	Create the All K-Furthest-Neighbors benchmark instance, show some informations 
 	and return the instance.
   
-  @param dataset - Input dataset to perform PCA on.
+  @param dataset - Input dataset to perform  All K-Furthest-Neighbors on.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
 	'''
@@ -86,7 +86,7 @@ class ALLKFN(object):
 		# In this case we add this to the command line.
 		if len(self.dataset) == 2:
 			cmd = shlex.split(self.path + "allkfn -r " + self.dataset[0] + " -q " + 
-					self.dataset[1] + " -v -n neighbors.csv -d distances.csv" + options)
+					self.dataset[1] + " -v -n neighbors.csv -d distances.csv " + options)
 		else:
 			cmd = shlex.split(self.path + "allkfn -r " + self.dataset +
 					" -v -n neighbors.csv -d distances.csv " + options)		

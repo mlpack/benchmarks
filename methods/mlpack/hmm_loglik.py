@@ -29,8 +29,14 @@ This class implements the Hidden Markov Model Sequence Log-Likelihood benchmark.
 '''
 class HMMLOGLIK(object):
 
-	# Create the Hidden Markov Model Training instance, show some informations and
-	# return the instance.
+	''' 
+	Create the Hidden Markov Model Sequence Log-Likelihood benchmark instance, 
+	show some	informations and return the instance.
+  
+  @param dataset - Input dataset to perform HMM Log-Likelihood on.
+  @param path - Path to the mlpack executable.
+  @param verbose - Display informational messages.
+	'''
 	def __init__(self, dataset, path=os.environ["MLPACK_BIN"], verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
@@ -42,20 +48,19 @@ class HMMLOGLIK(object):
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
 		except Exception, e:
 			Log.Fatal("Could not execute command: " + str(cmd))
-			return -1
-
-		# Use regular expression pattern to get the description.
-		pattern = re.compile(r"""(.*?)Required.*?options:""", 
-				re.VERBOSE|re.MULTILINE|re.DOTALL)
-		
-		match = pattern.match(s)
-		if not match:
-			Log.Warn("Can't parse description", self.verbose)
-			description = ""
 		else:
-			description = match.group(1)
-		
-		self.description = description
+			# Use regular expression pattern to get the description.
+			pattern = re.compile(r"""(.*?)Required.*?options:""", 
+					re.VERBOSE|re.MULTILINE|re.DOTALL)
+			
+			match = pattern.match(s)
+			if not match:
+				Log.Warn("Can't parse description", self.verbose)
+				description = ""
+			else:
+				description = match.group(1)
+			
+			self.description = description
 
 	'''
 	Destructor to clean up at the end. Use this method to remove created files.
@@ -81,7 +86,7 @@ class HMMLOGLIK(object):
 			cmd = shlex.split(self.path + "hmm_loglik -i " + self.dataset[0] + " -m " 
 					+ self.dataset[1] + " -v " + options)	
 		else:
-			Log.Fatal("Not enough input datasets.")
+			Log.Fatal("This method requires two datasets.")
 			return -1
 
 		# Run command with the nessecary arguments and return its output as a byte 

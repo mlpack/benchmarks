@@ -30,8 +30,14 @@ benchmark.
 '''
 class HMMVITERBI(object):
 
-	# Create the HHidden Markov Model Viterbi State Prediction instance, show some
-	# informations and return the instance.
+	''' 
+	Create the Hidden Markov Model Viterbi State Prediction benchmark instance, 
+	show some	informations and return the instance.
+  
+  @param dataset - Input dataset to perform HMM Viterbi State Prediction on.
+  @param path - Path to the mlpack executable.
+  @param verbose - Display informational messages.
+	'''
 	def __init__(self, dataset, path=os.environ["MLPACK_BIN"], verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
@@ -43,20 +49,19 @@ class HMMVITERBI(object):
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
 		except Exception, e:
 			Log.Fatal("Could not execute command: " + str(cmd))
-			return -1
-
-		# Use regular expression pattern to get the description.
-		pattern = re.compile(r"""(.*?)Required.*?options:""", 
-				re.VERBOSE|re.MULTILINE|re.DOTALL)
-		
-		match = pattern.match(s)
-		if not match:
-			Log.Warn("Can't parse description", self.verbose)
-			description = ""
 		else:
-			description = match.group(1)
-		
-		self.description = description
+			# Use regular expression pattern to get the description.
+			pattern = re.compile(r"""(.*?)Required.*?options:""", 
+					re.VERBOSE|re.MULTILINE|re.DOTALL)
+			
+			match = pattern.match(s)
+			if not match:
+				Log.Warn("Can't parse description", self.verbose)
+				description = ""
+			else:
+				description = match.group(1)
+			
+			self.description = description
 
 	'''
 	Destructor to clean up at the end. Use this method to remove created files.

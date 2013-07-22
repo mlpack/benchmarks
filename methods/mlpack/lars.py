@@ -32,7 +32,7 @@ class LARS(object):
 	Create the Least Angle Regression benchmark instance, show some informations 
 	and return the instance.
   
-  @param dataset - Input dataset to perform PCA on.
+  @param dataset - Input dataset to perform Least Angle Regression on.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
 	'''
@@ -47,20 +47,19 @@ class LARS(object):
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
 		except Exception, e:
 			Log.Fatal("Could not execute command: " + str(cmd))
-			return -1
-
-		# Use regular expression pattern to get the description.
-		pattern = re.compile(r"""(.*?)Required.*?options:""", 
-				re.VERBOSE|re.MULTILINE|re.DOTALL)
-		
-		match = pattern.match(s)
-		if not match:
-			Log.Warn("Can't parse description", self.verbose)
-			description = ""
 		else:
-			description = match.group(1)
-		
-		self.description = description
+			# Use regular expression pattern to get the description.
+			pattern = re.compile(r"""(.*?)Required.*?options:""", 
+					re.VERBOSE|re.MULTILINE|re.DOTALL)
+			
+			match = pattern.match(s)
+			if not match:
+				Log.Warn("Can't parse description", self.verbose)
+				description = ""
+			else:
+				description = match.group(1)
+			
+			self.description = description
 
 	'''
 	Destructor to clean up at the end. Use this method to remove created files.
@@ -83,7 +82,7 @@ class LARS(object):
 		Log.Info("Perform LARS.", self.verbose)
 
 		if len(self.dataset) < 2:
-			Log.Fatal("The method need two datasets.")
+			Log.Fatal("This method requires two datasets.")
 			return -1
 
 		# Split the command using shell-like syntax.
