@@ -40,6 +40,45 @@ class HMMVITERBI(object):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
+    self.error = 0
+
+    if len(dataset) != 2:
+      Log.Fatal("This method requires two datasets.")
+      self.error = -1
+    else:
+      # Open the HMM model file and extract the emis and trans values.
+      fid = open(dataset[1], "r")
+      line = fid.read()
+      fid.close()
+
+      patternEmis = re.compile(r"""
+          .*?<hmm_emission_covariance_.*?>(?P<hmm_emission_mean>.*?)
+          </hmm_emission_covariance_
+          """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+
+      patternTrans = re.compile(r"""
+          .*?<hmm_transition>(?P<hmm_transition>.*?)</hmm_transition>
+          """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+
+      emis = patternEmis.findall(line)
+      trans = patternTrans.findall(line)
+
+      # Write the emis and trans values to a temporary file.
+      if not emis or not trans:
+        Log.Fatal("Can't parse the HMM model file.")
+        return -1
+      else:
+        fidEmis = open("emis_tmp.csv", "w")     
+        for m in emis:
+          m = m.split('\n')
+          m = m[0] + "," + m[1] + "\n"
+          fidEmis.write(m)
+        fidEmis.close()
+
+        fidTrans = open("trans_tmp.csv", "w")
+        for m in trans:
+          fidTrans.write(m)
+        fidTrans.close()
 
   '''
   Destructor to clean up at the end.
@@ -60,45 +99,6 @@ class HMMVITERBI(object):
   '''
   def RunMethod(self, options):
     Log.Info("Perform HMM VITERBI.", self.verbose)
-
-    if len(self.dataset) != 2:
-      Log.Fatal("This method requires two datasets.")
-      return -1
-
-    # Open the HMM model file and extract the emis and trans values.
-    fid = open(self.dataset[1], "r")
-    line = fid.read()
-    fid.close()
-
-    patternEmis = re.compile(r"""
-        .*?<hmm_emission_covariance_.*?>(?P<hmm_emission_mean>.*?)
-        </hmm_emission_covariance_
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    patternTrans = re.compile(r"""
-        .*?<hmm_transition>(?P<hmm_transition>.*?)</hmm_transition>
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    emis = patternEmis.findall(line)
-    trans = patternTrans.findall(line)
-
-    # Write the emis and trans values to a temporary file.
-    if not emis or not trans:
-      Log.Fatal("Can't parse the HMM model file.")
-      return -1
-    else:
-      fidEmis = open("emis_tmp.csv", "w")     
-      for m in emis:
-        m = m.split('\n')
-        m = m[0] + "," + m[1] + "\n"
-        fidEmis.write(m)
-
-      fidEmis.close()
-
-      fidTrans = open("trans_tmp.csv", "w")
-      for m in trans:
-        fidTrans.write(m)
-      fidTrans.close()
 
     inputCmd = "-i " + self.dataset[0] + " -e emis_tmp.csv -t trans_tmp.csv " + options
     # Split the command using shell-like syntax.

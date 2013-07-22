@@ -40,6 +40,41 @@ class HMMGENERATE(object):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
+    self.error = 0
+
+    # Open the HMM xml model file and extract the emis and trans values.
+    fid = open(dataset, 'r')
+    line = fid.read()
+    fid.close()
+
+    patternEmis = re.compile(r"""
+        .*?<hmm_emission_covariance_.*?>(?P<hmm_emission_mean>.*?)
+        </hmm_emission_covariance_
+        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+
+    patternTrans = re.compile(r"""
+        .*?<hmm_transition>(?P<hmm_transition>.*?)</hmm_transition>
+        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+
+    emis = patternEmis.findall(line)
+    trans = patternTrans.findall(line)
+
+    # Write the emis and trans values to a temporary file.
+    if not emis or not trans:
+      Log.Fatal("Can't parse the HMM model file.")
+      self.error = -1
+    else:
+      fidEmis = open("emis_tmp.csv", "w")     
+      for m in emis:
+        m = m.split('\n')
+        m = m[0] + "," + m[1] + "\n"
+        fidEmis.write(m)
+      fidEmis.close()
+
+      fidTrans = open("trans_tmp.csv", "w")
+      for m in trans:
+        fidTrans.write(m)
+      fidTrans.close()
 
   '''
   Destructor to clean up at the end.
@@ -61,39 +96,8 @@ class HMMGENERATE(object):
   def RunMethod(self, options):
     Log.Info("Perform HMM GENERATE.", self.verbose)
 
-    # Open the HMM xml model file and extract the emis and trans values.
-    fid = open(self.dataset, 'r')
-    line = fid.read()
-    fid.close()
-
-    patternEmis = re.compile(r"""
-        .*?<hmm_emission_covariance_.*?>(?P<hmm_emission_mean>.*?)
-        </hmm_emission_covariance_
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    patternTrans = re.compile(r"""
-        .*?<hmm_transition>(?P<hmm_transition>.*?)</hmm_transition>
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    emis = patternEmis.findall(line)
-    trans = patternTrans.findall(line)
-
-    # Write the emis and trans values to a temporary file.
-    if not emis or not trans:
-      Log.Fatal("Can't parse the HMM model file.")
+    if (self.error == -1):
       return -1
-    else:
-      fidEmis = open("emis_tmp.csv", "w")     
-      for m in emis:
-        m = m.split('\n')
-        m = m[0] + "," + m[1] + "\n"
-        fidEmis.write(m)
-      fidEmis.close()
-
-      fidTrans = open("trans_tmp.csv", "w")
-      for m in trans:
-        fidTrans.write(m)
-      fidTrans.close()
 
     inputCmd = "-e emis_tmp.csv -t trans_tmp.csv " + options
     # Split the command using shell-like syntax.
