@@ -40,12 +40,6 @@ class ALLKNN(object):
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
-
-	'''
-	Destructor to clean up at the end.
-	'''
-	def __del__(self):		
-		pass	
 		
 	'''
   All K-Nearest-Neighbors. If the method has been successfully completed return 
@@ -120,5 +114,4 @@ class ALLKNN(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.total_time
-		return time
+		return timer.total_time

@@ -40,12 +40,6 @@ class NBC(object):
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
-
-	'''
-	Destructor to clean up at the end.
-	'''
-	def __del__(self):		
-		pass	
 		
 	'''
   Naive Bayes Classifier. If the method has been successfully completed return 
@@ -57,8 +51,8 @@ class NBC(object):
 	def RunMethod(self, options):
 		Log.Info("Perform NBC.", self.verbose)
 
-		if len(self.dataset) < 2:
-			Log.Fatal("The method need two datasets.")
+		if len(self.dataset) != 2:
+			Log.Fatal("This method requires two datasets.")
 			return -1
 
 		# Split the command using shell-like syntax.
@@ -117,5 +111,4 @@ class NBC(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.total_time
-		return time
+		return timer.total_time

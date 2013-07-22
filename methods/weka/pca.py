@@ -40,12 +40,6 @@ class PCA(object):
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
-
-	'''
-	Destructor to clean up at the end.
-	'''
-	def __del__(self):		
-		pass	
 		
 	'''
   Perform Principal Components Analysis. If the method has been successfully 

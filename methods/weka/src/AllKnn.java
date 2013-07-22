@@ -20,10 +20,12 @@ public class AllKnn {
 	    + "reference points and query points, or just a reference set which\n"
 	    + "will be used as both the reference and query set.\n\n"
 			+ "Required options:\n"
-			+ "(-k) [int]        Number of furthest neighbors to find.\n"
-			+ "(-l) [int]        Leaf size for tree building.  Default value 20.\n"
-			+ "(-q) [string]     File containing query points (optional).\n"
-			+ "Default value ''.\n");
+			+ "-r [string]     File containing the reference dataset.\n"
+			+ "-k [int]        Number of furthest neighbors to find.\n\n"
+			+ "Options:\n"
+			+ "-l [int]        Leaf size for tree building.  Default value 20.\n"
+			+ "-q [string]     File containing query points (optional).\n"
+			+ "                Default value ''.\n");
 	
 	public static void main(String args[]) {
 		Timers timer = new Timers();

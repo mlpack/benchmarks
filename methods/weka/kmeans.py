@@ -39,13 +39,7 @@ class KMEANS(object):
 	def __init__(self, dataset, path=os.environ["WEKA_CLASSPATH"], verbose = True): 
 		self.verbose = verbose
 		self.dataset = dataset
-		self.path = path
-
-	'''
-	Destructor to clean up at the end.
-	'''
-	def __del__(self):		
-		pass	
+		self.path = path	
 		
 	'''
   K-Means Clustering benchmark instance. If the method has been successfully 
@@ -113,5 +107,4 @@ class KMEANS(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.total_time
-		return time
+		return timer.total_time

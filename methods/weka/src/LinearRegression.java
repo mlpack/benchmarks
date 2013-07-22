@@ -18,9 +18,9 @@ public class LinearRegression {
           + "Required options:\n"
           + "-i [string]     File containing X (regressors).\n\n"
           + "Options:\n\n"
-          + "(-r) [string]   Optional file containing y (responses).\n"
-          + "                If not given, the responses are assumed\n"
-          + "                to be the last row of the input file.");
+          + "-r [string]   Optional file containing y (responses).\n"
+          + "              If not given, the responses are assumed\n"
+          + "              to be the last row of the input file.");
   
   public static void main(String args[]) {
     Timers timer = new Timers();

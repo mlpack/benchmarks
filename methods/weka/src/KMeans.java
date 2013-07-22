@@ -18,11 +18,12 @@ public class KMeans {
   private static final String USAGE = String
       .format("This program performs K-Means clustering on the given dataset.\n\n"
           + "Required options:\n"
-          + "(-c) [int]         Number of clusters to find.\n"
-          + "(-i) [string]      Input dataset to perform clustering on."
-          + "-m) [int]          Maximum number of iterations before K-Means\n"
-          + "                   terminates.  Default value 1000.\n"
-          + "(-s) [int]         Random seed. ");
+          + "-c [int]         Number of clusters to find.\n"
+          + "-i [string]      Input dataset to perform clustering on.\n\n"
+          + "Options:\n"
+          + "-m [int]         Maximum number of iterations before K-Means\n"
+          + "                 terminates. Default value 1000.\n"
+          + "-s [int]         Random seed.");
 
   public static void main(String args[]) {
     Timers timer = new Timers();
