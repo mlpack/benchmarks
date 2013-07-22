@@ -38,12 +38,6 @@ class GMM(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement Gaussian Mixture Model.
 
   @param options - Extra options for the method.

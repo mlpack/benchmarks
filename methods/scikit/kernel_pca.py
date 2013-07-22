@@ -38,12 +38,6 @@ class KPCA(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
@@ -80,10 +74,7 @@ class KPCA(object):
         model = KernelPCA(n_components=d, kernel="sigmoid")
       elif kernel.group(1) == "polynomial":
         degree = re.search('-D (\d+)', options)
-        if not degree:
-          degree = 1
-        else:
-          degree = int(degree.group(1))
+        degree = 1 if not degree else int(degree.group(1))
 
         model = KernelPCA(n_components=d, kernel="poly", degree=degree)
       else:

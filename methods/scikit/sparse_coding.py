@@ -38,12 +38,6 @@ class SparseCoding(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement Sparse Coding.
 
   @param options - Extra options for the method.
@@ -79,7 +73,7 @@ class SparseCoding(object):
     Log.Info("Perform Sparse Coding.", self.verbose)
 
     if len(self.dataset) != 2:
-      Log.Fatal("The method need two datasets.")
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     return self.SparseCodingScikit(options)

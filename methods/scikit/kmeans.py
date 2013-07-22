@@ -38,12 +38,6 @@ class KMEANS(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
@@ -76,10 +70,7 @@ class KMEANS(object):
           + "equal to 1.")
       return -1
 
-    if not maxIterations:
-      m = 1000
-    else:
-      m = maxIterations.group(1)
+    m = 1000 if not maxIterations else int(maxIterations.group(1))
 
     # Create the KMeans object and perform K-Means clustering.
     with totalTimer:
@@ -87,8 +78,8 @@ class KMEANS(object):
         kmeans = KMeans(k=centroids.shape[1], init=centroids, n_init=1, 
             max_iter=m)
       elif seed:
-        kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', n_init=1, 
-            max_iter=m, random_state=int(seed.group(1)))
+        kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', 
+            n_init=1, max_iter=m, random_state=int(seed.group(1)))
       else:
         kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)      
 

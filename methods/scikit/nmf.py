@@ -38,12 +38,6 @@ class NMF(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement Non-negative Matrix Factorization.
 
   @param options - Extra options for the method.
@@ -74,15 +68,8 @@ class NMF(object):
           Log.Fatal("The rank of the factorization cannot be less than 1.")
           return -1
 
-      if not maxIterations:
-        m = 10000
-      else:
-        m = maxIterations.group(1)
-
-      if not minResidue:
-        e = 1e-05
-      else:
-        e = float(minResidue.group(1))
+      m = 10000 if not maxIterations else int(maxIterations.group(1))
+      e = 1e-05 if not maxIterations else int(minResidue.group(1))
 
       if updateRule:
         u = updateRule.group(1)

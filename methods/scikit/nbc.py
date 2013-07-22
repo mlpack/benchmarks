@@ -38,12 +38,6 @@ class NBC(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement Naive Bayes Classifier.
 
   @param options - Extra options for the method.
@@ -80,8 +74,8 @@ class NBC(object):
   def RunMethod(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
-    if len(self.dataset) < 2:
-      Log.Fatal("The method need two datasets.")
+    if len(self.dataset) != 2:
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     return self.NBCScikit(options)

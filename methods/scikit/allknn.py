@@ -38,12 +38,6 @@ class ALLKNN(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the scikit libary to implement All K-Nearest-Neighbors.
 
   @param options - Extra options for the method.
@@ -79,7 +73,7 @@ class ALLKNN(object):
 
       if not leafSize:
         l = 20
-      elif leafSize.group(1) < 0:
+      elif int(leafSize.group(1)) < 0:
         Log.Fatal("Invalid leaf size: " + str(leafSize.group(1)) + ". Must be " +
             "greater than or equal to 0.")
         return -1
