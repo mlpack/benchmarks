@@ -40,12 +40,6 @@ class ALLKNN(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the shogun libary to implement All K-Nearest-Neighbors.
 
   @param options - Extra options for the method.
@@ -55,7 +49,7 @@ class ALLKNN(object):
     totalTimer = Timer()
 
     # Load input dataset.
-    # If the dataset contains two files then the second file is the query file 
+    # If the dataset contains two files then the second file is the query file. 
     # In this case we add this to the command line.
     Log.Info("Loading dataset", self.verbose)
     if len(self.dataset) == 2:

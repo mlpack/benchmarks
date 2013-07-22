@@ -69,7 +69,7 @@ class LARS(object):
   def RunMethod(self, options):
     Log.Info("Perform LARS.", self.verbose)
 
-    if len(self.dataset) < 2:
+    if len(self.dataset) != 2:
       Log.Fatal("This method requires two datasets.")
       return -1
 

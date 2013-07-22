@@ -40,12 +40,6 @@ class KMEANS(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the shogun libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
@@ -166,5 +160,4 @@ class KMEANS(object):
   @return Elapsed time in seconds.
   '''
   def GetTime(self, timer):
-    time = timer.total_time
-    return time
+    return timer.total_time

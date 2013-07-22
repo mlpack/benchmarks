@@ -39,12 +39,6 @@ class LARS(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the shogun libary to implement Least Angle Regression.
 
   @param options - Extra options for the method.
@@ -62,10 +56,7 @@ class LARS(object):
 
     # Get all the parameters.
     lambda1 = re.search("-l (\d+)", options)
-    if not lambda1:
-        lambda1 = 0.0
-      else:
-        lambda1 = int(lambda1.group(1))    
+    lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
 
     with totalTimer:
       # Perform LARS.
@@ -87,8 +78,8 @@ class LARS(object):
   def RunMethod(self, options):
     Log.Info("Perform LARS.", self.verbose)
 
-    if len(self.dataset) < 2:
-      Log.Fatal("The method need two datasets.")
+    if len(self.dataset) != 2:
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     return self.LARSShogun(options)

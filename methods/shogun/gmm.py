@@ -39,12 +39,6 @@ class GMM(object):
     self.dataset = dataset
 
   '''
-  Destructor to clean up at the end.
-  '''
-  def __del__(self):
-    pass
-
-  '''
   Use the shogun libary to implement Gaussian Mixture Model.
 
   @param options - Extra options for the method.
@@ -69,7 +63,7 @@ class GMM(object):
     model = Clustering.GMM(g)
     model.set_features(dataFeat)
     with totalTimer:
-      model.train_em(max_iter=n)
+      model.train_em(1e-9, n, 1e-9)
 
     return totalTimer.ElapsedTime()
 
