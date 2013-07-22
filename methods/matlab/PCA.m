@@ -1,3 +1,8 @@
+% @file PCA.m
+% @author Marcus Edel
+%
+% Principal Components Analysis with matlab.
+
 function pca(cmd)
 % This program performs principal components analysis on the given dataset.
 % It will transform the data onto its principal components, optionally 
@@ -7,20 +12,17 @@ function pca(cmd)
 % Required options:
 %     (-i) [string]    Input dataset to perform PCA on.
 % Options:
-% (-d) [int]           Desired dimensionality of output dataset. If this 
+%     (-d) [int]       Desired dimensionality of output dataset. If this 
 %                      option not set no dimensionality reduction is 
 %                      performed. Default value 0.
-% (-s)                 If set, the data will be scaled before running PCA,
+%     (-s)             If set, the data will be scaled before running PCA,
 %                      such that the variance of each feature is 1.
 
 
 inputFile = regexp(cmd, '.*?-i ([^\s]+)', 'tokens', 'once');
 
 % Load input dataset.
-loading_data = tic;
-total_time = tic;
 X = csvread(inputFile{:});
-disp(sprintf('[INFO ]   loading_data: %fs', toc(loading_data)))
 
 % Find out what dimension we want.
 k = str2double(regexp(cmd,'.* -d.* (\d+)','tokens','once'));
@@ -36,6 +38,7 @@ if k > 0
     end
 end
 
+total_time = tic;
 % Retrieve the dimensions of X.
 [m, n] = size(X);
 

@@ -4,15 +4,17 @@
 % K-Means Clustering with matlab.
 
 function KMEANS(cmd)
-% This program performs K-Means clustering on the given dataset
+% This program performs K-Means clustering on the given dataset.
 %
 % Required options:
 %     (-i) [string]    Input dataset to perform clustering on.
+%     (-I) [string]    Start with the specified initial centroids. 
+%                      Default value ''.
 % Options:
-%  (-c) [int]          Number of clusters to find.
-%  (-m) [int]          Maximum number of iterations before K-Means 
-%                      terminates. Default value 1000.
-%  (-s) [int]          Random seed. If 0, 'std::time(NULL)' is used.
+%     (-c) [int]    Number of clusters to find.
+%     (-m) [int]    Maximum number of iterations before K-Means terminates. 
+%                   Default value 1000.
+%     (-s) [int]    Random seed.
 
 
 % Load input dataset.
@@ -43,7 +45,7 @@ else
 end
 
 if ~isempty(seed)
-  s = RandStream('mt19937ar','Seed', seed);
+  s = RandStream('mt19937ar', 'Seed', seed);
   RandStream.setGlobalStream(s);
 end
 

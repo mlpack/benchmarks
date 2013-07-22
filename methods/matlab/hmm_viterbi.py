@@ -33,10 +33,10 @@ class HMMVITERBI(object):
   Create the HMM Sequence Log-Likelihood benchmark instance.
   
   @param dataset - Input dataset to perform the HMM Sequence Log-Likelihood on.
-  @param path - Path to the mlpack executable.
+  @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose = True): 
+  def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose=True): 
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
@@ -62,11 +62,11 @@ class HMMVITERBI(object):
     Log.Info("Perform HMM VITERBI.", self.verbose)
 
     if len(self.dataset) != 2:
-      Log.Fatal("The method need two datasets.")
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     # Open the HMM model file and extract the emis and trans values.
-    fid = open(self.dataset[1], 'r')
+    fid = open(self.dataset[1], "r")
     line = fid.read()
     fid.close()
 
@@ -154,5 +154,4 @@ class HMMVITERBI(object):
   @return Elapsed time in seconds.
   '''
   def GetTime(self, timer):
-    time = timer.total_time
-    return time
+    return timer.total_time

@@ -5,8 +5,7 @@
 
 function nmf(cmd)
 % This program performs non-negative matrix factorization on the given 
-% dataset, storing the resulting decomposed matrices in the specified 
-% files. For an input dataset V, NMF decomposes V into two matrices W and H
+% dataset. For an input dataset V, NMF decomposes V into two matrices W and H
 % such that
 %  
 %  V = W * H
@@ -17,13 +16,13 @@ function nmf(cmd)
 %     (-i) [string]    Input dataset to perform NMF on.
 %     (-r) [int]       Rank of the factorization.
 % Options:
-%  (-m) [int]          Number of iterations before NMF terminates (0) runs 
+%     (-m) [int]       Number of iterations before NMF terminates (0) runs 
 %                      until convergence. Default value 10000.
-%  (-e) [double]       The minimum root mean square residue allowed for 
+%     (-e) [double]    The minimum root mean square residue allowed for 
 %                      each iteration, below which the program terminates.
 %                      Default value 1e-05.
-%  (-s) [int]          Random seed.
-%  (-u) [string]       Update rules for each iteration; ( multdist | als ).
+%     (-s) [int]       Random seed.
+%     (-u) [string]    Update rules for each iteration; ( multdist | als ).
 %                      Default value 'multdist'.
 
 

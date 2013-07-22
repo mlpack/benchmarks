@@ -10,8 +10,8 @@ function allknn(cmd)
 % reference and query set.
 %
 % Required options:
-%     (-k) [int]       Number of furthest neighbors to find.
-%     (-t) [string]    A file containing the training set.
+%     (-k) [int]       Number of nearest neighbors to find.
+%     (-r) [string]    File containing the reference dataset.
 %
 % Options:
 %     (-l) [int]       Leaf size for tree building. Default value 20.

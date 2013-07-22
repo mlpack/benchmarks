@@ -33,10 +33,10 @@ class HMMGENERATE(object):
   Create the HMM Sequence Generator benchmark instance.
   
   @param dataset - Input dataset to perform the HMM Sequence Generator on.
-  @param path - Path to the mlpack executable.
+  @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose = True): 
+  def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose=True): 
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
@@ -61,7 +61,7 @@ class HMMGENERATE(object):
   def RunMethod(self, options):
     Log.Info("Perform HMM GENERATE.", self.verbose)
 
-    # Open the HMM model file and extract the emis and trans values.
+    # Open the HMM xml model file and extract the emis and trans values.
     fid = open(self.dataset, 'r')
     line = fid.read()
     fid.close()
@@ -88,7 +88,6 @@ class HMMGENERATE(object):
         m = m.split('\n')
         m = m[0] + "," + m[1] + "\n"
         fidEmis.write(m)
-
       fidEmis.close()
 
       fidTrans = open("trans_tmp.csv", "w")
@@ -150,5 +149,4 @@ class HMMGENERATE(object):
   @return Elapsed time in seconds.
   '''
   def GetTime(self, timer):
-    time = timer.total_time
-    return time
+    return timer.total_time

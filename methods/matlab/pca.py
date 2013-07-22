@@ -33,19 +33,13 @@ class PCA(object):
 	Create the Principal Components Analysis benchmark instance.
   
   @param dataset - Input dataset to perform PCA on.
-  @param path - Path to the mlpack executable.
+  @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
 	'''
 	def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
-
-	'''
-	Destructor to clean up at the end.
-	'''
-	def __del__(self):		
-		pass	
 		
 	'''
   Perform Principal Components Analysis. If the method has been successfully 
@@ -91,7 +85,6 @@ class PCA(object):
 		# Compile the regular expression pattern into a regular expression object to
 		# parse the timer data.
 		pattern = re.compile(r"""
-				.*?loading_data: (?P<loading_time>.*?)s.*?
 				.*?total_time: (?P<total_time>.*?)s.*?
 				""", re.VERBOSE|re.MULTILINE|re.DOTALL)
 		
@@ -101,10 +94,9 @@ class PCA(object):
 			return -1
 		else:
 			# Create a namedtuple and return the timer data.
-			timer = collections.namedtuple("timer", ["loading_time", "total_time"])
+			timer = collections.namedtuple("timer", ["total_time"])
 			
-			return timer(float(match.group("loading_time")),
-					float(match.group("total_time")))
+			return timer(float(match.group("total_time")))
 
 	'''
 	Return the elapsed time in seconds.
@@ -113,5 +105,4 @@ class PCA(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.total_time - timer.loading_time
-		return time
+		return timer.total_time

@@ -4,7 +4,7 @@
 % Linear Regression with matlab.
 
 function linear_regression(cmd)
-% Simple Linear Regression Prediction
+% Simple Linear Regression Prediction.
 %
 % Required options:
 %     (-i) [string]    File containing X (regressors).

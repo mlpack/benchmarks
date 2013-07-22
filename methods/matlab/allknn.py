@@ -33,19 +33,13 @@ class ALLKNN(object):
 	Create the All K-Nearest-Neighbors benchmark instance.
   
   @param dataset - Input dataset to perform ALLKNN on.
-  @param path - Path to the mlpack executable.
+  @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
 	'''
-	def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose = True): 
+	def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose=True): 
 		self.verbose = verbose
 		self.dataset = dataset
 		self.path = path
-
-	'''
-	Destructor to clean up at the end.
-	'''
-	def __del__(self):		
-		pass	
 		
 	'''
   All K-Nearest-Neighbors. If the method has been successfully completed return 
@@ -117,5 +111,4 @@ class ALLKNN(object):
 	@return Elapsed time in seconds.
 	'''
 	def GetTime(self, timer):
-		time = timer.total_time
-		return time
+		return timer.total_time
