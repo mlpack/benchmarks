@@ -197,8 +197,12 @@ def Main(configfile):
         header.append(name)
 
         # Load script.
-        module = Loader.ImportModuleFromPath(script)
-        methodCall = getattr(module, method)            
+        try:
+          module = Loader.ImportModuleFromPath(script)
+          methodCall = getattr(module, method)
+        except Exception, e:
+          Log.Fatal("Could not load the script: " + script)
+          continue
 
         for dataset in datsets:  
           datasetName = NormalizeDatasetName(dataset)          
@@ -209,9 +213,14 @@ def Main(configfile):
 
           modifiedDataset = GetDataset(dataset, format)
 
+          try:
+            instance = methodCall(modifiedDataset[0], verbose=False)
+          except Exception, e:
+            Log.Fatal("Could not call the constructor: " + script)
+            continue
+
           time = 0
           for trial in range(trials + 1):
-            instance = methodCall(modifiedDataset[0], verbose=False)
             if trial > 0:
               time += instance.RunMethod(options);
 
