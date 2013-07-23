@@ -38,6 +38,10 @@ class PCA(object):
     self.verbose = verbose
     self.dataset = dataset
 
+    # Load input dataset.
+    Log.Info("Loading dataset", verbose)
+    self.data = np.genfromtxt(dataset, delimiter=',')
+
   '''
   Use the shogun libary to implement Principal Components Analysis.
 
@@ -49,20 +53,19 @@ class PCA(object):
     
     # Load input dataset.
     Log.Info("Loading dataset", self.verbose)
-    data = np.genfromtxt(self.dataset, delimiter=',')
-    feat = RealFeatures(data.T)
+    feat = RealFeatures(self.data.T)
 
     with totalTimer:
       # Find out what dimension we want.
       match = re.search('-d (\d+)', options)
 
       if not match:
-        k = data.shape[1]
+        k = self.data.shape[1]
       else:
         k = int(match.group(1))      
-        if (k > data.shape[1]):
-          Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
-              + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+        if (k > self.data.shape[1]):
+          Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
+              + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
           return -1
 
       # Get the options for running PCA.
