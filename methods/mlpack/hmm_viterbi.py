@@ -47,11 +47,11 @@ class HMMVITERBI(object):
 		cmd = shlex.split(self.path + "hmm_viterbi -h")
 		try:
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
-		except Exception, e:
+		except Exception as e:
 			Log.Fatal("Could not execute command: " + str(cmd))
 		else:
 			# Use regular expression pattern to get the description.
-			pattern = re.compile(r"""(.*?)Required.*?options:""", 
+			pattern = re.compile(br"""(.*?)Required.*?options:""", 
 					re.VERBOSE|re.MULTILINE|re.DOTALL)
 			
 			match = pattern.match(s)
@@ -94,7 +94,7 @@ class HMMVITERBI(object):
 		# string. We have untrusted input so we disables all shell based features.
 		try:
 			s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)	
-		except Exception, e:
+		except Exception as e:
 			Log.Fatal("Could not execute command: " + str(cmd))
 			return -1
 
@@ -118,7 +118,7 @@ class HMMVITERBI(object):
 	def parseTimer(self, data):
 		# Compile the regular expression pattern into a regular expression object to
 		# parse the timer data.
-		pattern = re.compile(r"""
+		pattern = re.compile(br"""
 				.*?loading_data: (?P<loading_data>.*?)s.*?
 				.*?saving_data: (?P<saving_data>.*?)s.*?
 				.*?total_time: (?P<total_time>.*?)s.*?
