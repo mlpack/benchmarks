@@ -51,12 +51,12 @@ class HMMVITERBI(object):
       line = fid.read()
       fid.close()
 
-      patternEmis = re.compile(r"""
+      patternEmis = re.compile(br"""
           .*?<hmm_emission_covariance_.*?>(?P<hmm_emission_mean>.*?)
           </hmm_emission_covariance_
           """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
-      patternTrans = re.compile(r"""
+      patternTrans = re.compile(br"""
           .*?<hmm_transition>(?P<hmm_transition>.*?)</hmm_transition>
           """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
@@ -133,7 +133,7 @@ class HMMVITERBI(object):
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
-    pattern = re.compile(r"""
+    pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     

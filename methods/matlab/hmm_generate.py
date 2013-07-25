@@ -132,7 +132,7 @@ class HMMGENERATE(object):
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
-    pattern = re.compile(r"""
+    pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
