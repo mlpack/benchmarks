@@ -52,21 +52,10 @@ class NMF(object):
 
     with totalTimer:      
       # Gather parameters.
-      rank = re.search("-r (\d+)", options)
       seed = re.search("-s (\d+)", options)
       maxIterations = re.search("-m (\d+)", options)
       minResidue = re.search("-e ([^\s]+)", options)
       updateRule = re.search("-u ([^\s]+)", options)
-
-      # Validate rank.
-      if not rank:
-        Log.Fatal("Required option: Rank of the factorization.")
-        return -1
-      else:
-        rank = rank.group(1)
-        if rank < 1:
-          Log.Fatal("The rank of the factorization cannot be less than 1.")
-          return -1
 
       m = 10000 if not maxIterations else int(maxIterations.group(1))
       e = 1e-05 if not maxIterations else int(minResidue.group(1))

@@ -1,5 +1,5 @@
-PYTHON_BIN := $(shell which python)
-PYTHON_VERSION := $(shell expr `$(PYTHON_BIN) -c 'import sys; print sys.version[:3]'` \>= 2.7)
+PYTHON_BIN := $(shell which python3.3)
+PYTHON_VERSION := $(shell expr `$(PYTHON_BIN) -c 'import sys; print(sys.version[:3])'` \>= 2.7)
 YAML_INSTALLED := $(shell $(PYTHON_BIN) -c 'import sys, yaml;' 2>&1)
 
 CONFIG := config.yaml

@@ -57,7 +57,7 @@ class KMEANS(object):
     if not clusters and len(self.dataset) != 2:
       Log.Fatal("Required option: Number of clusters or cluster locations.")
       return -1
-    elif (not clusters or clusters.group(1) < 1):
+    elif (not clusters or int(clusters.group(1)) < 1):
       Log.Fatal("Invalid number of clusters requested! Must be greater than or "
           + "equal to 1.")
       return -1
@@ -77,7 +77,7 @@ class KMEANS(object):
           + str(maxIterations))
       try:
         s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
-      except Exception, e:
+      except Exception as e:
         Log.Fatal("Could not execute command: " + str(cmd))
         return -1
 
@@ -139,7 +139,7 @@ class KMEANS(object):
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
-    pattern = re.compile(r"""
+    pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     

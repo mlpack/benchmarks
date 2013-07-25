@@ -62,7 +62,7 @@ class Convert(object):
 
     # Read the first to get the attributes count.
     fid = open(data)
-    head = [fid.next() for x in xrange(1)]
+    head = [next(fid) for x in range(1)]
     fid.close()
     
     # We can convert files with ' ' and ',' as seperator.

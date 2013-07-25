@@ -65,7 +65,7 @@ class KMEANS(object):
     if not clusters and len(self.dataset) != 2:
       Log.Fatal("Required option: Number of clusters or cluster locations.")
       return -1
-    elif (not clusters or clusters.group(1) < 1) and len(self.dataset) != 2:
+    elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
       Log.Fatal("Invalid number of clusters requested! Must be greater than or "
           + "equal to 1.")
       return -1

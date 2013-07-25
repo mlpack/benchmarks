@@ -36,10 +36,11 @@ class Parser(object):
   def __init__(self, config, verbose=True):
     self.verbose = verbose
     self.config = config
+    self.mc = 0
 
     # Default values.
     self.RUN = True
-    self.ITERATION = 1
+    self.ITERATION = 3
     self.OPTIONS = ''
 
     try:
@@ -47,9 +48,9 @@ class Parser(object):
       streams = yaml.load_all(open(config))
       self.streams = streams
 
-    except IOError, e:
+    except IOError as e:
       Log.Fatal("Could not load config file: " + config)
-    except yaml.YAMLError, exc:
+    except yaml.YAMLError as exc:
       if hasattr(exc, "problem_mark"):
         mark = exc.problem_mark
         Log.Fatal("Error at position: (%s:%s)" % (mark.line+1, mark.column+1))
@@ -61,13 +62,13 @@ class Parser(object):
   '''
   def GetConfigLibraryMethods(self):
     try:
-      stream = self.streams.next()
-    except StopIteration, e:
+      stream = next(self.streams)
+    except StopIteration as e:
       # We have to catch the exception to stop at the end. There exists no 
       # hasNext().
       return False
 
-    if not stream.has_key("library"):
+    if not "library" in stream:
         return self.KeyErrorMsg("library", streamNum)
     else:
       libraryName = stream["library"]
@@ -75,7 +76,7 @@ class Parser(object):
 
     attr = collections.namedtuple("attributes", ["libraryName", "methods"])
       
-    return attr(libraryName, stream["methods"].iteritems())
+    return attr(libraryName, stream["methods"].items())
 
   '''
   This method return the attributes of a given method.
@@ -84,8 +85,9 @@ class Parser(object):
   '''
   def GetConfigMethod(self, methods):
     try:
-      method = methods.next()   
-    except StopIteration, e:
+      method = list(methods)[self.mc]
+      self.mc = self.mc + 1 
+    except IndexError as e:
       # We have to catch the exception to stop at the end. There exists no 
       # hasNext().
       return False
@@ -96,37 +98,37 @@ class Parser(object):
     attributes = method[1]
 
     # First check the required attributes. 
-    if attributes.has_key("script"):
+    if "script" in attributes:
       script = attributes["script"]
       Log.Info("Script: " + script, self.verbose)
     else:
       return self.KeyErrorMsg("script")
 
-    if attributes.has_key("format"):
+    if "format" in attributes:
       format = attributes["format"]
       Log.Info("Format: " + str(format), self.verbose)
     else:
       return self.gKeyErrorMsg('format')
 
-    if attributes.has_key("datasets"):
+    if "datasets" in attributes:
       datasets = attributes['datasets']
       for dataset in datasets:
         Log.Info("Dataset: " + str(dataset["files"]), self.verbose)
-        if not dataset.has_key("options"):
+        if not "options" in dataset:
           dataset["options"] = self.OPTIONS
 
     else:
       return self.KeyErrorMsg("datasets")
 
     # Check the optional attributes. 
-    if attributes.has_key("run"):
+    if "run" in attributes:
       run = attributes["run"]
       Log.Info("Run: " + str(run), self.verbose)
     else:
       self.KeyWarnMsg("run")
       run = self.RUN
 
-    if attributes.has_key("iteration"):
+    if "iteration" in attributes:
       iteration = attributes["iteration"]
       Log.Info("Iteration: " + str(iteration), self.verbose)
     else:
@@ -229,7 +231,7 @@ class Parser(object):
 
     for datasets in files:
       # Check if the value datasets is a list of datasets.
-      if not isinstance(datasets, basestring):
+      if not isinstance(datasets, str):
         for dataset in datasets:
           if not CheckDataset(dataset):
             return False        
@@ -253,27 +255,27 @@ class Parser(object):
     for stream in self.streams:
       streamNum += 1
 
-      if not stream.has_key("library"):
+      if not "library" in stream:
         return self.KeyErrorMsg("library", streamNum)
-      elif not stream.has_key("methods"):
+      elif not "methods" in stream:
         return self.KeyErrorMsg("methods", streamNum)
       else:
         try:
-          for key, value in stream["methods"].iteritems():
+          for key, value in stream["methods"].items():
 
-            if not value.has_key("script"):
+            if not "script" in value:
               return self.KeyErrorMsg("script", streamNum)              
 
-            if not value.has_key("format"):
+            if not "format" in value:
               return self.KeyErrorMsg("format", streamNum)
 
-            if not value.has_key("run"):
+            if not "run" in value:
               self.KeyWarnMsg("run", streamNum)
 
-            if not value.has_key("iteration"):
+            if not "iteration" in value:
               self.KeyWarnMsg("iteration", streamNum)
 
-            if value.has_key("datasets"):
+            if "datasets" in value:
               if not value["datasets"]:
                 return self.EmptyErrorMsg("datasets", streamNum)
               else:
@@ -282,7 +284,7 @@ class Parser(object):
                   if not self.CheckIfAvailable(dataset["files"]):
                     return False
 
-                  if not dataset.has_key("options"):
+                  if not "options" in dataset:
                     self.KeyWarnMsg("options", streamNum)
             else:
               return self.KeyErrorMsg("datasets", streamNum)
@@ -290,7 +292,7 @@ class Parser(object):
             if not self.CheckIfCallable(key, value["script"]):
               return self.CallableMethodErroMsg(key, value["script"], streamNum)
 
-        except AttributeError, e:
+        except AttributeError as e:
           return self.KeyErrorMsg("methods", streamNum)
 
     Log.Info("Config file check: successful", self.verbose)
@@ -308,7 +310,7 @@ class Parser(object):
     libraryMapping = self.GetConfigLibraryMethods()
     while libraryMapping: 
       # Iterate through all methods.
-      methodMapping = self.GetConfigMethod(libraryMapping.methods)      
+      methodMapping = self.GetConfigMethod(libraryMapping.methods)
       while methodMapping and libraryMapping:
         # Collect data only from method with run value = true.
         if methodMapping.run:
@@ -337,6 +339,7 @@ class Parser(object):
 
         methodMapping = self.GetConfigMethod(libraryMapping.methods)
       libraryMapping = self.GetConfigLibraryMethods()
+      self.mc = 0
 
     return streamData
 

@@ -41,7 +41,7 @@ dataset as name. If necessary remove characters like '.', '_'.
 @return Normalized dataset name.
 '''
 def NormalizeDatasetName(dataset):
-  if not isinstance(dataset, basestring):
+  if not isinstance(dataset, str):
     return os.path.splitext(os.path.basename(dataset[0]))[0].split('_')[0]
   else:
     return os.path.splitext(os.path.basename(dataset))[0].split('_')[0]
@@ -69,7 +69,7 @@ Return a list with modified dataset.
 '''
 def GetDataset(dataset, format):
   # Check if the given dataset is a list or a single dataset.
-  if not isinstance(dataset, basestring):
+  if not isinstance(dataset, str):
     datasetList = []
     modifiedList = []
 
@@ -107,7 +107,7 @@ This function Remove a given file or list of files.
 @para dataset - File or list of file which should be deleted.
 '''
 def RemoveDataset(dataset):
-  if isinstance(dataset, basestring):
+  if isinstance(dataset, str):
     dataset = [dataset]
 
   for f in dataset:
@@ -182,8 +182,8 @@ def Main(configfile):
       datasetCount = CountLibrariesDatasets(libraries)
 
       # Create the matrix which contains the time and dataset informations.
-      dataMatrix = [['-' for x in xrange(len(libraries) + 1)] for x in 
-          xrange(datasetCount)] 
+      dataMatrix = [['-' for x in range(len(libraries) + 1)] for x in 
+          range(datasetCount)] 
 
       col = 1
       for libary in libraries:
@@ -200,8 +200,9 @@ def Main(configfile):
         try:
           module = Loader.ImportModuleFromPath(script)
           methodCall = getattr(module, method)
-        except Exception, e:
+        except Exception as e:
           Log.Fatal("Could not load the script: " + script)
+          Log.Fatal("Exception: " + str(e))
           continue
 
         for dataset in datsets:  
@@ -215,8 +216,9 @@ def Main(configfile):
 
           try:
             instance = methodCall(modifiedDataset[0], verbose=False)
-          except Exception, e:
+          except Exception as e:
             Log.Fatal("Could not call the constructor: " + script)
+            Log.Fatal("Exception: " + str(e))
             continue
 
           time = 0
