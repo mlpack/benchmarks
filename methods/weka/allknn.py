@@ -69,7 +69,7 @@ class ALLKNN(object):
 		except Exception:
 			Log.Fatal("Could not execute command: " + str(cmd))
 			return -1
-
+			
 		# Return the elapsed time.
 		timer = self.parseTimer(s)
 		if not timer:
@@ -94,7 +94,7 @@ class ALLKNN(object):
 				.*?total_time: (?P<total_time>.*?)s.*?
 				""", re.VERBOSE|re.MULTILINE|re.DOTALL)
 		
-		match = pattern.match(data)
+		match = pattern.match(data.decode())
 		if not match:
 			Log.Fatal("Can't parse the data: wrong format")
 			return -1

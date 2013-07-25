@@ -94,7 +94,7 @@ class LinearRegression(object):
 				.*?total_time: (?P<total_time>.*?)s.*?
 				""", re.VERBOSE|re.MULTILINE|re.DOTALL)
 		
-		match = pattern.match(data)
+		match = pattern.match(data.decode())
 		if not match:
 			Log.Fatal("Can't parse the data: wrong format")
 			return -1
