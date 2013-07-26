@@ -42,7 +42,7 @@ class HMMTRAIN(object):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
-    self.timeout = 0
+    self.timeout = timeout
 
     # Get description from executable.
     cmd = shlex.split(self.path + "hmm_train -h")
