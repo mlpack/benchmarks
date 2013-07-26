@@ -31,11 +31,13 @@ class SparseCoding(object):
   Create the Sparse Coding benchmark instance.
   
   @param dataset - Input dataset to perform Sparse Coding on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the scikit libary to implement Sparse Coding.
@@ -44,23 +46,32 @@ class SparseCoding(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def SparseCodingScikit(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    inputData = np.genfromtxt(self.dataset[0], delimiter=',')
-    dictionary = np.genfromtxt(self.dataset[1], delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunSparseCodingScikit():
+      totalTimer = Timer()
 
-    # Get all the parameters.
-    l = re.search("-l (\d+)", options)
-    l = 0 if not l else int(l.group(1))
+      # Load input dataset.
+      inputData = np.genfromtxt(self.dataset[0], delimiter=',')
+      dictionary = np.genfromtxt(self.dataset[1], delimiter=',')
 
-    with totalTimer:
-      # Perform Sparse Coding.
-      model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
-          transform_alpha=l)
-      code = model.transform(inputData)
+      # Get all the parameters.
+      l = re.search("-l (\d+)", options)
+      l = 0 if not l else int(l.group(1))
 
-    return totalTimer.ElapsedTime()
+      with totalTimer:
+        # Perform Sparse Coding.
+        model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
+            transform_alpha=l)
+        code = model.transform(inputData)
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunSparseCodingScikit()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Sparse Coding. If the method has been successfully completed 

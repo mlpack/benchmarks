@@ -31,11 +31,13 @@ class NMF(object):
   Create the Naive Bayes Classifier benchmark instance.
   
   @param dataset - Input dataset to perform NBC on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the scikit libary to implement Non-negative Matrix Factorization.
@@ -44,39 +46,48 @@ class NMF(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NMFScikit(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    data = np.genfromtxt(self.dataset, delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunNMFScikit():
+      totalTimer = Timer()
 
-    with totalTimer:      
-      # Gather parameters.
-      seed = re.search("-s (\d+)", options)
-      maxIterations = re.search("-m (\d+)", options)
-      minResidue = re.search("-e ([^\s]+)", options)
-      updateRule = re.search("-u ([^\s]+)", options)
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      data = np.genfromtxt(self.dataset, delimiter=',')
 
-      m = 10000 if not maxIterations else int(maxIterations.group(1))
-      e = 1e-05 if not maxIterations else int(minResidue.group(1))
+      with totalTimer:      
+        # Gather parameters.
+        seed = re.search("-s (\d+)", options)
+        maxIterations = re.search("-m (\d+)", options)
+        minResidue = re.search("-e ([^\s]+)", options)
+        updateRule = re.search("-u ([^\s]+)", options)
 
-      if updateRule:
-        u = updateRule.group(1)
-        if u != 'alspgrad':
-          Log.Fatal("Invalid update rules ('" + u + "'); must be 'alspgrad'.")
-          return -1
+        m = 10000 if not maxIterations else int(maxIterations.group(1))
+        e = 1e-05 if not maxIterations else int(minResidue.group(1))
 
-      # Perform NMF with the specified update rules.
-      if seed:
-        s = int(seed.group(1))
-        model = ScikitNMF(n_components=2, init='random', max_iter = m, tol = e, random_state = s)
-      else:
-        model = ScikitNMF(n_components=2, init='nndsvdar', max_iter = m, tol = e)
+        if updateRule:
+          u = updateRule.group(1)
+          if u != 'alspgrad':
+            Log.Fatal("Invalid update rules ('" + u + "'); must be 'alspgrad'.")
+            return -1
 
-      W = model.fit_transform(data)
-      H = model.components_
+        # Perform NMF with the specified update rules.
+        if seed:
+          s = int(seed.group(1))
+          model = ScikitNMF(n_components=2, init='random', max_iter = m, tol = e, random_state = s)
+        else:
+          model = ScikitNMF(n_components=2, init='nndsvdar', max_iter = m, tol = e)
 
-    return totalTimer.ElapsedTime()
+        W = model.fit_transform(data)
+        H = model.components_
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunNMFScikit()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Non-negative Matrix Factorization. If the method has been successfully 

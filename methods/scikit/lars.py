@@ -31,11 +31,13 @@ class LARS(object):
   Create the Least Angle Regression benchmark instance.
   
   @param dataset - Input dataset to perform Least Angle Regression on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the scikit libary to implement Least Angle Regression.
@@ -44,24 +46,33 @@ class LARS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LARSScikit(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    inputData = np.genfromtxt(self.dataset[0], delimiter=',')
-    responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunLARSScikit():
+      totalTimer = Timer()
 
-    with totalTimer:
-      # Get all the parameters.
-      lambda1 = re.search("-l (\d+)", options)
-      lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      inputData = np.genfromtxt(self.dataset[0], delimiter=',')
+      responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-      # Perform LARS.
-      model = LassoLars(alpha=lambda1)
-      model.fit(inputData, responsesData)
-      out = model.coef_
+      with totalTimer:
+        # Get all the parameters.
+        lambda1 = re.search("-l (\d+)", options)
+        lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
 
-    return totalTimer.ElapsedTime()
+        # Perform LARS.
+        model = LassoLars(alpha=lambda1)
+        model.fit(inputData, responsesData)
+        out = model.coef_
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunLARSScikit()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Least Angle Regression. If the method has been successfully completed 

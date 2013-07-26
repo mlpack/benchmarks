@@ -31,11 +31,13 @@ class GMM(object):
   Create the Gaussian Mixture Model benchmark instance.
   
   @param dataset - Input dataset to perform Gaussian Mixture Model on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the scikit libary to implement Gaussian Mixture Model.
@@ -44,27 +46,36 @@ class GMM(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def GMMScikit(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    dataPoints = np.genfromtxt(self.dataset, delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunGMMScikit():
+      totalTimer = Timer()
 
-    # Get all the parameters.
-    g = re.search("-g (\d+)", options)
-    n = re.search("-n (\d+)", options)
-    s = re.search("-n (\d+)", options)
+      # Load input dataset.
+      dataPoints = np.genfromtxt(self.dataset, delimiter=',')
 
-    g = 1 if not g else int(g.group(1))
-    n = 250 if not n else int(n.group(1))
-    s = 0 if not s else int(s.group(1))
+      # Get all the parameters.
+      g = re.search("-g (\d+)", options)
+      n = re.search("-n (\d+)", options)
+      s = re.search("-n (\d+)", options)
 
-    # Create the Gaussian Mixture Model.
-    model = mixture.GMM(n_components=g, covariance_type='full', random_state=s, 
-        n_iter=n)
-    with totalTimer:
-      model.fit(dataPoints) 
+      g = 1 if not g else int(g.group(1))
+      n = 250 if not n else int(n.group(1))
+      s = 0 if not s else int(s.group(1))
 
-    return totalTimer.ElapsedTime()
+      # Create the Gaussian Mixture Model.
+      model = mixture.GMM(n_components=g, covariance_type='full', random_state=s, 
+          n_iter=n)
+      with totalTimer:
+        model.fit(dataPoints) 
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunGMMScikit()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully completed 
