@@ -37,7 +37,7 @@ def SystemInformation():
 Normalize the dataset name. If the dataset is a list of datasets, take the first
 dataset as name. If necessary remove characters like '.', '_'.
 
-@para dataset - Dataset file or a list of datasets files.
+@param dataset - Dataset file or a list of datasets files.
 @return Normalized dataset name.
 '''
 def NormalizeDatasetName(dataset):
@@ -49,8 +49,8 @@ def NormalizeDatasetName(dataset):
 '''
 Check if the file is available in one of the given formats.
 
-@para dataset - Datsets which should be checked.
-@para formats - List of supported file formats.
+@param dataset - Datsets which should be checked.
+@param formats - List of supported file formats.
 @return Orginal dataset or dataset with new file format.
 '''
 def CheckFileExtension(dataset, formats):
@@ -63,8 +63,8 @@ def CheckFileExtension(dataset, formats):
 '''
 Return a list with modified dataset.
 
-@para dataset - Datasets to be modified.
-@para format - List of file formats to be converted to.
+@param dataset - Datasets to be modified.
+@param format - List of file formats to be converted to.
 @return List of modified datasets.
 '''
 def GetDataset(dataset, format):
@@ -104,7 +104,7 @@ def GetDataset(dataset, format):
 '''
 This function Remove a given file or list of files.
 
-@para dataset - File or list of file which should be deleted.
+@param dataset - File or list of file which should be deleted.
 '''
 def RemoveDataset(dataset):
   if isinstance(dataset, str):
@@ -117,8 +117,8 @@ def RemoveDataset(dataset):
 '''
 Add all rows from a given matrix to a given table.
 
-@para matrix - 2D array contains the row.
-@para table - Table in which the rows are inserted.
+@param matrix - 2D array contains the row.
+@param table - Table in which the rows are inserted.
 @return Table with the inserted rows.
 '''
 def AddMatrixToTable(matrix, table):
@@ -129,7 +129,7 @@ def AddMatrixToTable(matrix, table):
 '''
 Count all datasets to determine the dataset size.
 
-@para libraries - Contains the Dataset List.
+@param libraries - Contains the Dataset List.
 @return Dataset count.
 '''
 def CountLibrariesDatasets(libraries):
@@ -146,9 +146,9 @@ def CountLibrariesDatasets(libraries):
 Search the correct row to insert the new data. We look at the left column for
 a free place or for the matching name.
 
-@para dataMatrix - In this Matrix we search for the right position.
-@para datasetName - Name of the dataset.
-@para datasetCount - Maximum dataset count.
+@param dataMatrix - In this Matrix we search for the right position.
+@param datasetName - Name of the dataset.
+@param datasetCount - Maximum dataset count.
 '''
 def FindRightRow(dataMatrix, datasetName, datasetCount):
   for row in range(datasetCount):
@@ -161,14 +161,30 @@ prints a table with the runtime information.
 
 @para configfile - Start the benchmark with this configuration file.
 '''
-def Main(configfile): 
+def Main(configfile):
+  # Benchmark settings.
+  timeout = 23000
 
   # Read Config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
 
+  # Read the general block and set the attributes.
+  if "general" in streamData:
+    for key, value in streamData["general"]:
+      if key == "timeout":
+        timeout = value
+      elif key == "MLPACK_BIN":
+        os.environ["MLPACK_BIN"] = value
+      elif key == "MATLAB_BIN":
+        os.environ["MATLAB_BIN"] = value
+      elif key == "MATLABPATH":
+        os.environ["MATLABPATH"] = value
+
   # Iterate through all libraries.
   for method, sets in streamData.items():
+    if method == "general":
+      continue
     Log.Info("Method: " + method)    
     for options, libraries in sets.items():
       Log.Info('Options: ' + (options if options != '' else 'None'))
@@ -215,7 +231,7 @@ def Main(configfile):
           modifiedDataset = GetDataset(dataset, format)
 
           try:
-            instance = methodCall(modifiedDataset[0], verbose=False)
+            instance = methodCall(modifiedDataset[0], timeout=timeout, verbose=False)
           except Exception as e:
             Log.Fatal("Could not call the constructor: " + script)
             Log.Fatal("Exception: " + str(e))

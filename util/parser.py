@@ -63,6 +63,7 @@ class Parser(object):
   def GetConfigLibraryMethods(self):
     try:
       stream = next(self.streams)
+        
     except StopIteration as e:
       # We have to catch the exception to stop at the end. There exists no 
       # hasNext().
@@ -74,9 +75,12 @@ class Parser(object):
       libraryName = stream["library"]
       Log.Info("Library: " + libraryName, self.verbose)
 
-    attr = collections.namedtuple("attributes", ["libraryName", "methods"])
-      
-    return attr(libraryName, stream["methods"].items())
+    if stream["library"] == "general":
+      attr = collections.namedtuple("attributes", ["libraryName", "settings"])
+      return attr(libraryName, stream["settings"].items())
+    else:
+      attr = collections.namedtuple("attributes", ["libraryName", "methods"])      
+      return attr(libraryName, stream["methods"].items())
 
   '''
   This method return the attributes of a given method.
@@ -257,43 +261,44 @@ class Parser(object):
 
       if not "library" in stream:
         return self.KeyErrorMsg("library", streamNum)
-      elif not "methods" in stream:
-        return self.KeyErrorMsg("methods", streamNum)
-      else:
-        try:
-          for key, value in stream["methods"].items():
-
-            if not "script" in value:
-              return self.KeyErrorMsg("script", streamNum)              
-
-            if not "format" in value:
-              return self.KeyErrorMsg("format", streamNum)
-
-            if not "run" in value:
-              self.KeyWarnMsg("run", streamNum)
-
-            if not "iteration" in value:
-              self.KeyWarnMsg("iteration", streamNum)
-
-            if "datasets" in value:
-              if not value["datasets"]:
-                return self.EmptyErrorMsg("datasets", streamNum)
-              else:
-                for dataset in value["datasets"]:
-
-                  if not self.CheckIfAvailable(dataset["files"]):
-                    return False
-
-                  if not "options" in dataset:
-                    self.KeyWarnMsg("options", streamNum)
-            else:
-              return self.KeyErrorMsg("datasets", streamNum)
-
-            if not self.CheckIfCallable(key, value["script"]):
-              return self.CallableMethodErroMsg(key, value["script"], streamNum)
-
-        except AttributeError as e:
+      elif not "settings" in stream:
+        if not "methods" in stream:
           return self.KeyErrorMsg("methods", streamNum)
+        else:
+          try:
+            for key, value in stream["methods"].items():
+
+              if not "script" in value:
+                return self.KeyErrorMsg("script", streamNum)              
+
+              if not "format" in value:
+                return self.KeyErrorMsg("format", streamNum)
+
+              if not "run" in value:
+                self.KeyWarnMsg("run", streamNum)
+
+              if not "iteration" in value:
+                self.KeyWarnMsg("iteration", streamNum)
+
+              if "datasets" in value:
+                if not value["datasets"]:
+                  return self.EmptyErrorMsg("datasets", streamNum)
+                else:
+                  for dataset in value["datasets"]:
+
+                    if not self.CheckIfAvailable(dataset["files"]):
+                      return False
+
+                    if not "options" in dataset:
+                      self.KeyWarnMsg("options", streamNum)
+              else:
+                return self.KeyErrorMsg("datasets", streamNum)
+
+              if not self.CheckIfCallable(key, value["script"]):
+                return self.CallableMethodErroMsg(key, value["script"], streamNum)
+
+          except AttributeError as e:
+            return self.KeyErrorMsg("methods", streamNum)
 
     Log.Info("Config file check: successful", self.verbose)
 
@@ -308,38 +313,40 @@ class Parser(object):
 
     # Iterate through all libraries.
     libraryMapping = self.GetConfigLibraryMethods()
-    while libraryMapping: 
-      # Iterate through all methods.
-      methodMapping = self.GetConfigMethod(libraryMapping.methods)
-      while methodMapping and libraryMapping:
-        # Collect data only from method with run value = true.
-        if methodMapping.run:
-          for dataset in methodMapping.datasets:     
+    while libraryMapping:
+      if libraryMapping.libraryName == "general":
+        streamData["general"] = libraryMapping.settings
+      else:
+        # Iterate through all methods.
+        methodMapping = self.GetConfigMethod(libraryMapping.methods)
+        while methodMapping and libraryMapping:
+          # Collect data only from method with run value = true.
+          if methodMapping.run:
+            for dataset in methodMapping.datasets:     
 
-            if methodMapping.methodName in streamData:
-              tempDict = streamData[methodMapping.methodName]
+              if methodMapping.methodName in streamData:
+                tempDict = streamData[methodMapping.methodName]
 
-              if dataset["options"] in tempDict:              
-                t = (libraryMapping.libraryName, dataset["files"], 
-                  methodMapping.iteration, methodMapping.script, 
-                  methodMapping.format)  
-                tempDict[dataset["options"]].append(t)          
+                if dataset["options"] in tempDict:              
+                  t = (libraryMapping.libraryName, dataset["files"], 
+                    methodMapping.iteration, methodMapping.script, 
+                    methodMapping.format)  
+                  tempDict[dataset["options"]].append(t)          
+                else:
+                  t = (libraryMapping.libraryName, dataset["files"], 
+                    methodMapping.iteration, methodMapping.script, 
+                    methodMapping.format)            
+                  tempDict[dataset["options"]] = [t]
               else:
+                d = {}
                 t = (libraryMapping.libraryName, dataset["files"], 
                   methodMapping.iteration, methodMapping.script, 
                   methodMapping.format)            
-                tempDict[dataset["options"]] = [t]
-            else:
-              d = {}
-              t = (libraryMapping.libraryName, dataset["files"], 
-                methodMapping.iteration, methodMapping.script, 
-                methodMapping.format)            
-              d[dataset["options"]] = [t]
-              streamData[methodMapping.methodName] = d          
+                d[dataset["options"]] = [t]
+                streamData[methodMapping.methodName] = d          
 
-        methodMapping = self.GetConfigMethod(libraryMapping.methods)
+          methodMapping = self.GetConfigMethod(libraryMapping.methods)
       libraryMapping = self.GetConfigLibraryMethods()
       self.mc = 0
 
     return streamData
-

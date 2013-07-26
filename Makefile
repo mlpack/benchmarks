@@ -5,12 +5,7 @@ YAML_INSTALLED := $(shell $(PYTHON_BIN) -c 'import sys, yaml;' 2>&1)
 CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
 
-# Export matlab path to execute matlab file in the methods directory.
-export MATLABPATH=methods/matlab/
-
 # Specify the path for the libraries.
-export MLPACK_BIN=/usr/local/bin/
-export MATLAB_BIN=/opt/matlab/bin/
 export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
 export SHOGUN_PATH=/opt/shogun/shogun-2.1.0-mod
 
