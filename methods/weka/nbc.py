@@ -33,13 +33,16 @@ class NBC(object):
   Create the Naive Bayes Classifier benchmark instance.
   
   @param dataset - Input dataset to perform NBC on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, path=os.environ["WEKA_CLASSPATH"], verbose=True): 
+  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"], 
+      verbose=True): 
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
+    self.timeout = timeout
     
   '''
   Naive Bayes Classifier. If the method has been successfully completed return 
@@ -62,7 +65,11 @@ class NBC(object):
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disables all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)   
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+          timeout=self.timeout)
+    except subprocess.TimeoutExpired as e:
+      Log.Warn(str(e))
+      return -2
     except Exception:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
