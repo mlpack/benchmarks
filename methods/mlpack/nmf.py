@@ -33,13 +33,16 @@ class NMF(object):
   informations and return the instance.
   
   @param dataset - Input dataset to perform NMF on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, path=os.environ["MLPACK_BIN"], verbose=True): 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
+      verbose=True): 
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
+    self.timeout = timeout
 
     # Get description from executable.
     cmd = shlex.split(self.path + "nmf -h")
@@ -88,7 +91,11 @@ class NMF(object):
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disables all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+          timeout=self.timeout)
+    except subprocess.TimeoutExpired as e:
+      Log.Warn(str(e))
+      return -2
     except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
