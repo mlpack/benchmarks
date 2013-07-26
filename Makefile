@@ -20,7 +20,7 @@ endif
 
 # This is empty unless there was a problem.
 ifdef YAML_INSTALLED
-  $(error Python 'yaml' module was not found)
+	$(error Python 'yaml' module was not found)
 endif
 
 .PHONY: help test run memory
