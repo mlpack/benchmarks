@@ -2,7 +2,7 @@
 library: general
 settings:
     # Time until a timeout in seconds.
-    timeout: 3
+    timeout: 9000
 
     # Specify the path for the libraries.
     MLPACK_BIN: '/usr/local/bin/'

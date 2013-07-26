@@ -240,10 +240,22 @@ def Main(configfile):
           time = 0
           for trial in range(trials + 1):
             if trial > 0:
-              time += instance.RunMethod(options);
+              try:
+                time += instance.RunMethod(options);
+
+                # Method unsuccessful.
+                if time < 0:
+                  break
+
+                time += methodTime
+              except Exception as e:
+                Log.Fatal("Exception: " + str(e))
 
           # Set time.
-          dataMatrix[row][col] = "{0:.6f}".format(time / trials)
+          if time == -2:
+            dataMatrix[row][col] = ">" + str(timeout)
+          else:
+            dataMatrix[row][col] = "{0:.6f}".format(time / trials)
 
           # Remove temporary datasets.
           RemoveDataset(modifiedDataset[1])
