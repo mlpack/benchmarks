@@ -33,13 +33,16 @@ class HMMGENERATE(object):
   Create the HMM Sequence Generator benchmark instance.
   
   @param dataset - Input dataset to perform the HMM Sequence Generator on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, path=os.environ["MATLAB_BIN"], verbose=True): 
+  def __init__(self, dataset, timeout=0, path=os.environ["MATLAB_BIN"], 
+      verbose=True): 
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
+    self.timeout = timeout
     self.error = 0
 
     # Open the HMM xml model file and extract the emis and trans values.
@@ -107,7 +110,11 @@ class HMMGENERATE(object):
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disables all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)   
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+          timeout=self.timeout)
+    except subprocess.TimeoutExpired as e:
+      Log.Warn(str(e))
+      return -2
     except Exception:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
