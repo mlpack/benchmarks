@@ -246,8 +246,6 @@ def Main(configfile):
                 # Method unsuccessful.
                 if time < 0:
                   break
-
-                time += methodTime
               except Exception as e:
                 Log.Fatal("Exception: " + str(e))
 
