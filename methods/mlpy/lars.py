@@ -31,11 +31,13 @@ class LARS(object):
   Create the Least Angle Regression benchmark instance.
   
   @param dataset - Input dataset to perform Least Angle Regression on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the mlpy libary to implement Least Angle Regression.
@@ -44,20 +46,29 @@ class LARS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LARSMlpy(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    inputData = np.genfromtxt(self.dataset[0], delimiter=',')
-    responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunLARSMlpy():
+      totalTimer = Timer()
 
-    with totalTimer:
-      # Perform LARS.
-      model = mlpy.LARS()
-      model.learn(inputData, responsesData)
-      out = model.beta()
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      inputData = np.genfromtxt(self.dataset[0], delimiter=',')
+      responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-    return totalTimer.ElapsedTime()
+      with totalTimer:
+        # Perform LARS.
+        model = mlpy.LARS()
+        model.learn(inputData, responsesData)
+        out = model.beta()
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunLARSMlpy()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Least Angle Regression. If the method has been successfully completed 

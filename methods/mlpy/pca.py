@@ -31,11 +31,13 @@ class PCA(object):
   Create the Principal Components Analysis benchmark instance.
   
   @param dataset - Input dataset to perform PCA on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the mlpy libary to implement Principal Components Analysis.
@@ -44,34 +46,43 @@ class PCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def PCAMlpy(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    data = np.genfromtxt(self.dataset, delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunPCAMlpy():
+      totalTimer = Timer()
 
-    with totalTimer:
-      # Find out what dimension we want.
-      match = re.search('-d (\d+)', options)
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      data = np.genfromtxt(self.dataset, delimiter=',')
 
-      if not match:
-        k = data.shape[1]
-      else:
-        k = int(match.group(1))      
-        if (k > data.shape[1]):
-          Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
-              + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-          return -1
+      with totalTimer:
+        # Find out what dimension we want.
+        match = re.search('-d (\d+)', options)
 
-      # Get the options for running PCA.
-      s = True if options.find("-s") > -1 else False
+        if not match:
+          k = data.shape[1]
+        else:
+          k = int(match.group(1))      
+          if (k > data.shape[1]):
+            Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
+                + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+            return -1
 
-      # Perform PCA.
-      prep = mlpy.PCA(whiten = s)
-      prep.learn(data)
-      out = prep.transform(data, k)      
+        # Get the options for running PCA.
+        s = True if options.find("-s") > -1 else False
 
-    return totalTimer.ElapsedTime()
+        # Perform PCA.
+        prep = mlpy.PCA(whiten = s)
+        prep.learn(data)
+        out = prep.transform(data, k)      
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunPCAMlpy()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 

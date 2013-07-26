@@ -31,11 +31,13 @@ class KPCA(object):
   Create the Kernel Principal Components Analysis benchmark instance.
   
   @param dataset - Input dataset to perform KPCA on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the mlpy libary to implement Kernel Principal Components Analysis.
@@ -44,52 +46,61 @@ class KPCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KPCAMlpy(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    data = np.genfromtxt(self.dataset, delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunKPCAMlpy():
+      totalTimer = Timer()
 
-    with totalTimer:
-      # Get the new dimensionality, if it is necessary.
-      dimension = re.search('-d (\d+)', options)
-      if not dimension:
-        d = data.shape[0]
-      else:
-        d = int(dimension.group(1))      
-        if (d > data.shape[1]):
-          Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
-            + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-          return -1    
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      data = np.genfromtxt(self.dataset, delimiter=',')
 
-      # Get the kernel type and make sure it is valid.
-      kernel = re.search("-k ([^\s]+)", options)
-      if not kernel:
-          Log.Fatal("Choose kernel type, valid choices are 'polynomial', " + 
-                "'gaussian', 'linear' and 'hyptan'.")
+      with totalTimer:
+        # Get the new dimensionality, if it is necessary.
+        dimension = re.search('-d (\d+)', options)
+        if not dimension:
+          d = data.shape[0]
+        else:
+          d = int(dimension.group(1))      
+          if (d > data.shape[1]):
+            Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
+              + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+            return -1    
+
+        # Get the kernel type and make sure it is valid.
+        kernel = re.search("-k ([^\s]+)", options)
+        if not kernel:
+            Log.Fatal("Choose kernel type, valid choices are 'polynomial', " + 
+                  "'gaussian', 'linear' and 'hyptan'.")
+            return -1
+        elif kernel.group(1) == "polynomial":
+          degree = re.search('-D (\d+)', options)
+          degree = 1 if not degree else int(degree.group(1))
+
+          kernel = mlpy.kernel_polynomial(data, data, d=degree)
+        elif kernel.group(1) == "gaussian":
+          kernel = mlpy.kernel_gaussian(data, data, sigma=2) 
+        elif kernel.group(1) == "linear":
+          kernel = mlpy.kernel_linear(data, data)
+        elif kernel.group(1) == "hyptan":
+          kernel = mlpy.kernel_sigmoid(data, data)
+        else:
+          Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
+                  "choices are 'polynomial', 'gaussian', 'linear' and 'hyptan'.")
           return -1
-      elif kernel.group(1) == "polynomial":
-        degree = re.search('-D (\d+)', options)
-        degree = 1 if not degree else int(degree.group(1))
 
-        kernel = mlpy.kernel_polynomial(data, data, d=degree)
-      elif kernel.group(1) == "gaussian":
-        kernel = mlpy.kernel_gaussian(data, data, sigma=2) 
-      elif kernel.group(1) == "linear":
-        kernel = mlpy.kernel_linear(data, data)
-      elif kernel.group(1) == "hyptan":
-        kernel = mlpy.kernel_sigmoid(data, data)
-      else:
-        Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
-                "choices are 'polynomial', 'gaussian', 'linear' and 'hyptan'.")
-        return -1
+        # Perform Kernel Principal Components Analysis.
+        model = mlpy.KPCA()
+        model.learn(kernel)
+        out = model.transform(kernel, k=d)
 
-      # Perform Kernel Principal Components Analysis.
-      model = mlpy.KPCA()
-      model.learn(kernel)
-      out = model.transform(kernel, k=d)
+      return totalTimer.ElapsedTime()
 
-    return totalTimer.ElapsedTime()
+    try:
+      return RunKPCAMlpy()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Kernel Principal Components Analysis. If the method has been 

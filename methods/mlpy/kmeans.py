@@ -31,11 +31,13 @@ class KMEANS(object):
   Create the K-Means Clustering benchmark instance.
   
   @param dataset - Input dataset to perform K-Means on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the mlpy libary to implement K-Means Clustering.
@@ -44,33 +46,42 @@ class KMEANS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KMeansMlpy(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    data = np.genfromtxt(self.dataset, delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunKMeansMlpy():
+      totalTimer = Timer()
 
-    # Gather all parameters.
-    clusters = re.search('-c (\d+)', options)
-    seed = re.search("-s (\d+)", options)
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      data = np.genfromtxt(self.dataset, delimiter=',')
 
-    # Now do validation of options.
-    if not clusters:
-      Log.Fatal("Required option: Number of clusters or cluster locations.")
-      return -1
-    elif int(clusters.group(1)) < 1:
-      Log.Fatal("Invalid number of clusters requested! Must be greater than or "
-          + "equal to 1.")
-      return -1
+      # Gather all parameters.
+      clusters = re.search('-c (\d+)', options)
+      seed = re.search("-s (\d+)", options)
 
-    with totalTimer:
-      # Create the KMeans object and perform K-Means clustering.
-      if seed:
-        kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
-      else:
-        kmeans = mlpy.kmeans(data, int(clusters.group(1)))
+      # Now do validation of options.
+      if not clusters:
+        Log.Fatal("Required option: Number of clusters or cluster locations.")
+        return -1
+      elif int(clusters.group(1)) < 1:
+        Log.Fatal("Invalid number of clusters requested! Must be greater than or "
+            + "equal to 1.")
+        return -1
 
-    return totalTimer.ElapsedTime()
+      with totalTimer:
+        # Create the KMeans object and perform K-Means clustering.
+        if seed:
+          kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
+        else:
+          kmeans = mlpy.kmeans(data, int(clusters.group(1)))
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunKMeansMlpy()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed 
