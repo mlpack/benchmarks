@@ -33,11 +33,13 @@ class KMEANS(object):
   Create the K-Means Clustering benchmark instance.
   
   @param dataset - Input dataset to perform K-Means Clustering on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the shogun libary to implement K-Means Clustering.
@@ -46,7 +48,6 @@ class KMEANS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KMeansShogun(self, options):
-    totalTimer = Timer()
 
     # Gather parameters.
     clusters = re.search("-c (\d+)", options)
@@ -76,7 +77,11 @@ class KMEANS(object):
           + " " + self.dataset[1] + " " + clusters.group(1) + " " 
           + str(maxIterations))
       try:
-        s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
+        s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+            timeout=self.timeout)
+      except subprocess.TimeoutExpired as e:
+        Log.Warn(str(e))
+        return -2
       except Exception as e:
         Log.Fatal("Could not execute command: " + str(cmd))
         return -1
@@ -93,30 +98,41 @@ class KMEANS(object):
         return time      
 
     else:
-      import numpy as np
-      from shogun.Distance import EuclideanDistance
-      from shogun.Features import RealFeatures
-      from shogun import Clustering
-      from shogun.Mathematics import Math_init_random
 
-      if seed:
-        Math_init_random(seed.group(1))
+      @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+      def RunKMeansShogun():
+        import numpy as np
+        from shogun.Distance import EuclideanDistance
+        from shogun.Features import RealFeatures
+        from shogun import Clustering
+        from shogun.Mathematics import Math_init_random
 
-      data = np.genfromtxt(self.dataset, delimiter=',')
+        totalTimer = Timer()
 
-      dataFeat = RealFeatures(data.T)
-      distance = EuclideanDistance(dataFeat, dataFeat)
+        if seed:
+          Math_init_random(seed.group(1))
 
-      # Create the K-Means object and perform K-Means clustering.
-      with totalTimer:
-        model = Clustering.KMeans(int(clusters.group(1)), distance)
-        model.set_max_iter(maxIterations)
-        model.train()
+        data = np.genfromtxt(self.dataset, delimiter=',')
 
-        labels = model.apply().get_labels()
-        centers = model.get_cluster_centers()
+        dataFeat = RealFeatures(data.T)
+        distance = EuclideanDistance(dataFeat, dataFeat)
 
-      return totalTimer.ElapsedTime()
+        # Create the K-Means object and perform K-Means clustering.
+        with totalTimer:
+          model = Clustering.KMeans(int(clusters.group(1)), distance)
+          model.set_max_iter(maxIterations)
+          model.train()
+
+          labels = model.apply().get_labels()
+          centers = model.get_cluster_centers()
+
+        return totalTimer.ElapsedTime()
+
+      try:
+        return RunKMeansShogun()
+      except TimeoutError as e:
+        Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+        return -2
 
   '''
   Perform K-Means Clustering. If the method has been successfully 

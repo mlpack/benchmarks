@@ -32,11 +32,13 @@ class GMM(object):
   Create the Gaussian Mixture Model benchmark instance.
   
   @param dataset - Input dataset to perform Gaussian Mixture Model on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True): 
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the shogun libary to implement Gaussian Mixture Model.
@@ -45,27 +47,36 @@ class GMM(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def GMMShogun(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    dataPoints = np.genfromtxt(self.dataset, delimiter=',')
-    dataFeat = RealFeatures(dataPoints.T)
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunGMMShogun():
+      totalTimer = Timer()
 
-    # Get all the parameters.
-    g = re.search("-g (\d+)", options)
-    n = re.search("-n (\d+)", options)
-    s = re.search("-n (\d+)", options)
+      # Load input dataset.
+      dataPoints = np.genfromtxt(self.dataset, delimiter=',')
+      dataFeat = RealFeatures(dataPoints.T)
 
-    g = 1 if not g else int(g.group(1))
-    n = 250 if not n else int(n.group(1))
+      # Get all the parameters.
+      g = re.search("-g (\d+)", options)
+      n = re.search("-n (\d+)", options)
+      s = re.search("-n (\d+)", options)
 
-    # Create the Gaussian Mixture Model.
-    model = Clustering.GMM(g)
-    model.set_features(dataFeat)
-    with totalTimer:
-      model.train_em(1e-9, n, 1e-9)
+      g = 1 if not g else int(g.group(1))
+      n = 250 if not n else int(n.group(1))
 
-    return totalTimer.ElapsedTime()
+      # Create the Gaussian Mixture Model.
+      model = Clustering.GMM(g)
+      model.set_features(dataFeat)
+      with totalTimer:
+        model.train_em(1e-9, n, 1e-9)
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunGMMShogun()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully 

@@ -33,11 +33,13 @@ class ALLKNN(object):
   Create the All K-Nearest-Neighbors benchmark instance.
   
   @param dataset - Input dataset to perform All K-Nearest-Neighbors on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the shogun libary to implement All K-Nearest-Neighbors.
@@ -46,49 +48,58 @@ class ALLKNN(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def AllKnnShogun(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    # If the dataset contains two files then the second file is the query file. 
-    # In this case we add this to the command line.
-    Log.Info("Loading dataset", self.verbose)
-    if len(self.dataset) == 2:
-      referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
-      queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      queryFeat = RealFeatures(queryFeat.T)
-    else:
-      referenceData = np.genfromtxt(self.dataset, delimiter=',')
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunAllKnnShogun():
+      totalTimer = Timer()
 
-    # Labels are the last row of the dataset.
-    labels = MulticlassLabels(referenceData[:, (referenceData.shape[1] - 1)])
-    referenceData = referenceData[:,:-1]
-
-    with totalTimer:
-      # Get all the parameters.
-      k = re.search("-k (\d+)", options)
-      if not k:
-        Log.Fatal("Required option: Number of furthest neighbors to find.")
-        return -1
-      else:
-        k = int(k.group(1))
-        if (k < 1 or k > referenceData.shape[0]):
-          Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
-            + "less ")
-          return -1
-
-      referenceFeat = RealFeatures(referenceData.T)
-      distance = EuclideanDistance(referenceFeat, referenceFeat)
-
-      # Perform All K-Nearest-Neighbors.
-      model = SKNN(k, distance, labels)
-      model.train()      
-
+      # Load input dataset.
+      # If the dataset contains two files then the second file is the query file. 
+      # In this case we add this to the command line.
+      Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) == 2:
-        out = model.apply(queryFeat).get_labels()
+        referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
+        queryData = np.genfromtxt(self.dataset[1], delimiter=',')
+        queryFeat = RealFeatures(queryFeat.T)
       else:
-        out = model.apply(referenceFeat).get_labels()
+        referenceData = np.genfromtxt(self.dataset, delimiter=',')
 
-    return totalTimer.ElapsedTime()
+      # Labels are the last row of the dataset.
+      labels = MulticlassLabels(referenceData[:, (referenceData.shape[1] - 1)])
+      referenceData = referenceData[:,:-1]
+
+      with totalTimer:
+        # Get all the parameters.
+        k = re.search("-k (\d+)", options)
+        if not k:
+          Log.Fatal("Required option: Number of furthest neighbors to find.")
+          return -1
+        else:
+          k = int(k.group(1))
+          if (k < 1 or k > referenceData.shape[0]):
+            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
+              + "less ")
+            return -1
+
+        referenceFeat = RealFeatures(referenceData.T)
+        distance = EuclideanDistance(referenceFeat, referenceFeat)
+
+        # Perform All K-Nearest-Neighbors.
+        model = SKNN(k, distance, labels)
+        model.train()      
+
+        if len(self.dataset) == 2:
+          out = model.apply(queryFeat).get_labels()
+        else:
+          out = model.apply(referenceFeat).get_labels()
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunAllKnnShogun()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform All K-Nearest-Neighbors. If the method has been successfully 

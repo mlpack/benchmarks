@@ -32,11 +32,13 @@ class LARS(object):
   Create the All Least Angle Regression benchmark instance.
   
   @param dataset - Input dataset to perform Least Angle Regression on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the shogun libary to implement Least Angle Regression.
@@ -45,28 +47,37 @@ class LARS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LARSShogun(self, options):
-    totalTimer = Timer()
 
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    inputData = np.genfromtxt(self.dataset[0], delimiter=',')
-    responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
-    inputFeat = RealFeatures(inputData.T)
-    responsesFeat = RegressionLabels(responsesData)
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunLARSShogun():
+      totalTimer = Timer()
 
-    # Get all the parameters.
-    lambda1 = re.search("-l (\d+)", options)
-    lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      inputData = np.genfromtxt(self.dataset[0], delimiter=',')
+      responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
+      inputFeat = RealFeatures(inputData.T)
+      responsesFeat = RegressionLabels(responsesData)
 
-    with totalTimer:
-      # Perform LARS.
-      model = LeastAngleRegression(False)
-      model.set_max_l1_norm(lambda1)
-      model.set_labels(responsesFeat)
-      model.train(inputFeat)
-      model.get_w(model.get_path_size() - 1)
+      # Get all the parameters.
+      lambda1 = re.search("-l (\d+)", options)
+      lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
 
-    return totalTimer.ElapsedTime()
+      with totalTimer:
+        # Perform LARS.
+        model = LeastAngleRegression(False)
+        model.set_max_l1_norm(lambda1)
+        model.set_labels(responsesFeat)
+        model.train(inputFeat)
+        model.get_w(model.get_path_size() - 1)
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunLARSShogun()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Least Angle Regression. If the method has been successfully 

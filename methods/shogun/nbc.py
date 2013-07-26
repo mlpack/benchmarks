@@ -32,11 +32,13 @@ class NBC(object):
   Create the Naive Bayes Classifier benchmark instance.
   
   @param dataset - Input dataset to perform NBC on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
   '''
   Use the shogun libary to implement Naive Bayes Classifier.
@@ -45,28 +47,37 @@ class NBC(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NBCShogun(self, options):
-    totalTimer = Timer()
-    
-    Log.Info("Loading dataset", self.verbose)
-    # Load train and test dataset.
-    trainData = np.genfromtxt(self.dataset[0], delimiter=',')
-    testData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-    # Labels are the last row of the training set.
-    labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunNBCShogun():
+      totalTimer = Timer()
+      
+      Log.Info("Loading dataset", self.verbose)
+      # Load train and test dataset.
+      trainData = np.genfromtxt(self.dataset[0], delimiter=',')
+      testData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-    with totalTimer:
-      # Transform into features.
-      trainFeat = RealFeatures(trainData[:,:-1].T)
-      testFeat = RealFeatures(testData.T)
+      # Labels are the last row of the training set.
+      labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
 
-      # Create and train the classifier.
-      nbc = GaussianNaiveBayes(trainFeat, labels)
-      nbc.train()
-      # Run Naive Bayes Classifier on the test dataset.
-      nbc.apply(testFeat).get_labels()
+      with totalTimer:
+        # Transform into features.
+        trainFeat = RealFeatures(trainData[:,:-1].T)
+        testFeat = RealFeatures(testData.T)
 
-    return totalTimer.ElapsedTime()
+        # Create and train the classifier.
+        nbc = GaussianNaiveBayes(trainFeat, labels)
+        nbc.train()
+        # Run Naive Bayes Classifier on the test dataset.
+        nbc.apply(testFeat).get_labels()
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunNBCShogun()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully 

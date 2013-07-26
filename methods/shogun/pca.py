@@ -32,11 +32,13 @@ class PCA(object):
   Create the Principal Components Analysis benchmark instance.
   
   @param dataset - Input dataset to perform PCA on.
+  @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
+    self.timeout = timeout
 
     # Load input dataset.
     Log.Info("Loading dataset", verbose)
@@ -49,35 +51,44 @@ class PCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def PCAShogun(self, options):
-    totalTimer = Timer()
-    
-    # Load input dataset.
-    Log.Info("Loading dataset", self.verbose)
-    feat = RealFeatures(self.data.T)
 
-    with totalTimer:
-      # Find out what dimension we want.
-      match = re.search('-d (\d+)', options)
+    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
+    def RunPCAShogun():
+      totalTimer = Timer()
+      
+      # Load input dataset.
+      Log.Info("Loading dataset", self.verbose)
+      feat = RealFeatures(self.data.T)
 
-      if not match:
-        k = self.data.shape[1]
-      else:
-        k = int(match.group(1))      
-        if (k > self.data.shape[1]):
-          Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
-              + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
-          return -1
+      with totalTimer:
+        # Find out what dimension we want.
+        match = re.search('-d (\d+)', options)
 
-      # Get the options for running PCA.
-      s = True if options.find("-s") > -1 else False
+        if not match:
+          k = self.data.shape[1]
+        else:
+          k = int(match.group(1))      
+          if (k > self.data.shape[1]):
+            Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
+                + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
+            return -1
 
-      # Perform PCA.
-      prep = ShogunPCA(s)
-      prep.set_target_dim(k)
-      prep.init(feat)
-      prep.apply_to_feature_matrix(feat)
+        # Get the options for running PCA.
+        s = True if options.find("-s") > -1 else False
 
-    return totalTimer.ElapsedTime()
+        # Perform PCA.
+        prep = ShogunPCA(s)
+        prep.set_target_dim(k)
+        prep.init(feat)
+        prep.apply_to_feature_matrix(feat)
+
+      return totalTimer.ElapsedTime()
+
+    try:
+      return RunPCAShogun()
+    except TimeoutError as e:
+      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
+      return -2
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 
