@@ -21,6 +21,7 @@ from parser import *
 from convert import *
 
 import argparse
+import datetime
 
 '''
 Show system informations. Are there no data available, the value is 'N/A'.
@@ -161,40 +162,31 @@ prints a table with the runtime information.
 
 @para configfile - Start the benchmark with this configuration file.
 '''
-def Main(configfile):
+def Main(configfile, blocks, log):
   # Benchmark settings.
   timeout = 23000
+  logfile = "results.log"
 
   # Read Config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
 
   # Read the general block and set the attributes.
+
   if "general" in streamData:
     for key, value in streamData["general"]:
       if key == "timeout":
         timeout = value
-      elif key == "MLPACK_BIN":
-        os.environ["MLPACK_BIN"] = value
-      elif key == "MATLAB_BIN":
-        os.environ["MATLAB_BIN"] = value
-      elif key == "MATLABPATH":
-        os.environ["MATLABPATH"] = value
-      elif key == "PYTHONPATH":
-        try:
-          PYTHONPATH = os.environ["PYTHONPATH"]
-        except KeyError:
-          os.environ["PYTHONPATH"] = value
-        else:
-          os.environ["PYTHONPATH"] = PYTHONPATH + ":" + value
-      elif key == "LD_LIBRARY_PATH":
-        try:
-          LD_LIBRARY_PATH = os.environ["LD_LIBRARY_PATH"]
-        except KeyError:
-          os.environ["LD_LIBRARY_PATH"] = value
-        else:
-          os.environ["LD_LIBRARY_PATH"] = LD_LIBRARY_PATH + ":" + value
+      if key == "logfile":
+        logfile = value
 
+  # Open logfile if the user asked for.
+  if log:
+    fid = open(logfile, "a")
+
+  # Transform the blocks string to a list.
+  if blocks:
+    blocks = blocks.split(",")
 
   # Iterate through all libraries.
   for method, sets in streamData.items():
@@ -217,6 +209,7 @@ def Main(configfile):
           range(datasetCount)] 
 
       col = 1
+      run = 0
       for libary in libraries:
         name = libary[0]
         datsets = libary[1]
@@ -224,70 +217,97 @@ def Main(configfile):
         script = libary[3]
         format = libary[4]
 
-        Log.Info("Libary: " + name)
         header.append(name)
+        
+        if not blocks or name in blocks:
+          run += 1
+          Log.Info("Libary: " + name)
 
-        # Load script.
-        try:
-          module = Loader.ImportModuleFromPath(script)
-          methodCall = getattr(module, method)
-        except Exception as e:
-          Log.Fatal("Could not load the script: " + script)
-          Log.Fatal("Exception: " + str(e))
-          continue
-
-        for dataset in datsets:  
-          datasetName = NormalizeDatasetName(dataset)          
-          row = FindRightRow(dataMatrix, datasetName, datasetCount)      
-
-          dataMatrix[row][0] = NormalizeDatasetName(dataset)
-          Log.Info("Dataset: " + dataMatrix[row][0])    
-
-          modifiedDataset = GetDataset(dataset, format)
-
+          # Load script.
           try:
-            instance = methodCall(modifiedDataset[0], timeout=timeout, verbose=False)
+            module = Loader.ImportModuleFromPath(script)
+            methodCall = getattr(module, method)
           except Exception as e:
-            Log.Fatal("Could not call the constructor: " + script)
+            Log.Fatal("Could not load the script: " + script)
             Log.Fatal("Exception: " + str(e))
-            continue
-
-          time = 0
-          for trial in range(trials + 1):
-            if trial > 0:
-              try:
-                time += instance.RunMethod(options);
-
-                # Method unsuccessful.
-                if time < 0:
-                  break
-              except Exception as e:
-                Log.Fatal("Exception: " + str(e))
-
-          # Set time.
-          if time == -2:
-            dataMatrix[row][col] = ">" + str(timeout)
           else:
-            dataMatrix[row][col] = "{0:.6f}".format(time / trials)
 
-          # Remove temporary datasets.
-          RemoveDataset(modifiedDataset[1])
-          row += 1
+            for dataset in datsets:  
+              datasetName = NormalizeDatasetName(dataset)          
+              row = FindRightRow(dataMatrix, datasetName, datasetCount)      
+
+              dataMatrix[row][0] = NormalizeDatasetName(dataset)
+              Log.Info("Dataset: " + dataMatrix[row][0])    
+
+              modifiedDataset = GetDataset(dataset, format)
+
+              try:
+                instance = methodCall(modifiedDataset[0], timeout=timeout, verbose=False)
+              except Exception as e:
+                Log.Fatal("Could not call the constructor: " + script)
+                Log.Fatal("Exception: " + str(e))
+                continue
+
+              time = []
+              for trial in range(trials + 1):
+                if trial > 0:
+                  try:
+                    time.append(instance.RunMethod(options));
+
+                    # Method unsuccessful.
+                    if sum(time) < 0:
+                      break
+                  except Exception as e:
+                    Log.Fatal("Exception: " + str(e))
+
+              # Set time.
+              if sum(time) == -2:
+                dataMatrix[row][col] = ">" + str(timeout)
+              elif sum(time) == -1:
+                dataMatrix[row][col] = "failure"
+              else:
+                dataMatrix[row][col] = "{0:.6f}".format(sum(time) / trials)
+
+              # Save results in the logfile if the user asked for.
+              if log:
+                # Get the variance.
+                var = 0
+                if len(time) != 0:
+                  avg = sum(time) / len(time)
+                  var = sum((avg - value) ** 2 for value in time) / len(time)
+
+                logData = str(datetime.datetime.now()) + " : " + name + ":"
+                logData += method + ":" + options + ":" + dataMatrix[row][0] 
+                logData += ":" + dataMatrix[row][col] + ":" + str(var)
+                fid.write(logData + "\n")
+
+              # Remove temporary datasets.
+              RemoveDataset(modifiedDataset[1])
         col += 1
 
       # Show results in a table.
-      Log.Notice("\n\n")
-      Log.PrintTable(AddMatrixToTable(dataMatrix, table))
-      Log.Notice("\n\n")
+      if not log and run > 0:
+        Log.Notice("\n\n")
+        Log.PrintTable(AddMatrixToTable(dataMatrix, table))
+        Log.Notice("\n\n")
+        run = 0
+
+  # Close the logfile.
+  if log:
+    fid.close()
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
       given config.""")
   parser.add_argument('-c','--config', help='Configuration file name.', 
       required=True)
+  parser.add_argument('-b','--blocks', help='Run only the specified blocks.', 
+      required=False)
+  parser.add_argument('-l','--log', help='Save the results in the logfile.', 
+      required=False, action='store_true')
 
   args = parser.parse_args()
 
   if args:
     SystemInformation()
-    Main(args.config)
+    Main(args.config, args.blocks, args.log)

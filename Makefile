@@ -6,8 +6,13 @@ CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
 
 # Specify the path for the libraries.
+export MLPACK_BIN=/usr/local/bin/
+export MATLAB_BIN=/opt/matlab/bin/
+export MATLABPATH=methods/matlab/
 export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
 export SHOGUN_PATH=/opt/shogun/shogun-2.1.0-mod
+export PYTHONPATH=/opt/scikit-learn/scikit-learn-0.13.1/lib/python3.3/site-packages/:/opt/mlpy/mlpy-3.5.0/lib/python3.3/site-packages/:/opt/shogun/shogun-2.1.0/lib/python3.3/dist-packages/
+export LD_LIBRARY_PATH=/opt/shogun/shogun-2.1.0/lib/
 
 ifeq ($(PYTHON_VERSION), 0)
 	$(error Python version 2.7 required which was not found)
