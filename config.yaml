@@ -1,4 +1,11 @@
-#  MLPACK 1.0.6:
+# Block for general settings.
+library: general
+settings:
+    # Time until a timeout in seconds.
+    timeout: 9000
+    logfile: results.log
+---
+#  MLPACK:
 #  A Scalable C++  Machine Learning Library
 library: mlpack
 methods:
@@ -7,37 +14,156 @@ methods:
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
-                      'datasets/wine.csv', 'datasets/artificial_data.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/ionosphere.csv']
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
 
-            - files: ['datasets/cities.csv', 'datasets/iris.csv', 'datasets/wine.csv',
-                      'datasets/artificial_data.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
-                      'datasets/diabetes_X.csv', 'datasets/ionosphere.csv']
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-d 2'
 
-            - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv',
-                      'datasets/wine.csv', 'datasets/artificial_data.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/ionosphere.csv']
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-d 2 -s'
     NMF:
-        run: false
+        run: true
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
-                      'datasets/ionosphere.csv', 'datasets/waveform.csv']
+            - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
+                      'datasets/optdigits.csv', 'datasets/waveform.csv',
+                      'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/mnist_all.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -s 42 -u multdist'
 
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
-                      'datasets/ionosphere.csv', 'datasets/waveform.csv']
+            - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
+                      'datasets/optdigits.csv', 'datasets/waveform.csv',
+                      'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/mnist_all.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -s 42 -u multdiv'
 
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/pendigits.csv',
-                      'datasets/ionosphere.csv', 'datasets/waveform.csv']
+            - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
+                      'datasets/optdigits.csv', 'datasets/waveform.csv',
+                      'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/mnist_all.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -s 42 -u als'
+    NBC:
+        run: true
+        script: methods/mlpack/nbc.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+    KPCA:
+        run: true
+        script: methods/mlpack/kernel_pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k linear'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k gaussian'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k polynomial'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k hyptan'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k laplacian'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k cosine'
+    LARS:
+          run: true
+          script: methods/mlpack/lars.py
+          format: [csv, txt]
+          datasets:
+              - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+                options: '-l 0.01'
+
+              - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+                options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
+
+    LSH:
+        run: true
+        script: methods/mlpack/lsh.py
+        format: [csv, txt]
+        datasets:
+         - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                   'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                   'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                   'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                   'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+           options: '-k 3 -s 42'
+
     KMEANS:
-        run: false
+        run: true
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
@@ -58,168 +184,160 @@ methods:
 
             - files: ['datasets/isolet.csv']
               options: '-c 26'
-    NBC:
-        run: false
-        script: methods/mlpack/nbc.py
-        format: [csv, txt]
-        datasets:
-            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
-                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
-                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
-    KPCA:
-        run: false
-        script: methods/mlpack/kernel_pca.py
-        format: [csv, txt]
-        datasets:
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv']
-              options: '-k linear'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv']
-              options: '-k gaussian'
+            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+              options: '-c 10'
 
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv']
-              options: '-k polynomial'
-
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv']
-              options: '-k hyptan'
-
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv']
-              options: '-k laplacian'
-
-            - files: ['datasets/circle_data.csv', 'datasets/abalone.csv' , 'datasets/cal_housing.csv',
-                      'datasets/bank8FM.csv', 'datasets/stock.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv']
-              options: '-k cosine'
-    LARS:
-        run: false
-        script: methods/mlpack/lars.py
-        format: [csv, txt]
-        datasets:
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-              options: '--lambda1 0.01 --lambda2 0.005'
-
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-              options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
-    LSH:
-        run: false
-        script: methods/mlpack/lsh.py
-        format: [csv, txt]
-        datasets:
-         - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/isolet.csv',
-                   'datasets/covtype.csv', 'datasets/wine_qual.csv']
-           options: '-k 3 -s 42'
+            - files: ['datasets/1000000-10-randu.csv']
+              options: '-c 75'
     ALLKNN:
-        run: false
+        run: true
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -S'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -c'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -c -S'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -N'
     ALLKFN:
-        run: false
+        run: true
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -N'
     ALLKRANN:
-        run: false
+        run: true
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -t 10'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -t 10 -N'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -t 10 -s'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -t 10 -L'
 
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv', 'datasets/isolet.csv',
-                      'datasets/madelon_X.csv', 'datasets/diabetes_X.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -t 10 -X'
     RANGESEARCH:
-        run: false
+        run: true
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
-                      'datasets/ionosphere.csv', 'datasets/cloud.csv', 'datasets/vehicle.csv']
-              options: '--min=1.3 --max=20.3'
+            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/cloud.csv', 'datasets/vehicle.csv',
+                      'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/Twitter.csv']
+              options: '-M 20.3'
 
-            - files: ['datasets/wine.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
-                      'datasets/ionosphere.csv', 'datasets/cloud.csv', 'datasets/vehicle.csv']
-              options: '--min=1.3 --max=20.3 -N'
+            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/cloud.csv', 'datasets/vehicle.csv',
+                      'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/Twitter.csv']
+              options: '-M 20.3 -N'
 
-            - files: ['datasets/wine.csv', 'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
-                      'datasets/ionosphere.csv', 'datasets/cloud.csv', 'datasets/vehicle.csv']
-              options: '--min=1.3 --max=20.3 -s'
+            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/cloud.csv', 'datasets/vehicle.csv',
+                      'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/Twitter.csv']
+              options: '-M 20.3 -s'
     GMM:
-        run: false
+        run: true
         script: methods/mlpack/gmm.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
-                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
-                      'datasets/USCensus1990.csv', 'datasets/optdigits.csv',
-                      'datasets/isolet.csv']
+                      'datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
+                      'datasets/optdigits.csv', 'datasets/isolet.csv',
+                      'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
 
-            - files: ['datasets/artificial_2DSignal.csv', 'datasets/iris.csv', 'datasets/vehicle.csv',
-                      'datasets/wine.csv', 'datasets/USCensus1990.csv', 'datasets/isolet.csv']
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
+                      'datasets/optdigits.csv', 'datasets/isolet.csv',
+                      'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-P -s 42'
     DET:
-        run: false
+        run: true
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
@@ -231,16 +349,19 @@ methods:
                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
               options: '-f 20'
     EMST:
-        run: false
+        run: true
         script: methods/mlpack/emst.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/waveform.csv']
+            - files: ['datasets/iris.csv', 'datasets/vehicle.csv',
+                      'datasets/waveform.csv', 'datasets/corel-histogram.csv',
+                      'datasets/isolet.csv', 'datasets/tinyImages100k.csv']
 
-            - files: ['datasets/iris.csv']
+            - files: ['datasets/iris.csv', 'datasets/vehicle.csv',
+                      'datasets/waveform.csv']
               options: '-n'
     LinearRegression:
-        run: false
+        run: true
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
@@ -248,9 +369,10 @@ methods:
                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv']
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
     LocalCoordinateCoding:
-        run: false
+        run: true
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
         datasets:
@@ -260,7 +382,7 @@ methods:
              - files: ['datasets/pendigits.csv']
                options: '-k 12 -s 42 -N'
     SparseCoding:
-        run: false
+        run: true
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
         datasets:
@@ -273,7 +395,7 @@ methods:
             - files: ['datasets/pendigits.csv']
               options: '-k 12 -s 42 -N'
     FastMKS:
-        run: false
+        run: true
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
@@ -310,23 +432,41 @@ methods:
             - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
               options: '-k 10 -K triangular'
     NCA:
-        run: false
+        run: true
         script: methods/mlpack/nca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+            - files: ['datasets/iris_train.csv',
+                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                       'datasets/wine.csv', 'datasets/ionosphere.csv',
-                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-n 2000 -O sgd -s 42'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+            - files: ['datasets/iris_train.csv',
+                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                       'datasets/wine.csv', 'datasets/ionosphere.csv',
-                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-n 2000 -O lbfgs -s 42'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+            - files: ['datasets/iris_train.csv',
+                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                       'datasets/wine.csv', 'datasets/ionosphere.csv',
-                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-n 2000 -O lbfgs -s 42 -w 0.5'
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
@@ -334,17 +474,29 @@ methods:
                       'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
               options: '-n 2000 -O lbfgs -s 42 -w 0.5 -B 5'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+            - files: ['datasets/iris_train.csv',
+                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                       'datasets/wine.csv', 'datasets/ionosphere.csv',
-                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-n 2000 -O lbfgs -s 42 -B 5'
 
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+            - files: ['datasets/iris_train.csv',
+                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                       'datasets/wine.csv', 'datasets/ionosphere.csv',
-                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
+                      'datasets/shuttle_train.csv', 'datasets/madelon_train.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-n 2000 -N -s 42'
     HMMTRAIN:
-        run: false
+        run: true
         script: methods/mlpack/hmm_train.py
         format: [csv, txt]
         datasets:
@@ -354,23 +506,757 @@ methods:
             - files: ['datasets/artificial_1DSignal.csv']
               options: '-t discrete -n 20 -s 42'
     HMMGENERATE:
-        run: false
+        run: true
         script: methods/mlpack/hmm_generate.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml', 'datasets/artificial_1DSignal_hmm.xml']
               options: '-l 10000'
     HMMLOGLIK:
-       run: false
+       run: true
        script: methods/mlpack/hmm_loglik.py
        format: [csv, txt]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
                       ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
     HMMVITERBI:
-       run: false
+       run: true
        script: methods/mlpack/hmm_viterbi.py
        format: [csv, txt]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
                       ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
+---
+# MATLAB:
+# Numerical computing environment and programming language.
+library: matlab
+methods:
+    PCA:
+        run: true
+        iteration: 3
+        script: methods/matlab/pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2'
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2 -s'
+    NMF:
+        run: true
+        iteration: 3
+        script: methods/matlab/nmf.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
+                      'datasets/optdigits.csv', 'datasets/waveform.csv',
+                      'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/mnist_all.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-r 6 -s 42 -u multdist'
+    KMEANS:
+        run: true
+        iteration: 3
+        script: methods/matlab/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/waveform.csv']
+              options: '-c 2'
+
+            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+              options: '-c 3'
+
+            - files: ['datasets/cloud.csv']
+              options: '-c 5'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 6'
+
+            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+              options: '-c 7'
+
+            - files: ['datasets/isolet.csv']
+              options: '-c 26'
+
+            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+              options: '-c 10'
+
+            - files: ['datasets/1000000-10-randu.csv']
+              options: '-c 75'
+    NBC:
+        run: true
+        iteration: 3
+        script: methods/matlab/nbc.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+    ALLKNN:
+        run: true
+        iteration: 3
+        script: methods/matlab/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42 -N'
+    RANGESEARCH:
+        run: true
+        iteration: 3
+        script: methods/matlab/range_search.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
+                      'datasets/cloud.csv', 'datasets/vehicle.csv',
+                      'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/Twitter.csv']
+              options: '-M 20.3'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/matlab/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                         'datasets/mnist_all.csv', 'datasets/tinyImages100k.csv']
+    HMMGENERATE:
+        run: true
+        iteration: 3
+        script: methods/matlab/hmm_generate.py
+        format: [csv, txt, xml]
+        datasets:
+            - files: ['datasets/artificial_2DSignal_hmm.xml']
+              options: '-l 10000'
+    HMMVITERBI:
+       run: false
+       iteration: 3
+       script: methods/matlab/hmm_viterbi.py
+       format: [csv, txt, xml]
+       datasets:
+           - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
+---
+# Scikit-Learn: machine learning in Python
+library: scikit
+methods:
+    PCA:
+        run: true
+        iteration: 3
+        script: methods/scikit/pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2'
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2 -s'
+    NMF:
+        run: true
+        iteration: 3
+        script: methods/scikit/nmf.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
+                      'datasets/optdigits.csv', 'datasets/waveform.csv',
+                      'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/mnist_all.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-r 6 -u alspgrad'
+    KMEANS:
+        run: true
+        iteration: 3
+        script: methods/scikit/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/waveform.csv']
+              options: '-c 2'
+
+            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+              options: '-c 3'
+
+            - files: ['datasets/cloud.csv']
+              options: '-c 5'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 6'
+
+            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+              options: '-c 7'
+
+            - files: ['datasets/isolet.csv']
+              options: '-c 26'
+
+            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+              options: '-c 10'
+
+            - files: ['datasets/1000000-10-randu.csv']
+              options: '-c 75'
+    NBC:
+        run: true
+        iteration: 3
+        script: methods/scikit/nbc.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                     ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                     ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+    KPCA:
+        run: true
+        iteration: 3
+        script: methods/scikit/kernel_pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k linear'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k polynomial'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k hyptan'
+    LARS:
+        run: true
+        iteration: 3
+        script: methods/scikit/lars.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+              options: '-l 0.01'
+    ALLKNN:
+        run: true
+        iteration: 3
+        script: methods/scikit/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42'
+    GMM:
+        run: true
+        iteration: 3
+        script: methods/scikit/gmm.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
+                      'datasets/USCensus1990.csv']
+              options: '-s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/scikit/linear_regression.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                        'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+    SparseCoding:
+        run: true
+        iteration: 3
+        script: methods/scikit/sparse_coding.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/pendigits.csv']
+              options: '-k 12 -s 42 -n 100'
+
+            - files: ['datasets/pendigits.csv']
+              options: '-k 12 -s 42'
+
+            - files: ['datasets/pendigits.csv']
+              options: '-k 12 -s 42 -N'
+---
+# mlpy is a Python module for Machine Learning built on top of NumPy/SciPy 
+# and the GNU Scientific Libraries.
+library: mlpy
+methods:
+    PCA:
+        run: true
+        iteration: 3
+        script: methods/mlpy/pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2'
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2 -s'
+    KMEANS:
+        run: true
+        iteration: 3
+        script: methods/mlpy/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/waveform.csv']
+              options: '-c 2'
+
+            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+              options: '-c 3'
+
+            - files: ['datasets/cloud.csv']
+              options: '-c 5'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 6'
+
+            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+              options: '-c 7'
+
+            - files: ['datasets/isolet.csv']
+              options: '-c 26'
+
+            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+              options: '-c 10'
+
+            - files: ['datasets/1000000-10-randu.csv']
+              options: '-c 75'
+    KPCA:
+        run: true
+        iteration: 3
+        script: methods/mlpy/kernel_pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k linear'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k gaussian'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k hyptan'
+    LARS:
+        run: true
+        iteration: 3
+        script: methods/mlpy/lars.py
+        format: [csv, txt]
+        datasets:
+              - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+                options: '-l 0.01'
+    ALLKNN:
+        run: true
+        iteration: 3
+        script: methods/mlpy/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/mlpy/linear_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+---
+# Shogun - A Large Scale Machine Learning Toolbox
+library: shogun
+methods:
+    PCA:
+        run: true
+        iteration: 3
+        script: methods/shogun/pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2'
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2 -s'
+    KMEANS:
+        run: true
+        iteration: 3
+        script: methods/shogun/kmeans.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/waveform.csv']
+              options: '-c 2'
+
+            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+              options: '-c 3'
+
+            - files: ['datasets/cloud.csv']
+              options: '-c 5'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 6'
+
+            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+              options: '-c 7'
+
+            - files: ['datasets/isolet.csv']
+              options: '-c 26'
+
+            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+              options: '-c 10'
+
+            - files: ['datasets/1000000-10-randu.csv']
+              options: '-c 75'
+    KPCA:
+        run: true
+        iteration: 3
+        script: methods/shogun/kernel_pca.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k linear'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k gaussian'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k polynomial'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
+                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
+                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
+                      'datasets/isolet.csv', 'datasets/covtype.csv']
+              options: '-k hyptan'
+    NBC:
+        run: true
+        iteration: 3
+        script: methods/shogun/nbc.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+    ALLKNN:
+        run: true
+        iteration: 3
+        script: methods/shogun/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42'
+    GMM:
+        run: true
+        iteration: 3
+        script: methods/shogun/gmm.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
+                      'datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
+                      'datasets/optdigits.csv', 'datasets/isolet.csv',
+                      'datasets/TomsHardware.csv', 'datasets/covtype.csv']
+              options: '-s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/shogun/linear_regression.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+---
+# Weka: Data Mining Software in Java
+library: weka
+methods:
+    PCA:
+        run: true
+        iteration: 3
+        script: methods/weka/pca.py
+        format: [arff]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2'
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2 -s'
+    NBC:
+        run: true
+        iteration: 3
+        script: methods/weka/nbc.py
+        format: [arff]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+    KMEANS:
+        run: true
+        iteration: 3
+        script: methods/weka/kmeans.py
+        format: [arff]
+        datasets:
+            - files: ['datasets/waveform.csv']
+              options: '-c 2'
+
+            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+              options: '-c 3'
+
+            - files: ['datasets/cloud.csv']
+              options: '-c 5'
+
+            - files: ['datasets/USCensus1990.csv']
+              options: '-c 6'
+
+            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+              options: '-c 7'
+
+            - files: ['datasets/isolet.csv']
+              options: '-c 26'
+
+            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+              options: '-c 10'
+
+            - files: ['datasets/1000000-10-randu.csv']
+              options: '-c 75'
+    ALLKNN:
+        run: true
+        iteration: 3
+        script: methods/weka/allknn.py
+        format: [arff]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42'
+    LinearRegression:
+        run: true
+        iteration: 3
+        script: methods/weka/linear_regression.py
+        format: [arff]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
+                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
