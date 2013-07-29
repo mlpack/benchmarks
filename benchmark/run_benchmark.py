@@ -180,6 +180,21 @@ def Main(configfile):
         os.environ["MATLAB_BIN"] = value
       elif key == "MATLABPATH":
         os.environ["MATLABPATH"] = value
+      elif key == "PYTHONPATH":
+        try:
+          PYTHONPATH = os.environ["PYTHONPATH"]
+        except KeyError:
+          os.environ["PYTHONPATH"] = value
+        else:
+          os.environ["PYTHONPATH"] = PYTHONPATH + ":" + value
+      elif key == "LD_LIBRARY_PATH":
+        try:
+          LD_LIBRARY_PATH = os.environ["LD_LIBRARY_PATH"]
+        except KeyError:
+          os.environ["LD_LIBRARY_PATH"] = value
+        else:
+          os.environ["LD_LIBRARY_PATH"] = LD_LIBRARY_PATH + ":" + value
+
 
   # Iterate through all libraries.
   for method, sets in streamData.items():

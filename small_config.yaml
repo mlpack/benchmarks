@@ -8,6 +8,8 @@ settings:
     MLPACK_BIN: '/usr/local/bin/'
     MATLAB_BIN: '/opt/matlab/bin/'
     MATLABPATH: 'methods/matlab/'
+    PYTHONPATH: '''/opt/scikit-learn/scikit-learn-0.13.1/lib/python3.3/site-packages/:/opt/mlpy/mlpy-3.5.0/lib/python3.3/site-packages/:/opt/shogun/shogun-2.1.0/lib/python3.3/dist-packages'
+    LD_LIBRARY_PATH: '/opt/shogun/shogun-2.1.0/lib'
 ---
 # MLPACK:
 # A Scalable C++  Machine Learning Library
