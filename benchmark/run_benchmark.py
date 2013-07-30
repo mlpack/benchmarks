@@ -304,10 +304,11 @@ if __name__ == '__main__':
   parser.add_argument('-b','--blocks', help='Run only the specified blocks.', 
       required=False)
   parser.add_argument('-l','--log', help='Save the results in the logfile.', 
-      required=False, action='store_true')
+      required=False)
 
   args = parser.parse_args()
 
   if args:
     SystemInformation()
-    Main(args.config, args.blocks, args.log)
+    log = True if args.log == "True" else False
+    Main(args.config, args.blocks, log)

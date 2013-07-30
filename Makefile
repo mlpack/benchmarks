@@ -4,6 +4,8 @@ YAML_INSTALLED := $(shell $(PYTHON_BIN) -c 'import sys, yaml;' 2>&1)
 
 CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
+LOG:=False
+BLOCK:=""
 
 # Specify the path for the libraries.
 export MLPACK_BIN=/usr/local/bin/
@@ -43,7 +45,7 @@ test:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 run:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG)
 
 memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG)
