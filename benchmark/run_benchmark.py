@@ -19,6 +19,7 @@ from system import *
 from loader import * 
 from parser import *
 from convert import *
+from misc import *
 
 import argparse
 import datetime
@@ -113,19 +114,7 @@ def RemoveDataset(dataset):
 
   for f in dataset:
     if os.path.isfile(f):
-      os.remove(f)  
-
-'''
-Add all rows from a given matrix to a given table.
-
-@param matrix - 2D array contains the row.
-@param table - Table in which the rows are inserted.
-@return Table with the inserted rows.
-'''
-def AddMatrixToTable(matrix, table):
-  for row in matrix:
-    table.append(row)
-  return table
+      os.remove(f)
 
 '''
 Count all datasets to determine the dataset size.
@@ -142,19 +131,6 @@ def CountLibrariesDatasets(libraries):
         datasetList.append(name)
 
   return len(datasetList)
-
-'''
-Search the correct row to insert the new data. We look at the left column for
-a free place or for the matching name.
-
-@param dataMatrix - In this Matrix we search for the right position.
-@param datasetName - Name of the dataset.
-@param datasetCount - Maximum dataset count.
-'''
-def FindRightRow(dataMatrix, datasetName, datasetCount):
-  for row in range(datasetCount):
-    if (dataMatrix[row][0] == datasetName) or (dataMatrix[row][0] == "-"):
-      return row
 
 '''
 Start the main benchmark routine. The method shows some DEBUG information and 
