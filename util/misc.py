@@ -14,7 +14,7 @@ This function determinate if the given number is a float.
 def isFloat(n):
   try:
     float(n)
-  except ValueError, TypeError:
+  except ValueError as TypeError:
     return False
   else:
     return True
