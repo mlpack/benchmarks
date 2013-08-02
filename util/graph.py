@@ -2,7 +2,7 @@
   @file graph.py
   @author Marcus Edel
 
-  FUnctions to plot graphs.
+  Functions to plot graphs.
 '''
 
 import os, sys, inspect
