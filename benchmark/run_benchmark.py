@@ -20,6 +20,7 @@ from loader import *
 from parser import *
 from convert import *
 from misc import *
+from database import *
 
 import argparse
 import datetime
@@ -34,19 +35,6 @@ def SystemInformation():
   Log.Info('Platform: ' + SystemInfo.GetPlatform())
   Log.Info('Memory: ' + SystemInfo.GetMemory())
   Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
-
-'''
-Normalize the dataset name. If the dataset is a list of datasets, take the first
-dataset as name. If necessary remove characters like '.', '_'.
-
-@param dataset - Dataset file or a list of datasets files.
-@return Normalized dataset name.
-'''
-def NormalizeDatasetName(dataset):
-  if not isinstance(dataset, str):
-    return os.path.splitext(os.path.basename(dataset[0]))[0].split('_')[0]
-  else:
-    return os.path.splitext(os.path.basename(dataset))[0].split('_')[0]
 
 '''
 Check if the file is available in one of the given formats.

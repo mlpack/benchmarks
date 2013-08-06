@@ -5,6 +5,8 @@
   Supporting functions.
 '''
 
+import os
+
 '''
 This function determinate if the given number is a float.
 
@@ -47,6 +49,19 @@ def AddMatrixToTable(matrix, table):
   return table
 
 '''
+Normalize the dataset name. If the dataset is a list of datasets, take the first
+dataset as name. If necessary remove characters like '.', '_'.
+
+@param dataset - Dataset file or a list of datasets files.
+@return Normalized dataset name.
+'''
+def NormalizeDatasetName(dataset):
+  if not isinstance(dataset, str):
+    return os.path.splitext(os.path.basename(dataset[0]))[0].split('_')[0]
+  else:
+    return os.path.splitext(os.path.basename(dataset))[0].split('_')[0]
+
+'''
 Search the correct row to insert the new data. We look at the left column for
 a free place or for the matching name.
 
@@ -58,3 +73,27 @@ def FindRightRow(dataMatrix, datasetName, datasetCount):
   for row in range(datasetCount):
     if (dataMatrix[row][0] == datasetName) or (dataMatrix[row][0] == "-"):
       return row
+
+'''
+Collect informations for the given dataset.
+
+@param path - Path to the dataset.
+@return Tuble which contains the informations about the given dataset.
+'''
+def DatasetInfo(path):
+  instances = 0
+  with open(path, "r") as fid:
+    for line in fid:
+      instances += 1
+
+  attributes = 0
+  with open(path, "r") as fid:
+    for line in fid:
+      attributes = line.count(",") + 1
+      break
+
+  name = NormalizeDatasetName(path)
+  size = os.path.getsize(path) / (1 << 20)
+  datasetType = "real"
+
+  return (name, size, attributes, instances, datasetType)
