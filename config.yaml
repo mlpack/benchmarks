@@ -3,7 +3,7 @@ library: general
 settings:
     # Time until a timeout in seconds.
     timeout: 9000
-    logfile: results.log
+    database: 'reports/benchmark.db'
 ---
 #  MLPACK:
 #  A Scalable C++  Machine Learning Library
