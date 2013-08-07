@@ -27,36 +27,33 @@ class Database:
     self.cur = con.cursor()
 
   '''
-  Create a new build table (remove the existing table).
+  Create a new build table.
   '''
   def CreateBuildTable(self):
     self.con.executescript("""
-        DROP TABLE IF EXISTS builds;
-        CREATE TABLE builds (
+        CREATE TABLE IF NOT EXISTS builds (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           build TIMESTAMP NOT NULL
         );
         """)
 
   '''
-  Create a new libraries table (remove the existing table).
+  Create a new libraries table.
   '''
   def CreateLibrariesTable(self):
     self.con.executescript("""
-        DROP TABLE IF EXISTS libraries;
-        CREATE TABLE libraries (
+        CREATE TABLE IF NOT EXISTS libraries (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL
         );
         """)
 
   '''
-  Create a new datasets table (remove the existing table).
+  Create a new datasets table.
   '''
   def CreateDatasetsTable(self):
     self.con.executescript("""
-        DROP TABLE IF EXISTS datasets;
-        CREATE TABLE datasets (
+        CREATE TABLE IF NOT EXISTS datasets (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL UNIQUE,
           size INTEGER NOT NULL,
@@ -67,22 +64,35 @@ class Database:
         """)
 
   '''
-  Create a new results table (remove the existing table).
+  Create a new methods table.
+  '''
+  def CreateMethodsTable(self):
+    self.con.executescript("""
+        CREATE TABLE IF NOT EXISTS methods (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          parameters TEXT NOT NULL
+        );
+        """)
+
+  '''
+  Create a new results table.
   '''
   def CreateResultsTable(self):
     self.con.executescript("""
-        DROP TABLE IF EXISTS results;
-        CREATE TABLE results (
+        CREATE TABLE IF NOT EXISTS results (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           build_id INTEGER NOT NULL,
           libary_id INTEGER NOT NULL,
           time REAL NOT NULL,
           var REAL NOT NULL,
           dataset_id INTEGER NOT NULL,
+          method_id INTEGER NOT NULL,
 
           FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
           FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
-          FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE
+          FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
+          FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
         );
         """)
 
@@ -93,6 +103,7 @@ class Database:
     self.CreateBuildTable()
     self.CreateLibrariesTable()
     self.CreateDatasetsTable()
+    self.CreateMethodsTable()
     self.CreateResultsTable()
 
   '''
@@ -143,3 +154,67 @@ class Database:
     with self.con:
       self.cur.execute("SELECT * FROM results WHERE build_id=" + str(id))
       return self.cur.fetchall()
+
+  '''
+  Get the libary id form the libraries table with the given name.
+
+  @param name - The name of the library.
+  @return The records.
+  '''
+  def GetLibrary(self, name):
+    with self.con:
+      self.cur.execute("SELECT id FROM libraries WHERE name='" + name + "'")
+      return self.cur.fetchall()
+
+  '''
+  Add a new library record to the libraries table.
+
+  @param name - The name of the library.
+  @return The id of the new record in the libraries table.
+  '''
+  def NewLibrary(self, name):
+    with self.con:
+      self.cur.execute("INSERT INTO libraries VALUES (NULL,?)", (name,))
+      self.cur.execute("SELECT last_insert_rowid()")
+      return self.cur.fetchall()[0][0]
+
+  '''
+  Add a new result record to the results table.
+
+  @param buildId - The id of the build.
+  @param libaryId - The if ot the library.
+  @param time - The mesured time of the build.
+  @param var - The variance of the build.
+  @param datasetId - The id of the dataset.
+  '''
+  def NewResult(self, buildId, libaryId, time, var, datasetId, methodId):
+     with self.con:
+      self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)", 
+          (buildId, libaryId, time, var, datasetId, methodId))
+
+  '''
+  Get the method if from the methods table with the given name and parameters.
+
+  @param name - The name of the method.
+  @param parameters - The parameters of the method.
+  @return the records.
+  '''
+  def GetMethod(self, name, parameters):
+     with self.con:
+      self.cur.execute("SELECT id FROM methods WHERE name='" + name + 
+          "' AND parameters='" + parameters + "'")
+      return self.cur.fetchall()
+
+  '''
+  Add a new method record to the methods table.
+
+  @param name - The name of the method.
+  @param parameters - The parameters of the method.
+  @return the record id.
+  '''
+  def NewMethod(self, name, parameters):
+    with self.con:
+      self.cur.execute("INSERT INTO methods VALUES (NULL,?, ?)", 
+          (name,parameters))
+      self.cur.execute("SELECT last_insert_rowid()")
+      return self.cur.fetchall()[0][0]

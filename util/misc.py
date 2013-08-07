@@ -81,6 +81,9 @@ Collect informations for the given dataset.
 @return Tuble which contains the informations about the given dataset.
 '''
 def DatasetInfo(path):
+  if not isinstance(path, str):
+    path = path[0]
+
   instances = 0
   with open(path, "r") as fid:
     for line in fid:
