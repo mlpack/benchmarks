@@ -129,7 +129,7 @@ prints a table with the runtime information.
 def Main(configfile, blocks, log):
   # Benchmark settings.
   timeout = 23000
-  logfile = "results.log"
+  database = "reports/benchmark.db"
 
   # Read Config.
   config = Parser(configfile, verbose=False)
@@ -141,16 +141,20 @@ def Main(configfile, blocks, log):
     for key, value in streamData["general"]:
       if key == "timeout":
         timeout = value
-      if key == "logfile":
-        logfile = value
+      if key == "database":
+        database = value
 
   # Open logfile if the user asked for.
   if log:
-    fid = open(logfile, "a")
+    db = Database(database)
+    db.CreateTables()
 
   # Transform the blocks string to a list.
   if blocks:
     blocks = blocks.split(",")
+
+  # Temporary datastructures for the current build.
+  build = {}
 
   # Iterate through all libraries.
   for method, sets in streamData.items():
@@ -159,6 +163,10 @@ def Main(configfile, blocks, log):
     Log.Info("Method: " + method)    
     for options, libraries in sets.items():
       Log.Info('Options: ' + (options if options != '' else 'None'))
+
+      if log:
+        methodId = db.GetMethod(method, options)
+        methodId = methodId[0][0] if methodId else db.NewMethod(method, options)
 
       # Create the Table.
       table = []
@@ -182,6 +190,13 @@ def Main(configfile, blocks, log):
         format = libary[4]
 
         header.append(name)
+
+        # Logging: create a new build and libary record for this libary.
+        if log and name not in build:
+          libaryId = db.GetLibrary(name)
+          libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name)
+
+          build[name] = (db.NewBuild(), libaryId)
         
         if not blocks or name in blocks:
           run += 1
@@ -198,7 +213,12 @@ def Main(configfile, blocks, log):
 
             for dataset in datsets:  
               datasetName = NormalizeDatasetName(dataset)          
-              row = FindRightRow(dataMatrix, datasetName, datasetCount)      
+              row = FindRightRow(dataMatrix, datasetName, datasetCount)
+
+              # Logging: Create a new dataset record fot this dataset.
+              if log:
+                datasetId = db.GetDataset(datasetName)
+                datasetId = datasetId[0][0] if datasetId else db.NewDataset(*DatasetInfo(dataset))                
 
               dataMatrix[row][0] = NormalizeDatasetName(dataset)
               Log.Info("Dataset: " + dataMatrix[row][0])    
@@ -240,10 +260,8 @@ def Main(configfile, blocks, log):
                   avg = sum(time) / len(time)
                   var = sum((avg - value) ** 2 for value in time) / len(time)
 
-                logData = str(datetime.datetime.now()) + " : " + name + ":"
-                logData += method + ":" + options + ":" + dataMatrix[row][0] 
-                logData += ":" + dataMatrix[row][col] + ":" + str(var)
-                fid.write(logData + "\n")
+                buildId, libaryId = build[name]
+                db.NewResult(buildId, libaryId, dataMatrix[row][col], var, datasetId, methodId)
 
               # Remove temporary datasets.
               RemoveDataset(modifiedDataset[1])
@@ -255,10 +273,6 @@ def Main(configfile, blocks, log):
         Log.PrintTable(AddMatrixToTable(dataMatrix, table))
         Log.Notice("\n\n")
         run = 0
-
-  # Close the logfile.
-  if log:
-    fid.close()
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
