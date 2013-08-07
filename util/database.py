@@ -33,7 +33,10 @@ class Database:
     self.con.executescript("""
         CREATE TABLE IF NOT EXISTS builds (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          build TIMESTAMP NOT NULL
+          build TIMESTAMP NOT NULL,
+          libary_id INTEGER NOT NULL,
+
+          FOREIGN KEY(libary_id) REFERENCES builds(id) ON DELETE CASCADE
         );
         """)
 
@@ -100,8 +103,8 @@ class Database:
   Create a new build, libraries, datasets and results table.
   '''
   def CreateTables(self):
-    self.CreateBuildTable()
     self.CreateLibrariesTable()
+    self.CreateBuildTable()
     self.CreateDatasetsTable()
     self.CreateMethodsTable()
     self.CreateResultsTable()
@@ -109,10 +112,10 @@ class Database:
   '''
   Add a new build record to the builds table.
   '''
-  def NewBuild(self):
+  def NewBuild(self, libaryId):
     with self.con:
-      self.cur.execute("INSERT INTO builds VALUES(NULL, '" + 
-          str(datetime.datetime.now()) + "')")
+      self.cur.execute("INSERT INTO builds VALUES (NULL,?, ?)", 
+          (datetime.datetime.now(), libaryId))
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
 
@@ -218,3 +221,20 @@ class Database:
           (name,parameters))
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
+
+  '''
+  Get the sum of the time column of all build of the given name.
+
+  @param name - The name of the library.
+  @return The sum of the time column.
+  '''
+  def GetResultsSum(self, name):
+    libaryId = self.GetLibrary(name)[0][0]
+    with self.con:
+      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) + " ORDER BY build ASC")
+      timeSummed = []
+      for buildId in self.cur.fetchall(): 
+        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
+           str(buildId[0]))
+        timeSummed.append(self.cur.fetchall()[0][0])
+    return timeSummed

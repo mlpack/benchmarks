@@ -196,7 +196,7 @@ def Main(configfile, blocks, log):
           libaryId = db.GetLibrary(name)
           libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name)
 
-          build[name] = (db.NewBuild(), libaryId)
+          build[name] = (db.NewBuild(libaryId), libaryId)
         
         if not blocks or name in blocks:
           run += 1
