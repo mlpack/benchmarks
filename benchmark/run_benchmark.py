@@ -124,7 +124,9 @@ def CountLibrariesDatasets(libraries):
 Start the main benchmark routine. The method shows some DEBUG information and 
 prints a table with the runtime information.
 
-@para configfile - Start the benchmark with this configuration file.
+@param configfile - Start the benchmark with this configuration file.
+@param blocks - Run only the specified blocks.
+@param log - If True save the reports otherwise use stdout and print the reports.
 '''
 def Main(configfile, blocks, log):
   # Benchmark settings.
@@ -191,16 +193,18 @@ def Main(configfile, blocks, log):
 
         header.append(name)
 
-        # Logging: create a new build and libary record for this libary.
-        if log and name not in build:
-          libaryId = db.GetLibrary(name)
-          libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name)
-
-          build[name] = (db.NewBuild(libaryId), libaryId)
+       
         
         if not blocks or name in blocks:
           run += 1
           Log.Info("Libary: " + name)
+
+          # Logging: create a new build and libary record for this libary.
+          if log and name not in build:
+            libaryId = db.GetLibrary(name)
+            libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name)
+
+            build[name] = (db.NewBuild(libaryId), libaryId)
 
           # Load script.
           try:
