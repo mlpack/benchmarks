@@ -167,7 +167,7 @@ def GetMaxIndex():
 
   maxId = 0
   for f in files:
-    pattern = re.compile(br"""
+    pattern = re.compile(r"""
         .*?index_(?P<id>.*?).html
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     

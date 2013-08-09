@@ -173,6 +173,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack"):
   # Save the bar chart.
   fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
     facecolor=fig.get_facecolor(), edgecolor='none', format='png')
+  plt.close()
 
   # Count the time in which bestlib is the best.
   bestLibCount = 0
@@ -236,3 +237,4 @@ def GenerateSingleLineChart(data, fileName):
   # Save the line chart.
   fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(), 
       edgecolor='none')
+  plt.close()
