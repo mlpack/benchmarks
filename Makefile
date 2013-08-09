@@ -52,7 +52,7 @@ memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG)
 
 reports:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/make_reports.py.py -c $(CONFIG)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/make_reports.py -c $(CONFIG)
 
 scripts:
 	# Compile the java files for the weka methods.
