@@ -22,6 +22,16 @@ def isFloat(n):
     return True
 
 '''
+Function to seach the minimum scalar in a list.
+'''
+def minData(data):
+  minData = float('Inf')
+  for d in data:
+    if isFloat(d) and d < minData:
+      minData = d
+  return minData
+
+'''
 Count all datasets to determine the dataset size.
 
 @param libraries - Contains the Dataset List.

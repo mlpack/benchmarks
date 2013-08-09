@@ -57,7 +57,7 @@ def CreateTimingTable(data, libraries):
     for time in timings:
 
       # Highlight the data with the best timing.
-      if min(timings) == time:
+      if minData(timings) == time:
         time = str(time) + "s" if isFloat(time) else time 
         timingTable += '<td><p class="text-success"><strong>' + time + '</strong></p></td>'
       else:
