@@ -196,7 +196,7 @@ class Database:
           (buildId, libaryId, time, var, datasetId, methodId))
 
   '''
-  Get the method if from the methods table with the given name and parameters.
+  Get the method id from the methods table with the given name and parameters.
 
   @param name - The name of the method.
   @param parameters - The parameters of the method.
@@ -231,10 +231,58 @@ class Database:
   def GetResultsSum(self, name):
     libaryId = self.GetLibrary(name)[0][0]
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) + " ORDER BY build ASC")
+      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
+          + " ORDER BY build ASC")
       timeSummed = []
       for buildId in self.cur.fetchall(): 
         self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
            str(buildId[0]))
         timeSummed.append(self.cur.fetchall()[0][0])
-    return timeSummed
+    return (buildId[0], timeSummed)
+
+  '''
+  Get the ids of all libraries.
+
+  @return The ids of the libraries.
+  '''
+  def GetLibraryIds(self):
+    with self.con:
+      self.cur.execute("SELECT * FROM libraries")
+      return self.cur.fetchall()
+
+  '''
+  Get the latest build id for the specified libary id.
+
+  @param libaryId - Get the build id for the libary id.
+  @param The latest build id.
+  '''
+  def GetLatestBuildFromLibary(self, libaryId):
+    with self.con:
+      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
+          + " ORDER BY build DESC LIMIT 1")
+      return self.cur.fetchall()[0][0]
+
+  '''
+  Get a list of all methods.
+
+  @return A list with all methods.
+  '''
+  def GetAllMethods(self):
+    with self.con:
+      self.cur.execute("SELECT * FROM methods")
+      return self.cur.fetchall()
+
+  '''
+  Get the results for the specified method and build id.
+
+  @param buildId - The build id.
+  @param methodId - The method id.
+  @return A list with the results.
+  '''
+  def GetMethodResultsForLibary(self, buildId, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM results JOIN datasets ON" + 
+          " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+          " AND method_id=" + str(methodId) + " ORDER BY datasets.name")      
+      return self.cur.fetchall()
+
