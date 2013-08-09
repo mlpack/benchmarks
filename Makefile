@@ -25,7 +25,7 @@ ifdef YAML_INSTALLED
 	$(error Python 'yaml' module was not found)
 endif
 
-.PHONY: help test run memory
+.PHONY: help test run memory scripts reports
 
 help:
 	@echo "$(YAML_INSTALLED)"
@@ -40,6 +40,7 @@ help:
 	@echo "  memory [CONFIG]    Get memory profiling information with the given "
 	@echo "                     config. Default '$(CONFIG)'."
 	@echo "  scripts            Compile the java files for the weka methods."
+	@echo "  reports [CONFIG]   Create the reports. Default '$(CONFIG)'."
 
 test:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
@@ -49,6 +50,9 @@ run:
 
 memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG)
+
+reports:
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/make_reports.py.py -c $(CONFIG)
 
 scripts:
 	# Compile the java files for the weka methods.
