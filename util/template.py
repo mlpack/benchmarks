@@ -87,6 +87,9 @@ methodTemplate = """
           </div>
           <div id="collapseOne" class="container__bottomContent graph collapse">
             <div>
+              <img class="center--image" src="%(lineChart)s" alt="">
+            </div>
+            <div>
               <img class="center--image" src="%(barChart)s" alt="">
             </div>
             <div>

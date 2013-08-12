@@ -121,12 +121,22 @@ def MethodReports(db):
         methodResults.append(results)
 
     if methodResults:
-      # Generate a "unique" name for the bar chart.
-      chartName = "img/bar_" + str(hash(str(method[1:]) + str(buildIds))) + ".png"
+      # Generate a "unique" hash for the chart names.
+      chartHash = str(hash(str(method[1:]) + str(buildIds)))
 
+      # Generate a "unique" name for the line chart.
+      lineChartName = "img/line_" + chartHash + ".png"
+
+      # Create the line chart.
+      build, methodResultsSum = db.GetResultsMethodSum("mlpack", method[0])
+      GenerateSingleLineChart(methodResultsSum, "reports/" + lineChartName)
+
+      # Generate a "unique" name for the bar chart.
+      barChartName = "img/bar_" + chartHash + ".png"
+      
       # Create the bar chart.
       ChartInfo = GenerateBarChart(methodResults, methodLibararies, 
-          "reports/" + chartName)
+          "reports/" + barChartName)
       numDatasets, totalTime, failure, timeouts, bestLibCount, timingData = ChartInfo
 
       # Create the timing table.
@@ -143,7 +153,8 @@ def MethodReports(db):
       reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
       reportValues["progressNegative"] = "{0:.2f}".format(negative) + "%"
 
-      reportValues["barChart"] = chartName
+      reportValues["barChart"] = barChartName
+      reportValues["lineChart"] = lineChartName
       reportValues["numLibararies"] = str(len(methodLibararies))
       reportValues["numDatasets"] = numDatasets
       reportValues["totalTime"] = totalTime
