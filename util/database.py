@@ -100,6 +100,26 @@ class Database:
         """)
 
   '''
+  Create a new memory table.
+  '''
+  def CreateMemoryTable(self):
+    self.con.executescript("""
+        CREATE TABLE IF NOT EXISTS memory (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          build_id INTEGER NOT NULL,
+          libary_id INTEGER NOT NULL,
+          method_id INTEGER NOT NULL,
+          dataset_id INTEGER NOT NULL,
+          memory_info TEXT NOT NULL,
+
+          FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
+          FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
+          FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
+          FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
+        );
+        """)
+
+  '''
   Create a new build, libraries, datasets and results table.
   '''
   def CreateTables(self):
@@ -108,6 +128,7 @@ class Database:
     self.CreateDatasetsTable()
     self.CreateMethodsTable()
     self.CreateResultsTable()
+    self.CreateMemoryTable()
 
   '''
   Add a new build record to the builds table.
@@ -189,6 +210,7 @@ class Database:
   @param time - The mesured time of the build.
   @param var - The variance of the build.
   @param datasetId - The id of the dataset.
+  @param methodId - The id of the method.
   '''
   def NewResult(self, buildId, libaryId, time, var, datasetId, methodId):
      with self.con:
@@ -304,3 +326,21 @@ class Database:
            str(buildId[0]) + " AND method_id=" + str(methodId))
         timeSummed.append(self.cur.fetchall()[0][0])
     return (buildId[0], timeSummed)
+
+  '''
+  Add a new memory record to the memory table.
+
+  @param libaryId - The if ot the library.
+  @param methodId - The id of the method
+  @param datasetId - The id of the dataset.
+  @param memoryInfo - The text for the memory value.
+  '''
+  def NewMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
+     with self.con:
+      self.cur.execute("INSERT INTO memory VALUES (NULL,?,?,?,?,?)", 
+          (buildId, libaryId, methodId, datasetId, memoryInfo))
+
+  def GetMemoryResults(self, buildId, libaryId, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM memory JOIN datasets ON memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) + " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
+      return self.cur.fetchall()

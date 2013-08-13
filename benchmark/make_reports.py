@@ -20,6 +20,7 @@ from log import *
 from database import *
 from template import *
 from misc import *
+from profiler import *
 
 import argparse
 import glob
@@ -95,6 +96,23 @@ def CreateDatasetTable(results):
   return datasetTable
 
 '''
+Create the content for the memory section.
+
+@param results - This data structure contains the results.
+@return A string that contains the content for the memory section.
+'''
+def CreateMemoryContent(results):
+  memoryContent = ""
+  if results:
+    for result in results:
+      memoryValues = {}
+      memoryValues["name"] = result[7]
+      memoryValues["content"] = Profiler.MassifMemoryUsageReport(str(result[5]))
+      memoryContent += memoryTemplate % memoryValues
+
+  return memoryContent
+
+'''
 Create the method container with the informations from the database.
 
 @param db - The database object.
@@ -124,6 +142,15 @@ def MethodReports(db):
       # Generate a "unique" hash for the chart names.
       chartHash = str(hash(str(method[1:]) + str(buildIds)))
 
+      # Create the memory content.
+      memoryContent = ""
+      mlpackMemoryId = db.GetLibrary("mlpack_memory")
+      if mlpackMemoryId:
+        mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
+        if mlpackMemoryBuilId:
+          memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, mlpackMemoryId[0][0], method[0])
+          memoryContent = CreateMemoryContent(memoryResults)     
+
       # Generate a "unique" name for the line chart.
       lineChartName = "img/line_" + chartHash + ".png"
 
@@ -141,7 +168,7 @@ def MethodReports(db):
 
       # Create the timing table.
       header, timingTable = CreateTimingTable(timingData, methodLibararies)
-      datasetTable = CreateDatasetTable(methodResults)
+      datasetTable = CreateDatasetTable(methodResults)      
 
       # Create the container.
       reportValues = {}
@@ -163,6 +190,7 @@ def MethodReports(db):
       reportValues["timingHeader"] = header
       reportValues["timingTable"] = timingTable
       reportValues["datasetTable"] = datasetTable
+      reportValues["memoryContent"] = memoryContent
 
       methodsPage += methodTemplate % reportValues
 

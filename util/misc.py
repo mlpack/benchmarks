@@ -110,3 +110,30 @@ def DatasetInfo(path):
   datasetType = "real"
 
   return (name, size, attributes, instances, datasetType)
+
+'''
+This function Remove a given file or list of files.
+
+@param dataset - File or list of file which should be deleted.
+'''
+def RemoveDataset(dataset):
+  if isinstance(dataset, str):
+    dataset = [dataset]
+
+  for f in dataset:
+    if os.path.isfile(f):
+      os.remove(f)
+
+'''
+Check if the file is available in one of the given formats.
+
+@param dataset - Datsets which should be checked.
+@param formats - List of supported file formats.
+@return Orginal dataset or dataset with new file format.
+'''
+def CheckFileExtension(dataset, formats):
+  dataExtension = os.path.splitext(dataset)[1][1:]
+  if dataExtension in formats:
+    return dataset
+  else:
+    return dataset[0:len(dataset) - len(dataExtension)] + formats[0]

@@ -129,9 +129,7 @@ methodTemplate = """
             <div>
               <div class="panel">
                 <div class="panel-heading">Massif Log</div>
-                  <div class="row">
-                    
-                  </div>
+                  %(memoryContent)s
               </div>
 
             </div>
@@ -150,4 +148,15 @@ methodTemplate = """
           </div>
         </div>
 
+"""
+
+memoryTemplate = """
+<div class="accordion-group">
+<div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(name)s">%(name)s</a></div>
+  <div id="%(name)s" class="accordion-body collapse">
+    <div class="accordion-inner">
+      %(content)s
+    </div>
+  </div>
+</div>
 """
