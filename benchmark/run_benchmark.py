@@ -37,20 +37,6 @@ def SystemInformation():
   Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
 
 '''
-Check if the file is available in one of the given formats.
-
-@param dataset - Datsets which should be checked.
-@param formats - List of supported file formats.
-@return Orginal dataset or dataset with new file format.
-'''
-def CheckFileExtension(dataset, formats):
-  dataExtension = os.path.splitext(dataset)[1][1:]
-  if dataExtension in formats:
-    return dataset
-  else:
-    return dataset[0:len(dataset) - len(dataExtension)] + formats[0]
-
-'''
 Return a list with modified dataset.
 
 @param dataset - Datasets to be modified.
@@ -92,19 +78,6 @@ def GetDataset(dataset, format):
   return (datasetList, modifiedList)
 
 '''
-This function Remove a given file or list of files.
-
-@param dataset - File or list of file which should be deleted.
-'''
-def RemoveDataset(dataset):
-  if isinstance(dataset, str):
-    dataset = [dataset]
-
-  for f in dataset:
-    if os.path.isfile(f):
-      os.remove(f)
-
-'''
 Count all datasets to determine the dataset size.
 
 @param libraries - Contains the Dataset List.
@@ -138,7 +111,6 @@ def Main(configfile, blocks, log):
   streamData = config.StreamMerge()
 
   # Read the general block and set the attributes.
-
   if "general" in streamData:
     for key, value in streamData["general"]:
       if key == "timeout":
@@ -192,14 +164,12 @@ def Main(configfile, blocks, log):
         format = libary[4]
 
         header.append(name)
-
-       
         
         if not blocks or name in blocks:
           run += 1
           Log.Info("Libary: " + name)
 
-          # Logging: create a new build and libary record for this libary.
+          # Logging: create a new build and library record for this library.
           if log and name not in build:
             libaryId = db.GetLibrary(name)
             libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name)
@@ -216,21 +186,22 @@ def Main(configfile, blocks, log):
           else:
 
             for dataset in datsets:  
-              datasetName = NormalizeDatasetName(dataset)          
+              datasetName = NormalizeDatasetName(dataset)
               row = FindRightRow(dataMatrix, datasetName, datasetCount)
 
               # Logging: Create a new dataset record fot this dataset.
               if log:
                 datasetId = db.GetDataset(datasetName)
-                datasetId = datasetId[0][0] if datasetId else db.NewDataset(*DatasetInfo(dataset))                
+                datasetId = datasetId[0][0] if datasetId else db.NewDataset(*DatasetInfo(dataset))
 
-              dataMatrix[row][0] = NormalizeDatasetName(dataset)
-              Log.Info("Dataset: " + dataMatrix[row][0])    
+              dataMatrix[row][0] = datasetName
+              Log.Info("Dataset: " + dataMatrix[row][0])
 
               modifiedDataset = GetDataset(dataset, format)
 
               try:
-                instance = methodCall(modifiedDataset[0], timeout=timeout, verbose=False)
+                instance = methodCall(modifiedDataset[0], timeout=timeout, 
+                  verbose=False)
               except Exception as e:
                 Log.Fatal("Could not call the constructor: " + script)
                 Log.Fatal("Exception: " + str(e))
@@ -265,7 +236,8 @@ def Main(configfile, blocks, log):
                   var = sum((avg - value) ** 2 for value in time) / len(time)
 
                 buildId, libaryId = build[name]
-                db.NewResult(buildId, libaryId, dataMatrix[row][col], var, datasetId, methodId)
+                db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
+                    datasetId, methodId)
 
               # Remove temporary datasets.
               RemoveDataset(modifiedDataset[1])

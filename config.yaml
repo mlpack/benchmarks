@@ -88,50 +88,50 @@ methods:
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k linear'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k gaussian'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k polynomial'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k hyptan'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k laplacian'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k cosine'
     LARS:
           run: true
@@ -303,21 +303,21 @@ methods:
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 20.3'
+              options: '-M 0.02'
 
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/cloud.csv', 'datasets/vehicle.csv',
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 20.3 -N'
+              options: '-M 0.02 -N'
 
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/cloud.csv', 'datasets/vehicle.csv',
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 20.3 -s'
+              options: '-M 0.02 -s'
     GMM:
         run: true
         script: methods/mlpack/gmm.py
@@ -651,7 +651,7 @@ methods:
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 20.3'
+              options: '-M 0.02'
     LinearRegression:
         run: true
         iteration: 3
@@ -781,26 +781,26 @@ methods:
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k linear'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k polynomial'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k hyptan'
     LARS:
         run: true
@@ -943,26 +943,26 @@ methods:
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k linear'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k gaussian'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k hyptan'
     LARS:
         run: true
@@ -1080,34 +1080,34 @@ methods:
         datasets:
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k linear'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k gaussian'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k polynomial'
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
-                      'datasets/waveform.csv', 'datasets/cal_housing.csv',
-                      'datasets/TomsHardware.csv', 'datasets/arcene_X.csv',
-                      'datasets/madelon_X.csv', 'datasets/pendigits.csv',
-                      'datasets/isolet.csv', 'datasets/covtype.csv']
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
               options: '-k hyptan'
     NBC:
         run: true
