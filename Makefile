@@ -9,6 +9,7 @@ BLOCK:=""
 
 # Specify the path for the libraries.
 export MLPACK_BIN=/usr/local/bin/
+export MLPACK_BIN_DEBUG=/usr/local/bin/
 export MATLAB_BIN=/opt/matlab/bin/
 export MATLABPATH=methods/matlab/
 export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"

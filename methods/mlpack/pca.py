@@ -39,11 +39,12 @@ class PCA(object):
   @param verbose - Display informational messages.
   '''
   def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
-      verbose=True): 
+      verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]): 
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.debug = debug
 
     # Get description from executable.
     cmd = shlex.split(self.path + "pca -h")
@@ -81,18 +82,20 @@ class PCA(object):
   the method has been successfully completed the report is saved in the 
   specified file.
 
-  @param options - Extra massif options.
+  @param options - Extra options for the method.
+  @param fileName - The name of the massif output file.
+  @param massifOptions - Extra massif options.
   @return Returns False if the method was not successful, if the method was 
   successful save the report file in the specified file.
   '''
-  def RunMemoryProfiling(self, methodOptions, fileName, massifOptions="--depth=2"):
+  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform PCA Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "pca -i " + self.dataset + 
-        " -o output.csv -v " + methodOptions)
+    cmd = shlex.split(self.debug + "pca -i " + self.dataset + 
+        " -o output.csv -v " + options)
 
-    return Profiler.MassifMemoryUsage(cmd, fileName, options=massifOptions)
+    return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
     
   '''
   Perform Principal Components Analysis. If the method has been successfully 

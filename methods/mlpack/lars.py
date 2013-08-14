@@ -17,6 +17,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from log import *
+from profiler import *
 
 import shlex
 import subprocess
@@ -37,11 +38,13 @@ class LARS(object):
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], verbose=True): 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
+    verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.debug = debug
 
     # Get description from executable.
     cmd = shlex.split(self.path + "lars -h")
@@ -66,12 +69,36 @@ class LARS(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  def __del__(self):    
+  def __del__(self):
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
-        os.remove(f)        
+        os.remove(f)
+
+  '''
+  Run valgrind massif profiler on the Principal Components Analysis method. If 
+  the method has been successfully completed the report is saved in the 
+  specified file.
+
+  @param options - Extra options for the method.
+  @param fileName - The name of the massif output file.
+  @param massifOptions - Extra massif options.
+  @return Returns False if the method was not successful, if the method was 
+  successful save the report file in the specified file.
+  '''
+  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
+    Log.Info("Perform LARS Memory Profiling.", self.verbose)
+
+    if len(self.dataset) < 2:
+      Log.Fatal("This method requires two datasets.")
+      return -1
+
+    # Split the command using shell-like syntax.
+    cmd = shlex.split(self.debug + "lars -i " + self.dataset[0] + " -r " + 
+        self.dataset[1] + " -v " + options)
+
+    return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
   Perform  Least Angle Regression. If the method has been successfully completed

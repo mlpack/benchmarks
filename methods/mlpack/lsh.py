@@ -18,6 +18,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from log import *
+from profiler import *
 
 import shlex
 import subprocess
@@ -39,11 +40,12 @@ class LSH(object):
   @param verbose - Display informational messages.
   '''
   def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
-      verbose=True): 
+      verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.debug = debug
 
     # Get description from executable.
     cmd = shlex.split(self.path + "lsh -h")
@@ -73,7 +75,26 @@ class LSH(object):
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
-        os.remove(f)        
+        os.remove(f)
+
+  '''
+  Run valgrind massif profiler on the Principal Components Analysis method. If 
+  the method has been successfully completed the report is saved in the 
+  specified file.
+
+  @param options - Extra options for the method.
+  @param fileName - The name of the massif output file.
+  @param massifOptions - Extra massif options.
+  @return Returns False if the method was not successful, if the method was 
+  successful save the report file in the specified file.
+  '''
+  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
+    Log.Info("Perform LSH Memory Profiling.", self.verbose)
+
+    # Split the command using shell-like syntax.
+    cmd = shlex.split(self.debug + "lsh -r " + self.dataset + " -v " + options)
+
+    return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
   Perform All K-Approximate-Nearest-Neighbor Search with LSH. If the method has 

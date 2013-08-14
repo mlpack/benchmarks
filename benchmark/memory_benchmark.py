@@ -155,13 +155,16 @@ def Main(configfile, blocks, log):
               outputName = "reports/etc/" + str(hash(datetime.datetime.now())) + ".mout"
 
               try:
-                instance.RunMemoryProfiling(options, outputName);
+                err = instance.RunMemoryProfiling(options, outputName);
               except Exception as e:
                 Log.Fatal("Exception: " + str(e))
+                
+                # Remove temporary datasets.
+                RemoveDataset(modifiedDataset[1])
                 continue
 
               # Save results in the logfile if the user asked for.
-              if log:
+              if err != -1 and log:
                 buildId, libaryId = build[name]
                 db.NewMemory(buildId, libaryId, methodId, datasetId, outputName)
 

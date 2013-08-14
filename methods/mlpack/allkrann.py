@@ -17,6 +17,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from log import *
+from profiler import *
 
 import shlex
 import subprocess
@@ -38,16 +39,17 @@ class ALLKRANN(object):
   @param verbose - Display informational messages.
   '''
   def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
-      verbose=True): 
+      verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.debug = debug
 
     # Get description from executable.
     cmd = shlex.split(self.path + "allkrann -h")
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
     else:
@@ -67,12 +69,37 @@ class ALLKRANN(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  def __del__(self):    
+  def __del__(self):
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "distances.csv", "neighbors.csv"]
     for f in filelist:
       if os.path.isfile(f):
-        os.remove(f)        
+        os.remove(f)
+
+  '''
+  Run valgrind massif profiler on the Principal Components Analysis method. If 
+  the method has been successfully completed the report is saved in the 
+  specified file.
+
+  @param options - Extra options for the method.
+  @param fileName - The name of the massif output file.
+  @param massifOptions - Extra massif options.
+  @return Returns False if the method was not successful, if the method was 
+  successful save the report file in the specified file.
+  '''
+  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
+    Log.Info("Perform ALLKRANN Memory Profiling.", self.verbose)
+
+    # If the dataset contains two files then the second file is the query file.
+    # In this case we add this to the command line.
+    if len(self.dataset) == 2:
+      cmd = shlex.split(self.debug + "allkrann -r " + self.dataset[0] + " -q " + 
+          self.dataset[1] + " -v -n neighbors.csv -d distances.csv " + options)
+    else:
+      cmd = shlex.split(self.debug + "allkrann -r " + self.dataset + 
+          " -v -n neighbors.csv -d distances.csv " + options)
+
+    return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
   Perform All K-Rank-Approximate-Nearest-Neighbors. If the method has been 
