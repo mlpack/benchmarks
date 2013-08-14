@@ -85,43 +85,53 @@ methodTemplate = """
               <a href="#collapseThree" class="btn memory btn-grey icon-paragraph-right-2 js-button"></a>
             </div>
           </div>
+
           <div id="collapseOne" class="container__bottomContent graph collapse">
+
             <div>
-              <img class="center--image" src="%(lineChart)s" alt="">
+              <img class="panel" src="%(lineChart)s" alt="">
             </div>
+
             <div>
-              <img class="center--image" src="%(barChart)s" alt="">
+              <img class="panel" src="%(barChart)s" alt="">
             </div>
+
             <div>
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th></th>
-                    %(timingHeader)s
-                  </tr>
-                </thead>
-                <tbody>
-                  %(timingTable)s
-                </tbody>
-              </table>
+              <div class="panel">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      %(timingHeader)s
+                    </tr>
+                  </thead>
+                  <tbody>
+                    %(timingTable)s
+                  </tbody>
+                </table>
+              </div>            
             </div>
           </div>
+
           <div id="collapseTwo" class="container__bottomContent infos collapse">
             <div>
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>Size</th>   
-                    <th>Number of Instances</th>
-                    <th>Number of Attributes</th>
-                    <th>Attribute Types</th>                                     
-                  </tr>
-                </thead>
-                <tbody>
-                  %(datasetTable)s
-                </tbody>
-              </table>
+              <div class="panel">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Size</th>   
+                      <th>Number of Instances</th>
+                      <th>Number of Attributes</th>
+                      <th>Attribute Types</th>                                     
+                    </tr>
+                  </thead>
+                  <tbody>
+                    %(datasetTable)s
+                  </tbody>
+                </table>
+                    %(methodInfo)s
+              </div>
             </div>
           </div>
 
@@ -150,12 +160,12 @@ methodTemplate = """
 
 """
 
-memoryTemplate = """
+panelTemplate = """
 <div class="accordion-group">
 <div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(name)s">%(name)s</a></div>
   <div id="%(name)s" class="accordion-body collapse">
     <div class="accordion-inner">
-      %(content)s
+    <pre>%(content)s</pre>
     </div>
   </div>
 </div>

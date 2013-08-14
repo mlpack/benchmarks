@@ -38,15 +38,15 @@ Generate a bar chart with the specified informations.
 @param bestlib - The name of the library which should be compared with the other
                  libraries.
 '''
-def GenerateBarChart(results, libraries, fileName, bestlib="mlpack"):
+def GenerateBarChart(results, libraries, fileName, bestlib="mlpack", 
+    backgroundColor="#FFFFFF"):
   # Bar chart settings.
   lineWidth = 0.1
   barWidth = 0.15
   opacity = 0.9
   fill = True
-  windowWidth = 11
+  windowWidth = 10.6
   windowHeight = 1.5
-  backgroundColor = '#F5F5F5'
   gridLineWidth = 0.2
 
   # Create figure and set the color.
@@ -165,7 +165,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack"):
 
   # Create the legend under the bar chart.
   lgd = ax.legend(chartHandler, legendNames, loc='upper center', 
-    bbox_to_anchor=(0.5, 1.2), fancybox=True, shadow=False, ncol=8, fontsize=8)
+    bbox_to_anchor=(0.5, 1.3), fancybox=True, shadow=False, ncol=8, fontsize=8)
   lgd.get_frame().set_linewidth(0)
   for label in lgd.get_texts():
     label.set_color("#6e6e6e")
@@ -189,13 +189,12 @@ Generate a line chart with the specified informations.
 @param data - List which contains the values for the line chart.
 @param fileName - The filename of the line chart.
 '''
-def GenerateSingleLineChart(data, fileName):
+def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
   # Bar chart settings.
   lineWidth = 1.5
   opacity = 0.9
-  windowWidth = 11
+  windowWidth = 10.6
   windowHeight = 1.5
-  backgroundColor = '#F5F5F5'
   gridLineWidth = 0.2
 
   # Create figure and set the color.

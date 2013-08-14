@@ -119,6 +119,20 @@ class Database:
         );
         """)
 
+    '''
+  Create a method information table.
+  '''
+  def CreateMethodInfoTable(self):
+    self.con.executescript("""
+        CREATE TABLE IF NOT EXISTS method_info (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          method_id INTEGER NOT NULL,
+          info TEXT NOT NULL,
+
+          FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
+        );
+        """)
+
   '''
   Create a new build, libraries, datasets and results table.
   '''
@@ -129,6 +143,7 @@ class Database:
     self.CreateMethodsTable()
     self.CreateResultsTable()
     self.CreateMemoryTable()
+    self.CreateMethodInfoTable()
 
   '''
   Add a new build record to the builds table.
@@ -344,3 +359,25 @@ class Database:
     with self.con:
       self.cur.execute("SELECT * FROM memory JOIN datasets ON memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) + " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
+
+  '''
+  Get the information of the given method.
+
+  @param methodId - The id of the method.
+  @return The informaton of the method.
+  '''
+  def GetMethodInfo(self, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM method_info WHERE method_id=" + str(methodId))
+      return self.cur.fetchall()
+
+  '''
+  Add a new method info record to the method_info table.
+
+  @param methodId - The id of the method.
+  @param info - The info for the method.
+  '''
+  def NewMethodInfo(self, methodId, info):
+    with self.con:
+      self.cur.execute("INSERT INTO method_info VALUES (NULL,?,?)", 
+        (methodId, info))

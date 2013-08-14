@@ -35,7 +35,8 @@ Create the top line chart.
 def CreateTopLineChart(db):
   build, results = db.GetResultsSum("mlpack")
 
-  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + ".png")
+  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + ".png", 
+      backgroundColor="#F5F5F5")
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -107,10 +108,27 @@ def CreateMemoryContent(results):
     for result in results:
       memoryValues = {}
       memoryValues["name"] = result[7]
-      memoryValues["content"] = Profiler.MassifMemoryUsageReport(str(result[5]))
-      memoryContent += memoryTemplate % memoryValues
+      memoryValues["content"] = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
+      memoryContent += panelTemplate % memoryValues
 
   return memoryContent
+
+'''
+Create the method info content.
+
+@param results - Contains the method information.
+@param methodName - The name of the method.
+@return A string that contains the method information HTML code.
+'''
+def CreateMethodInfo(results, methodName):
+  methodInfo = ""
+  if results:
+    infoValues = {}
+    infoValues["name"] = methodName
+    infoValues["content"] =results[0][2].lstrip(" ")
+    methodInfo = panelTemplate % infoValues
+  
+  return methodInfo
 
 '''
 Create the method container with the informations from the database.
@@ -168,7 +186,10 @@ def MethodReports(db):
 
       # Create the timing table.
       header, timingTable = CreateTimingTable(timingData, methodLibararies)
-      datasetTable = CreateDatasetTable(methodResults)      
+      datasetTable = CreateDatasetTable(methodResults)
+
+      # Create the method info content.
+      methodInfo = CreateMethodInfo(db.GetMethodInfo(method[0]), str(method[1:][0]))
 
       # Create the container.
       reportValues = {}
@@ -191,6 +212,7 @@ def MethodReports(db):
       reportValues["timingTable"] = timingTable
       reportValues["datasetTable"] = datasetTable
       reportValues["memoryContent"] = memoryContent
+      reportValues["methodInfo"] = methodInfo
 
       methodsPage += methodTemplate % reportValues
 

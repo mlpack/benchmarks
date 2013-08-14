@@ -207,6 +207,16 @@ def Main(configfile, blocks, log):
                 Log.Fatal("Exception: " + str(e))
                 continue
 
+              # Add method information record.
+              if log:
+                try:
+                  methodDescription = instance.description
+                except AttributeError:
+                  pass
+                else:
+                  if methodDescription and not db.GetMethodInfo(methodId):
+                    db.NewMethodInfo(methodId, methodDescription)
+
               time = []
               for trial in range(trials + 1):
                 if trial > 0:
