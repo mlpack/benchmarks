@@ -108,8 +108,14 @@ def CreateMemoryContent(results):
     for result in results:
       memoryValues = {}
       memoryValues["name"] = result[7]
+      memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
       memoryValues["content"] = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
-      memoryContent += panelTemplate % memoryValues
+
+      filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"    
+      CreateMassifChart(result[5], "reports/" + filename)
+      memoryValues["memoryChart"] = filename
+
+      memoryContent += memoryPanelTemplate % memoryValues
 
   return memoryContent
 
@@ -125,6 +131,7 @@ def CreateMethodInfo(results, methodName):
   if results:
     infoValues = {}
     infoValues["name"] = methodName
+    infoValues["nameID"] = methodName + str(hash(datetime.datetime.now()))
     infoValues["content"] =results[0][2].lstrip(" ")
     methodInfo = panelTemplate % infoValues
   
@@ -299,6 +306,8 @@ Create the new report.
 @param configfile - Create the reports with the given configuration file.
 '''
 def Main(configfile):
+  # CreateMassifChart("reports/etc/-2043538483674198236.mout")
+  # exit()
   # Reports settings.
   database = "reports/benchmark.db"
 

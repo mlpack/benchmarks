@@ -23,6 +23,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+import re
 
 
 # Use this colors to plot the graph.
@@ -36,7 +37,8 @@ Generate a bar chart with the specified informations.
 @param libraries - A list that contains the names of the libraries.
 @param fileName - The filename of the line chart.
 @param bestlib - The name of the library which should be compared with the other
-                 libraries.
+libraries.
+@param backgroundColor - The color of the image background.
 '''
 def GenerateBarChart(results, libraries, fileName, bestlib="mlpack", 
     backgroundColor="#FFFFFF"):
@@ -163,7 +165,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   ax.tick_params(axis='both', which='major', labelsize=8, labelcolor="#6e6e6e")
   ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor="#6e6e6e")
 
-  # Create the legend under the bar chart.
+  # Create the legend above the bar chart.
   lgd = ax.legend(chartHandler, legendNames, loc='upper center', 
     bbox_to_anchor=(0.5, 1.3), fancybox=True, shadow=False, ncol=8, fontsize=8)
   lgd.get_frame().set_linewidth(0)
@@ -188,9 +190,10 @@ Generate a line chart with the specified informations.
 
 @param data - List which contains the values for the line chart.
 @param fileName - The filename of the line chart.
+@param backgroundColor - The color of the image background.
 '''
 def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
-  # Bar chart settings.
+  # Line chart settings.
   lineWidth = 1.5
   opacity = 0.9
   windowWidth = 10.6
@@ -224,7 +227,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
     data += data
     
   # Create the data for the x-axis.
-  X = np.arange(len(data))  
+  X = np.arange(len(data))
 
   # Plot the line chart.
   plt.plot(X, data, color=colors[0], alpha=opacity)
@@ -237,3 +240,75 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
   fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(), 
       edgecolor='none')
   plt.close()
+
+'''
+Generate a memory chart with the specified informations.
+
+@param massiflogFile - The massif logfile.
+@param fileName - The filename of the memory chart.
+@param backgroundColor - The color of the image background.
+'''
+def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
+  lineWidth = 1.5
+  opacity = 0.9
+  windowWidth = 10.2
+  windowHeight = 1.5
+  gridLineWidth = 0.2
+
+  # Create figure and set the color.
+  matplotlib.rc('axes', facecolor=backgroundColor)
+  matplotlib.rcParams.update({'font.size': 8})
+  fig = plt.figure(figsize=(windowWidth, windowHeight), 
+      facecolor=backgroundColor, dpi=80)
+  plt.rc('lines', linewidth=lineWidth)
+  ax = plt.subplot(1,1,1)
+
+  # Set the grid style.
+  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth)
+  ax.xaxis.grid(False)
+  ax.spines['left'].set_visible(False)
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.get_xaxis().tick_bottom()
+  ax.get_yaxis().tick_left()
+  ax.spines['bottom'].set_linewidth(gridLineWidth)
+
+  # Read the massif logfile.
+  with open(massiflogFile, "r") as fid:
+    content = fid.read()
+
+  # Parse the massif logfile.
+  memHeapB = [int(i) for i in re.findall(r"mem_heap_B=(\d*)", content)]
+  memHeapExtraB = [int(i) for i in  re.findall(r"mem_heap_extra_B=(\d*)", content)]
+  memStackB = [int(i) for i in  re.findall(r"mem_stacks_B=(\d*)", content)]
+
+  # Plot the memory information.
+  X = np.arange(len(memHeapExtraB))
+  # plt.fill_between(X, memHeapB, 0, color='g', alpha=0.6)
+  # plt.fill_between(X, memHeapB, memHeapExtraB, color='y', alpha=0.6)
+  # plt.fill_between(X, memHeapB, memStackB, color='r', alpha=0.6)
+  plt.fill_between(X, memHeapExtraB, 0, color="#109618", alpha=0.6)
+  plt.fill_between(X, memHeapExtraB, memHeapB, color="#DC3912", alpha=0.6)
+  plt.fill_between(X, memHeapExtraB, memStackB, color="#3366CC", alpha=0.6)
+
+  # Set the color and the font of the x-axis and y-axis labels.
+  ax.tick_params(axis='both', which='major', labelsize=8, labelcolor="#6e6e6e")
+  ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor="#6e6e6e")
+
+  # Create a proxy artist, because fill_between hasn't a chart handler.
+  p1 = plt.Rectangle((0, 0), 1, 1, fc="#109618", alpha=0.6)
+  p2 = plt.Rectangle((0, 0), 1, 1, fc="#DC3912", alpha=0.6)
+  p3 = plt.Rectangle((0, 0), 1, 1, fc="#3366CC", alpha=0.6)
+
+  # Create the legend above the memory chart.
+  lgd = ax.legend((p1, p2, p3), 
+    ("mem heap B", "mem heap extra B", "mem stacks B"), loc='upper center', 
+    bbox_to_anchor=(0.5, 1.3), fancybox=True, shadow=False, ncol=8, fontsize=8)
+  lgd.get_frame().set_linewidth(0)
+  for label in lgd.get_texts():
+    label.set_color("#6e6e6e")
+       
+  # Save the memory chart.
+  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
+    facecolor=fig.get_facecolor(), edgecolor='none', format='png')
+  plt.close()  

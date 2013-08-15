@@ -30,12 +30,10 @@ pageTemplate = """
           <div class="container__topContent">
             <div>
               <img class="center--image" src="%(topLineChart)s" alt="">
-            </div>          
+            </div>
           </div>
         </div>
-
         %(methods)s
-
         </div>
       </div>
     </div>
@@ -64,7 +62,7 @@ paginationTemplate = """
     <script src="js/slider.js"></script>
     <!--[if lte IE 7]>
       <script src="framework/font/lte-ie7.js"></script>
-    <![endif]-->      
+    <![endif]-->
     </body>
 </html>
 """
@@ -85,17 +83,13 @@ methodTemplate = """
               <a href="#collapseThree" class="btn memory btn-grey icon-paragraph-right-2 js-button"></a>
             </div>
           </div>
-
           <div id="collapseOne" class="container__bottomContent graph collapse">
-
             <div>
               <img class="panel" src="%(lineChart)s" alt="">
             </div>
-
             <div>
               <img class="panel" src="%(barChart)s" alt="">
             </div>
-
             <div>
               <div class="panel">
                 <table class="table table-striped">
@@ -109,10 +103,9 @@ methodTemplate = """
                     %(timingTable)s
                   </tbody>
                 </table>
-              </div>            
+              </div>
             </div>
           </div>
-
           <div id="collapseTwo" class="container__bottomContent infos collapse">
             <div>
               <div class="panel">
@@ -123,7 +116,7 @@ methodTemplate = """
                       <th>Size</th>   
                       <th>Number of Instances</th>
                       <th>Number of Attributes</th>
-                      <th>Attribute Types</th>                                     
+                      <th>Attribute Types</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -134,24 +127,16 @@ methodTemplate = """
               </div>
             </div>
           </div>
-
           <div id="collapseTwo" class="container__bottomContent memories collapse">
             <div>
-              <div class="panel">
-                <div class="panel-heading">Massif Log</div>
-                  %(memoryContent)s
-              </div>
-
-            </div>
-          </div>
-
+            </div>%(memoryContent)s</div>
           <div class="container__bottomContent">&#160;</div>
            <div class="row">
             <div class="col-lg-2">Libraries: %(numLibararies)s</div>
             <div class="col-lg-2">Datasets: %(numDatasets)s</div>
             <div class="col-lg-3">Total time: %(totalTime)s seconds</div>
             <div class="col-lg-2">Script failure: %(failure)s</div>
-            <div class="col-lg-2">Timeouts failure: %(timeouts)s</div>          
+            <div class="col-lg-2">Timeouts failure: %(timeouts)s</div>
           </div>
           <div class="row">
             <div class="col-lg-10">Parameters: %(parameters)s</div>
@@ -160,10 +145,24 @@ methodTemplate = """
 
 """
 
+memoryPanelTemplate = """
+<div class="panel">
+  <div><img class="center--image" src="%(memoryChart)s" alt=""></div>
+  <div class="accordion-group">
+  <div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(nameID)s">%(name)s</a></div>
+    <div id="%(nameID)s" class="accordion-body collapse">
+      <div class="accordion-inner">
+      <pre>%(content)s</pre>
+      </div>
+    </div>
+  </div>
+</div>
+"""
+
 panelTemplate = """
 <div class="accordion-group">
-<div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(name)s">%(name)s</a></div>
-  <div id="%(name)s" class="accordion-body collapse">
+<div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(nameID)s">%(name)s</a></div>
+  <div id="%(nameID)s" class="accordion-body collapse">
     <div class="accordion-inner">
     <pre>%(content)s</pre>
     </div>
