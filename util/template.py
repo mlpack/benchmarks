@@ -116,6 +116,7 @@ methodTemplate = """
                       <th>Size</th>   
                       <th>Number of Instances</th>
                       <th>Number of Attributes</th>
+                      <th>Instances</th>
                       <th>Attribute Types</th>
                     </tr>
                   </thead>

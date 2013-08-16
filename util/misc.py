@@ -125,6 +125,15 @@ def RemoveDataset(dataset):
       os.remove(f)
 
 '''
+Check if the given file is available.
+
+@param fileName - The name of the file.
+@return True if the file is available otherwise False.
+'''
+def CheckFileAvailable(fileName):
+    return True if os.path.isfile(fileName) else False
+
+'''
 Check if the file is available in one of the given formats.
 
 @param dataset - Datsets which should be checked.

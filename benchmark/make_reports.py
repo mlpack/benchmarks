@@ -36,7 +36,7 @@ def CreateTopLineChart(db):
   build, results = db.GetResultsSum("mlpack")
 
   GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + ".png", 
-      backgroundColor="#F5F5F5")
+      backgroundColor="#F3F3F3")
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -91,6 +91,7 @@ def CreateDatasetTable(results):
        datasetTable += "<td>" + "{0:.5f}".format(data[9]) + " MB</td>"
        datasetTable += "<td>" + str(data[10]) + "</td>"
        datasetTable += "<td>" + str(data[11]) + "</td>"
+       datasetTable += "<td>" + str(data[10] * data[11]) + "</td>"
        datasetTable += "<td>" + str(data[12]) + "</td>"
        datasetTable += "</tr>"
 
@@ -109,7 +110,11 @@ def CreateMemoryContent(results):
       memoryValues = {}
       memoryValues["name"] = result[7]
       memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
-      memoryValues["content"] = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
+      
+      content = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
+      if len(content) > 800:
+        content = content[1:800]
+      memoryValues["content"] = content
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"    
       CreateMassifChart(result[5], "reports/" + filename)
