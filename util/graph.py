@@ -169,7 +169,8 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 
   # Create the legend above the bar chart.
   lgd = ax.legend(chartHandler, legendNames, loc='upper center', 
-    bbox_to_anchor=(0.5, 1.3), fancybox=True, shadow=False, ncol=8, fontsize=8)
+    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(legendNames) / 6)), fancybox=True, 
+    shadow=False, ncol=6, fontsize=8)
   lgd.get_frame().set_linewidth(0)
   for label in lgd.get_texts():
     label.set_color("#6e6e6e")
@@ -199,6 +200,18 @@ Generate a line chart with the specified informations.
 @param backgroundColor - The color of the image background.
 '''
 def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
+  def NormalizeData(data):
+    i = 0
+    while len(data) != i:
+      if not data[i]:
+        if i > 0 and data[i -1]:
+          data[i] = data[i - 1]
+        else:
+          del data[i]
+          i -= 1
+      i += 1
+    return data
+
   if not CheckFileAvailable(fileName):
     # Line chart settings.
     lineWidth = 1.5
@@ -228,6 +241,8 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
     # Set ticks for the x-axis.
     myLocator = mticker.MultipleLocator(1)
     ax.xaxis.set_major_locator(myLocator)
+
+    data = NormalizeData(data)
 
     # If we have only have a single value we don't want to start from zero so we 
     # double the data.
@@ -324,4 +339,4 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
     # Save the memory chart.
     fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
       facecolor=fig.get_facecolor(), edgecolor='none', format='png')
-    plt.close()  
+    plt.close()

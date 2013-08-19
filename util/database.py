@@ -357,7 +357,9 @@ class Database:
 
   def GetMemoryResults(self, buildId, libaryId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM memory JOIN datasets ON memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) + " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
+      self.cur.execute("SELECT * FROM memory JOIN datasets ON " + 
+        "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) + 
+        " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
 
   '''
