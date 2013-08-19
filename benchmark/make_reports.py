@@ -60,9 +60,11 @@ def CreateTimingTable(data, libraries):
 
       # Highlight the data with the best timing.
       if minData(timings) == time:
+        time = "{0:.4f}".format(time) if isFloat(str(time)) else time
         time = str(time) + "s" if isFloat(time) else time 
         timingTable += '<td><p class="text-success"><strong>' + time + '</strong></p></td>'
       else:
+        time = "{0:.4f}".format(time) if isFloat(str(time)) else time
         time = str(time) + "s" if isFloat(time) else time 
         timingTable += "<td>" + time + "</td>"
 
@@ -112,8 +114,6 @@ def CreateMemoryContent(results):
       memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
       
       content = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
-      if len(content) > 800:
-        content = content[1:800]
       memoryValues["content"] = content
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"    
@@ -209,9 +209,14 @@ def MethodReports(db):
       reportValues["parameters"] = str(method[1:][1]) if method[1:][1] else "None"
 
       # Calculate the percent for the progress bar.
-      negative = (((numDatasets - bestLibCount) / float(numDatasets)) * 100.0)
-      reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
-      reportValues["progressNegative"] = "{0:.2f}".format(negative) + "%"
+      if numDatasets != 0:
+        negative = (((numDatasets - bestLibCount) / float(numDatasets)) * 100.0)
+        reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
+        reportValues["progressNegative"] = "{0:.2f}".format(negative) + "%"
+      else:
+        reportValues["progressPositive"] = "0%"
+        reportValues["progressNegative"] = "100%"
+
 
       reportValues["barChart"] = barChartName
       reportValues["lineChart"] = lineChartName
@@ -311,8 +316,6 @@ Create the new report.
 @param configfile - Create the reports with the given configuration file.
 '''
 def Main(configfile):
-  # CreateMassifChart("reports/etc/-2043538483674198236.mout")
-  # exit()
   # Reports settings.
   database = "reports/benchmark.db"
 
@@ -327,6 +330,7 @@ def Main(configfile):
         database = value
 
   db = Database(database)
+  db.CreateTables()
 
   ShiftReports()
   AdjustPagination()
