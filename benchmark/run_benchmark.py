@@ -106,6 +106,9 @@ def Main(configfile, blocks, log):
   timeout = 23000
   database = "reports/benchmark.db"
 
+  # Create folder structure.
+  CreateDirectoryStructure("reports/img", "reports/etc")
+
   # Read Config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()

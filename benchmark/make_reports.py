@@ -319,6 +319,9 @@ def Main(configfile):
   # Reports settings.
   database = "reports/benchmark.db"
 
+  # Create folder structure.
+  CreateDirectoryStructure(["reports/img", "reports/etc"])
+
   # Read Config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()

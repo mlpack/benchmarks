@@ -146,3 +146,13 @@ def CheckFileExtension(dataset, formats):
     return dataset
   else:
     return dataset[0:len(dataset) - len(dataExtension)] + formats[0]
+
+'''
+Create the directory structure for the scripts.
+
+@param directories - List of directories to create.
+'''
+def CreateDirectoryStructure(directories):
+  for directory in directories:
+    if not os.path.exists(directory):
+       os.makedirs(directory)
