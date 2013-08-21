@@ -322,7 +322,7 @@ class Database:
     with self.con:
       self.cur.execute("SELECT * FROM results JOIN datasets ON" + 
           " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
-          " AND method_id=" + str(methodId) + " ORDER BY datasets.name")      
+          " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
   
   '''

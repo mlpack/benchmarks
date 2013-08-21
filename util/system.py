@@ -24,10 +24,14 @@ import sys
 import shlex
 import subprocess
 
-
+'''
+This class implements functions the get system informations.
+'''
 class SystemInfo(object):
 
-  # Returns the available memory of this machine.
+  '''
+  Returns the available memory of this machine.
+  '''
   @staticmethod
   def GetMemory():
     if sys.platform.startswith('posix') or sys.platform.startswith('linux'):
@@ -39,19 +43,23 @@ class SystemInfo(object):
 
     elif sys.platform.startswith('darwin'):
       cmd = shlex.split("sysctl -n hw.memsize")
-      mem = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False).strip()
+      mem = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
+          shell=False).strip()
 
       return str(float(mem) / 1024 / 1024 / 1000.0) + ' GB'
 
     else:
       return 'N/A'      
 
-  # Returns the CPU model name of this machine.
+  '''
+  Returns the CPU model name of this machine.
+  '''
   @staticmethod
   def GetCPUModel():
     if sys.platform.startswith('posix') or sys.platform.startswith('linux'):
       cmd = 'cat /proc/cpuinfo'
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).strip()
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
+          shell=True).strip()
       for line in s.decode().split("\n"):
         if "model name" in line:
           modelName = re.sub( ".*model name.*:", "", line, 1)
@@ -63,7 +71,8 @@ class SystemInfo(object):
 
     elif sys.platform.startswith('darwin'):
       cmd = shlex.split("sysctl -n machdep.cpu.brand_string")
-      modelName = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False).strip()
+      modelName = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
+          shell=False).strip()
       return modelName
 
     elif sys.platform.startswith('win'):
@@ -74,7 +83,9 @@ class SystemInfo(object):
       Log.Fatal('Could not get the OS name')
       return 'N/A'
 
-  # Returns the distribution name of this machine.
+  '''
+  Returns the distribution name of this machine.
+  '''
   @staticmethod
   def GetDistribution():
     if sys.platform.startswith('posix') or sys.platform.startswith('linux'):
@@ -109,7 +120,9 @@ class SystemInfo(object):
       Log.Fatal('Could not get the OS name')
       return 'N/A'
 
-  # Returns the CPU core count of this machine.
+  '''
+  Returns the CPU core count of this machine.
+  '''
   @staticmethod
   def GetCPUCores():
     # Python 2.6+ use multiprocessing module.
@@ -135,7 +148,9 @@ class SystemInfo(object):
       Log.Fatal('Could not specify the OS name')
       return 'N/A'
       
-  # Returns the plattform of this machine (e.g. x86_64).
+  '''
+  Returns the plattform of this machine (e.g. x86_64).
+  '''
   @staticmethod
   def GetPlatform():
     return platform.machine()

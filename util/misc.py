@@ -11,7 +11,7 @@ import os
 This function determinate if the given number is a float.
 
 @param n - Number to test.
-@return If the number a float returns True otherwise the function returns False.
+@return If the number is a float return True otherwise return False.
 '''
 def isFloat(n):
   try:
@@ -23,6 +23,9 @@ def isFloat(n):
 
 '''
 Function to seach the minimum scalar in a list.
+
+@param data - A list that contains the values.
+@return The minimum scalar of the given list.
 '''
 def minData(data):
   minData = float('Inf')
@@ -138,7 +141,7 @@ Check if the file is available in one of the given formats.
 
 @param dataset - Datsets which should be checked.
 @param formats - List of supported file formats.
-@return Orginal dataset or dataset with new file format.
+@return Orginal dataset or dataset with the new file format.
 '''
 def CheckFileExtension(dataset, formats):
   dataExtension = os.path.splitext(dataset)[1][1:]

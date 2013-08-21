@@ -83,9 +83,10 @@ class Parser(object):
       return attr(libraryName, stream["methods"].items())
 
   '''
-  This method return the attributes of a given method.
+  This method returns the attributes of a given method.
 
-  @param methods - Contains the methods attributes.
+  @param methods - Contains the method attributes.
+  @return A tuble that contains the method attributes.
   '''
   def GetConfigMethod(self, methods):
     try:
@@ -145,22 +146,10 @@ class Parser(object):
     return attr(methodName, script, format, datasets, run, iteration)
 
   '''
-  Show a key error message.
-
-  @return False
-  '''
-  def ConfigKeyErrorMsg(self, key, streamNum = 0):
-    if streamNum == 0:
-      Log.Fatal("No [" + key + "] key.")
-    else:
-      Log.Fatal("Stream number: " + str(streamNum) + " has no [" + key + 
-          "] key.")
-    
-    return False
-
-  '''
   Show a emtpy value error message.
 
+  @param key - The name of the key.
+  @param streamNum - The number of the stream.
   @return False
   '''
   def EmptyErrorMsg(self, key, streamNum):
@@ -170,6 +159,8 @@ class Parser(object):
 
   '''
   Show a value is not set warn message.
+  @param key - The name of the key.
+  @param streamNum - The number of the stream.
   '''
   def KeyWarnMsg(self, key, streamNum = 0):
     if streamNum == 0:
@@ -181,6 +172,9 @@ class Parser(object):
   '''
   Show a method is not callable error message.
 
+  @param methodName - The name of the method.
+  @param methodScript - The path of the script.
+  @param streamNum - The number of the stream.
   @return False
   '''
   def CallableMethodErroMsg(self, methodName, methodScript, streamNum):
@@ -191,7 +185,8 @@ class Parser(object):
   '''
   Show a file not available error message.
 
-  @ return False
+  @param fileName - The name of the file.
+  @return False
   '''
   def NotAvailableErrorMsg(self, fileName):
     Log.Fatal("The file: " + fileName + " is not available.")
@@ -223,6 +218,7 @@ class Parser(object):
   '''
   This function checks if a file is readable.
 
+  @param files - A list of files to check.
   @return The function returns True if the file is readable otherwise false.
   '''
   def CheckIfAvailable(self, files):

@@ -35,7 +35,8 @@ class Profiler(object):
   successful save the report file in the specified file. 
   '''
   @staticmethod
-  def MassifMemoryUsage(command, output, timeout, options, valgrind=os.environ["VALGRIND_BIN"]):
+  def MassifMemoryUsage(command, output, timeout, options, 
+      valgrind=os.environ["VALGRIND_BIN"]):
     import shlex, subprocess
 
     cmd = shlex.split(("%s --tool=massif --massif-out-file=%s %s ") % 

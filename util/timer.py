@@ -35,7 +35,7 @@ class Timer(object):
     return self.__finish - self.__start
 
 '''
-This Class provides a Timout Error.
+This Class provides a timeout error.
 '''
 class TimeoutError(Exception):
     errno = 23

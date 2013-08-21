@@ -8,10 +8,14 @@
 import imp
 import os
 
-
+'''
+This class contains a function to import modules and scripts.
+'''
 class Loader(object):
 
-  # Import a module from a path.
+  '''
+  Import a module from a path.
+  '''
   @staticmethod
   def ImportModuleFromPath(path):
 

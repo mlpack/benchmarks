@@ -9,7 +9,9 @@ from __future__ import print_function
 import re
 import sys
 
-
+'''
+This class contains functions to unify the console output.
+'''
 class Log(object):
 
   # Color code escape sequences -- but not on Windows.
@@ -26,42 +28,80 @@ class Log(object):
     BASH_CYAN = '\033[0;36m'
     BASH_CLEAR = '\033[0m'
 
-    #! Prints debug output with the appropriate tag: [DEBUG].
+  '''
+  Prints debug output with the appropriate tag: [DEBUG].
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
   @staticmethod
   def Debug(line, verbose=True):
     if verbose:
-      print(Log.BASH_CYAN + '[DEBUG] ' + Log.BASH_CLEAR + Log.WrapLine(line), file=sys.stdout)
+      print(Log.BASH_CYAN + '[DEBUG] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+          file=sys.stdout)
 
-  #! Prints informational messages prefixed with [INFO ].
+  '''
+  Prints informational messages prefixed with [INFO ].
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
   @staticmethod
   def Info(line, verbose=True):
     if verbose:
-      print(Log.BASH_GREEN + '[INFO ] ' + Log.BASH_CLEAR + Log.WrapLine(line), file=sys.stdout)
+      print(Log.BASH_GREEN + '[INFO ] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+          file=sys.stdout)
 
-  #! Prints warning messages prefixed with [WARN ].
+  '''
+  Prints warning messages prefixed with [WARN ].
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
   @staticmethod
   def Warn(line, verbose=True):
     if verbose:
-      print(Log.BASH_YELLOW + '[WARN ] ' + Log.BASH_CLEAR + Log.WrapLine(line), file=sys.stdout)
+      print(Log.BASH_YELLOW + '[WARN ] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+          file=sys.stdout)
 
-  #! Prints fatal messages prefixed with [FATAL].
+  '''
+  Prints fatal messages prefixed with [FATAL].
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
   @staticmethod
   def Fatal(line, verbose=True):
     if verbose:
-      print(Log.BASH_RED + '[FATAL] ' + Log.BASH_CLEAR + Log.WrapLine(line), file=sys.stdout)
+      print(Log.BASH_RED + '[FATAL] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+          file=sys.stdout)
 
-  #! Prints messages without any prefixed.
+  '''
+  Prints messages without any prefixed.
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
   @staticmethod
   def Notice(line, verbose=True):
     if verbose:
       print(Log.WrapLine(line), file=sys.stdout)
 
-  # Truncate the String into lines of 80 characters.
+  '''
+  Truncate the String into lines of 80 characters.
+
+  @param line - The line to wrap.
+  '''
   @staticmethod
   def WrapLine(line):
-    return '\n'.join(line.strip() for line in re.findall(r'.{1,80}(?:\s+|$)', line))
+    return '\n'.join(line.strip() for line in re.findall(r'.{1,80}(?:\s+|$)', 
+        line))
 
-  #! Prints out a table of data.
+  '''
+  Prints out a table of data.
+
+  @param table - A list of a list that contains the table values.
+  '''
   @staticmethod
   def PrintTable(table):
 
