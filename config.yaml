@@ -399,37 +399,31 @@ methods:
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 1 -K linear'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 10 -K linear'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 10 -S -K linear'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
-              options: '-k 10 -N -K linear'
+            - files: ['datasets/optdigits.csv']
+              options: '-k 10 -K polynomial -d 10'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
-              options: '-k 10 -N -S -K linear'
+            - files: ['datasets/optdigits.csv']
+              options: '-k 10 -K hyptan'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
-              options: '-k 10 -N -S -K polynomial -d 10'
-
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
-              options: '-k 10 -N -S -K hyptan -d 10'
-
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 10 -K cosine'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 10 -K gaussian'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 10 -K epanechnikov'
 
-            - files: ['datasets/optdigits.csv', 'datasets/covtype.csv']
+            - files: ['datasets/optdigits.csv']
               options: '-k 10 -K triangular'
     NCA:
         run: true
@@ -508,21 +502,21 @@ methods:
     HMMGENERATE:
         run: true
         script: methods/mlpack/hmm_generate.py
-        format: [csv, txt]
+        format: [csv, txt, xml]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml', 'datasets/artificial_1DSignal_hmm.xml']
               options: '-l 10000'
     HMMLOGLIK:
        run: true
        script: methods/mlpack/hmm_loglik.py
-       format: [csv, txt]
+       format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
                       ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
     HMMVITERBI:
        run: true
        script: methods/mlpack/hmm_viterbi.py
-       format: [csv, txt]
+       format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
                       ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
