@@ -147,6 +147,8 @@ class Database:
 
   '''
   Add a new build record to the builds table.
+
+  @param libaryId - The id of the library.
   '''
   def NewBuild(self, libaryId):
     with self.con:
@@ -237,7 +239,7 @@ class Database:
 
   @param name - The name of the method.
   @param parameters - The parameters of the method.
-  @return the records.
+  @return The records.
   '''
   def GetMethod(self, name, parameters):
      with self.con:
@@ -250,7 +252,7 @@ class Database:
 
   @param name - The name of the method.
   @param parameters - The parameters of the method.
-  @return the record id.
+  @return The record id.
   '''
   def NewMethod(self, name, parameters):
     with self.con:
@@ -345,7 +347,7 @@ class Database:
   '''
   Add a new memory record to the memory table.
 
-  @param libaryId - The if ot the library.
+  @param libaryId - The id ot the library.
   @param methodId - The id of the method
   @param datasetId - The id of the dataset.
   @param memoryInfo - The text for the memory value.
@@ -355,6 +357,14 @@ class Database:
       self.cur.execute("INSERT INTO memory VALUES (NULL,?,?,?,?,?)", 
           (buildId, libaryId, methodId, datasetId, memoryInfo))
 
+  '''
+  Get the memory informations of the given parameters.
+
+  @param buildId - The id of the build.
+  @param libaryId - The id of the library.
+  @param methodId - The id of the method.
+  @return The memory informations of the method.
+  '''
   def GetMemoryResults(self, buildId, libaryId, methodId):
     with self.con:
       self.cur.execute("SELECT * FROM memory JOIN datasets ON " + 
