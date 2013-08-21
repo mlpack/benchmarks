@@ -35,8 +35,8 @@ Create the top line chart.
 def CreateTopLineChart(db):
   build, results = db.GetResultsSum("mlpack")
 
-  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + ".png", 
-      backgroundColor="#F3F3F3")
+  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + 
+      ".png", backgroundColor="#F3F3F3")
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -62,13 +62,14 @@ def CreateTimingTable(data, libraries):
       if minData(timings) == time:
         time = "{0:.4f}".format(time) if isFloat(str(time)) else time
         time = str(time) + "s" if isFloat(time) else time 
-        timingTable += '<td><p class="text-success"><strong>' + time + '</strong></p></td>'
+        timingTable += '<td><p class="text-success"><strong>' + time 
+        timingTable += '</strong></p></td>'
       else:
         time = "{0:.4f}".format(time) if isFloat(str(time)) else time
         time = str(time) + "s" if isFloat(time) else time 
         timingTable += "<td>" + time + "</td>"
 
-    timingTable += "</tr>"    
+    timingTable += "</tr>"
 
   return (header, timingTable)
 
@@ -116,7 +117,7 @@ def CreateMemoryContent(results):
       content = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
       memoryValues["content"] = content
 
-      filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"    
+      filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
       CreateMassifChart(result[5], "reports/" + filename)
       memoryValues["memoryChart"] = filename
 
@@ -155,7 +156,7 @@ def MethodReports(db):
   libraryIds  = db.GetLibraryIds()
   buildIds = []
   for libraryid in libraryIds:
-    buildIds.append((db.GetLatestBuildFromLibary(libraryid[0]), libraryid[1]))  
+    buildIds.append((db.GetLatestBuildFromLibary(libraryid[0]), libraryid[1]))
 
   # Iterate throw all methods and create for each method a new container.
   for method in db.GetAllMethods():
@@ -179,7 +180,7 @@ def MethodReports(db):
         mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
         if mlpackMemoryBuilId:
           memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, mlpackMemoryId[0][0], method[0])
-          memoryContent = CreateMemoryContent(memoryResults)     
+          memoryContent = CreateMemoryContent(memoryResults)
 
       # Generate a "unique" name for the line chart.
       lineChartName = "img/line_" + chartHash + ".png"
@@ -216,7 +217,6 @@ def MethodReports(db):
       else:
         reportValues["progressPositive"] = "0%"
         reportValues["progressNegative"] = "100%"
-
 
       reportValues["barChart"] = barChartName
       reportValues["lineChart"] = lineChartName
@@ -319,10 +319,10 @@ def Main(configfile):
   # Reports settings.
   database = "reports/benchmark.db"
 
-  # Create folder structure.
+  # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
 
-  # Read Config.
+  # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
 
@@ -351,8 +351,8 @@ def Main(configfile):
     fid.write(template)
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description="""Perform the benchmark with the
-      given config.""")
+  parser = argparse.ArgumentParser(description="""Perform the memory benchmark 
+      with the given config.""")
   parser.add_argument('-c','--config', help='Configuration file name.', 
       required=True)
 

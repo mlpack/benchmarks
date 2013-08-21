@@ -106,10 +106,10 @@ def Main(configfile, blocks, log):
   timeout = 23000
   database = "reports/benchmark.db"
 
-  # Create folder structure.
-  CreateDirectoryStructure("reports/img", "reports/etc")
+  # Create the folder structure.
+  CreateDirectoryStructure(["reports/img", "reports/etc"])
 
-  # Read Config.
+  # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
 
@@ -240,7 +240,7 @@ def Main(configfile, blocks, log):
               else:
                 dataMatrix[row][col] = "{0:.6f}".format(sum(time) / trials)
 
-              # Save results in the logfile if the user asked for.
+              # Save results in the databse if the user asked for.
               if log:
                 # Get the variance.
                 var = 0

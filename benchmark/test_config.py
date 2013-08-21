@@ -5,7 +5,6 @@
   Test the configuration file.
 '''
 
-
 import os
 import sys
 import inspect

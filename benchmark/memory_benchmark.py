@@ -71,10 +71,10 @@ def Main(configfile, blocks, log):
   timeout = 23000
   database = "reports/benchmark.db"
 
-  # Create folder structure.
+  # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
 
-  # Read Config.
+  # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
 
@@ -126,7 +126,7 @@ def Main(configfile, blocks, log):
 
             build[name] = (db.NewBuild(libaryId), libaryId)
 
-          # Load script.
+          # Load the script.
           try:
             module = Loader.ImportModuleFromPath(script)
             methodCall = getattr(module, method)
@@ -135,7 +135,7 @@ def Main(configfile, blocks, log):
             Log.Fatal("Exception: " + str(e))
           else:
 
-            for dataset in datsets:  
+            for dataset in datsets:
               datasetName = NormalizeDatasetName(dataset)
 
               # Logging: Create a new dataset record fot this dataset.
@@ -166,7 +166,7 @@ def Main(configfile, blocks, log):
                 RemoveDataset(modifiedDataset[1])
                 continue
 
-              # Save results in the logfile if the user asked for.
+              # Save results in the database if the user asked for.
               if err != -1 and log:
                 buildId, libaryId = build[name]
                 db.NewMemory(buildId, libaryId, methodId, datasetId, outputName)
