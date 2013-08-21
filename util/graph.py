@@ -48,7 +48,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   barWidth = 0.15
   opacity = 0.9
   fill = True
-  windowWidth = 10.6
+  windowWidth = 10.4
   windowHeight = 1.5
   gridLineWidth = 0.2
 
@@ -216,7 +216,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
     # Line chart settings.
     lineWidth = 1.5
     opacity = 0.9
-    windowWidth = 10.6
+    windowWidth = 10.3
     windowHeight = 1.5
     gridLineWidth = 0.2
 
@@ -261,6 +261,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
 
     # Set axis labels.
     plt.ylabel("time [s]", color="#6e6e6e")
+    plt.xlabel("benchmark build", color="#6e6e6e")
 
     # Save the line chart.
     fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(), 
@@ -327,6 +328,7 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
 
     # Set axis labels.
     plt.ylabel("memory [KB]", color="#6e6e6e")
+    plt.xlabel("snapshot", color="#6e6e6e")
 
     # Create the legend above the memory chart.
     lgd = ax.legend((p1, p2, p3), 
