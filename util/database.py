@@ -36,7 +36,7 @@ class Database:
           build TIMESTAMP NOT NULL,
           libary_id INTEGER NOT NULL,
 
-          FOREIGN KEY(libary_id) REFERENCES builds(id) ON DELETE CASCADE
+          FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE
         );
         """)
 
@@ -370,7 +370,8 @@ class Database:
   '''
   def GetMethodInfo(self, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM method_info WHERE method_id=" + str(methodId))
+      self.cur.execute("SELECT * FROM method_info WHERE method_id=" + 
+          str(methodId))
       return self.cur.fetchall()
 
   '''
