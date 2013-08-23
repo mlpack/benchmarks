@@ -48,15 +48,15 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   barWidth = 0.15
   opacity = 0.9
   fill = True
-  windowWidth = 10.4
-  windowHeight = 1.5
+  windowWidth = 8.1
+  windowHeight = 1.3
   gridLineWidth = 0.2
 
   # Create figure and set the color.
   matplotlib.rc('axes', facecolor=backgroundColor)
   matplotlib.rcParams.update({'font.size': 8})
   fig = plt.figure(figsize=(windowWidth, windowHeight), 
-      facecolor=backgroundColor, dpi=80)
+      facecolor=backgroundColor, dpi=100)
   plt.rc('lines', linewidth=lineWidth)
   ax = plt.subplot(1,1,1)
 
@@ -178,9 +178,11 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   # Set axis labels.
   plt.ylabel("time [s]", color="#6e6e6e")
 
+  
   # Save the bar chart.
+  fig.tight_layout()
   fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
-    facecolor=fig.get_facecolor(), edgecolor='none', format='png')
+    facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
   plt.close()
 
   # Count the time in which bestlib is the best.
@@ -199,7 +201,8 @@ Generate a line chart with the specified informations.
 @param fileName - The filename of the line chart.
 @param backgroundColor - The color of the image background.
 '''
-def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
+def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",  
+    windowWidth=8.1, windowHeight=1.3):
   def NormalizeData(data):
     i = 0
     while len(data) != i:
@@ -215,16 +218,14 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
   if not CheckFileAvailable(fileName):
     # Line chart settings.
     lineWidth = 1.5
-    opacity = 0.9
-    windowWidth = 10.3
-    windowHeight = 1.5
+    opacity = 0.9    
     gridLineWidth = 0.2
 
     # Create figure and set the color.
     matplotlib.rc('axes', facecolor=backgroundColor)
     matplotlib.rcParams.update({'font.size': 8})
     fig = plt.figure(figsize=(windowWidth, windowHeight), 
-        facecolor=backgroundColor, dpi=80)
+        facecolor=backgroundColor, dpi=100)
     plt.rc('lines', linewidth=lineWidth)
     ax = plt.subplot(1,1,1)
 
@@ -264,8 +265,9 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF"):
     plt.xlabel("benchmark build", color="#6e6e6e")
 
     # Save the line chart.
+    fig.tight_layout()
     fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(), 
-        edgecolor='none')
+        edgecolor='none', dpi=100)
     plt.close()
 
 '''
@@ -279,15 +281,15 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
   if not CheckFileAvailable(fileName):
     lineWidth = 1.5
     opacity = 0.9
-    windowWidth = 10.2
-    windowHeight = 1.5
+    windowWidth = 8.1
+    windowHeight = 1.3
     gridLineWidth = 0.2
 
     # Create figure and set the color.
     matplotlib.rc('axes', facecolor=backgroundColor)
     matplotlib.rcParams.update({'font.size': 8})
     fig = plt.figure(figsize=(windowWidth, windowHeight), 
-        facecolor=backgroundColor, dpi=80)
+        facecolor=backgroundColor, dpi=100)
     plt.rc('lines', linewidth=lineWidth)
     ax = plt.subplot(1,1,1)
 
@@ -339,6 +341,7 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
       label.set_color("#6e6e6e")
          
     # Save the memory chart.
+    fig.tight_layout()
     fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
-      facecolor=fig.get_facecolor(), edgecolor='none', format='png')
+      facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
     plt.close()

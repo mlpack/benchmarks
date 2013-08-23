@@ -5,7 +5,7 @@
   Class to handle the database.
 '''
 
-import sqlite3 as lite
+import sqlite3
 import datetime
 
 
@@ -20,7 +20,7 @@ class Database:
   @param databasePath - Path to the database.
   '''
   def __init__(self, databasePath="benchmark.db"):
-    con = lite.connect(databasePath)
+    con = sqlite3.connect(databasePath)
     con.execute('pragma foreign_keys = on')
 
     self.con = con
@@ -308,7 +308,7 @@ class Database:
   '''
   def GetAllMethods(self):
     with self.con:
-      self.cur.execute("SELECT * FROM methods")
+      self.cur.execute("SELECT * FROM methods ORDER BY name ASC")
       return self.cur.fetchall()
 
   '''
@@ -394,3 +394,15 @@ class Database:
     with self.con:
       self.cur.execute("INSERT INTO method_info VALUES (NULL,?,?)", 
         (methodId, info))
+
+  '''
+  Get the parameters of a given method.
+
+  @param methodId - The id of the method.
+  @return The parameters of the method.
+  '''
+  def GetMethodParameters(self, methodId):
+    with self.con:
+      self.cur.execute("SELECT parameters FROM methods WHERE id=" + 
+          str(methodId))
+      return self.cur.fetchall()

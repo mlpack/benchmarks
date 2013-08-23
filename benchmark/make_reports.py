@@ -25,6 +25,7 @@ from profiler import *
 import argparse
 import glob
 import re
+import collections
 
 '''
 Create the top line chart.
@@ -36,7 +37,7 @@ def CreateTopLineChart(db):
   build, results = db.GetResultsSum("mlpack")
 
   GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + 
-      ".png", backgroundColor="#F3F3F3")
+      ".png", backgroundColor="#F3F3F3", windowWidth=9, windowHeight=1.6)
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -76,27 +77,28 @@ def CreateTimingTable(data, libraries):
 '''
 Create the table with the datasets informations.
 
-@results List of a List which contains the datasets informations.
+@param resultList - List of a List which contains the datasets informations.
 @return HTML code which contains the dataset informations.
 '''
-def CreateDatasetTable(results):
+def CreateDatasetTable(resultList):
   datasets = []
   datasetTable = ""
+  for results in resultList:
+    results = results[0]
+    for result in results:
+      for data in result:
+        datasetName = data[8]
 
-  for result in results:
-    for data in result:
-      datasetName = data[8]
+        if datasetName not in datasets:
+         datasets.append(datasetName)
 
-      if datasetName not in datasets:
-       datasets.append(datasetName)
-
-       datasetTable += "<tr><td>" + datasetName + "</td>"
-       datasetTable += "<td>" + "{0:.5f}".format(data[9]) + " MB</td>"
-       datasetTable += "<td>" + str(data[10]) + "</td>"
-       datasetTable += "<td>" + str(data[11]) + "</td>"
-       datasetTable += "<td>" + str(data[10] * data[11]) + "</td>"
-       datasetTable += "<td>" + str(data[12]) + "</td>"
-       datasetTable += "</tr>"
+         datasetTable += "<tr><td>" + datasetName + "</td>"
+         datasetTable += "<td>" + "{0:.5f}".format(data[9]) + " MB</td>"
+         datasetTable += "<td>" + str(data[10]) + "</td>"
+         datasetTable += "<td>" + str(data[11]) + "</td>"
+         datasetTable += "<td>" + str(data[10] * data[11]) + "</td>"
+         datasetTable += "<td>" + str(data[12]) + "</td>"
+         datasetTable += "</tr>"
 
   return datasetTable
 
@@ -115,7 +117,7 @@ def CreateMemoryContent(results):
       memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
       
       content = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(" ")
-      memoryValues["content"] = content
+      memoryValues["content"] = "content"
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
       CreateMassifChart(result[5], "reports/" + filename)
@@ -157,81 +159,153 @@ def MethodReports(db):
   buildIds = []
   for libraryid in libraryIds:
     buildIds.append((db.GetLatestBuildFromLibary(libraryid[0]), libraryid[1]))
-
+  
+  methodGroup = {}
   # Iterate throw all methods and create for each method a new container.
   for method in db.GetAllMethods():
+    
     methodResults = []
     methodLibararies = []
+    resultBuildId = []
     for buildId in buildIds:
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
 
-      if results:        
+      if results:
         methodLibararies.append(buildId[1])
+        resultBuildId.append(buildId[0])
         methodResults.append(results)
 
     if methodResults:
-      # Generate a "unique" hash for the chart names.
-      chartHash = str(hash(str(method[1:]) + str(buildIds)))
+      t = (methodResults, methodLibararies, resultBuildId)
+      if method[1] in methodGroup:
+        methodGroup[method[1]].append(t)
+      else:
+        methodGroup[method[1]] = [t]
 
-      # Create the memory content.
-      memoryContent = ""
-      mlpackMemoryId = db.GetLibrary("mlpack_memory")
-      if mlpackMemoryId:
+  methodGroup = collections.OrderedDict(sorted(methodGroup.items()))
+  collapseGroup = 0
+  for methodName, results in methodGroup.items():
+    # Create the container.
+    reportValues = {}
+    reportValues["methodName"] = methodName
+    
+
+    resultPanel = ""
+    methodInfo = ""
+    memoryContent = ""
+
+    mlpackMemoryId = db.GetLibrary("mlpack_memory")
+    mlpackMemoryBuilId = ""
+    if mlpackMemoryId:
         mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
-        if mlpackMemoryBuilId:
-          memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, mlpackMemoryId[0][0], method[0])
-          memoryContent = CreateMemoryContent(memoryResults)
+
+    # Variables to count the status informations.
+    failureCount= 0
+    datasetCount = 0
+    timeoutCount = 0
+    bestLibCount = 0
+    totalTimeCount = 0
+    libCount = 0
+
+    for result in results:
+      resultValues = {}
+      groupPanel = {}
+      
+      methodResults = result[0]
+      methodLibararies = result[1]
+      resultBuildId = result[2]
+      methodId = methodResults[0][0][6]
+
+      # Generate a "unique" hash for the chart name.
+      chartHash = str(hash(str(result)))
 
       # Generate a "unique" name for the line chart.
       lineChartName = "img/line_" + chartHash + ".png"
 
-      # Create the line chart.
-      build, methodResultsSum = db.GetResultsMethodSum("mlpack", method[0])
+      build, methodResultsSum = db.GetResultsMethodSum("mlpack", methodId)
       GenerateSingleLineChart(methodResultsSum, "reports/" + lineChartName)
 
       # Generate a "unique" name for the bar chart.
       barChartName = "img/bar_" + chartHash + ".png"
-      
+
       # Create the bar chart.
       ChartInfo = GenerateBarChart(methodResults, methodLibararies, 
           "reports/" + barChartName)
-      numDatasets, totalTime, failure, timeouts, bestLibCount, timingData = ChartInfo
+      numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
 
-      # Create the timing table.
+      # Increase status informations.
+      failureCount += failure
+      datasetCount += numDatasets
+      timeoutCount += timeouts
+      bestLibCount += bestLibnum
+      totalTimeCount += totalTime
+
       header, timingTable = CreateTimingTable(timingData, methodLibararies)
-      datasetTable = CreateDatasetTable(methodResults)
+
+      libCount = libCount if libCount >= len(methodLibararies) else len(methodLibararies)
+
+      parameters = db.GetMethodParameters(methodId)
+      if parameters:
+        parameters = parameters[0][0]
+      else:
+        parameters = ""
+
+      resultValues["parameters"] = lineChartName
+      resultValues["lineChart"] = lineChartName
+      resultValues["barChart"] = barChartName
+      resultValues["timingHeader"] = header
+      resultValues["timingTable"] = timingTable
+
+      groupPanel["nameID"] = chartHash
+      groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
+      groupPanel["content"] = resultsPanel % resultValues
+
+      resultPanel += resultsTemplate % groupPanel
+
+      # Create the memory content.
+      if mlpackMemoryBuilId:
+        memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, mlpackMemoryId[0][0], methodId)
+
+        groupPanel["content"] = CreateMemoryContent(memoryResults)
+        if groupPanel["content"]:
+          groupPanel["nameID"] = chartHash + "_m"
+          groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
+          
+          memoryContent += resultsTemplate % groupPanel
 
       # Create the method info content.
-      methodInfo = CreateMethodInfo(db.GetMethodInfo(method[0]), str(method[1:][0]))
+      if not methodInfo:
+        methodInfo = CreateMethodInfo(db.GetMethodInfo(methodId), methodName)
+      
+    datasetTable = CreateDatasetTable(results)
 
-      # Create the container.
-      reportValues = {}
-      reportValues["methodName"] = str(method[1:][0])
-      reportValues["parameters"] = str(method[1:][1]) if method[1:][1] else "None"
+    # Calculate the percent for the progress bar.
+    if numDatasets != 0:
+      negative = (((datasetCount - bestLibCount) / float(datasetCount)) * 100.0)
+      reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
+      reportValues["progressNegative"] = "{0:.2f}".format(negative) + "%"
+    else:
+      reportValues["progressPositive"] = "0%"
+      reportValues["progressNegative"] = "100%"
+    
+    reportValues["numLibararies"] = libCount
+    reportValues["numDatasets"] = datasetCount
+    reportValues["totalTime"] =  "{0:.2f}".format(totalTimeCount)
+    reportValues["failure"] = failureCount
+    reportValues["timeouts"] = timeoutCount
+    reportValues["datasetTable"] = datasetTable
+    reportValues["memoryContent"] = memoryContent
+    reportValues["methodInfo"] = methodInfo
+    reportValues["resultsPanel"] = resultPanel
+    reportValues["methods"] = len(results)
+    reportValues["groupOne"] = collapseGroup
+    reportValues["groupTwo"] = collapseGroup + 1
+    reportValues["groupThree"] = collapseGroup + 2
 
-      # Calculate the percent for the progress bar.
-      if numDatasets != 0:
-        negative = (((numDatasets - bestLibCount) / float(numDatasets)) * 100.0)
-        reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
-        reportValues["progressNegative"] = "{0:.2f}".format(negative) + "%"
-      else:
-        reportValues["progressPositive"] = "0%"
-        reportValues["progressNegative"] = "100%"
+    methodsPage += methodTemplate % reportValues
 
-      reportValues["barChart"] = barChartName
-      reportValues["lineChart"] = lineChartName
-      reportValues["numLibararies"] = str(len(methodLibararies))
-      reportValues["numDatasets"] = numDatasets
-      reportValues["totalTime"] = totalTime
-      reportValues["failure"] = failure
-      reportValues["timeouts"] = timeouts
-      reportValues["timingHeader"] = header
-      reportValues["timingTable"] = timingTable
-      reportValues["datasetTable"] = datasetTable
-      reportValues["memoryContent"] = memoryContent
-      reportValues["methodInfo"] = methodInfo
-
-      methodsPage += methodTemplate % reportValues
+    # Increase collapse group id.
+    collapseGroup += 3
 
   return methodsPage
 
@@ -270,14 +344,14 @@ def AdjustPagination():
       content = content[:pos+len(pattern)]
 
       if i == 1:
-        content += '<li><a href="index.html">&laquo;</a></li>\n'
+        content += '<li class="previous"><a href="index.html">&larr; Newer</a></li>\n'
       else:
-        content += '<li><a href="index_' + str(i - 1) + '.html">&laquo;</a></li>\n'
+        content += '<li class="previous"><a href="index_' + str(i - 1) + '.html">&larr; Newer</a></li>\n'
       
       if i == maxId:
-        content += '<li><a href="#">&raquo;</a></li>'
+        content += '<li class="next disabled"><a href="#">Older &rarr;</a></li>'
       else:
-        content += '<li><a href="index_' + str(i + 1) + '.html">&raquo;</a></li>\n'
+        content += '<li class="next"><a href="index_' + str(i + 1) + '.html">Older &rarr;</a></li>\n'
 
       content += paginationTemplate
       fid.seek(0)
@@ -292,11 +366,11 @@ Get the pagination for the new index.html file.
 def NewPagination():
   maxId, files = GetMaxIndex()
 
-  pagination = '<li><a href="#">&laquo;</a></li>\n'
+  pagination = '<li class="previous disabled"><a href="#">&larr; Newer</a></li>\n'
   if maxId > 0:
-    pagination += '<li><a href="index_1.html">&raquo;</a></li>\n'
+    pagination += '<li class="next"><a href="index_1.html">Older &rarr;</a></li>\n'
   else:    
-    pagination += '<li><a href="#">&raquo;</a></li>'
+    pagination += '<li class="next disabled"><a href="#">Older &rarr;</a></li>'
 
   return pagination
 
