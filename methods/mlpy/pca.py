@@ -55,26 +55,26 @@ class PCA(object):
 
       try:
         with totalTimer:
-        # Find out what dimension we want.
-        match = re.search('-d (\d+)', options)
+          # Find out what dimension we want.
+          match = re.search('-d (\d+)', options)
 
-        if not match:
-          k = data.shape[1]
-        else:
-          k = int(match.group(1))      
-          if (k > data.shape[1]):
-            Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
-                + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-            q.put(-1)
-            return -1
+          if not match:
+            k = data.shape[1]
+          else:
+            k = int(match.group(1))      
+            if (k > data.shape[1]):
+              Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
+                  + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+              q.put(-1)
+              return -1
 
-        # Get the options for running PCA.
-        s = True if options.find("-s") > -1 else False
+          # Get the options for running PCA.
+          s = True if options.find("-s") > -1 else False
 
-        # Perform PCA.
-        prep = mlpy.PCA(whiten = s)
-        prep.learn(data)
-        out = prep.transform(data, k)      
+          # Perform PCA.
+          prep = mlpy.PCA(whiten = s)
+          prep.learn(data)
+          out = prep.transform(data, k)      
       except Exception as e:
         q.put(-1)
         return -1

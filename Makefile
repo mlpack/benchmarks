@@ -52,7 +52,7 @@ run:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG)
 
 memory:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG)
 
 reports:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/make_reports.py -c $(CONFIG)
