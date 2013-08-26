@@ -141,7 +141,9 @@ def CreateMethodInfo(results, methodName):
     infoValues = {}
     infoValues["name"] = methodName
     infoValues["nameID"] = methodName + str(hash(datetime.datetime.now()))
-    infoValues["content"] =results[0][2].lstrip(" ")
+    content = str(results[0][2])
+    content = content.lstrip(" ")
+    infoValues["content"] = content
     methodInfo = panelTemplate % infoValues
   
   return methodInfo
