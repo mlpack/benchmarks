@@ -46,8 +46,6 @@ class ICA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def ICAScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunICAScikit():
       totalTimer = Timer()
 
@@ -63,13 +61,11 @@ class ICA(object):
         ic = model.fit(data).transform(data)
         mixing = model.get_mixing_matrix()
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunICAScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform independent component analysis. If the method has been successfully 

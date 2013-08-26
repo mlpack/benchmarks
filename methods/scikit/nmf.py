@@ -46,8 +46,6 @@ class NMF(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NMFScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunNMFScikit():
       totalTimer = Timer()
 
@@ -69,6 +67,7 @@ class NMF(object):
           u = updateRule.group(1)
           if u != 'alspgrad':
             Log.Fatal("Invalid update rules ('" + u + "'); must be 'alspgrad'.")
+            q.put(-1)
             return -1
 
         # Perform NMF with the specified update rules.
@@ -81,13 +80,11 @@ class NMF(object):
         W = model.fit_transform(data)
         H = model.components_
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunNMFScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform Non-negative Matrix Factorization. If the method has been successfully 

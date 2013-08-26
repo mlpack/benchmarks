@@ -46,8 +46,6 @@ class GMM(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def GMMScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunGMMScikit():
       totalTimer = Timer()
 
@@ -69,13 +67,11 @@ class GMM(object):
       with totalTimer:
         model.fit(dataPoints) 
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunGMMScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully completed 

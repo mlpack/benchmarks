@@ -46,8 +46,6 @@ class SparseCoding(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def SparseCodingScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunSparseCodingScikit():
       totalTimer = Timer()
 
@@ -65,13 +63,11 @@ class SparseCoding(object):
             transform_alpha=l)
         code = model.transform(inputData)
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunSparseCodingScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform Sparse Coding. If the method has been successfully completed 

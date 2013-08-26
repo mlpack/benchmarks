@@ -46,8 +46,6 @@ class KMEANS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KMeansScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunKMeansScikit():
       totalTimer = Timer()
 
@@ -69,10 +67,12 @@ class KMEANS(object):
       # Now do validation of options.
       if not clusters and len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
+        q.put(-1)
         return -1
       elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
         Log.Fatal("Invalid number of clusters requested! Must be greater than or "
             + "equal to 1.")
+        q.put(-1)
         return -1
 
       m = 1000 if not maxIterations else int(maxIterations.group(1))
@@ -92,13 +92,11 @@ class KMEANS(object):
         labels = kmeans.labels_
         centers = kmeans.cluster_centers_
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunKMeansScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed 

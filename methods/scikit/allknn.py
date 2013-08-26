@@ -46,9 +46,7 @@ class ALLKNN(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def AllKnnScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunAllKnnScikit():
+    def RunAllKnnScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -68,12 +66,14 @@ class ALLKNN(object):
 
         if not k:
           Log.Fatal("Required option: Number of furthest neighbors to find.")
+          q.put(-1)
           return -1
         else:
           k = int(k.group(1))
           if (k < 1 or k > referenceData.shape[0]):
             Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
               + "less ")
+            q.put(-1)
             return -1
 
         if not leafSize:
@@ -81,6 +81,7 @@ class ALLKNN(object):
         elif int(leafSize.group(1)) < 0:
           Log.Fatal("Invalid leaf size: " + str(leafSize.group(1)) + ". Must be " +
               "greater than or equal to 0.")
+          q.put(-1)
           return -1
         else:
           l = int(leafSize.group(1))
@@ -94,13 +95,11 @@ class ALLKNN(object):
         else:
           out = model.kneighbors(referenceData, k, return_distance=True)
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunAllKnnScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform All K-Nearest-Neighbors. If the method has been successfully completed 

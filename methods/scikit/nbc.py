@@ -46,8 +46,6 @@ class NBC(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NBCScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunNBCScikit():
       totalTimer = Timer()
       
@@ -67,13 +65,11 @@ class NBC(object):
         # Run Naive Bayes Classifier on the test dataset.
         nbc.predict(testData)
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunNBCScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully 

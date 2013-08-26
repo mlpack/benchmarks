@@ -46,8 +46,6 @@ class PCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def PCAScikit(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
     def RunPCAScikit():
       totalTimer = Timer()
 
@@ -66,6 +64,7 @@ class PCA(object):
           if (k > data.shape[1]):
             Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+            q.put(-1)
             return -1
 
         # Get the options for running PCA.
@@ -76,13 +75,11 @@ class PCA(object):
         pca.fit(data)
         score = pca.transform(data)
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunPCAScikit()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunAllKnnMlpy, self.timeout)
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 
