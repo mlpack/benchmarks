@@ -54,19 +54,19 @@ class ALLKNN(object):
       # Load input dataset.
       # If the dataset contains two files then the second file is the query file. 
       # In this case we add this to the command line.
-      Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) == 2:
-        referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
-        queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-        queryFeat = RealFeatures(queryFeat.T)
-      else:
-        referenceData = np.genfromtxt(self.dataset, delimiter=',')
-
-      # Labels are the last row of the dataset.
-      labels = MulticlassLabels(referenceData[:, (referenceData.shape[1] - 1)])
-      referenceData = referenceData[:,:-1]
-
       try:
+        Log.Info("Loading dataset", self.verbose)
+        if len(self.dataset) == 2:
+          referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
+          queryData = np.genfromtxt(self.dataset[1], delimiter=',')
+          queryFeat = RealFeatures(queryFeat.T)
+        else:
+          referenceData = np.genfromtxt(self.dataset, delimiter=',')
+
+        # Labels are the last row of the dataset.
+        labels = MulticlassLabels(referenceData[:, (referenceData.shape[1] - 1)])
+        referenceData = referenceData[:,:-1]
+      
         with totalTimer:
           # Get all the parameters.
           k = re.search("-k (\d+)", options)

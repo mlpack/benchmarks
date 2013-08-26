@@ -51,12 +51,12 @@ class KPCA(object):
     def RunKPCAShogun(q):
       totalTimer = Timer()
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset, delimiter=',')
-      dataFeat = RealFeatures(data.T)
-
       try:
+        # Load input dataset.
+        Log.Info("Loading dataset", self.verbose)
+        data = np.genfromtxt(self.dataset, delimiter=',')
+        dataFeat = RealFeatures(data.T)
+      
         with totalTimer:
           # Get the new dimensionality, if it is necessary.
           dimension = re.search('-d (\d+)', options)

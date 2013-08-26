@@ -109,13 +109,13 @@ class KMEANS(object):
 
         if seed:
           Math_init_random(seed.group(1))
-
-        data = np.genfromtxt(self.dataset, delimiter=',')
-
-        dataFeat = RealFeatures(data.T)
-        distance = EuclideanDistance(dataFeat, dataFeat)
-
         try:
+          data = np.genfromtxt(self.dataset, delimiter=',')
+
+          dataFeat = RealFeatures(data.T)
+          distance = EuclideanDistance(dataFeat, dataFeat)
+
+        
           # Create the K-Means object and perform K-Means clustering.
           with totalTimer:
             model = Clustering.KMeans(int(clusters.group(1)), distance)

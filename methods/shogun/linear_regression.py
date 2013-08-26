@@ -53,16 +53,16 @@ class LinearRegression(object):
       # Load input dataset.
       # If the dataset contains two files then the second file is the responses
       # file. In this case we add this to the command line.
-      Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) == 2:
-        X = np.genfromtxt(self.dataset[0], delimiter=',')
-        y = np.genfromtxt(self.dataset[1], delimiter=',')
-      else:
-        X = np.genfromtxt(self.dataset, delimiter=',')
-        y = X[:, (X.shape[1] - 1)]
-        X = X[:,:-1]
-
       try:
+        Log.Info("Loading dataset", self.verbose)
+        if len(self.dataset) == 2:
+          X = np.genfromtxt(self.dataset[0], delimiter=',')
+          y = np.genfromtxt(self.dataset[1], delimiter=',')
+        else:
+          X = np.genfromtxt(self.dataset, delimiter=',')
+          y = X[:, (X.shape[1] - 1)]
+          X = X[:,:-1]
+
         with totalTimer:
           # Perform linear regression.
           model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))

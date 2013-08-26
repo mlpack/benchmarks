@@ -51,18 +51,18 @@ class GMM(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      dataPoints = np.genfromtxt(self.dataset, delimiter=',')
-      dataFeat = RealFeatures(dataPoints.T)
-
-      # Get all the parameters.
-      g = re.search("-g (\d+)", options)
-      n = re.search("-n (\d+)", options)
-      s = re.search("-n (\d+)", options)
-
-      g = 1 if not g else int(g.group(1))
-      n = 250 if not n else int(n.group(1))
-
       try:
+        dataPoints = np.genfromtxt(self.dataset, delimiter=',')
+        dataFeat = RealFeatures(dataPoints.T)
+
+        # Get all the parameters.
+        g = re.search("-g (\d+)", options)
+        n = re.search("-n (\d+)", options)
+        s = re.search("-n (\d+)", options)
+
+        g = 1 if not g else int(g.group(1))
+        n = 250 if not n else int(n.group(1))
+      
         # Create the Gaussian Mixture Model.
         model = Clustering.GMM(g)
         model.set_features(dataFeat)

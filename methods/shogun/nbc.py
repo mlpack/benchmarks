@@ -51,14 +51,14 @@ class NBC(object):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
-      # Load train and test dataset.
-      trainData = np.genfromtxt(self.dataset[0], delimiter=',')
-      testData = np.genfromtxt(self.dataset[1], delimiter=',')
-
-      # Labels are the last row of the training set.
-      labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
-
       try:
+        # Load train and test dataset.
+        trainData = np.genfromtxt(self.dataset[0], delimiter=',')
+        testData = np.genfromtxt(self.dataset[1], delimiter=',')
+
+        # Labels are the last row of the training set.
+        labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
+
         with totalTimer:
           # Transform into features.
           trainFeat = RealFeatures(trainData[:,:-1].T)

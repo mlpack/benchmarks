@@ -56,9 +56,9 @@ class PCA(object):
       
       # Load input dataset.
       Log.Info("Loading dataset", self.verbose)
-      feat = RealFeatures(self.data.T)
-
       try:
+        feat = RealFeatures(self.data.T)
+
         with totalTimer:
           # Find out what dimension we want.
           match = re.search('-d (\d+)', options)

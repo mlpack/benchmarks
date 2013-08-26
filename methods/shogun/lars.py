@@ -51,17 +51,17 @@ class LARS(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      inputData = np.genfromtxt(self.dataset[0], delimiter=',')
-      responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
-      inputFeat = RealFeatures(inputData.T)
-      responsesFeat = RegressionLabels(responsesData)
-
-      # Get all the parameters.
-      lambda1 = re.search("-l (\d+)", options)
-      lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
-
       try:
+        Log.Info("Loading dataset", self.verbose)
+        inputData = np.genfromtxt(self.dataset[0], delimiter=',')
+        responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
+        inputFeat = RealFeatures(inputData.T)
+        responsesFeat = RegressionLabels(responsesData)
+
+        # Get all the parameters.
+        lambda1 = re.search("-l (\d+)", options)
+        lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+
         with totalTimer:
           # Perform LARS.
           model = LeastAngleRegression(False)
