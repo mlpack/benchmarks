@@ -54,11 +54,15 @@ class LARS(object):
       inputData = np.genfromtxt(self.dataset[0], delimiter=',')
       responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-      with totalTimer:
-        # Perform LARS.
-        model = mlpy.LARS()
-        model.learn(inputData, responsesData)
-        out = model.beta()
+      try:
+        with totalTimer:
+          # Perform LARS.
+          model = mlpy.LARS()
+          model.learn(inputData, responsesData)
+          out = model.beta()
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

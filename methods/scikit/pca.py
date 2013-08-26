@@ -53,27 +53,31 @@ class PCA(object):
       Log.Info("Loading dataset", self.verbose)
       data = np.genfromtxt(self.dataset, delimiter=',')
 
-      with totalTimer:
-        # Find out what dimension we want.
-        match = re.search('-d (\d+)', options)
+      try:
+        with totalTimer:
+          # Find out what dimension we want.
+          match = re.search('-d (\d+)', options)
 
-        if not match:
-          k = data.shape[1]
-        else:
-          k = int(match.group(1))      
-          if (k > data.shape[1]):
-            Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
-                + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-            q.put(-1)
-            return -1
+          if not match:
+            k = data.shape[1]
+          else:
+            k = int(match.group(1))      
+            if (k > data.shape[1]):
+              Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
+                  + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+              q.put(-1)
+              return -1
 
-        # Get the options for running PCA.
-        s = True if options.find("-s") > -1 else False
+          # Get the options for running PCA.
+          s = True if options.find("-s") > -1 else False
 
-        # Perform PCA.
-        pca = decomposition.PCA(n_components = k, whiten = s)
-        pca.fit(data)
-        score = pca.transform(data)
+          # Perform PCA.
+          pca = decomposition.PCA(n_components = k, whiten = s)
+          pca.fit(data)
+          score = pca.transform(data)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

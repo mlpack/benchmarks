@@ -53,7 +53,8 @@ class PCA(object):
       Log.Info("Loading dataset", self.verbose)
       data = np.genfromtxt(self.dataset, delimiter=',')
 
-      with totalTimer:
+      try:
+        with totalTimer:
         # Find out what dimension we want.
         match = re.search('-d (\d+)', options)
 
@@ -74,6 +75,9 @@ class PCA(object):
         prep = mlpy.PCA(whiten = s)
         prep.learn(data)
         out = prep.transform(data, k)      
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

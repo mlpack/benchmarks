@@ -65,4 +65,8 @@ def timeout(fun, timeout=9000):
     Log.Warn("Script timed out after " + str(timeout) + " seconds")
     return -2
   else:
-    return q.get()
+    try:
+      r = q.get()
+    except Exception as e:
+      r = -1
+    return r

@@ -53,32 +53,36 @@ class NMF(object):
       Log.Info("Loading dataset", self.verbose)
       data = np.genfromtxt(self.dataset, delimiter=',')
 
-      with totalTimer:      
-        # Gather parameters.
-        seed = re.search("-s (\d+)", options)
-        maxIterations = re.search("-m (\d+)", options)
-        minResidue = re.search("-e ([^\s]+)", options)
-        updateRule = re.search("-u ([^\s]+)", options)
+      try:
+        with totalTimer:      
+          # Gather parameters.
+          seed = re.search("-s (\d+)", options)
+          maxIterations = re.search("-m (\d+)", options)
+          minResidue = re.search("-e ([^\s]+)", options)
+          updateRule = re.search("-u ([^\s]+)", options)
 
-        m = 10000 if not maxIterations else int(maxIterations.group(1))
-        e = 1e-05 if not maxIterations else int(minResidue.group(1))
+          m = 10000 if not maxIterations else int(maxIterations.group(1))
+          e = 1e-05 if not maxIterations else int(minResidue.group(1))
 
-        if updateRule:
-          u = updateRule.group(1)
-          if u != 'alspgrad':
-            Log.Fatal("Invalid update rules ('" + u + "'); must be 'alspgrad'.")
-            q.put(-1)
-            return -1
+          if updateRule:
+            u = updateRule.group(1)
+            if u != 'alspgrad':
+              Log.Fatal("Invalid update rules ('" + u + "'); must be 'alspgrad'.")
+              q.put(-1)
+              return -1
 
-        # Perform NMF with the specified update rules.
-        if seed:
-          s = int(seed.group(1))
-          model = ScikitNMF(n_components=2, init='random', max_iter = m, tol = e, random_state = s)
-        else:
-          model = ScikitNMF(n_components=2, init='nndsvdar', max_iter = m, tol = e)
+          # Perform NMF with the specified update rules.
+          if seed:
+            s = int(seed.group(1))
+            model = ScikitNMF(n_components=2, init='random', max_iter = m, tol = e, random_state = s)
+          else:
+            model = ScikitNMF(n_components=2, init='nndsvdar', max_iter = m, tol = e)
 
-        W = model.fit_transform(data)
-        H = model.components_
+          W = model.fit_transform(data)
+          H = model.components_
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

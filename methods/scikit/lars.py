@@ -54,15 +54,19 @@ class LARS(object):
       inputData = np.genfromtxt(self.dataset[0], delimiter=',')
       responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-      with totalTimer:
-        # Get all the parameters.
-        lambda1 = re.search("-l (\d+)", options)
-        lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+      try:
+        with totalTimer:
+          # Get all the parameters.
+          lambda1 = re.search("-l (\d+)", options)
+          lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
 
-        # Perform LARS.
-        model = LassoLars(alpha=lambda1)
-        model.fit(inputData, responsesData)
-        out = model.coef_
+          # Perform LARS.
+          model = LassoLars(alpha=lambda1)
+          model.fit(inputData, responsesData)
+          out = model.coef_
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

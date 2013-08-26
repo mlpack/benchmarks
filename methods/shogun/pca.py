@@ -51,44 +51,45 @@ class PCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def PCAShogun(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunPCAShogun():
+    def RunPCAShogun(q):
       totalTimer = Timer()
       
       # Load input dataset.
       Log.Info("Loading dataset", self.verbose)
       feat = RealFeatures(self.data.T)
 
-      with totalTimer:
-        # Find out what dimension we want.
-        match = re.search('-d (\d+)', options)
+      try:
+        with totalTimer:
+          # Find out what dimension we want.
+          match = re.search('-d (\d+)', options)
 
-        if not match:
-          k = self.data.shape[1]
-        else:
-          k = int(match.group(1))      
-          if (k > self.data.shape[1]):
-            Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
-                + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
-            return -1
+          if not match:
+            k = self.data.shape[1]
+          else:
+            k = int(match.group(1))      
+            if (k > self.data.shape[1]):
+              Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
+                  + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
+              q.put(-1)
+              return -1
 
-        # Get the options for running PCA.
-        s = True if options.find("-s") > -1 else False
+          # Get the options for running PCA.
+          s = True if options.find("-s") > -1 else False
 
-        # Perform PCA.
-        prep = ShogunPCA(s)
-        prep.set_target_dim(k)
-        prep.init(feat)
-        prep.apply_to_feature_matrix(feat)
+          # Perform PCA.
+          prep = ShogunPCA(s)
+          prep.set_target_dim(k)
+          prep.init(feat)
+          prep.apply_to_feature_matrix(feat)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunPCAShogun()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunPCAShogun, self.timeout)
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 

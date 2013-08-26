@@ -47,9 +47,7 @@ class LARS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LARSShogun(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunLARSShogun():
+    def RunLARSShogun(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -63,21 +61,23 @@ class LARS(object):
       lambda1 = re.search("-l (\d+)", options)
       lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
 
-      with totalTimer:
-        # Perform LARS.
-        model = LeastAngleRegression(False)
-        model.set_max_l1_norm(lambda1)
-        model.set_labels(responsesFeat)
-        model.train(inputFeat)
-        model.get_w(model.get_path_size() - 1)
+      try:
+        with totalTimer:
+          # Perform LARS.
+          model = LeastAngleRegression(False)
+          model.set_max_l1_norm(lambda1)
+          model.set_labels(responsesFeat)
+          model.train(inputFeat)
+          model.get_w(model.get_path_size() - 1)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunLARSShogun()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunLARSShogun, self.timeout)
 
   '''
   Perform Least Angle Regression. If the method has been successfully 

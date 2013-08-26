@@ -47,9 +47,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LinearRegressionShogun(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunLinearRegressionShogun():
+    def RunLinearRegressionShogun(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -64,19 +62,21 @@ class LinearRegression(object):
         y = X[:, (X.shape[1] - 1)]
         X = X[:,:-1]
 
-      with totalTimer:
-        # Perform linear regression.
-        model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))
-        model.train()
-        b = model.get_w()
+      try:
+        with totalTimer:
+          # Perform linear regression.
+          model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))
+          model.train()
+          b = model.get_w()
+      except Exception as e:
+        q.put(-1)
+        return -1
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunLinearRegressionShogun()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunLinearRegressionShogun, self.timeout)
 
   '''
   Perform Linear Regression. If the method has been successfully 

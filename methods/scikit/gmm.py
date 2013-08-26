@@ -61,11 +61,15 @@ class GMM(object):
       n = 250 if not n else int(n.group(1))
       s = 0 if not s else int(s.group(1))
 
-      # Create the Gaussian Mixture Model.
-      model = mixture.GMM(n_components=g, covariance_type='full', random_state=s, 
-          n_iter=n)
-      with totalTimer:
-        model.fit(dataPoints) 
+      try:
+        # Create the Gaussian Mixture Model.
+        model = mixture.GMM(n_components=g, covariance_type='full', random_state=s, 
+            n_iter=n)
+        with totalTimer:
+          model.fit(dataPoints)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

@@ -77,20 +77,24 @@ class KMEANS(object):
 
       m = 1000 if not maxIterations else int(maxIterations.group(1))
 
-      # Create the KMeans object and perform K-Means clustering.
-      with totalTimer:
-        if len(self.dataset) == 2:
-          kmeans = KMeans(k=centroids.shape[1], init=centroids, n_init=1, 
-              max_iter=m)
-        elif seed:
-          kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', 
-              n_init=1, max_iter=m, random_state=int(seed.group(1)))
-        else:
-          kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)      
+      try:
+        # Create the KMeans object and perform K-Means clustering.
+        with totalTimer:
+          if len(self.dataset) == 2:
+            kmeans = KMeans(k=centroids.shape[1], init=centroids, n_init=1, 
+                max_iter=m)
+          elif seed:
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', 
+                n_init=1, max_iter=m, random_state=int(seed.group(1)))
+          else:
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)      
 
-        kmeans.fit(data)
-        labels = kmeans.labels_
-        centers = kmeans.cluster_centers_
+          kmeans.fit(data)
+          labels = kmeans.labels_
+          centers = kmeans.cluster_centers_
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

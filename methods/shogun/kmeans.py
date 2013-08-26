@@ -98,9 +98,7 @@ class KMEANS(object):
         return time      
 
     else:
-
-      @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-      def RunKMeansShogun():
+      def RunKMeansShogun(q):
         import numpy as np
         from shogun.Distance import EuclideanDistance
         from shogun.Features import RealFeatures
@@ -117,22 +115,24 @@ class KMEANS(object):
         dataFeat = RealFeatures(data.T)
         distance = EuclideanDistance(dataFeat, dataFeat)
 
-        # Create the K-Means object and perform K-Means clustering.
-        with totalTimer:
-          model = Clustering.KMeans(int(clusters.group(1)), distance)
-          model.set_max_iter(maxIterations)
-          model.train()
+        try:
+          # Create the K-Means object and perform K-Means clustering.
+          with totalTimer:
+            model = Clustering.KMeans(int(clusters.group(1)), distance)
+            model.set_max_iter(maxIterations)
+            model.train()
 
-          labels = model.apply().get_labels()
-          centers = model.get_cluster_centers()
+            labels = model.apply().get_labels()
+            centers = model.get_cluster_centers()
+        except Exception as e:
+          q.put(-1)
+          return -1
 
-        return totalTimer.ElapsedTime()
+        time = totalTimer.ElapsedTime()
+        q.put(time)
+        return time
 
-      try:
-        return RunKMeansShogun()
-      except TimeoutError as e:
-        Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-        return -2
+      return timeout(RunKMeansShogun, self.timeout)
 
   '''
   Perform K-Means Clustering. If the method has been successfully 

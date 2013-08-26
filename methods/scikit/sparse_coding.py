@@ -57,11 +57,15 @@ class SparseCoding(object):
       l = re.search("-l (\d+)", options)
       l = 0 if not l else int(l.group(1))
 
-      with totalTimer:
-        # Perform Sparse Coding.
-        model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
-            transform_alpha=l)
-        code = model.transform(inputData)
+      try:
+        with totalTimer:
+          # Perform Sparse Coding.
+          model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
+              transform_alpha=l)
+          code = model.transform(inputData)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

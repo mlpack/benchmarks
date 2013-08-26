@@ -47,9 +47,7 @@ class GMM(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def GMMShogun(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunGMMShogun():
+    def RunGMMShogun(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -64,19 +62,21 @@ class GMM(object):
       g = 1 if not g else int(g.group(1))
       n = 250 if not n else int(n.group(1))
 
-      # Create the Gaussian Mixture Model.
-      model = Clustering.GMM(g)
-      model.set_features(dataFeat)
-      with totalTimer:
-        model.train_em(1e-9, n, 1e-9)
+      try:
+        # Create the Gaussian Mixture Model.
+        model = Clustering.GMM(g)
+        model.set_features(dataFeat)
+        with totalTimer:
+          model.train_em(1e-9, n, 1e-9)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunGMMShogun()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunGMMShogun, self.timeout)
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully 

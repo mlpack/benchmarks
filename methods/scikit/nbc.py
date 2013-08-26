@@ -58,12 +58,16 @@ class NBC(object):
       labels = trainData[:, (trainData.shape[1] - 1)]
       trainData = trainData[:,:-1]
 
-      with totalTimer:      
-        # Create and train the classifier.
-        nbc = MultinomialNB()
-        nbc.fit(trainData, labels)
-        # Run Naive Bayes Classifier on the test dataset.
-        nbc.predict(testData)
+      try:
+        with totalTimer:      
+          # Create and train the classifier.
+          nbc = MultinomialNB()
+          nbc.fit(trainData, labels)
+          # Run Naive Bayes Classifier on the test dataset.
+          nbc.predict(testData)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

@@ -85,15 +85,19 @@ class ALLKNN(object):
           return -1
         else:
           l = int(leafSize.group(1))
+  
+        try:
+          # Perform All K-Nearest-Neighbors.
+          model = NearestNeighbors(n_neighbors=k, algorithm='kd_tree', leaf_size=l)
+          model.fit(referenceData)
 
-        # Perform All K-Nearest-Neighbors.
-        model = NearestNeighbors(n_neighbors=k, algorithm='kd_tree', leaf_size=l)
-        model.fit(referenceData)
-
-        if len(self.dataset) == 2:
-          out = model.kneighbors(queryData, k, return_distance=True)
-        else:
-          out = model.kneighbors(referenceData, k, return_distance=True)
+          if len(self.dataset) == 2:
+            out = model.kneighbors(queryData, k, return_distance=True)
+          else:
+            out = model.kneighbors(referenceData, k, return_distance=True)
+        except Exception as e:
+          q.put(-1)
+          return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

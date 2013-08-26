@@ -68,12 +68,16 @@ class KMEANS(object):
         q.put(-1)
         return -1
 
-      with totalTimer:
-        # Create the KMeans object and perform K-Means clustering.
-        if seed:
-          kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
-        else:
-          kmeans = mlpy.kmeans(data, int(clusters.group(1)))
+      try:
+        with totalTimer:
+          # Create the KMeans object and perform K-Means clustering.
+          if seed:
+            kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
+          else:
+            kmeans = mlpy.kmeans(data, int(clusters.group(1)))
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

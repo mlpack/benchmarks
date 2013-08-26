@@ -47,9 +47,7 @@ class NBC(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NBCShogun(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunNBCShogun():
+    def RunNBCShogun(q):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
@@ -60,24 +58,26 @@ class NBC(object):
       # Labels are the last row of the training set.
       labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
 
-      with totalTimer:
-        # Transform into features.
-        trainFeat = RealFeatures(trainData[:,:-1].T)
-        testFeat = RealFeatures(testData.T)
+      try:
+        with totalTimer:
+          # Transform into features.
+          trainFeat = RealFeatures(trainData[:,:-1].T)
+          testFeat = RealFeatures(testData.T)
 
-        # Create and train the classifier.
-        nbc = GaussianNaiveBayes(trainFeat, labels)
-        nbc.train()
-        # Run Naive Bayes Classifier on the test dataset.
-        nbc.apply(testFeat).get_labels()
+          # Create and train the classifier.
+          nbc = GaussianNaiveBayes(trainFeat, labels)
+          nbc.train()
+          # Run Naive Bayes Classifier on the test dataset.
+          nbc.apply(testFeat).get_labels()
+      except Exception as e:
+        q.put(-1)
+        return -1
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunNBCShogun()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunNBCShogun, self.timeout)
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully 

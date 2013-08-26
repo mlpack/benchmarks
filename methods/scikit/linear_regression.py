@@ -61,11 +61,15 @@ class LinearRegression(object):
         y = X[:, (X.shape[1] - 1)]
         X = X[:,:-1]
 
-      with totalTimer:
-        # Perform linear regression.
-        model = SLinearRegression()
-        model.fit(X, y, n_jobs=-1)
-        b = model.coef_
+      try:
+        with totalTimer:
+          # Perform linear regression.
+          model = SLinearRegression()
+          model.fit(X, y, n_jobs=-1)
+          b = model.coef_
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

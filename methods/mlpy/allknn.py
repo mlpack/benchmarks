@@ -63,29 +63,33 @@ class ALLKNN(object):
       labels = referenceData[:, (referenceData.shape[1] - 1)]
       referenceData = referenceData[:,:-1]
 
-      with totalTimer:
-        # Get all the parameters.
-        k = re.search("-k (\d+)", options)
-        if not k:
-          Log.Fatal("Required option: Number of furthest neighbors to find.")
-          q.put(-1)
-          return -1
-        else:
-          k = int(k.group(1))
-          if (k < 1 or k > referenceData.shape[0]):
-            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
-              + "less ")
+      try:
+        with totalTimer:
+          # Get all the parameters.
+          k = re.search("-k (\d+)", options)
+          if not k:
+            Log.Fatal("Required option: Number of furthest neighbors to find.")
             q.put(-1)
             return -1
+          else:
+            k = int(k.group(1))
+            if (k < 1 or k > referenceData.shape[0]):
+              Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
+                + "less ")
+              q.put(-1)
+              return -1
 
-        # Perform All K-Nearest-Neighbors.
-        model = mlpy.KNN(k)
-        model.learn(referenceData, labels)
+          # Perform All K-Nearest-Neighbors.
+          model = mlpy.KNN(k)
+          model.learn(referenceData, labels)
 
-        if len(self.dataset) == 2:
-          out = model.pred(queryData)
-        else:
-          out = model.pred(referenceData)
+          if len(self.dataset) == 2:
+            out = model.pred(queryData)
+          else:
+            out = model.pred(referenceData)
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)

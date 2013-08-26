@@ -68,31 +68,35 @@ class KPCA(object):
 
         # Get the kernel type and make sure it is valid.
         kernel = re.search("-k ([^\s]+)", options)
-        if not kernel:
-          Log.Fatal("Choose kernel type, valid choices are 'linear', 'hyptan' " + 
-                "and 'polynomial'.")
-          q.put(-1)
-          return -1
-        elif kernel.group(1) == "linear":
-          model = KernelPCA(n_components=d, kernel="linear")
-        elif kernel.group(1) == "hyptan":
-          model = KernelPCA(n_components=d, kernel="sigmoid")
-        elif kernel.group(1) == "polynomial":
-          degree = re.search('-D (\d+)', options)
-          degree = 1 if not degree else int(degree.group(1))
+        try:        
+          if not kernel:
+            Log.Fatal("Choose kernel type, valid choices are 'linear', 'hyptan' " + 
+                  "and 'polynomial'.")
+            q.put(-1)
+            return -1
+          elif kernel.group(1) == "linear":
+            model = KernelPCA(n_components=d, kernel="linear")
+          elif kernel.group(1) == "hyptan":
+            model = KernelPCA(n_components=d, kernel="sigmoid")
+          elif kernel.group(1) == "polynomial":
+            degree = re.search('-D (\d+)', options)
+            degree = 1 if not degree else int(degree.group(1))
 
-          model = KernelPCA(n_components=d, kernel="poly", degree=degree)
-        else:
-          Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
-              "choices are 'linear', 'hyptan' and 'polynomial'.")
+            model = KernelPCA(n_components=d, kernel="poly", degree=degree)
+          else:
+            Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
+                "choices are 'linear', 'hyptan' and 'polynomial'.")
+            q.put(-1)
+            return -1
+            
+          out = model.fit_transform(data)
+        except Exception as e:
           q.put(-1)
           return -1
-          
-        out = model.fit_transform(data)
 
       time = totalTimer.ElapsedTime()
       q.put(time)
-      return -1
+      return time
 
     return timeout(RunKPCAScikit, self.timeout)
 

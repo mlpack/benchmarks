@@ -61,11 +61,15 @@ class LinearRegression(object):
         y = X[:, (X.shape[1] - 1)]
         X = X[:,:-1]
 
-      with totalTimer:
-        # Perform linear regression.
-        model = mlpy.OLS()
-        model.learn(X, y)
-        b =  model.beta()
+      try:
+        with totalTimer:
+          # Perform linear regression.
+          model = mlpy.OLS()
+          model.learn(X, y)
+          b =  model.beta()
+      except Exception as e:
+        q.put(-1)
+        return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)
