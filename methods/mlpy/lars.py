@@ -46,9 +46,7 @@ class LARS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LARSMlpy(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunLARSMlpy():
+    def RunLARSMlpy(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -62,13 +60,11 @@ class LARS(object):
         model.learn(inputData, responsesData)
         out = model.beta()
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunLARSMlpy()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunLARSMlpy, self.timeout)
 
   '''
   Perform Least Angle Regression. If the method has been successfully completed 

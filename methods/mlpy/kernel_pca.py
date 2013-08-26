@@ -46,9 +46,7 @@ class KPCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KPCAMlpy(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunKPCAMlpy():
+    def RunKPCAMlpy(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -65,6 +63,7 @@ class KPCA(object):
           if (d > data.shape[1]):
             Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
               + "than existing dimensionality (" + str(data.shape[1]) + ")!")
+            q.put(-1)
             return -1    
 
         # Get the kernel type and make sure it is valid.
@@ -72,6 +71,7 @@ class KPCA(object):
         if not kernel:
             Log.Fatal("Choose kernel type, valid choices are 'polynomial', " + 
                   "'gaussian', 'linear' and 'hyptan'.")
+            q.put(-1)
             return -1
         elif kernel.group(1) == "polynomial":
           degree = re.search('-D (\d+)', options)
@@ -87,6 +87,7 @@ class KPCA(object):
         else:
           Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
                   "choices are 'polynomial', 'gaussian', 'linear' and 'hyptan'.")
+          q.put(-1)
           return -1
 
         # Perform Kernel Principal Components Analysis.
@@ -94,13 +95,11 @@ class KPCA(object):
         model.learn(kernel)
         out = model.transform(kernel, k=d)
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunKPCAMlpy()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunKPCAMlpy, self.timeout)
 
   '''
   Perform Kernel Principal Components Analysis. If the method has been 

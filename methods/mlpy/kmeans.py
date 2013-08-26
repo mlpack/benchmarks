@@ -46,9 +46,7 @@ class KMEANS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KMeansMlpy(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunKMeansMlpy():
+    def RunKMeansMlpy(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -62,10 +60,12 @@ class KMEANS(object):
       # Now do validation of options.
       if not clusters:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
+        q.put(-1)
         return -1
       elif int(clusters.group(1)) < 1:
         Log.Fatal("Invalid number of clusters requested! Must be greater than or "
             + "equal to 1.")
+        q.put(-1)
         return -1
 
       with totalTimer:
@@ -75,13 +75,11 @@ class KMEANS(object):
         else:
           kmeans = mlpy.kmeans(data, int(clusters.group(1)))
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunKMeansMlpy()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunKMeansMlpy, self.timeout)
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed 

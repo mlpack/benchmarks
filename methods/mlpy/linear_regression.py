@@ -46,9 +46,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LinearRegressionMlpy(self, options):
-
-    @timeout(self.timeout, os.strerror(errno.ETIMEDOUT))
-    def RunLinearRegressionMlpy():
+    def RunLinearRegressionMlpy(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -69,13 +67,11 @@ class LinearRegression(object):
         model.learn(X, y)
         b =  model.beta()
 
-      return totalTimer.ElapsedTime()
+      time = totalTimer.ElapsedTime()
+      q.put(time)
+      return time
 
-    try:
-      return RunLinearRegressionMlpy()
-    except TimeoutError as e:
-      Log.Warn("Script timed out after " + str(self.timeout) + " seconds")
-      return -2
+    return timeout(RunLinearRegressionMlpy, self.timeout)
 
   '''
   Perform Linear Regression. If the method has been successfully completed 

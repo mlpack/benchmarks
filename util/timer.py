@@ -6,11 +6,21 @@
 '''
 
 from __future__ import with_statement
-import time
-from functools import wraps
-import errno
 import os
-import signal
+import sys
+import inspect
+
+# Import the util path, this method even works if the path contains symlinks to 
+# modules.
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "util")))
+if cmd_subfolder not in sys.path:
+  sys.path.insert(0, cmd_subfolder)
+
+from log import *
+
+import time
+from multiprocessing import Process, Queue
 
 '''
 This class implements three functions to measure the time.
@@ -35,32 +45,24 @@ class Timer(object):
     return self.__finish - self.__start
 
 '''
-This Class provides a timeout error.
-'''
-class TimeoutError(Exception):
-    errno = 23
-
-'''
 This function implements a timeout for a function call.
 
-@param seconds - The time until the timeout. Default 5000 seconds.
-@param errorMessage - Message for the Error when the timeout is invoked.
-@return Timeout error.
+@param fun - Start the process with the given function.
+@param timeout - The time until the timeout. Default 9000 seconds.
+@return The return value of the process.
 '''
-def timeout(seconds=5000, errorMessage=os.strerror(errno.ETIME)):
-    def decorator(func):
-        def handleTimeout(signum, frame):
-            raise TimeoutError(errorMessage)
+def timeout(fun, timeout=9000):
+  q = Queue()
+  p = Process(target=fun, args=(q,))
+  p.start()
+  p.join(timeout)
 
-        def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, handleTimeout)
-            signal.setitimer(signal.ITIMER_REAL,seconds)
-            try:
-                result = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-            return result
+  if p.is_alive():
+    # Terminate the process.
+    p.terminate()
+    p.join()
 
-        return wraps(func)(wrapper)
-
-    return decorator
+    Log.Warn("Script timed out after " + str(timeout) + " seconds")
+    return -2
+  else:
+    return q.get()
