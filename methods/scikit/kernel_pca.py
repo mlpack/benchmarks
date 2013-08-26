@@ -46,7 +46,7 @@ class KPCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KPCAScikit(self, options):
-    def RunKPCAScikit():
+    def RunKPCAScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -94,7 +94,7 @@ class KPCA(object):
       q.put(time)
       return -1
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunKPCAScikit, self.timeout)
 
   '''
   Perform Kernel Principal Components Analysis. If the method has been 

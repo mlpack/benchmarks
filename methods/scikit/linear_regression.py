@@ -46,7 +46,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LinearRegressionScikit(self, options):
-    def RunLinearRegressionScikit():
+    def RunLinearRegressionScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -71,7 +71,7 @@ class LinearRegression(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunLinearRegressionScikit, self.timeout)
 
   '''
   Perform Linear Regression. If the method has been successfully completed 

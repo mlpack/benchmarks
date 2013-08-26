@@ -46,7 +46,7 @@ class ICA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def ICAScikit(self, options):
-    def RunICAScikit():
+    def RunICAScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -65,7 +65,7 @@ class ICA(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunICAScikit, self.timeout)
 
   '''
   Perform independent component analysis. If the method has been successfully 

@@ -99,7 +99,7 @@ class ALLKNN(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunAllKnnScikit, self.timeout)
 
   '''
   Perform All K-Nearest-Neighbors. If the method has been successfully completed 

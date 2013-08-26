@@ -46,7 +46,7 @@ class SparseCoding(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def SparseCodingScikit(self, options):
-    def RunSparseCodingScikit():
+    def RunSparseCodingScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -67,7 +67,7 @@ class SparseCoding(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunSparseCodingScikit, self.timeout)
 
   '''
   Perform Sparse Coding. If the method has been successfully completed 

@@ -46,7 +46,7 @@ class GMM(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def GMMScikit(self, options):
-    def RunGMMScikit():
+    def RunGMMScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -71,7 +71,7 @@ class GMM(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunGMMScikit, self.timeout)
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully completed 

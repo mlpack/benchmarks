@@ -46,7 +46,7 @@ class PCA(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def PCAScikit(self, options):
-    def RunPCAScikit():
+    def RunPCAScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -79,7 +79,7 @@ class PCA(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunPCAScikit, self.timeout)
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 

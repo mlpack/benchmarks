@@ -46,7 +46,7 @@ class NMF(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NMFScikit(self, options):
-    def RunNMFScikit():
+    def RunNMFScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -84,7 +84,7 @@ class NMF(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunNMFScikit, self.timeout)
 
   '''
   Perform Non-negative Matrix Factorization. If the method has been successfully 

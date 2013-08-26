@@ -46,7 +46,7 @@ class LARS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def LARSScikit(self, options):
-    def RunLARSScikit():
+    def RunLARSScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -68,7 +68,7 @@ class LARS(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunLARSScikit, self.timeout)
 
   '''
   Perform Least Angle Regression. If the method has been successfully completed 

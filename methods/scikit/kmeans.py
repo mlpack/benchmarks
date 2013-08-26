@@ -46,7 +46,7 @@ class KMEANS(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def KMeansScikit(self, options):
-    def RunKMeansScikit():
+    def RunKMeansScikit(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -96,7 +96,7 @@ class KMEANS(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunKMeansScikit, self.timeout)
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed 

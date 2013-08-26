@@ -46,7 +46,7 @@ class NBC(object):
   @return - Elapsed time in seconds or -1 if the method was not successful.
   '''
   def NBCScikit(self, options):
-    def RunNBCScikit():
+    def RunNBCScikit(q):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
@@ -69,7 +69,7 @@ class NBC(object):
       q.put(time)
       return time
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    return timeout(RunNBCScikit, self.timeout)
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully 
