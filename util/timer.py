@@ -66,7 +66,7 @@ def timeout(fun, timeout=9000):
     return -2
   else:
     try:
-      r = q.get()
+      r = q.get(timeout=3)
     except Exception as e:
       r = -1
     return r
