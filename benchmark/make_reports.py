@@ -116,8 +116,7 @@ def CreateMemoryContent(results):
       memoryValues["name"] = result[7]
       memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
       
-      content = str(Profiler.MassifMemoryUsageReport(str(result[5])))
-      content = content.lstrip(" ")
+      content = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(b" ")
       memoryValues["content"] = "content"
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
@@ -141,8 +140,7 @@ def CreateMethodInfo(results, methodName):
     infoValues = {}
     infoValues["name"] = methodName
     infoValues["nameID"] = methodName + str(hash(datetime.datetime.now()))
-    content = str(results[0][2])
-    content = content.lstrip(" ")
+    content = results[0][2].lstrip(b" ")
     infoValues["content"] = content
     methodInfo = panelTemplate % infoValues
   
