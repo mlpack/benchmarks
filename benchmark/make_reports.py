@@ -117,7 +117,7 @@ def CreateMemoryContent(results):
       memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
       
       content = Profiler.MassifMemoryUsageReport(str(result[5])).lstrip(b" ")
-      memoryValues["content"] = "content"
+      memoryValues["content"] = content
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
       CreateMassifChart(result[5], "reports/" + filename)
