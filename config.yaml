@@ -1121,8 +1121,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
-                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
-                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                      'datasets/1000000-10-randu.csv']
               options: '-k 3 -s 42'
     GMM:
         run: true
