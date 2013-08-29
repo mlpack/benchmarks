@@ -334,8 +334,12 @@ def GetMaxIndex():
 '''
 Adjust the pagination for all index.html files.
 '''
-def AdjustPagination():
+def AdjustPagination(maxFiles):
   maxId, files = GetMaxIndex()
+
+  delFiles = []
+  if maxId >= maxFiles:
+    maxId -= 1
 
   for i in range(1, files + 1):
     with open("reports/index_" + str(i) + ".html", "r+") as fid:
@@ -357,7 +361,17 @@ def AdjustPagination():
       content += paginationTemplate
       fid.seek(0)
       fid.write(content)
-      fid.truncate()  
+      fid.truncate()
+
+      # Delete unneeded files.
+      if i < maxFiles:
+        delFiles.extend(re.findall('src="img/(.*?)"', content))
+      else:
+        c = re.findall('src="img/(.*?)"', content)
+        delFiles = ["reports/img" + img for img in c if img not in delFiles]
+        delFiles.append("reports/index_" + str(i) + ".html")
+        fid.close()
+        RemoveDataset(delFiles)
 
 '''
 Get the pagination for the new index.html file.
@@ -380,10 +394,15 @@ Rename the index_number.html files.
 '''
 def ShiftReports(): 
   maxId, files = GetMaxIndex()
-  if maxId > 0 and os.path.isfile("reports/index.html"):
-    os.rename("reports/index.html", "reports/index_" + str(maxId + 1) + ".html")
-  elif files > 0 and os.path.isfile("reports/index.html"):
-    os.rename("reports/index.html", "reports/index_1.html")
+
+  for i in range(files, 0, -1):
+    fileName = "reports/index_" + str(i) + ".html"
+    if CheckFileAvailable(fileName):
+        os.rename(fileName, "reports/index_" + str(i + 1) + ".html")
+
+  fileName = "reports/index.html"
+  if CheckFileAvailable(fileName):
+    os.rename(fileName, "reports/index_1.html")
 
 '''
 Create the new report.
@@ -393,6 +412,7 @@ Create the new report.
 def Main(configfile):
   # Reports settings.
   database = "reports/benchmark.db"
+  keepReports = 3
 
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
@@ -406,12 +426,14 @@ def Main(configfile):
     for key, value in streamData["general"]:
       if key == "database":
         database = value
+      elif key == "keepReports":
+        keepReports = value
 
   db = Database(database)
   db.CreateTables()
 
   ShiftReports()
-  AdjustPagination()
+  AdjustPagination(keepReports)
 
   # Get the values for the new index.html file.
   reportValues = {}
