@@ -72,7 +72,7 @@ class KMEANS(object):
 
     # Return the elapsed time.
     timer = self.parseTimer(s)
-    if not timer:
+    if not timer or timer < 0:
       Log.Fatal("Can't parse the timer")
       return -1
     else:
