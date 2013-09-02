@@ -92,16 +92,9 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 
   # Use this variable to get use the data for the right library.
   l = 0 
-
   # Iterate through the data and plot the bar chart.
-  for result in results:
-    legendPosition = 0
-    legendBegin = nextBar
-    
+  for result in results:    
     for i, data in enumerate(result):
-      # Use this variable to indicate if we have to store the bar handler.
-      check = 0
-
       # The time value.
       time = data[3]
       # The name of the dataset.
@@ -114,62 +107,67 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
         timingData[dataset] = ['-' for x in range(len(libraries))]
         timingData[dataset][l] = time
 
-      # We can only plot scalar values so we job over the other.
+      # We can only plot scalar values so we jump over the other.
       if time == "failure":
         failure += 1
         continue
       elif str(time).count(">") > 0:
         timeouts += 1
-        continue      
+        continue
 
       totalTime += time
-
-      # Use the same color for the same dataset and save the timing to find 
-      # out the best time.
-      if dataset in color:
-        barColor = color[dataset]
-
-        # Use the time only if its lower then the old time value.
-        timming, lib = bestTiming[dataset]
-        if timming > time:
-          bestTiming[dataset] = (time, libraries[l])
-      else:
-        check = 1
-        barColor = colors[i%len(colors)]
-        color[dataset] = barColor
-        legendNames.append(dataset)
-
-        bestTiming[dataset] = (time, libraries[l])
-
-      # Plot the bar chart.
-      handler = plt.bar(nextBar, time, barWidth, alpha=opacity, color=barColor, 
-          label=dataset, fill=fill, lw=0.2)
-
-      # Increase the width for the next bar.
-      nextBar += barWidth
-      legendPosition += barWidth
-
-      # Save the bar handler for the legend.
-      if check == 1:
-        chartHandler.append(handler)
-
-    # Set the right lable postion in the legend.
-    legendIndex.append(legendBegin + (legendPosition / 2))
-    nextBar += (barWidth * 2)
-
-    # Next library for the next round.
+      bestTiming[dataset] = (time, libraries[l])
     l += 1
 
+  timingData = collections.OrderedDict(sorted(timingData.items()))
+
+  tmp = timingData.copy()
+  if failure > 0 or timeouts > 0:
+    # Get the maximum value of the results.
+    values = [item for sublist in timingData.values() for item in sublist]
+    maxValue = [v if isFloat(v) else 1 for v in values]
+    maxValue = max(maxValue)
+  else:
+    maxValue = 0
+
+  for key, values in timingData.items():
+    l = 0
+    legendIndex.append(nextBar)
+    for value in values:
+      color = colors[l % len(colors)]
+
+      if isFloat(value):
+        plt.bar(nextBar, value, barWidth, alpha=opacity, color=color, 
+            fill=fill,lw=0.2)
+      else:
+        plt.bar(nextBar, maxValue, barWidth, alpha=opacity, color="gray", 
+            fill=fill, lw=0.2)
+
+      time = value if isFloat(value) else 10
+
+      nextBar += barWidth
+      l += 1
+    nextBar += (2 * barWidth)
+
+  # Create a proxy artist for the legend.
+  handler = []
+  for l, library in enumerate(libraries):
+    color = colors[l % len(colors)]
+    handler.append(plt.Rectangle((0, 0), 1, 1, fc=color, alpha=0.6))
+
+  handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
+
   # Set the labels for the x-axis.
-  plt.xticks(legendIndex , libraries)
+  plt.xticks(legendIndex , [' ' for x in range(len(timingData.keys()))])
+  plt.xlabel("Dataset", color="#6e6e6e")
 
   # Set the color and the font of the x-axis and y-axis labels.
   ax.tick_params(axis='both', which='major', labelsize=8, labelcolor="#6e6e6e")
   ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor="#6e6e6e")
 
   # Create the legend above the bar chart.
-  lgd = ax.legend(chartHandler, legendNames, loc='upper center', 
-    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(legendNames) / 6)), fancybox=True, 
+  lgd = ax.legend(handler, libraries + ["failure/ timeout"], loc='upper center', 
+    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(libraries) / 6)), fancybox=True, 
     shadow=False, ncol=6, fontsize=8)
   lgd.get_frame().set_linewidth(0)
   for label in lgd.get_texts():
@@ -178,7 +176,6 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   # Set axis labels.
   plt.ylabel("time [s]", color="#6e6e6e")
 
-  
   # Save the bar chart.
   fig.tight_layout()
   fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
@@ -191,8 +188,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
     if data[1] == bestlib:
       bestLibCount += 1
   
-  return (len(color), totalTime, failure, timeouts, bestLibCount, 
-    collections.OrderedDict(sorted(timingData.items())))
+  return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData)
 
 '''
 Generate a line chart with the specified informations.
@@ -201,7 +197,7 @@ Generate a line chart with the specified informations.
 @param fileName - The filename of the line chart.
 @param backgroundColor - The color of the image background.
 '''
-def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",  
+def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF", 
     windowWidth=8.1, windowHeight=1.3):
   def NormalizeData(data):
     i = 0
@@ -218,7 +214,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
   if not CheckFileAvailable(fileName):
     # Line chart settings.
     lineWidth = 1.5
-    opacity = 0.9    
+    opacity = 0.9
     gridLineWidth = 0.2
 
     # Create figure and set the color.
