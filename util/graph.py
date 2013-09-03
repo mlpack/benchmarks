@@ -49,7 +49,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   opacity = 0.9
   fill = True
   windowWidth = 8.1
-  windowHeight = 1.3
+  windowHeight = 3.3
   gridLineWidth = 0.2
 
   # Create figure and set the color.
@@ -147,7 +147,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 
       nextBar += barWidth
       l += 1
-    nextBar += (2 * barWidth)
+    nextBar += (4 * barWidth)
 
   # Create a proxy artist for the legend.
   handler = []
@@ -158,8 +158,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
 
   # Set the labels for the x-axis.
-  plt.xticks(legendIndex , [' ' for x in range(len(timingData.keys()))])
-  plt.xlabel("Dataset", color="#6e6e6e")
+  plt.xticks(legendIndex , timingData.keys(), rotation=30, ha='right')
 
   # Set the color and the font of the x-axis and y-axis labels.
   ax.tick_params(axis='both', which='major', labelsize=8, labelcolor="#6e6e6e")
