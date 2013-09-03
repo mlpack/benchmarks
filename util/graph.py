@@ -158,7 +158,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
 
   # Set the labels for the x-axis.
-  plt.xticks(legendIndex , timingData.keys(), rotation=30, ha='right')
+  plt.xticks(legendIndex , list(timingData.keys()), rotation=30, ha='right')
 
   # Set the color and the font of the x-axis and y-axis labels.
   ax.tick_params(axis='both', which='major', labelsize=8, labelcolor="#6e6e6e")
