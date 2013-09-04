@@ -76,8 +76,8 @@ public class PCA {
       pcaEvaluator.setMaximumAttributeNames(-1);
 
       // Scaled X such that the variance of each feature is 1.
-      String scale = Utils.getOption('s', args);
-      if (scale.length() == 0) {
+      boolean scale = Utils.getFlag('s', args);
+      if (scale) {
         pcaEvaluator.setCenterData(true);
       } else {
         pcaEvaluator.setCenterData(false);
