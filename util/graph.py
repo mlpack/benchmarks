@@ -87,7 +87,6 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   failure = 0
 
   # Use this data structures to generate the timing table and the progress bar.
-  bestTiming = {}
   timingData = {}
 
   # Use this variable to get use the data for the right library.
@@ -116,7 +115,6 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
         continue
 
       totalTime += time
-      bestTiming[dataset] = (time, libraries[l])
     l += 1
 
   timingData = collections.OrderedDict(sorted(timingData.items()))
@@ -183,9 +181,15 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 
   # Count the time in which bestlib is the best.
   bestLibCount = 0
-  for dataset, data in bestTiming.items():
-    if data[1] == bestlib:
-      bestLibCount += 1
+  try:
+    bestLibIndex = libraries.index(bestlib)
+  except ValueError:
+    pass
+  else:
+    for dataset, results in timingData.items():
+      results = [v if isFloat(v) else float('Inf') for v in results]
+      if bestLibIndex == results.index(min(results)):
+        bestLibCount += 1
   
   return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData)
 
