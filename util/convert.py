@@ -25,8 +25,8 @@ class Convert(object):
   '''
   Convert dataset to a file with the given extension.
 
-  @para dataset - Convert this dataset.
-  @para extension - Convert dataset to a new file with this extension.
+  @param dataset - Convert this dataset.
+  @param extension - Convert dataset to a new file with this extension.
   '''
   def __init__(self, dataset, extension):
     self.extension = extension
@@ -37,8 +37,8 @@ class Convert(object):
   '''
   Decide which method we have to call to modify the dataset.
 
-  @para dataset - Convert this dataset.
-  @para extension - Convert dataset to a new file with this extension.
+  @param dataset - Convert this dataset.
+  @param extension - Convert dataset to a new file with this extension.
   '''
   def ModifyDataset(self, dataset, extension):
     dataExtension = os.path.splitext(dataset)[1][1:]
@@ -53,8 +53,8 @@ class Convert(object):
   '''
   Add an header to the dataset file.
 
-  @para data - This dataset contains the information.
-  @para newData - This dataset contais the information and the header.
+  @param data - This dataset contains the information.
+  @param newData - This dataset contais the information and the header.
   '''
   def AddArffHeader(self, data, newData):
     # Extract the dataset name.

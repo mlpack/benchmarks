@@ -91,6 +91,7 @@ class Log(object):
   Truncate the String into lines of 80 characters.
 
   @param line - The line to wrap.
+  @return The truncated string.
   '''
   @staticmethod
   def WrapLine(line):

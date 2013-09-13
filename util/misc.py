@@ -81,6 +81,7 @@ a free place or for the matching name.
 @param dataMatrix - In this Matrix we search for the right position.
 @param datasetName - Name of the dataset.
 @param datasetCount - Maximum dataset count.
+@return The correct row.
 '''
 def FindRightRow(dataMatrix, datasetName, datasetCount):
   for row in range(datasetCount):
@@ -91,7 +92,7 @@ def FindRightRow(dataMatrix, datasetName, datasetCount):
 Collect informations for the given dataset.
 
 @param path - Path to the dataset.
-@return Tuble which contains the informations about the given dataset.
+@return Tuple which contains the informations about the given dataset.
 '''
 def DatasetInfo(path):
   if not isinstance(path, str):

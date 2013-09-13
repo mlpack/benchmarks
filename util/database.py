@@ -149,6 +149,7 @@ class Database:
   Add a new build record to the builds table.
 
   @param libaryId - The id of the library.
+  @return The new build id.
   '''
   def NewBuild(self, libaryId):
     with self.con:
@@ -188,7 +189,7 @@ class Database:
   '''
   Get the informations of the given build.
 
-  @param id - The if of the build.
+  @param id - The id of the build.
   @return The records.
   '''
   def GetBuild(self, id):
@@ -230,9 +231,9 @@ class Database:
   @param methodId - The id of the method.
   '''
   def NewResult(self, buildId, libaryId, time, var, datasetId, methodId):
-     with self.con:
+    with self.con:
       self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)", 
-          (buildId, libaryId, time, var, datasetId, methodId))
+        (buildId, libaryId, time, var, datasetId, methodId))
 
   '''
   Get the method id from the methods table with the given name and parameters.
@@ -347,6 +348,7 @@ class Database:
   '''
   Add a new memory record to the memory table.
 
+  @param buildId - The build id.
   @param libaryId - The id ot the library.
   @param methodId - The id of the method
   @param datasetId - The id of the dataset.

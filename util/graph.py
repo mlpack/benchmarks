@@ -41,6 +41,7 @@ Generate a bar chart with the specified informations.
 @param bestlib - The name of the library which should be compared with the other
 libraries.
 @param backgroundColor - The color of the image background.
+@return Result informations.
 '''
 def GenerateBarChart(results, libraries, fileName, bestlib="mlpack", 
     backgroundColor="#FFFFFF"):
@@ -200,6 +201,8 @@ Generate a line chart with the specified informations.
 @param data - List which contains the values for the line chart.
 @param fileName - The filename of the line chart.
 @param backgroundColor - The color of the image background.
+@param windowWidth - The width of the chart.
+@prama windowHeight - The height of the chart.
 '''
 def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF", 
     windowWidth=8.1, windowHeight=1.3):

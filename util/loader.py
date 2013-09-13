@@ -15,6 +15,8 @@ class Loader(object):
 
   '''
   Import a module from a path.
+
+  @param path - The path to the module.
   '''
   @staticmethod
   def ImportModuleFromPath(path):

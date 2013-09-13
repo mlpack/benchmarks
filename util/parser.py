@@ -159,10 +159,11 @@ class Parser(object):
 
   '''
   Show a value is not set warn message.
+
   @param key - The name of the key.
   @param streamNum - The number of the stream.
   '''
-  def KeyWarnMsg(self, key, streamNum = 0):
+  def KeyWarnMsg(self, key, streamNum=0):
     if streamNum == 0:
       Log.Warn("No [" + key + "] key, use default value.", self.verbose)
     else: 
