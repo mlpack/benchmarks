@@ -1,7 +1,10 @@
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.2)
 ifndef PYTHON_BIN
-  PYTHON_BIN := $(shell which python)
+  PYTHON_BIN := $(shell which python3)
+  ifndef PYTHON_BIN
+    PYTHON_BIN := $(shell which python)
+  endif
 endif
 
 ifdef PYTHON_BIN
@@ -66,12 +69,12 @@ scripts: .scripts
 .check:
 ifndef YAML_INSTALLED
 	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'yaml' module was not \
-	found please install the yaml module to start the benchmark script."
+	found; please install the yaml module to start the benchmark script."
 	@exit 1
 endif
 
 ifndef PYTHON_BIN
-	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) Python not found please install \
+	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) Python not found; please install \
 	python to start the benchmark script."
 	@exit 1
 else
