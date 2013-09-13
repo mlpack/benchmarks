@@ -80,7 +80,8 @@ ifndef PYTHON_BIN
 else
 ifndef PYTHON_VERSION
 	@echo "$(WARN_COLOR)[WARN]$(NO_COLOR) The benchmark script requires \
-	python3.2+ to run properly."
+	python3.2+ to run all tests properly; however, some modules may still \
+	work with older python versions."
 endif
 endif
 
