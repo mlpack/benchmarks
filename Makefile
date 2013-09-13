@@ -37,8 +37,8 @@ export VALGRIND_BIN=/usr/bin/valgrind
 
 # Color settings.
 NO_COLOR=\033[0m
-ERROR_COLOR=\x1b[31;01m
-WARN_COLOR=\x1b[33;01m
+ERROR_COLOR=\033[0;31m
+WARN_COLOR=\033[0;33m
 
 .PHONY: help test run memory scripts reports
 
