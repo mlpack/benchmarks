@@ -343,6 +343,8 @@ def GetMaxIndex():
 
 '''
 Adjust the pagination for all index.html files.
+
+@param maxFiles - The number of files to keep.
 '''
 def AdjustPagination(maxFiles):
   maxId, files = GetMaxIndex()
@@ -352,36 +354,40 @@ def AdjustPagination(maxFiles):
     maxId -= 1
 
   for i in range(1, files + 1):
-    with open("reports/index_" + str(i) + ".html", "r+") as fid:
-      content = fid.read()
-      pattern = '<ul class="pagination">'
-      pos = content.rfind(pattern)
-      content = content[:pos+len(pattern)]
+    try:
+      with open("reports/index_" + str(i) + ".html", "r+") as fid:
+        content = fid.read()
+        pattern = '<ul class="pagination">'
+        pos = content.rfind(pattern)
+        content = content[:pos+len(pattern)]
 
-      if i == 1:
-        content += '<li class="previous"><a href="index.html">&larr; Newer</a></li>\n'
-      else:
-        content += '<li class="previous"><a href="index_' + str(i - 1) + '.html">&larr; Newer</a></li>\n'
-      
-      if i == maxId:
-        content += '<li class="next disabled"><a href="#">Older &rarr;</a></li>'
-      else:
-        content += '<li class="next"><a href="index_' + str(i + 1) + '.html">Older &rarr;</a></li>\n'
+        if i == 1:
+          content += '<li class="previous"><a href="index.html">&larr; Newer</a></li>\n'
+        else:
+          content += '<li class="previous"><a href="index_' + str(i - 1) + '.html">&larr; Newer</a></li>\n'
+        
+        if i == maxId:
+          content += '<li class="next disabled"><a href="#">Older &rarr;</a></li>'
+        else:
+          content += '<li class="next"><a href="index_' + str(i + 1) + '.html">Older &rarr;</a></li>\n'
 
-      content += paginationTemplate
-      fid.seek(0)
-      fid.write(content)
-      fid.truncate()
+        content += paginationTemplate
+        fid.seek(0)
+        fid.write(content)
+        fid.truncate()
 
-      # Delete unneeded files.
-      if i < maxFiles:
-        delFiles.extend(re.findall('src="img/(.*?)"', content))
-      else:
-        c = re.findall('src="img/(.*?)"', content)
-        delFiles = ["reports/img" + img for img in c if img not in delFiles]
-        delFiles.append("reports/index_" + str(i) + ".html")
-        fid.close()
-        RemoveDataset(delFiles)
+        # Delete unneeded files.
+        if i < maxFiles:
+          delFiles.extend(re.findall('src="img/(.*?)"', content))
+        else:
+          c = re.findall('src="img/(.*?)"', content)
+          delFiles = ["reports/img" + img for img in c if img not in delFiles]
+          delFiles.append("reports/index_" + str(i) + ".html")
+          fid.close()
+          RemoveDataset(delFiles)
+    except IOError as e:
+      Log.Fatal("Exception: " + str(e))
+      return
 
 '''
 Get the pagination for the new index.html file.

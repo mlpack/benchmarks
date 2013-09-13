@@ -80,7 +80,7 @@ def GetDataset(dataset, format):
 '''
 Count all datasets to determine the dataset size.
 
-@param libraries - Contains the Dataset List.
+@param libraries - Contains the dataset list.
 @return Dataset count.
 '''
 def CountLibrariesDatasets(libraries):

@@ -177,10 +177,9 @@ class Parser(object):
   @param streamNum - The number of the stream.
   @return False
   '''
-  def CallableMethodErroMsg(self, methodName, methodScript, streamNum):
-    Log.Fatal("Stream number: " + str(streamNum) + " the method: " + methodName 
+  def CallableMethodWarnMsg(self, methodName, methodScript, streamNum):
+    Log.Warn("Stream number: " + str(streamNum) + " the method: " + methodName 
         + " in script: " + methodScript + " is not callable.")
-    return False
 
   '''
   Show a file not available error message.
@@ -207,7 +206,12 @@ class Parser(object):
     except IOError:
       return False
 
-    module = Loader.ImportModuleFromPath(methodScript)
+    try:
+      module = Loader.ImportModuleFromPath(methodScript)
+    except Exception as e:
+      Log.Warn("Exception: " + str(e))
+      return False
+
     methodClass = getattr(module, methodName, None)
     if callable(methodClass):
       if getattr(methodClass, "RunMethod", None):
@@ -291,7 +295,7 @@ class Parser(object):
                 return self.KeyErrorMsg("datasets", streamNum)
 
               if not self.CheckIfCallable(key, value["script"]):
-                return self.CallableMethodErroMsg(key, value["script"], streamNum)
+                self.CallableMethodWarnMsg(key, value["script"], streamNum)
 
           except AttributeError as e:
             return self.KeyErrorMsg("methods", streamNum)

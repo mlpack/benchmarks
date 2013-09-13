@@ -15,6 +15,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from misc import *
+from log import *
 
 import numpy as np
 import matplotlib
@@ -303,8 +304,12 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
     ax.spines['bottom'].set_linewidth(gridLineWidth)
 
     # Read the massif logfile.
-    with open(massiflogFile, "r") as fid:
-      content = fid.read()
+    try:
+      with open(massiflogFile, "r") as fid:
+        content = fid.read()
+    except IOError as e:
+      Log.Fatal("Exception: " + str(e))
+      return
 
     # Parse the massif logfile.
     memHeapB = [(int(i) / 1024) + 0.0001 for i in re.findall(r"mem_heap_B=(\d*)", content)]

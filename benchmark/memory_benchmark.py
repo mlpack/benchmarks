@@ -66,6 +66,13 @@ def GetDataset(dataset, format):
 
   return (datasetList, modifiedList)
 
+'''
+Create the new memory report.
+
+@param configfile - Create the reports with the given configuration file.
+@param blocks - Run only the specified blocks.
+@param log - If True save the reports otherwise use stdout and print the reports.
+'''
 def Main(configfile, blocks, log):
   # Benchmark settings.
   timeout = 23000
