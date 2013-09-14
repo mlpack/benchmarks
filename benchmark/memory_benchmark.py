@@ -72,8 +72,10 @@ Create the new memory report.
 @param configfile - Create the reports with the given configuration file.
 @param blocks - Run only the specified blocks.
 @param log - If True save the reports otherwise use stdout and print the reports.
+@param methodBlocks - Run only the specified methods.
+@param update - Update the memory records in the database.
 '''
-def Main(configfile, blocks, log):
+def Main(configfile, blocks, log, methodBlocks, update):
   # Benchmark settings.
   timeout = 23000
   database = "reports/benchmark.db"
@@ -109,77 +111,92 @@ def Main(configfile, blocks, log):
   for method, sets in streamData.items():
     if method == "general":
       continue
-    Log.Info("Method: " + method)    
-    for options, libraries in sets.items():
-      Log.Info('Options: ' + (options if options != '' else 'None'))
+    if not methodBlocks or method in methodBlocks:
+      Log.Info("Method: " + method)
+      for options, libraries in sets.items():
+        Log.Info('Options: ' + (options if options != '' else 'None'))
 
-      if log:
-        methodId = db.GetMethod(method, options)
-        methodId = methodId[0][0] if methodId else db.NewMethod(method, options)
+        if log:
+          methodId = db.GetMethod(method, options)
+          methodId = methodId[0][0] if methodId else db.NewMethod(method, options)
 
-      for libary in libraries:
-        name = libary[0]
-        datsets = libary[1]
-        script = libary[3]
-        format = libary[4]
-        
-        if not blocks or name in blocks:
-          Log.Info("Libary: " + name)
+        for libary in libraries:
+          name = libary[0]
+          datsets = libary[1]
+          script = libary[3]
+          format = libary[4]
+          
+          if not blocks or name in blocks:
+            Log.Info("Libary: " + name)
 
-          # Logging: create a new library record for this library.
-          if log and name not in build:
-            libaryId = db.GetLibrary(name + "_memory")
-            libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name + "_memory")
+            # Logging: create a new library record for this library.
+            if log and name not in build:
+              libaryId = db.GetLibrary(name + "_memory")
+              libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name + "_memory")
 
-            build[name] = (db.NewBuild(libaryId), libaryId)
+              if update:
+                buildId = db.GetLatestBuildFromLibary(libaryId)
+                if buildId >= 0:
+                  build[name] = (buildId, libaryId)
+                else:
+                  Log.Warn("Nothing to update.")
+                  continue
+              else:
+                build[name] = (db.NewBuild(libaryId), libaryId)
 
-          # Load the script.
-          try:
-            module = Loader.ImportModuleFromPath(script)
-            methodCall = getattr(module, method)
-          except Exception as e:
-            Log.Fatal("Could not load the script: " + script)
-            Log.Fatal("Exception: " + str(e))
-          else:
+            # Load the script.
+            try:
+              module = Loader.ImportModuleFromPath(script)
+              methodCall = getattr(module, method)
+            except Exception as e:
+              Log.Fatal("Could not load the script: " + script)
+              Log.Fatal("Exception: " + str(e))
+            else:
 
-            for dataset in datsets:
-              datasetName = NormalizeDatasetName(dataset)
+              for dataset in datsets:
+                datasetName = NormalizeDatasetName(dataset)
 
-              # Logging: Create a new dataset record fot this dataset.
-              if log:
-                datasetId = db.GetDataset(datasetName)
-                datasetId = datasetId[0][0] if datasetId else db.NewDataset(*DatasetInfo(dataset))
+                # Logging: Create a new dataset record fot this dataset.
+                if log:
+                  datasetId = db.GetDataset(datasetName)
+                  datasetId = datasetId[0][0] if datasetId else db.NewDataset(*DatasetInfo(dataset))
 
-              Log.Info("Dataset: " + datasetName)
-              modifiedDataset = GetDataset(dataset, format)
+                Log.Info("Dataset: " + datasetName)
+                modifiedDataset = GetDataset(dataset, format)
 
-              try:
-                instance = methodCall(modifiedDataset[0], timeout=timeout, 
-                  verbose=False)
-              except Exception as e:
-                Log.Fatal("Could not call the constructor: " + script)
-                Log.Fatal("Exception: " + str(e))
-                continue
+                try:
+                  instance = methodCall(modifiedDataset[0], timeout=timeout, 
+                    verbose=False)
+                except Exception as e:
+                  Log.Fatal("Could not call the constructor: " + script)
+                  Log.Fatal("Exception: " + str(e))
+                  continue
 
-              # Generate a "unique" name for the memory output file.
-              outputName = "reports/etc/" + str(hash(datetime.datetime.now())) + ".mout"
+                # Generate a "unique" name for the memory output file.
+                outputName = "reports/etc/" + str(hash(datetime.datetime.now())) + ".mout"
 
-              try:
-                err = instance.RunMemoryProfiling(options, outputName);
-              except Exception as e:
-                Log.Fatal("Exception: " + str(e))
-                
+                try:
+                  err = instance.RunMemoryProfiling(options, outputName);
+                except Exception as e:
+                  Log.Fatal("Exception: " + str(e))
+                  
+                  # Remove temporary datasets.
+                  RemoveDataset(modifiedDataset[1])
+                  continue
+
+                # Save results in the database if the user asked for.
+                if err != -1 and log:
+                  buildId, libaryId = build[name]
+
+                  if update:
+                    db.UpdateMemory(buildId, libaryId, methodId, datasetId, 
+                        outputName)
+                  else:
+                    db.NewMemory(buildId, libaryId, methodId, datasetId, 
+                        outputName)
+
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
-                continue
-
-              # Save results in the database if the user asked for.
-              if err != -1 and log:
-                buildId, libaryId = build[name]
-                db.NewMemory(buildId, libaryId, methodId, datasetId, outputName)
-
-              # Remove temporary datasets.
-              RemoveDataset(modifiedDataset[1])
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
@@ -190,9 +207,14 @@ if __name__ == '__main__':
       required=False)
   parser.add_argument('-l','--log', help='Save the results in the logfile.', 
       required=False)
+  parser.add_argument('-u','--update', help="""Update the results in the 
+      database.""", required=False)
+  parser.add_argument('-m','--methodBlocks', help="""Run only the specified 
+      method blocks.""", required=False)
 
   args = parser.parse_args()
 
   if args:
     log = True if args.log == "True" else False
-    Main(args.config, args.blocks, log)
+    update = True if args.update == "True" else False
+    Main(args.config, args.blocks, log, args.methodBlocks, update)

@@ -370,7 +370,7 @@ class Database:
   Add a new memory record to the memory table.
 
   @param buildId - The build id.
-  @param libaryId - The id ot the library.
+  @param libaryId - The id of the library.
   @param methodId - The id of the method
   @param datasetId - The id of the dataset.
   @param memoryInfo - The text for the memory value.
@@ -379,6 +379,22 @@ class Database:
      with self.con:
       self.cur.execute("INSERT INTO memory VALUES (NULL,?,?,?,?,?)", 
           (buildId, libaryId, methodId, datasetId, memoryInfo))
+
+  '''
+  Update the given memory record in the memory table.
+
+  @param buildId - The build id.
+  @param libaryId - The id of the library.
+  @param methodId - The id of the method
+  @param datasetId - The id of the dataset.
+  @param memoryInfo - The text for the memory value.
+  '''
+  def UpdateMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
+     with self.con:
+      self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
+        + "\' WHERE build_id=" + str(buildId) + " AND libary_id=" 
+        + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+        + " AND method_id=" + str(methodId))
 
   '''
   Get the memory informations of the given parameters.
