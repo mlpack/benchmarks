@@ -236,6 +236,23 @@ class Database:
         (buildId, libaryId, time, var, datasetId, methodId))
 
   '''
+  Update the given result record in the results table.
+
+  @param buildId - The id of the build.
+  @param libaryId - The if ot the library.
+  @param time - The mesured time of the build.
+  @param var - The variance of the build.
+  @param datasetId - The id of the dataset.
+  @param methodId - The id of the method.
+  '''
+  def UpdateResult(self, buildId, libaryId, time, var, datasetId, methodId):
+    with self.con:
+      self.cur.execute("UPDATE results SET time=" + str(time) + ",var=" 
+        + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
+        + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+        + " AND method_id=" + str(methodId))
+
+  '''
   Get the method id from the methods table with the given name and parameters.
 
   @param name - The name of the method.
@@ -294,13 +311,17 @@ class Database:
   Get the latest build id for the specified libary id.
 
   @param libaryId - Get the build id for the libary id.
-  @param The latest build id.
+  @param The latest build id if there is a latest build otherwise -1.
   '''
   def GetLatestBuildFromLibary(self, libaryId):
     with self.con:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
           + " ORDER BY build DESC LIMIT 1")
-      return self.cur.fetchall()[0][0]
+      res = self.cur.fetchall()
+      if res:
+        return res[0][0]
+      else:
+        return -1
 
   '''
   Get a list of all methods.

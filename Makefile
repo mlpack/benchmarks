@@ -25,6 +25,8 @@ CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
 LOG:=False
 BLOCK:=""
+METHODBLOCK:=""
+UPDATE:=False
 
 # Specify the path for the libraries.
 export MLPACK_BIN=/usr/local/bin/
@@ -89,7 +91,7 @@ endif
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 .run:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG)
