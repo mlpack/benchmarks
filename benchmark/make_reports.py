@@ -34,7 +34,11 @@ Create the top line chart.
 @return The filename of the line chart.
 '''
 def CreateTopLineChart(db):
-  build, results = db.GetResultsSum("mlpack")
+  res = db.GetResultsSum("mlpack")
+  if res:
+    build, results = res
+  else:
+    return ""
 
   GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + 
       ".png", backgroundColor="#F3F3F3", windowWidth=9, windowHeight=1.6)
@@ -164,6 +168,7 @@ Create the method container with the informations from the database.
 '''
 def MethodReports(db):
   methodsPage = ""
+  numDatasets = 0
 
   # Get the latest builds.
   libraryIds  = db.GetLibraryIds()
@@ -233,7 +238,12 @@ def MethodReports(db):
       # Generate a "unique" name for the line chart.
       lineChartName = "img/line_" + chartHash + ".png"
 
-      build, methodResultsSum = db.GetResultsMethodSum("mlpack", methodId)
+      res = db.GetResultsMethodSum("mlpack", methodId)
+      if res:
+        build, methodResultsSum = res
+      else:
+        continue
+
       GenerateSingleLineChart(methodResultsSum, "reports/" + lineChartName)
 
       # Generate a "unique" name for the bar chart.

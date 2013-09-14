@@ -283,7 +283,7 @@ class Database:
   Get the sum of the time column of all build of the given name.
 
   @param name - The name of the library.
-  @return The sum of the time column.
+  @return The sum of the time column if there are records otherwise None.
   '''
   def GetResultsSum(self, name):
     libaryId = self.GetLibrary(name)[0][0]
@@ -291,11 +291,15 @@ class Database:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
           + " ORDER BY build ASC")
       timeSummed = []
-      for buildId in self.cur.fetchall(): 
+      res = self.cur.fetchall()
+      for buildId in res: 
         self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
            str(buildId[0]))
         timeSummed.append(self.cur.fetchall()[0][0])
-    return (buildId[0], timeSummed)
+    if res:
+      return (buildId[0], timeSummed)
+    else:
+      return None
 
   '''
   Get the ids of all libraries.
@@ -352,7 +356,7 @@ class Database:
 
   @param name - The name of the library.
   @param methodId - The method id.
-  @return The sum of the time column.
+  @return The sum of the time column if there are records otherwise None.
   '''
   def GetResultsMethodSum(self, name, methodId):
     libaryId = self.GetLibrary(name)[0][0]
@@ -360,11 +364,15 @@ class Database:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
           + " ORDER BY build ASC")
       timeSummed = []
-      for buildId in self.cur.fetchall():
+      res = self.cur.fetchall()
+      for buildId in res:
         self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
            str(buildId[0]) + " AND method_id=" + str(methodId))
         timeSummed.append(self.cur.fetchall()[0][0])
-    return (buildId[0], timeSummed)
+    if res:
+      return (buildId[0], timeSummed)
+    else:
+      return None
 
   '''
   Add a new memory record to the memory table.
