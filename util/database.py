@@ -286,7 +286,12 @@ class Database:
   @return The sum of the time column if there are records otherwise None.
   '''
   def GetResultsSum(self, name):
-    libaryId = self.GetLibrary(name)[0][0]
+    libaryId = self.GetLibrary(name)
+    if libaryId:
+      libaryId = libaryId[0][0]
+    else:
+      return None
+      
     with self.con:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
           + " ORDER BY build ASC")
