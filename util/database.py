@@ -236,7 +236,24 @@ class Database:
         (buildId, libaryId, time, var, datasetId, methodId))
 
   '''
-  Update the given result record in the results table.
+  Get the specified result from the results table.
+
+  @param buildId - The id of the build.
+  @param libaryId - The if ot the library.
+  @param datasetId - The id of the dataset.
+  @param methodId - The id of the method.
+  @return The specified result record.
+  '''
+  def GetResult(self, buildId, libaryId, datasetId, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId) 
+          + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
+          + str(datasetId) + " AND method_id=" + str(methodId))
+      return self.cur.fetchall()
+
+  '''
+  Update the given result record in the results table if the record is available
+  otherwise create a new record.
 
   @param buildId - The id of the build.
   @param libaryId - The if ot the library.
@@ -247,10 +264,13 @@ class Database:
   '''
   def UpdateResult(self, buildId, libaryId, time, var, datasetId, methodId):
     with self.con:
-      self.cur.execute("UPDATE results SET time=" + str(time) + ",var=" 
-        + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
-        + str(libaryId) + " AND dataset_id=" + str(datasetId) 
-        + " AND method_id=" + str(methodId))
+      if self.GetResult(buildId, libaryId, datasetId, methodId):
+        self.cur.execute("UPDATE results SET time=" + str(time) + ",var=" 
+            + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
+            + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+            + " AND method_id=" + str(methodId))
+      else:
+        self.NewResult(buildId, libaryId, time, var, datasetId, methodId)
 
   '''
   Get the method id from the methods table with the given name and parameters.
@@ -291,7 +311,7 @@ class Database:
       libaryId = libaryId[0][0]
     else:
       return None
-      
+
     with self.con:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
           + " ORDER BY build ASC")
@@ -394,7 +414,8 @@ class Database:
           (buildId, libaryId, methodId, datasetId, memoryInfo))
 
   '''
-  Update the given memory record in the memory table.
+  Update the given memory record in the memory table if the record is available
+  otherwise create a new record.
 
   @param buildId - The build id.
   @param libaryId - The id of the library.
@@ -404,10 +425,14 @@ class Database:
   '''
   def UpdateMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
      with self.con:
-      self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
-        + "\' WHERE build_id=" + str(buildId) + " AND libary_id=" 
-        + str(libaryId) + " AND dataset_id=" + str(datasetId) 
-        + " AND method_id=" + str(methodId))
+
+      if self.GetMemoryResults(buildId, libaryId, methodId):
+        self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
+          + "\' WHERE build_id=" + str(buildId) + " AND libary_id=" 
+          + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+          + " AND method_id=" + str(methodId))
+      else:
+        self.NewMemory(buildId, libaryId, methodId, datasetId, memoryInfo)
 
   '''
   Get the memory informations of the given parameters.
