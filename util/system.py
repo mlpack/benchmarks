@@ -30,12 +30,14 @@ This class implements functions the get system informations.
 class SystemInfo(object):
 
   '''
-  Returns the available memory of this machine.
+  Get the available memory of this machine.
+
+  @return The available memory if the plattform is known otherwise 'N/A'.
   '''
   @staticmethod
   def GetMemory():
-    if sys.platform.startswith('posix') or sys.platform.startswith('linux'):
-      cmd = 'free -m'
+    if sys.platform.startswith("posix") or sys.platform.startswith("linux"):
+      cmd = "free -m"
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
 
       mem = s.decode().split('\n')[1].split()[1]
@@ -52,7 +54,9 @@ class SystemInfo(object):
       return 'N/A'      
 
   '''
-  Returns the CPU model name of this machine.
+  Get the CPU model name of this machine.
+
+  @return The CPU model of this machine if the plattform otherwise 'N/A'.
   '''
   @staticmethod
   def GetCPUModel():
@@ -84,7 +88,9 @@ class SystemInfo(object):
       return 'N/A'
 
   '''
-  Returns the distribution name of this machine.
+  Get the distribution name of this machine.
+
+  @return The name of the distribution if the plattform is known otherwise 'N/A'.
   '''
   @staticmethod
   def GetDistribution():
@@ -121,7 +127,9 @@ class SystemInfo(object):
       return 'N/A'
 
   '''
-  Returns the CPU core count of this machine.
+  Get the CPU core count of this machine.
+
+  @return The CPU core count if the plattform is known otherwise 'N/A'.
   '''
   @staticmethod
   def GetCPUCores():
@@ -149,7 +157,9 @@ class SystemInfo(object):
       return 'N/A'
       
   '''
-  Returns the plattform of this machine (e.g. x86_64).
+  Get the plattform of this machine (e.g. x86_64).
+
+  @return The plattform of this machine.
   '''
   @staticmethod
   def GetPlatform():

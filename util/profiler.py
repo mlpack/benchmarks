@@ -24,14 +24,14 @@ This class implements functions the get profiling informations.
 class Profiler(object):
 
   '''
-  Use valgrind massif to get memory profiling information and the save the ouput
-  in the specified file.
+  Use valgrind massif to get memory profiling information and save the ouput in 
+  the specified file.
 
-  @param cmd - Method command line to profile.
+  @param command - Method command line to profile.
   @param output - Save the report at the output path with the specified name.
-  @param valgrind - Path to the valgrind binary.
   @param options - Specified massif options.
-  @ return Returns False if the method was not successful, if the method was 
+  @param valgrind - Path to the valgrind binary.
+  @ return Returns -1 if the method was not successful, if the method was 
   successful save the report file in the specified file. 
   '''
   @staticmethod
@@ -53,7 +53,7 @@ class Profiler(object):
 
   @param fileName - The filname of the valgrind massif log file.
   @param valgrind - The path to the ms_print script.
-  @return The ms_print output.
+  @return The ms_print output if the method was successful otherwise -1.
   '''
   @staticmethod
   def MassifMemoryUsageReport(fileName, valgrind=os.environ["MS_PRINT_BIN"]):
@@ -70,7 +70,7 @@ class Profiler(object):
   '''
   Returns the memory used by a process and his children. We don't know when the 
   process is done so we have to poll to get the memory. To avoid memory overflow
-  we use  a ringbuffer to limit the size of the memory values.
+  we use a ringbuffer to limit the size of the memory values.
 
   @param process - Popen instance.
   @param Buffersize - Memory value count.

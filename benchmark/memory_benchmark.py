@@ -24,7 +24,6 @@ from database import *
 import argparse
 import datetime
 
-
 '''
 Return a list with modified dataset.
 
@@ -45,7 +44,7 @@ def GetDataset(dataset, format):
       if os.path.isfile(mdata):
         datasetList.append(mdata)
       else:
-        # Check if the dataset is available.
+        # Convert the dataset into the new format.
         convert = Convert(data, format[0])
         datasetList.append(convert.modifiedDataset)
         modifiedList.append(convert.modifiedDataset)
@@ -59,7 +58,7 @@ def GetDataset(dataset, format):
     if os.path.isfile(mdataset):
       datasetList = mdataset
     else:
-      # Convert the Dataset.
+      # Convert the dataset into the new format.
       convert = Convert(dataset, format[0])
       datasetList = convert.modifiedDataset
       modifiedList = convert.modifiedDataset
@@ -73,7 +72,7 @@ Create the new memory report.
 @param blocks - Run only the specified blocks.
 @param log - If True save the reports otherwise use stdout and print the reports.
 @param methodBlocks - Run only the specified methods.
-@param update - Update the memory records in the database.
+@param update - Update the latest memory records in the database.
 '''
 def Main(configfile, blocks, log, methodBlocks, update):
   # Benchmark settings.
@@ -98,7 +97,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
   # Temporary datastructures for the current build.
   build = {}
 
-  # Open logfile if the user asked for.
+  # Create database connection if the user asked for to save the reports.
   if log:
     db = Database(database)
     db.CreateTables()
@@ -114,7 +113,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
     if not methodBlocks or method in methodBlocks:
       Log.Info("Method: " + method)
       for options, libraries in sets.items():
-        Log.Info('Options: ' + (options if options != '' else 'None'))
+        Log.Info("Options: " + (options if options != "" else "None"))
 
         if log:
           methodId = db.GetMethod(method, options)
@@ -184,7 +183,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   RemoveDataset(modifiedDataset[1])
                   continue
 
-                # Save results in the database if the user asked for.
+                # Save the results in the database if the user asked for.
                 if err != -1 and log:
                   buildId, libaryId = build[name]
 
@@ -207,7 +206,7 @@ if __name__ == '__main__':
       required=False)
   parser.add_argument('-l','--log', help='Save the results in the logfile.', 
       required=False)
-  parser.add_argument('-u','--update', help="""Update the results in the 
+  parser.add_argument('-u','--update', help="""Update the latest results in the 
       database.""", required=False)
   parser.add_argument('-m','--methodBlocks', help="""Run only the specified 
       method blocks.""", required=False)

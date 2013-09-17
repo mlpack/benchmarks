@@ -15,12 +15,12 @@ This class contains functions to unify the console output.
 class Log(object):
 
   # Color code escape sequences -- but not on Windows.
-  if sys.platform == 'win32':
-    BASH_RED = ''
-    BASH_GREEN = ''
-    BASH_YELLOW = ''
-    BASH_CYAN = ''
-    BASH_CLEAR = ''
+  if sys.platform == "win32":
+    BASH_RED = ""
+    BASH_GREEN = ""
+    BASH_YELLOW = ""
+    BASH_CYAN = ""
+    BASH_CLEAR = ""
   else:
     BASH_RED = '\033[0;31m'
     BASH_GREEN = '\033[0;32m'

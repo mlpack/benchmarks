@@ -23,7 +23,7 @@ import argparse
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Test the configuration file.
       Check for correct syntax and then try to open files referred in the 
-      configuration""")
+      configuration.""")
   parser.add_argument('-c','--config', help='Configuration file name.', 
       required=True)
 

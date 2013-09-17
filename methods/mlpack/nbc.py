@@ -77,8 +77,8 @@ class NBC(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Principal Components Analysis method. If 
-  the method has been successfully completed the report is saved in the 
+  Run valgrind massif profiler on the Parametric Naive Bayes Classifier method. 
+  If the method has been successfully completed the report is saved in the 
   specified file.
 
   @param options - Extra options for the method.

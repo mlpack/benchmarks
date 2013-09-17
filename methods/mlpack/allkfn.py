@@ -78,7 +78,7 @@ class ALLKFN(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Principal Components Analysis method. If 
+  Run valgrind massif profiler on the All K-Furthest-Neighbors method. If 
   the method has been successfully completed the report is saved in the 
   specified file.
 

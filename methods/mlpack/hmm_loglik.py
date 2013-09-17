@@ -78,9 +78,9 @@ class HMMLOGLIK(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Principal Components Analysis method. If 
-  the method has been successfully completed the report is saved in the 
-  specified file.
+  Run valgrind massif profiler on the Hidden Markov Model Sequence 
+  Log-Likelihood method. If the method has been successfully completed the 
+  report is saved in the specified file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.

@@ -30,14 +30,14 @@ Show system informations. Are there no data available, the value is 'N/A'.
 '''
 def SystemInformation():
   
-  Log.Info('CPU Model: ' + SystemInfo.GetCPUModel())
-  Log.Info('Distribution: ' + SystemInfo.GetDistribution())
-  Log.Info('Platform: ' + SystemInfo.GetPlatform())
-  Log.Info('Memory: ' + SystemInfo.GetMemory())
-  Log.Info('CPU Cores: ' + SystemInfo.GetCPUCores())
+  Log.Info("CPU Model: " + SystemInfo.GetCPUModel())
+  Log.Info("Distribution: " + SystemInfo.GetDistribution())
+  Log.Info("Platform: " + SystemInfo.GetPlatform())
+  Log.Info("Memory: " + SystemInfo.GetMemory())
+  Log.Info("CPU Cores: " + SystemInfo.GetCPUCores())
 
 '''
-Return a list with modified dataset.
+Return a list with modified datasets.
 
 @param dataset - Datasets to be modified.
 @param format - List of file formats to be converted to.
@@ -56,7 +56,7 @@ def GetDataset(dataset, format):
       if os.path.isfile(mdata):
         datasetList.append(mdata)
       else:
-        # Check if the dataset is available.
+        # Convert the dataset in the given format.
         convert = Convert(data, format[0])
         datasetList.append(convert.modifiedDataset)
         modifiedList.append(convert.modifiedDataset)
@@ -70,7 +70,7 @@ def GetDataset(dataset, format):
     if os.path.isfile(mdataset):
       datasetList = mdataset
     else:
-      # Convert the Dataset.
+      # Convert the dataset in the given format.
       convert = Convert(dataset, format[0])
       datasetList = convert.modifiedDataset
       modifiedList = convert.modifiedDataset
@@ -78,7 +78,7 @@ def GetDataset(dataset, format):
   return (datasetList, modifiedList)
 
 '''
-Count all datasets to determine the dataset size.
+Count all datasets to determine the dataset number of datasets.
 
 @param libraries - Contains the dataset list.
 @return Dataset count.
@@ -95,9 +95,9 @@ def CountLibrariesDatasets(libraries):
 
 '''
 Start the main benchmark routine. The method shows some DEBUG information and 
-prints a table with the runtime information.
+prints a runtime information table.
 
-@param configfile - Start the benchmark with this configuration file.
+@param configfile - Start the benchmark with the given configuration file.
 @param blocks - Run only the specified blocks.
 @param log - If True save the reports otherwise use stdout and print the reports.
 @param methodBlocks - Run only the specified methods.
@@ -123,7 +123,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
       if key == "database":
         database = value
 
-  # Open logfile if the user asked for.
+  # Create database connection if the user asked for to save the reports.
   if log:
     db = Database(database)
     db.CreateTables()
@@ -142,18 +142,18 @@ def Main(configfile, blocks, log, methodBlocks, update):
     if not methodBlocks or method in methodBlocks:
       Log.Info("Method: " + method)
       for options, libraries in sets.items():
-        Log.Info('Options: ' + (options if options != '' else 'None'))
+        Log.Info("Options: " + (options if options != "" else "None"))
 
         if log:
           methodId = db.GetMethod(method, options)
           methodId = methodId[0][0] if methodId else db.NewMethod(method, options)
 
-        # Create the Table.
+        # Create the result table.
         table = []
         header = ['']
         table.append(header)
 
-        # Count the Datasets.
+        # Count the datasets.
         datasetCount = CountLibrariesDatasets(libraries)
 
         # Create the matrix which contains the time and dataset informations.
@@ -190,7 +190,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
               else:
                 build[name] = (db.NewBuild(libaryId), libaryId)
 
-            # Load script.
+            # Load the script.
             try:
               module = Loader.ImportModuleFromPath(script)
               methodCall = getattr(module, method)
@@ -221,13 +221,17 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   Log.Fatal("Exception: " + str(e))
                   continue
 
-                # Add method information record.
+                # Logging: Add method information record.
                 if log:
                   try:
+                    # Some script define a method description, if 
+                    # the description is set, save this in the database.
                     methodDescription = instance.description
                   except AttributeError:
                     pass
                   else:
+                    # Only store the description in the databse if there isn't
+                    # a description.
                     if methodDescription and not db.GetMethodInfo(methodId):
                       db.NewMethodInfo(methodId, methodDescription)
 
@@ -243,15 +247,18 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     except Exception as e:
                       Log.Fatal("Exception: " + str(e))
 
-                # Set time.
+                # Set the correct time label.
                 if sum(time) == -2:
+                  # Timout failure.
                   dataMatrix[row][col] = ">" + str(timeout)
                 elif sum(time) == -1:
+                  # Exception.
                   dataMatrix[row][col] = "failure"
                 else:
+                  # Measured time.
                   dataMatrix[row][col] = "{0:.6f}".format(sum(time) / trials)
 
-                # Save results in the databse if the user asked for.
+                # Save the results in the databse if the user asked for.
                 if log:
                   # Get the variance.
                   var = 0
@@ -271,7 +278,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 RemoveDataset(modifiedDataset[1])
           col += 1
 
-        # Show results in a table.
+        # Show the results.
         if not log and run > 0:
           Log.Notice("\n\n")
           Log.PrintTable(AddMatrixToTable(dataMatrix, table))

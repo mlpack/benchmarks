@@ -317,7 +317,7 @@ class Database:
           + " ORDER BY build ASC")
       timeSummed = []
       res = self.cur.fetchall()
-      for buildId in res: 
+      for buildId in res:
         self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
            str(buildId[0]))
         timeSummed.append(self.cur.fetchall()[0][0])

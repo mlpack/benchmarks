@@ -77,7 +77,7 @@ class ICA(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Principal Components Analysis method. If 
+  Run valgrind massif profiler on the independent component analysis method. If 
   the method has been successfully completed the report is saved in the 
   specified file.
 

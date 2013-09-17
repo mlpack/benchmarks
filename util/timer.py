@@ -26,6 +26,7 @@ from multiprocessing import Process, Queue
 This class implements three functions to measure the time.
 '''
 class Timer(object):
+  
   '''
   Start the timer.
   '''

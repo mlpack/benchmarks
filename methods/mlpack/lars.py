@@ -77,9 +77,9 @@ class LARS(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Principal Components Analysis method. If 
-  the method has been successfully completed the report is saved in the 
-  specified file.
+  Run valgrind massif profiler on the Least Angle Regression method. If the 
+  method has been successfully completed the report is saved in the specified
+  file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.

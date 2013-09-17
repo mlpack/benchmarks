@@ -30,7 +30,7 @@ import collections
 '''
 Create the top line chart.
 
-@param db - The Database object.
+@param db - The database object.
 @return The filename of the line chart.
 '''
 def CreateTopLineChart(db):
@@ -45,9 +45,9 @@ def CreateTopLineChart(db):
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
-Create the table with the timings.
+Create the timings table.
 
-@param data - Dictionary which contains the timing data.
+@param data - Dictionary which contains the timings.
 @libraries - List which contains the library names.
 @return HTML code which contains the header and the timing data.
 '''
@@ -65,13 +65,11 @@ def CreateTimingTable(data, libraries):
 
       # Highlight the data with the best timing.
       if minData(timings) == time:
-        time = "{0:.4f}".format(time) if isFloat(str(time)) else time
-        time = str(time) + "s" if isFloat(time) else time 
+        time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
         timingTable += '<td><p class="text-success"><strong>' + time 
-        timingTable += '</strong></p></td>'
+        timingTable += "</strong></p></td>"
       else:
-        time = "{0:.4f}".format(time) if isFloat(str(time)) else time
-        time = str(time) + "s" if isFloat(time) else time 
+        time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
         timingTable += "<td>" + time + "</td>"
 
     timingTable += "</tr>"
@@ -81,7 +79,7 @@ def CreateTimingTable(data, libraries):
 '''
 Create the table with the datasets informations.
 
-@param resultList - List of a List which contains the datasets informations.
+@param resultList - List of a list which contains the dataset informations.
 @return HTML code which contains the dataset informations.
 '''
 def CreateDatasetTable(resultList):
@@ -96,11 +94,17 @@ def CreateDatasetTable(resultList):
         if datasetName not in datasets:
          datasets.append(datasetName)
 
+         # Dataset name.
          datasetTable += "<tr><td>" + datasetName + "</td>"
+         # Dataset disksize.
          datasetTable += "<td>" + "{0:.5f}".format(data[9]) + " MB</td>"
+         # Number of instances.
          datasetTable += "<td>" + str(data[10]) + "</td>"
+         # Number of attributes.
          datasetTable += "<td>" + str(data[11]) + "</td>"
+         # Number of instances * number of attributes.
          datasetTable += "<td>" + str(data[10] * data[11]) + "</td>"
+         # Attribute type.
          datasetTable += "<td>" + str(data[12]) + "</td>"
          datasetTable += "</tr>"
 
@@ -109,7 +113,7 @@ def CreateDatasetTable(resultList):
 '''
 Create the content for the memory section.
 
-@param results - This data structure contains the results.
+@param results - This data structure contains the memory results.
 @return A string that contains the content for the memory section.
 '''
 def CreateMemoryContent(results):
@@ -161,7 +165,7 @@ def CreateMethodInfo(results, methodName):
   return methodInfo
 
 '''
-Create the method container with the informations from the database.
+Create the method container with the information from the database.
 
 @param db - The database object.
 @return HTML code which contains the information for the container.
@@ -205,7 +209,6 @@ def MethodReports(db):
     reportValues = {}
     reportValues["methodName"] = methodName
     
-
     resultPanel = ""
     methodInfo = ""
     memoryContent = ""
@@ -216,7 +219,7 @@ def MethodReports(db):
         mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
 
     # Variables to count the status informations.
-    failureCount= 0
+    failureCount = 0
     datasetCount = 0
     timeoutCount = 0
     bestLibCount = 0
@@ -254,7 +257,7 @@ def MethodReports(db):
           "reports/" + barChartName)
       numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
 
-      # Increase status informations.
+      # Increase the status information.
       failureCount += failure
       datasetCount += numDatasets
       timeoutCount += timeouts
@@ -325,13 +328,13 @@ def MethodReports(db):
 
     methodsPage += methodTemplate % reportValues
 
-    # Increase collapse group id.
+    # Increase the collapse group id.
     collapseGroup += 3
 
   return methodsPage
 
 '''
-Search the highest index_number.html number.
+Search the highest index_[number].html number.
 
 @return The highest index_number.html number and the file count.
 '''
@@ -371,22 +374,29 @@ def AdjustPagination(maxFiles):
         pos = content.rfind(pattern)
         content = content[:pos+len(pattern)]
 
+        # If i equals one there is no previous index file. In this case we can't
+        # create a link to the previous index file.
         if i == 1:
           content += '<li class="previous"><a href="index.html">&larr; Newer</a></li>\n'
         else:
           content += '<li class="previous"><a href="index_' + str(i - 1) + '.html">&larr; Newer</a></li>\n'
         
+        # If i equals maxId there is no next index file. In this case we can't
+        # create a link to the next index file.
         if i == maxId:
           content += '<li class="next disabled"><a href="#">Older &rarr;</a></li>'
         else:
           content += '<li class="next"><a href="index_' + str(i + 1) + '.html">Older &rarr;</a></li>\n'
 
         content += paginationTemplate
+        # Reset the file descriptor.
         fid.seek(0)
+        # Set the new pagination.
         fid.write(content)
         fid.truncate()
 
-        # Delete unneeded files.
+        # Delete unneeded files. We don't want to store all reports, for that 
+        # reason we delete the oldest report.
         if i < maxFiles:
           delFiles.extend(re.findall('src="img/(.*?)"', content))
         else:
@@ -407,7 +417,11 @@ Get the pagination for the new index.html file.
 def NewPagination():
   maxId, files = GetMaxIndex()
 
+  # This is the new index file, for that reason there is never a link to a 
+  # previous index file.
   pagination = '<li class="previous disabled"><a href="#">&larr; Newer</a></li>\n'
+  # If i is greater then maxId there is no next index file. In this case we 
+  # can't create a link to the next index file.
   if maxId > 0:
     pagination += '<li class="next"><a href="index_1.html">Older &rarr;</a></li>\n'
   else:    
@@ -416,16 +430,18 @@ def NewPagination():
   return pagination
 
 '''
-Rename the index_number.html files.
+Rename the index_[number].html files.
 '''
 def ShiftReports(): 
   maxId, files = GetMaxIndex()
 
+  # Iterate through all index_[number].html files and increase the number.
   for i in range(files, 0, -1):
     fileName = "reports/index_" + str(i) + ".html"
     if CheckFileAvailable(fileName):
         os.rename(fileName, "reports/index_" + str(i + 1) + ".html")
 
+  # The old index.html file in the new index_1.html file.
   fileName = "reports/index.html"
   if CheckFileAvailable(fileName):
     os.rename(fileName, "reports/index_1.html")
@@ -436,7 +452,7 @@ Create the new report.
 @param configfile - Create the reports with the given configuration file.
 '''
 def Main(configfile):
-  # Reports settings.
+  # Report settings.
   database = "reports/benchmark.db"
   keepReports = 3
 

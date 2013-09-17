@@ -17,25 +17,25 @@ class Loader(object):
   Import a module from a path.
 
   @param path - The path to the module.
+  @return The name of the module.
   '''
   @staticmethod
   def ImportModuleFromPath(path):
-
-    if hasattr(os, 'getcwdu'):
-      # Returns a Unicode object represantation.
+    if hasattr(os, "getcwdu"):
+      # Returns a unicode object represantation.
       realPath = os.path.realpath(os.getcwdu())
     else:
       realPath = os.path.realpath(os.path.curdir)
       
     destinationPath = os.path.dirname(path)
 
-    if destinationPath == '':
+    if destinationPath == "":
       destinationPath = '.'
       
     # Remove the .py suffix.
     scriptName = os.path.basename(path)
 
-    if scriptName.endswith('.py'):
+    if scriptName.endswith(".py"):
       modName = scriptName[:-3]
     else:
       modName = scriptName
@@ -51,5 +51,5 @@ class Loader(object):
       if fileHandle is not None:
         fileHandle.close()
 
-    # Return module name.
+    # Return the name of the module.
     return module

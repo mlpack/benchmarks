@@ -22,11 +22,13 @@ import os.path
 This class implements functions to convert files.
 '''
 class Convert(object):
-  '''
-  Convert dataset to a file with the given extension.
 
-  @param dataset - Convert this dataset.
-  @param extension - Convert dataset to a new file with this extension.
+  '''
+  Convert the dataset to a file with the given extension.
+
+  @param dataset - Convert the specified dataset.
+  @param extension - Convert the dataset to a new file with the specified 
+  extension.
   '''
   def __init__(self, dataset, extension):
     self.extension = extension
@@ -37,13 +39,17 @@ class Convert(object):
   '''
   Decide which method we have to call to modify the dataset.
 
-  @param dataset - Convert this dataset.
-  @param extension - Convert dataset to a new file with this extension.
+  @param dataset - Convert the specified dataset.
+  @param extension - Convert the dataset to a new file with the specified 
+  extension.
   '''
   def ModifyDataset(self, dataset, extension):
     dataExtension = os.path.splitext(dataset)[1][1:]
     newDataset = dataset[0:len(dataset) - len(dataExtension)] + extension
 
+    # Currently the following conversions are implemented:
+    # csv -> arff
+    # txt -> arff 
     if extension == "arff" and (dataExtension == "csv" or dataExtension == "txt"):
       self.AddArffHeader(dataset, newDataset)
     else:
@@ -51,16 +57,16 @@ class Convert(object):
       pass
 
   '''
-  Add an header to the dataset file.
+  Add the arff header to the dataset file.
 
   @param data - This dataset contains the information.
-  @param newData - This dataset contais the information and the header.
+  @param newData - This dataset contains the information and the header.
   '''
   def AddArffHeader(self, data, newData):
     # Extract the dataset name.
     relationName = os.path.splitext(os.path.basename(data))[0].split('_')[0]
 
-    # Read the first to get the attributes count.
+    # Read the first line to count the attributes.
     fid = open(data)
     head = [next(fid) for x in range(1)]
     fid.close()
@@ -68,14 +74,14 @@ class Convert(object):
     # We can convert files with ' ' and ',' as seperator.
     count = max(head[0].count(","), head[0].count(" ")) + 1
 
-    # Write the header to the new file.
+    # Write the arff header to the new file.
     nfid = open(newData, "a")
     nfid.write("@relation " + relationName + "\n\n")
     for i in range(count):
       nfid.write("@attribute " + data + "_dim" + str(i) + " NUMERIC\n")
     nfid.write("\n@data\n")
 
-    # Append the data to the new file.
+    # Append the data for the given file to the new arff file.
     fid = open(data, "r")
     while True:
       line = fid.read(65536)

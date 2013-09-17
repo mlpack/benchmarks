@@ -22,7 +22,7 @@ def isFloat(n):
     return True
 
 '''
-Function to seach the minimum scalar in a list.
+Function to search the minimum scalar in a list.
 
 @param data - A list that contains the values.
 @return The minimum scalar of the given list.
@@ -37,7 +37,7 @@ def minData(data):
 '''
 Count all datasets to determine the dataset size.
 
-@param libraries - Contains the Dataset List.
+@param libraries - Contains the dataset list.
 @return Dataset count.
 '''
 def CountLibrariesDatasets(libraries):
@@ -65,7 +65,7 @@ def AddMatrixToTable(matrix, table):
 Normalize the dataset name. If the dataset is a list of datasets, take the first
 dataset as name. If necessary remove characters like '.', '_'.
 
-@param dataset - Dataset file or a list of datasets files.
+@param dataset - Dataset file or a list of dataset files.
 @return Normalized dataset name.
 '''
 def NormalizeDatasetName(dataset):
@@ -92,7 +92,8 @@ def FindRightRow(dataMatrix, datasetName, datasetCount):
 Collect informations for the given dataset.
 
 @param path - Path to the dataset.
-@return Tuple which contains the informations about the given dataset.
+@return Tuple that contains the informations about the given dataset 
+(name, size, attributes, instances, type).
 '''
 def DatasetInfo(path):
   if not isinstance(path, str):
@@ -116,11 +117,12 @@ def DatasetInfo(path):
   return (name, size, attributes, instances, datasetType)
 
 '''
-This function Remove a given file or list of files.
+This function removes a given file or list of files.
 
 @param dataset - File or list of file which should be deleted.
 '''
 def RemoveDataset(dataset):
+  # Transform a single dataset to a list that contains this single dataset.
   if isinstance(dataset, str):
     dataset = [dataset]
 

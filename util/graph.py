@@ -41,7 +41,8 @@ Generate a bar chart with the specified informations.
 @param bestlib - The name of the library which should be compared with the other
 libraries.
 @param backgroundColor - The color of the image background.
-@return Result informations.
+@return The dataset count, total time, failure count, timeout count, 
+best libray count, timing data.
 '''
 def GenerateBarChart(results, libraries, fileName, bestlib="mlpack", 
     backgroundColor="#FFFFFF"):
@@ -157,10 +158,10 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 
   handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
 
-  # Set the labels for the x-axis.
+  # Set the label for the x-axis.
   plt.xticks(legendIndex , list(timingData.keys()), rotation=30, ha='right')
 
-  # Set the color and the font of the x-axis and y-axis labels.
+  # Set the color and the font of the x-axis and y-axis label.
   ax.tick_params(axis='both', which='major', labelsize=8, labelcolor="#6e6e6e")
   ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor="#6e6e6e")
 
@@ -198,7 +199,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 '''
 Generate a line chart with the specified informations.
 
-@param data - List which contains the values for the line chart.
+@param data - Contains the information for the line chart.
 @param fileName - The filename of the line chart.
 @param backgroundColor - The color of the image background.
 @param windowWidth - The width of the chart.
@@ -206,11 +207,14 @@ Generate a line chart with the specified informations.
 '''
 def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF", 
     windowWidth=8.1, windowHeight=1.3):
+  
+  # Generate a list of scalar values. Use the privious or next elemnt to fill 
+  # the gap.
   def NormalizeData(data):
     i = 0
     while len(data) != i:
       if not data[i]:
-        if i > 0 and data[i -1]:
+        if i > 0 and data[i - 1]:
           data[i] = data[i - 1]
         else:
           del data[i]
@@ -248,7 +252,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
 
     data = NormalizeData(data)
 
-    # If we have only have a single value we don't want to start from zero so we 
+    # If we only have a single value we don't want to start from zero so we 
     # double the data.
     if len(data) == 1:
       data += data
