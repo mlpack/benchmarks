@@ -1,4 +1,5 @@
 import unittest
+import xmlrunner
 
 # Test modules.
 modules = [
@@ -28,12 +29,14 @@ modules = [
 'benchmark_sparse_coding'
 ]
 
-if __name__ == '__main__':
+def load_tests(loader, tests, pattern):
   suite = unittest.TestSuite()
-
   # Add the modules to the suite.
   for t in modules:
       suite.addTest(unittest.defaultTestLoader.loadTestsFromName(t))
 
+  return suite
+
+if __name__ == '__main__':
   # Run all modules (Testsuite).
-  unittest.TextTestRunner().run(suite)
+  unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
