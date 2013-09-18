@@ -157,7 +157,6 @@ def CreateMethodInfo(results, methodName):
       content = content.decode()
     except AttributeError:
       pass
-    memoryValues["content"] = content
 
     infoValues["content"] = content
     methodInfo = panelTemplate % infoValues
