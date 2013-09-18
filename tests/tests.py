@@ -1,6 +1,7 @@
 import unittest
 
-testmodules = [
+# Test modules.
+modules = [
 'benchmark_allkfn',
 'benchmark_allknn',
 'benchmark_allkrann',
@@ -27,14 +28,12 @@ testmodules = [
 'benchmark_sparse_coding'
 ]
 
-suite = unittest.TestSuite()
+if __name__ == '__main__':
+  suite = unittest.TestSuite()
 
-for t in testmodules:
-  try:
-    mod = __import__(t, globals(), locals(), ['suite'])
-    suitefn = getattr(mod, 'suite')
-    suite.addTest(suitefn())
-  except (ImportError, AttributeError):
-    suite.addTest(unittest.defaultTestLoader.loadTestsFromName(t))
+  # Add the modules to the suite.
+  for t in modules:
+      suite.addTest(unittest.defaultTestLoader.loadTestsFromName(t))
 
-unittest.TextTestRunner().run(suite)
+  # Run all modules (Testsuite).
+  unittest.TextTestRunner().run(suite)

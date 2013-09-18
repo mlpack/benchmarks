@@ -53,6 +53,7 @@ run: .check .run
 memory: .check .memory
 reports: .check .reports
 scripts: .scripts
+checks: .check .checks
 
 .help:
 	@echo "Benchmark-Script"
@@ -127,3 +128,6 @@ endif
 	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
 	# Compile the shogun K-Means (with initial centroids) Clustering method.
 	g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
+
+.checks:
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/tests/tests.py
