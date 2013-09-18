@@ -130,4 +130,4 @@ endif
 	g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
 
 .checks:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/tests/tests.py
+	$(PYTHON_BIN) tests/tests.py
