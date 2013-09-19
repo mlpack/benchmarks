@@ -45,7 +45,8 @@ class KPCA(object):
   Use the shogun libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def KPCAShogun(self, options):
     def RunKPCAShogun(q):
@@ -73,8 +74,8 @@ class KPCA(object):
           # Get the kernel type and make sure it is valid.
           kernel = re.search("-k ([^\s]+)", options)
           if not kernel:
-              Log.Fatal("Choose kernel type, valid choices are 'linear', 'hyptan'" + 
-                    ", 'polynomial' and 'gaussian'.")
+              Log.Fatal("Choose kernel type, valid choices are 'linear'," + 
+                    " 'hyptan', 'polynomial' and 'gaussian'.")
               q.put(-1)
               return -1
           elif kernel.group(1) == "polynomial":
@@ -89,8 +90,8 @@ class KPCA(object):
           elif kernel.group(1) == "hyptan":
             kernel = SigmoidKernel(dataFeat, dataFeat, 2, 1.0, 1.0)
           else:
-            Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid choices"
-                    + " are 'linear', 'hyptan', 'polynomial' and 'gaussian'.")
+            Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid "
+              + "choices are 'linear', 'hyptan', 'polynomial' and 'gaussian'.")
             q.put(-1)
             return -1
 
@@ -114,7 +115,8 @@ class KPCA(object):
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform KPCA.", self.verbose)

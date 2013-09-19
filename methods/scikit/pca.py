@@ -43,7 +43,8 @@ class PCA(object):
   Use the scikit libary to implement Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def PCAScikit(self, options):
     def RunPCAScikit(q):
@@ -72,7 +73,7 @@ class PCA(object):
           s = True if options.find("-s") > -1 else False
 
           # Perform PCA.
-          pca = decomposition.PCA(n_components = k, whiten = s)
+          pca = decomposition.PCA(n_components=k, whiten=s)
           pca.fit(data)
           score = pca.transform(data)
       except Exception as e:
@@ -90,7 +91,8 @@ class PCA(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform PCA.", self.verbose)

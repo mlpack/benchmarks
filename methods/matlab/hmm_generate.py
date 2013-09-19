@@ -94,7 +94,8 @@ class HMMGENERATE(object):
   the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform HMM GENERATE.", self.verbose)
@@ -108,7 +109,7 @@ class HMMGENERATE(object):
       "HMM_GENERATE('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")   
     
     # Run command with the nessecary arguments and return its output as a byte
-    # string. We have untrusted input so we disables all shell based features.
+    # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
           timeout=self.timeout)
@@ -134,7 +135,7 @@ class HMMGENERATE(object):
   Parse the timer data form a given string.
 
   @param data - String to parse timer data from.
-  @return - Namedtuple that contains the timer data.
+  @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to

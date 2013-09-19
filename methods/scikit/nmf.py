@@ -28,9 +28,9 @@ This class implements the Non-negative Matrix Factorization benchmark.
 class NMF(object):
 
   ''' 
-  Create the Naive Bayes Classifier benchmark instance.
+  Create the Non-negative Matrix Factorization benchmark instance.
   
-  @param dataset - Input dataset to perform NBC on.
+  @param dataset - Input dataset to perform NMF on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -43,7 +43,8 @@ class NMF(object):
   Use the scikit libary to implement Non-negative Matrix Factorization.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def NMFScikit(self, options):
     def RunNMFScikit(q):
@@ -60,9 +61,15 @@ class NMF(object):
           maxIterations = re.search("-m (\d+)", options)
           minResidue = re.search("-e ([^\s]+)", options)
           updateRule = re.search("-u ([^\s]+)", options)
+          rank = re.search("-r (\d+)", options)
 
           m = 10000 if not maxIterations else int(maxIterations.group(1))
           e = 1e-05 if not maxIterations else int(minResidue.group(1))
+          rank = None if not rank else int(rank.group(1))
+
+          if rank:
+            if rank < 1:
+              Log.Fatal("The rank of the factorization cannot be less than 1.")
 
           if updateRule:
             u = updateRule.group(1)
@@ -74,9 +81,9 @@ class NMF(object):
           # Perform NMF with the specified update rules.
           if seed:
             s = int(seed.group(1))
-            model = ScikitNMF(n_components=2, init='random', max_iter = m, tol = e, random_state = s)
+            model = ScikitNMF(n_components=rank, init='random', max_iter=m, tol=e, random_state=s)
           else:
-            model = ScikitNMF(n_components=2, init='nndsvdar', max_iter = m, tol = e)
+            model = ScikitNMF(n_components=rank, init='nndsvdar', max_iter=m, tol=e)
 
           W = model.fit_transform(data)
           H = model.components_
@@ -95,7 +102,8 @@ class NMF(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform NMF.", self.verbose)

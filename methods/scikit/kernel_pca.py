@@ -43,7 +43,8 @@ class KPCA(object):
   Use the scikit libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def KPCAScikit(self, options):
     def RunKPCAScikit(q):
@@ -70,8 +71,8 @@ class KPCA(object):
         kernel = re.search("-k ([^\s]+)", options)
         try:        
           if not kernel:
-            Log.Fatal("Choose kernel type, valid choices are 'linear', 'hyptan' " + 
-                  "and 'polynomial'.")
+            Log.Fatal("Choose kernel type, valid choices are 'linear'," + 
+                  " 'hyptan' and 'polynomial'.")
             q.put(-1)
             return -1
           elif kernel.group(1) == "linear":
@@ -105,7 +106,8 @@ class KPCA(object):
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform KPCA.", self.verbose)

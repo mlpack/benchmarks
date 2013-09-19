@@ -43,7 +43,8 @@ class KMEANS(object):
   Use the scikit libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def KMeansScikit(self, options):
     def RunKMeansScikit(q):
@@ -51,7 +52,7 @@ class KMEANS(object):
 
       # Load input dataset.
       # If the dataset contains two files then the second file is the centroids 
-      # file. In this case we add this to the command line.
+      # file.
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) == 2:
         data = np.genfromtxt(self.dataset[0], delimiter=',')
@@ -70,8 +71,8 @@ class KMEANS(object):
         q.put(-1)
         return -1
       elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
-        Log.Fatal("Invalid number of clusters requested! Must be greater than or "
-            + "equal to 1.")
+        Log.Fatal("Invalid number of clusters requested! Must be greater than"
+            + " or equal to 1.")
         q.put(-1)
         return -1
 
@@ -107,7 +108,8 @@ class KMEANS(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform K-Means.", self.verbose)

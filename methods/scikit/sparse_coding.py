@@ -43,7 +43,8 @@ class SparseCoding(object):
   Use the scikit libary to implement Sparse Coding.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def SparseCodingScikit(self, options):
     def RunSparseCodingScikit(q):
@@ -78,7 +79,8 @@ class SparseCoding(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform Sparse Coding.", self.verbose)

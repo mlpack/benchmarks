@@ -44,14 +44,17 @@ class GMM(object):
   Use the shogun libary to implement Gaussian Mixture Model.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def GMMShogun(self, options):
     def RunGMMShogun(q):
       totalTimer = Timer()
 
-      # Load input dataset.
+      
       try:
+        # Load input dataset.
+        Log.Info("Loading dataset", self.verbose)
         dataPoints = np.genfromtxt(self.dataset, delimiter=',')
         dataFeat = RealFeatures(dataPoints.T)
 
@@ -83,7 +86,8 @@ class GMM(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform GMM.", self.verbose)

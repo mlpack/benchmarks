@@ -45,7 +45,8 @@ class KMEANS(object):
   Use the shogun libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def KMeansShogun(self, options):
 
@@ -72,7 +73,7 @@ class KMEANS(object):
     if len(self.dataset) == 2:
 
       # Run command with the nessecary arguments and return its output as a byte 
-      # string. We have untrusted input so we disables all shell based features.
+      # string. We have untrusted input so we disable all shell based features.
       cmd = shlex.split("methods/shogun/kmeans " + self.dataset[0] 
           + " " + self.dataset[1] + " " + clusters.group(1) + " " 
           + str(maxIterations))
@@ -139,7 +140,8 @@ class KMEANS(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform K-Means.", self.verbose)
@@ -150,7 +152,7 @@ class KMEANS(object):
   Parse the timer data form a given string.
 
   @param data - String to parse timer data from.
-  @return - Namedtuple that contains the timer data.
+  @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to

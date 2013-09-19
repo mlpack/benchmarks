@@ -43,7 +43,8 @@ class ICA(object):
   Use the scikit libary to implement independent component analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def ICAScikit(self, options):
     def RunICAScikit(q):
@@ -76,7 +77,8 @@ class ICA(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform ICA.", self.verbose)

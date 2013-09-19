@@ -48,7 +48,8 @@ class PCA(object):
   Use the shogun libary to implement Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def PCAShogun(self, options):
     def RunPCAShogun(q):
@@ -96,7 +97,8 @@ class PCA(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform PCA.", self.verbose)

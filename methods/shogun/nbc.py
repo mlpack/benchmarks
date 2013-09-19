@@ -44,7 +44,8 @@ class NBC(object):
   Use the shogun libary to implement Naive Bayes Classifier.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def NBCShogun(self, options):
     def RunNBCShogun(q):
@@ -80,11 +81,12 @@ class NBC(object):
     return timeout(RunNBCShogun, self.timeout)
 
   '''
-  Perform Naive Bayes Classifier. If the method has been successfully 
-  completed return the elapsed time in seconds.
+  Perform Naive Bayes Classifier. If the method has been successfully completed 
+  return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform NBC.", self.verbose)

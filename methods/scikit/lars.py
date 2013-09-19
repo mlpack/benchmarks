@@ -43,7 +43,8 @@ class LARS(object):
   Use the scikit libary to implement Least Angle Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def LARSScikit(self, options):
     def RunLARSScikit(q):
@@ -79,7 +80,8 @@ class LARS(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform LARS.", self.verbose)

@@ -43,7 +43,8 @@ class GMM(object):
   Use the scikit libary to implement Gaussian Mixture Model.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def GMMScikit(self, options):
     def RunGMMScikit(q):
@@ -63,8 +64,8 @@ class GMM(object):
 
       try:
         # Create the Gaussian Mixture Model.
-        model = mixture.GMM(n_components=g, covariance_type='full', random_state=s, 
-            n_iter=n)
+        model = mixture.GMM(n_components=g, covariance_type='full', 
+            random_state=s, n_iter=n)
         with totalTimer:
           model.fit(dataPoints)
       except Exception as e:
@@ -82,7 +83,8 @@ class GMM(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform GMM.", self.verbose)

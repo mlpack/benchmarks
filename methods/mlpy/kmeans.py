@@ -43,7 +43,8 @@ class KMEANS(object):
   Use the mlpy libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def KMeansMlpy(self, options):
     def RunKMeansMlpy(q):
@@ -70,7 +71,7 @@ class KMEANS(object):
 
       try:
         with totalTimer:
-          # Create the KMeans object and perform K-Means clustering.
+          # Create the K-Means object and perform K-Means clustering.
           if seed:
             kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
           else:
@@ -90,7 +91,8 @@ class KMEANS(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform K-Means.", self.verbose)

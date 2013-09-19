@@ -43,7 +43,8 @@ class ALLKNN(object):
   Use the scikit libary to implement All K-Nearest-Neighbors.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def AllKnnScikit(self, options):
     def RunAllKnnScikit(q):
@@ -71,16 +72,16 @@ class ALLKNN(object):
         else:
           k = int(k.group(1))
           if (k < 1 or k > referenceData.shape[0]):
-            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
-              + "less ")
+            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
+              + " and less or equal than " + str(referenceData.shape[0]))
             q.put(-1)
             return -1
 
         if not leafSize:
           l = 20
         elif int(leafSize.group(1)) < 0:
-          Log.Fatal("Invalid leaf size: " + str(leafSize.group(1)) + ". Must be " +
-              "greater than or equal to 0.")
+          Log.Fatal("Invalid leaf size: " + str(leafSize.group(1)) + ". Must" +
+              " be greater than or equal to 0.")
           q.put(-1)
           return -1
         else:
@@ -113,7 +114,8 @@ class ALLKNN(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)

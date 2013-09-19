@@ -29,7 +29,7 @@ This class implements the Least Angle Regression benchmark.
 class LARS(object):
 
   ''' 
-  Create the All Least Angle Regression benchmark instance.
+  Create the Least Angle Regression benchmark instance.
   
   @param dataset - Input dataset to perform Least Angle Regression on.
   @param timeout - The time until the timeout. Default no timeout.
@@ -44,7 +44,8 @@ class LARS(object):
   Use the shogun libary to implement Least Angle Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def LARSShogun(self, options):
     def RunLARSShogun(q):
@@ -84,7 +85,8 @@ class LARS(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform LARS.", self.verbose)

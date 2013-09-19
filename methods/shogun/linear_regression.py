@@ -44,7 +44,8 @@ class LinearRegression(object):
   Use the shogun libary to implement Linear Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def LinearRegressionShogun(self, options):
     def RunLinearRegressionShogun(q):
@@ -52,7 +53,7 @@ class LinearRegression(object):
 
       # Load input dataset.
       # If the dataset contains two files then the second file is the responses
-      # file. In this case we add this to the command line.
+      # file.
       try:
         Log.Info("Loading dataset", self.verbose)
         if len(self.dataset) == 2:
@@ -79,11 +80,12 @@ class LinearRegression(object):
     return timeout(RunLinearRegressionShogun, self.timeout)
 
   '''
-  Perform Linear Regression. If the method has been successfully 
-  completed return the elapsed time in seconds.
+  Perform Linear Regression. If the method has been successfully completed 
+  return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)

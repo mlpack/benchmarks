@@ -43,7 +43,8 @@ class LinearRegression(object):
   Use the scikit libary to implement Linear Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def LinearRegressionScikit(self, options):
     def RunLinearRegressionScikit(q):
@@ -51,7 +52,7 @@ class LinearRegression(object):
 
       # Load input dataset.
       # If the dataset contains two files then the second file is the responses 
-      # file. In this case we add this to the command line.
+      # file.
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) == 2:
         X = np.genfromtxt(self.dataset[0], delimiter=',')
@@ -82,7 +83,8 @@ class LinearRegression(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)

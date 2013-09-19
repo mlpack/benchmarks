@@ -43,7 +43,8 @@ class PCA(object):
   Use the mlpy libary to implement Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def PCAMlpy(self, options):
     def RunPCAMlpy(q):
@@ -72,7 +73,7 @@ class PCA(object):
           s = True if options.find("-s") > -1 else False
 
           # Perform PCA.
-          prep = mlpy.PCA(whiten = s)
+          prep = mlpy.PCA(whiten=s)
           prep.learn(data)
           out = prep.transform(data, k)      
       except Exception as e:
@@ -90,7 +91,8 @@ class PCA(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform PCA.", self.verbose)

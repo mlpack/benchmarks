@@ -45,15 +45,16 @@ class ALLKNN(object):
   Use the shogun libary to implement All K-Nearest-Neighbors.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def AllKnnShogun(self, options):
     def RunAllKnnShogun(q):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the query file. 
-      # In this case we add this to the command line.
+      # If the dataset contains two files then the second file is the query 
+      # file. 
       try:
         Log.Info("Loading dataset", self.verbose)
         if len(self.dataset) == 2:
@@ -77,8 +78,8 @@ class ALLKNN(object):
           else:
             k = int(k.group(1))
             if (k < 1 or k > referenceData.shape[0]):
-              Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 and "
-                + "less ")
+              Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
+                + " and less or equal than " + str(referenceData.shape[0]))
               q.put(-1)
               return -1
 
@@ -108,7 +109,8 @@ class ALLKNN(object):
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negativ value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)

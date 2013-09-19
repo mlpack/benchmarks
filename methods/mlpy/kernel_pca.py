@@ -43,7 +43,8 @@ class KPCA(object):
   Use the mlpy libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def KPCAMlpy(self, options):
     def RunKPCAMlpy(q):
@@ -110,7 +111,8 @@ class KPCA(object):
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or -1 if the method was not successful.
+  @return - Elapsed time in seconds or a negative value if the method was not 
+  successful.
   '''
   def RunMethod(self, options):
     Log.Info("Perform KPCA.", self.verbose)
