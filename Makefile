@@ -18,6 +18,24 @@ YAML_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, yaml;' 2>&1)
 ifndef YAML_CHECK
   YAML_INSTALLED := 1
 endif
+
+# Check if matplotlib is installed.
+MATPLOTLIB_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, matplotlib;' 2>&1)
+ifndef MATPLOTLIB_CHECK
+  MATPLOTLIB_INSTALLED := 1
+endif
+
+# Check if pyplot is installed.
+PYPLOT_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, matplotlib.pyplot;' 2>&1)
+ifndef PYPLOT_CHECK
+  PYPLOT_INSTALLED := 1
+endif
+
+# Check if numpy is installed.
+NUMPY_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, numpy;' 2>&1)
+ifndef NUMPY_CHECK
+  NUMPY_INSTALLED := 1
+endif
 endif
 
 # Specify the benchmark settings.
@@ -51,7 +69,7 @@ help: .check .help
 test: .check .test
 run: .check .run
 memory: .check .memory
-reports: .check .reports
+reports: .check .check_reports .reports
 scripts: .scripts
 checks: .check .checks
 
@@ -95,7 +113,7 @@ checks: .check .checks
 .check:
 ifndef YAML_INSTALLED
 	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'yaml' module was not \
-	found; please install the yaml module to start the benchmark script."
+	found; please install the 'yaml' module to start the benchmark script."
 	@exit 1
 endif
 
@@ -109,6 +127,25 @@ ifndef PYTHON_VERSION
 	python3.2+ to run all tests properly; however, some modules may still \
 	work with older python versions."
 endif
+endif
+
+.check_reports:
+ifndef MATPLOTLIB_INSTALLED
+	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'matplotlib' module was \
+	not found; please install the 'matplotlib' module to create the benchmark reports."
+	@exit 1
+endif
+
+ifndef PYPLOT_INSTALLED
+	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'matplotlib.pyplot' module \
+	was not found; please install the 'matplotlib.pyplot' module to create the benchmark reports."
+	@exit 1
+endif
+
+ifndef NUMPY_INSTALLED
+	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'numpy' module \
+	was not found; please install the 'numpy' module to create the benchmark reports."
+	@exit 1
 endif
 
 .test:
