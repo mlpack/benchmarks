@@ -57,8 +57,8 @@ methodTemplate = """
 <p class="graph--name">%(methodName)s</p>
 <div class="holder--progressBar">
 <span class="progressBar__percentage">%(progressPositive)s</span>
-<span class="progressBar__firstPart" style="width:%(progressPositive)s;"></span>
-<span class="progressBar__secondPart" style="width:%(progressNegative)s;"></span>
+<span class="progressBar__firstPart" style="width:%(progressPositiveStyle)s"></span>
+<span class="progressBar__secondPart" style="width:%(progressNegativeStyle)s"></span>
 </div><div class="btn-group">
 <a href="#collapse%(groupOne)s" class="btn graphs btn-grey icon-bars js-button"></a>
 <a href="#collapse%(groupTwo)s" class="btn info btn-grey icon-info js-button"></a>
@@ -125,3 +125,5 @@ resultsPanel = """
 <tbody>%(timingTable)s</tbody>
 </table></div></div></div>
 """
+
+progressBarStyle = "%;-webkit-border-radius:4px 4px 4px 4px;-moz-border-radius:4px 4px 4px 4px;border-radius:4px 4px 4px 4px;"

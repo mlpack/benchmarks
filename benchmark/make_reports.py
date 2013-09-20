@@ -306,10 +306,20 @@ def MethodReports(db):
     if numDatasets != 0:
       negative = (((datasetCount - bestLibCount) / float(datasetCount)) * 100.0)
       reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
-      reportValues["progressNegative"] = "{0:.2f}".format(negative) + "%"
+
+      if negative == 0:
+        reportValues["progressPositiveStyle"] = "{0:.2f}".format(100 - negative) + progressBarStyle
+      else:
+        reportValues["progressPositiveStyle"] = "{0:.2f}".format(100 - negative) + "%;"
+
+      if negative == 100:
+        reportValues["progressNegativeStyle"] = "{0:.2f}".format(negative) + progressBarStyle
+      else:
+        reportValues["progressNegativeStyle"] = "{0:.2f}".format(negative) + "%;"
     else:
       reportValues["progressPositive"] = "0%"
-      reportValues["progressNegative"] = "100%"
+      reportValues["progressPositiveStyle"] = "0%;"
+      reportValues["progressNegativeStyle"] = "100%" + progressBarStyle
     
     reportValues["numLibararies"] = libCount
     reportValues["numDatasets"] = datasetCount
