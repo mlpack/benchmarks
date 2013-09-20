@@ -27,7 +27,7 @@ class LARS_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -83,7 +83,7 @@ class LARS_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -115,7 +115,7 @@ class LARS_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
     self.verbose = False
     self.timeout = 9000
 
