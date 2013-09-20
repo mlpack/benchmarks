@@ -102,7 +102,7 @@ checks: .check .checks
 	@echo "                         syntax and then try to open files referred in the"
 	@echo "                         configuration file."
 	@echo "  run [parameters]       Perform the benchmark with the given config."
-	@echo "  memory [parameters]    Get memory profiling information with the given config"
+	@echo "  memory [parameters]    Get memory profiling information with the given config."
 	@echo "  scripts                Compile the java files for the weka methods."
 	@echo "  reports [parameters]   Create the reports."
 	@echo "  help                   Show this info."

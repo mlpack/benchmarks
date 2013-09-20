@@ -17,7 +17,6 @@ if cmd_subfolder not in sys.path:
 from misc import *
 from log import *
 
-import numpy as np
 import matplotlib
 
 matplotlib.use("Agg")
@@ -258,7 +257,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
       data += data
       
     # Create the data for the x-axis.
-    X = np.arange(len(data))
+    X = list(range(len(data)))
 
     # Plot the line chart.
     plt.plot(X, data, color=colors[0], alpha=opacity, linewidth=1.7)
@@ -324,7 +323,7 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF"):
     memStackB = [(int(i) / 1024) + 0.0001 for i in  re.findall(r"mem_stacks_B=(\d*)", content)]
 
     # Plot the memory information.
-    X = np.arange(len(memHeapExtraB))
+    X = list(range(len(memHeapExtraB)))
     X = [x+0.0001 for x in X]
     plt.fill_between(X, memHeapExtraB, 0, color="#109618", alpha=0.6)
     plt.fill_between(X, memHeapExtraB, memHeapB, color="#DC3912", alpha=0.6)
