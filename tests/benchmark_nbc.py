@@ -1,5 +1,5 @@
 '''
-  @file benchmark_emst.py
+  @file benchmark_nbc.py
   @author Marcus Edel
 
   Test for the Parametric Naive Bayes Classifier scripts.

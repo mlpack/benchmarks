@@ -1,5 +1,5 @@
 '''
-  @file benchmark_emst.py
+  @file benchmark_nca.py
   @author Marcus Edel
 
   Test for the Neighborhood Components Analysis scripts.
