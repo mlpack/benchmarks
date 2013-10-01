@@ -5,6 +5,8 @@ settings:
     timeout: 9000
     database: 'reports/benchmark.db'
     keepReports: 20
+    topChartColor: '#F3F3F3'
+    chartColor: '#FFFFFF'
 ---
 #  MLPACK:
 #  A Scalable C++  Machine Learning Library

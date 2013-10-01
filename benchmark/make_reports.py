@@ -33,7 +33,7 @@ Create the top line chart.
 @param db - The database object.
 @return The filename of the line chart.
 '''
-def CreateTopLineChart(db):
+def CreateTopLineChart(db, topChartColor):
   res = db.GetResultsSum("mlpack")
   if res:
     build, results = res
@@ -41,7 +41,7 @@ def CreateTopLineChart(db):
     return ""
 
   GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + 
-      ".png", backgroundColor="#F3F3F3", windowWidth=9, windowHeight=1.6)
+      ".png", backgroundColor=topChartColor, windowWidth=9, windowHeight=1.6)
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -116,7 +116,7 @@ Create the content for the memory section.
 @param results - This data structure contains the memory results.
 @return A string that contains the content for the memory section.
 '''
-def CreateMemoryContent(results):
+def CreateMemoryContent(results, chartColor):
   memoryContent = ""
   if results:
     for result in results:
@@ -132,7 +132,7 @@ def CreateMemoryContent(results):
       memoryValues["content"] = content
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
-      CreateMassifChart(result[5], "reports/" + filename)
+      CreateMassifChart(result[5], "reports/" + filename, chartColor)
       memoryValues["memoryChart"] = filename
 
       memoryContent += memoryPanelTemplate % memoryValues
@@ -169,7 +169,7 @@ Create the method container with the information from the database.
 @param db - The database object.
 @return HTML code which contains the information for the container.
 '''
-def MethodReports(db):
+def MethodReports(db, chartColor):
   methodsPage = ""
   numDatasets = 0
 
@@ -246,14 +246,17 @@ def MethodReports(db):
       else:
         continue
 
-      GenerateSingleLineChart(methodResultsSum, "reports/" + lineChartName)
+      GenerateSingleLineChart(methodResultsSum, "reports/" + lineChartName, 
+          chartColor)
 
       # Generate a "unique" name for the bar chart.
       barChartName = "img/bar_" + chartHash + ".png"
 
       # Create the bar chart.
-      ChartInfo = GenerateBarChart(methodResults, methodLibararies, 
-          "reports/" + barChartName)
+      ChartInfo = GenerateBarChart(results=methodResults, 
+          libraries=methodLibararies, fileName="reports/" + barChartName, 
+          backgroundColor=chartColor)
+
       numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
 
       # Increase the status information.
@@ -287,9 +290,10 @@ def MethodReports(db):
 
       # Create the memory content.
       if mlpackMemoryBuilId:
-        memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, mlpackMemoryId[0][0], methodId)
+        memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, 
+            mlpackMemoryId[0][0], methodId)
 
-        groupPanel["content"] = CreateMemoryContent(memoryResults)
+        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor)
         if groupPanel["content"]:
           groupPanel["nameID"] = chartHash + "_m"
           groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
@@ -464,6 +468,8 @@ def Main(configfile):
   # Report settings.
   database = "reports/benchmark.db"
   keepReports = 3
+  topChartColor = "#F3F3F3"
+  chartColor = "#FFFFFF"
 
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
@@ -479,6 +485,10 @@ def Main(configfile):
         database = value
       elif key == "keepReports":
         keepReports = value
+      elif key == "topChartColor":
+        topChartColor = value
+      elif key == "chartColor":
+        chartColor = value
 
   db = Database(database)
   db.CreateTables()
@@ -488,9 +498,9 @@ def Main(configfile):
 
   # Get the values for the new index.html file.
   reportValues = {}
-  reportValues["topLineChart"] = CreateTopLineChart(db)
+  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor)
   reportValues["pagination"] = NewPagination()
-  reportValues["methods"] = MethodReports(db)
+  reportValues["methods"] = MethodReports(db, chartColor)
 
   template = pageTemplate % reportValues
 
