@@ -22,9 +22,9 @@ pageTemplate = """
 <div class="row">
 <div class="col-lg-12">
 <div class="text-center"><h4>Benchmarks</h4></div>
-<div class="container--graph collapse-group well">
+<div class="container--graph collapse-group well overall-timing-chart">
 <div class="container__topContent">
-<div><img class="center--image" src="%(topLineChart)s" alt="" style="max-width: 100%%;"></div>
+<div class="overall-timing-chart"><img class="center--image" src="%(topLineChart)s" alt="" style="max-width: 100%%;"></div>
 </div></div>%(methods)s</div></div></div>
 <div class="pagination--holder">
 <ul class="pagination">%(pagination)s</ul></div>
@@ -117,7 +117,7 @@ resultsTemplate = """
 
 resultsPanel = """
 <div class="panel-body">
-<div><img class="panel" src="%(lineChart)s" alt="" style="max-width: 100%%;"></div>
+<div class="overall-timing-chart"><img class="panel" src="%(lineChart)s" alt="" style="max-width: 100%%;"></div>
 <div><img class="panel" src="%(barChart)s" alt="" style="max-width: 100%%;"></div>
 <div><div class="panel">
 <table class="table table-striped">
