@@ -33,7 +33,7 @@ Create the top line chart.
 @param db - The database object.
 @return The filename of the line chart.
 '''
-def CreateTopLineChart(db, topChartColor):
+def CreateTopLineChart(db, topChartColor, textColor):
   res = db.GetResultsSum("mlpack")
   if res:
     build, results = res
@@ -41,7 +41,8 @@ def CreateTopLineChart(db, topChartColor):
     return ""
 
   GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + 
-      ".png", backgroundColor=topChartColor, windowWidth=9, windowHeight=1.6)
+      ".png", backgroundColor=topChartColor, windowWidth=9, windowHeight=1.6,
+      textColor=textColor)
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -116,7 +117,7 @@ Create the content for the memory section.
 @param results - This data structure contains the memory results.
 @return A string that contains the content for the memory section.
 '''
-def CreateMemoryContent(results, chartColor):
+def CreateMemoryContent(results, chartColor, textColor):
   memoryContent = ""
   if results:
     for result in results:
@@ -132,7 +133,7 @@ def CreateMemoryContent(results, chartColor):
       memoryValues["content"] = content
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
-      CreateMassifChart(result[5], "reports/" + filename, chartColor)
+      CreateMassifChart(result[5], "reports/" + filename, chartColor, textColor)
       memoryValues["memoryChart"] = filename
 
       memoryContent += memoryPanelTemplate % memoryValues
@@ -169,7 +170,7 @@ Create the method container with the information from the database.
 @param db - The database object.
 @return HTML code which contains the information for the container.
 '''
-def MethodReports(db, chartColor):
+def MethodReports(db, chartColor, textColor):
   methodsPage = ""
   numDatasets = 0
 
@@ -246,8 +247,9 @@ def MethodReports(db, chartColor):
       else:
         continue
 
-      GenerateSingleLineChart(methodResultsSum, "reports/" + lineChartName, 
-          chartColor)
+      GenerateSingleLineChart(data=methodResultsSum, 
+          fileName="reports/" + lineChartName, backgroundColor=chartColor, 
+          textColor=textColor)
 
       # Generate a "unique" name for the bar chart.
       barChartName = "img/bar_" + chartHash + ".png"
@@ -255,7 +257,7 @@ def MethodReports(db, chartColor):
       # Create the bar chart.
       ChartInfo = GenerateBarChart(results=methodResults, 
           libraries=methodLibararies, fileName="reports/" + barChartName, 
-          backgroundColor=chartColor)
+          backgroundColor=chartColor, textColor=textColor)
 
       numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
 
@@ -293,7 +295,7 @@ def MethodReports(db, chartColor):
         memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, 
             mlpackMemoryId[0][0], methodId)
 
-        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor)
+        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor, textColor)
         if groupPanel["content"]:
           groupPanel["nameID"] = chartHash + "_m"
           groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
@@ -470,6 +472,7 @@ def Main(configfile):
   keepReports = 3
   topChartColor = "#F3F3F3"
   chartColor = "#FFFFFF"
+  textColor = "#6e6e6e"
 
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
@@ -489,6 +492,8 @@ def Main(configfile):
         topChartColor = value
       elif key == "chartColor":
         chartColor = value
+      elif key == "textColor":
+        textColor = value
 
   db = Database(database)
   db.CreateTables()
@@ -498,9 +503,9 @@ def Main(configfile):
 
   # Get the values for the new index.html file.
   reportValues = {}
-  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor)
+  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor, textColor)
   reportValues["pagination"] = NewPagination()
-  reportValues["methods"] = MethodReports(db, chartColor)
+  reportValues["methods"] = MethodReports(db, chartColor, textColor)
 
   template = pageTemplate % reportValues
 
