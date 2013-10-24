@@ -251,7 +251,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 if sum(time) == -2:
                   # Timout failure.
                   dataMatrix[row][col] = ">" + str(timeout)
-                elif sum(time) == -1:
+                elif sum(time) < 0:
                   # Exception.
                   dataMatrix[row][col] = "failure"
                 else:
