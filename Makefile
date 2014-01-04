@@ -57,6 +57,7 @@ export PYTHONPATH=/opt/scikit-learn/scikit-learn-0.13.1/lib/python3.3/site-packa
 export LD_LIBRARY_PATH=/opt/shogun/shogun-2.1.0/lib/
 export MS_PRINT_BIN=/usr/bin/ms_print
 export VALGRIND_BIN=/usr/bin/valgrind
+export FLANN_PATH=methods/flann/
 
 # Color settings.
 NO_COLOR=\033[0m
