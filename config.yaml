@@ -830,8 +830,10 @@ methods:
         format: [csv, txt]
         datasets:
             - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
-                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
-                      'datasets/USCensus1990.csv']
+                      'datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
+                      'datasets/optdigits.csv', 'datasets/isolet.csv',
+                      'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
     LinearRegression:
         run: true
@@ -860,7 +862,7 @@ methods:
             - files: ['datasets/pendigits.csv']
               options: '-k 12 -s 42 -N'
 ---
-# mlpy is a Python module for Machine Learning built on top of NumPy/SciPy 
+# mlpy is a Python module for Machine Learning built on top of NumPy/SciPy
 # and the GNU Scientific Libraries.
 library: mlpy
 methods:
