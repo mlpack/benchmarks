@@ -54,13 +54,10 @@ export MATLABPATH=methods/matlab/
 export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
 export SHOGUN_PATH=/opt/shogun/shogun-2.1.0-mod
 export PYTHONPATH=/opt/scikit-learn/scikit-learn-0.13.1/lib/python3.3/site-packages/:/opt/mlpy/mlpy-3.5.0/lib/python3.3/site-packages/:/opt/shogun/shogun-2.1.0/lib/python3.3/dist-packages/
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ann/ann_1.1.2/lib/:/opt/shogun/shogun-2.1.0/lib/
 export MS_PRINT_BIN=/usr/bin/ms_print
 export VALGRIND_BIN=/usr/bin/valgrind
 export FLANN_PATH=methods/flann/
 export ANN_PATH=methods/ann/
-export LIBRARY_PATH=$LIBRARY_PATH:/opt/ann/ann_1.1.2/lib/
-export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/opt/ann/ann_1.1.2/include/:/opt/flann/flann-1.8.4/include/:/usr/include/libxml2/
 
 # Color settings.
 NO_COLOR=\033[0m
