@@ -1262,7 +1262,7 @@ methods:
 ---
 #  ANN:
 #  A Library for Approximate Nearest Neighbor Searching
-library: ANN
+library: ann
 methods:
     ALLKNN:
           run: true
@@ -1278,7 +1278,7 @@ methods:
 ---
 #  FLANN:
 #  A Library for Fast Library for Approximate Nearest Neighbors
-library: FLANN
+library: flann
 methods:
     ALLKNN:
           run: true
