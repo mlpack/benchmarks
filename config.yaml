@@ -1259,3 +1259,35 @@ methods:
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                          'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
                          'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+---
+#  ANN:
+#  A Library for Approximate Nearest Neighbor Searching
+library: ANN
+methods:
+    ALLKNN:
+          run: true
+          script: methods/ann/allknn.py
+          format: [csv, txt]
+          datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42'
+---
+#  FLANN:
+#  A Library for Fast Library for Approximate Nearest Neighbors
+library: FLANN
+methods:
+    ALLKNN:
+          run: true
+          script: methods/flann/allknn.py
+          format: [csv, txt]
+          datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42'

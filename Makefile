@@ -54,11 +54,13 @@ export MATLABPATH=methods/matlab/
 export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
 export SHOGUN_PATH=/opt/shogun/shogun-2.1.0-mod
 export PYTHONPATH=/opt/scikit-learn/scikit-learn-0.13.1/lib/python3.3/site-packages/:/opt/mlpy/mlpy-3.5.0/lib/python3.3/site-packages/:/opt/shogun/shogun-2.1.0/lib/python3.3/dist-packages/
-export LD_LIBRARY_PATH=/opt/shogun/shogun-2.1.0/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ann/ann_1.1.2/lib/:/opt/shogun/shogun-2.1.0/lib/
 export MS_PRINT_BIN=/usr/bin/ms_print
 export VALGRIND_BIN=/usr/bin/valgrind
 export FLANN_PATH=methods/flann/
 export ANN_PATH=methods/ann/
+export LIBRARY_PATH=$LIBRARY_PATH:/opt/ann/ann_1.1.2/lib/
+export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/opt/ann/ann_1.1.2/include/:/opt/flann/flann-1.8.4/include/:/usr/include/libxml2/
 
 # Color settings.
 NO_COLOR=\033[0m
@@ -167,6 +169,9 @@ endif
 	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
 	# Compile the shogun K-Means (with initial centroids) Clustering method.
 	g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
-
+	# Compile the ann scripts.
+	g++ -O0 methods/ann/src/allknn.cpp -o methods/ann/allknn -lANN -lmlpack -lboost_program_options
+	# Compile the FLANN scripts.
+	g++ -O0 methods/flann/src/allknn.cpp -o methods/flann/allknn -lmlpack -lboost_program_options
 .checks:
 	$(PYTHON_BIN) tests/tests.py

@@ -121,4 +121,4 @@ class ALLKNN(object):
   @return Elapsed time in seconds.
   '''
   def GetTime(self, timer):
-    return timer.total_time
+    return timer.knn_time

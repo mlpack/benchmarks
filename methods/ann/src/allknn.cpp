@@ -23,7 +23,7 @@ PARAM_STRING_REQ("reference_file", "File containing the reference dataset.",
 PARAM_INT_REQ("k", "Number of nearest neighbors to find.", "k");
 PARAM_STRING("query_file", "File containing query points (optional).", "q", "");
 PARAM_INT("leaf_size", "Leaf size for tree building.", "l", 20);
-
+PARAM_INT("seed", "Random seed (if 0, std::time(NULL) is used).", "s", 0);
 
 int main(int argc, char **argv)
 {
