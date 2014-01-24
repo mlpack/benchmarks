@@ -63,9 +63,10 @@ class GMM(object):
       s = 0 if not s else int(s.group(1))
 
       try:
-        # Create the Gaussian Mixture Model.
+        # Create the Gaussian Mixture Model
+	# Some params changed to match mlpack defaults.
         model = mixture.GMM(n_components=g, covariance_type='full', 
-            random_state=s, n_iter=n)
+            random_state=s, n_iter=n, n_init=10, thresh=1e-10)
         with totalTimer:
           model.fit(dataPoints)
       except Exception as e:
