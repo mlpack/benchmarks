@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
   int lsInt = CLI::GetParam<int>("leaf_size");
 
-  size_t k = CLI::GetParam<int>("k");
+  size_t k = CLI::GetParam<int>("k") + 1;
 
   arma::mat referenceData;
   arma::mat queryData; // So it doesn't go out of scope.
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 
   ANNidxArray nnIdx = new ANNidx[k];
   ANNdistArray dists = new ANNdist[k];
-  ANNpointArray dataPts = annAllocPts(maxPts, dim);
+  ANNpointArray dataPts = annAllocPts(referenceData.n_cols, referenceData.n_rows);
 
   for (int i = 0; i < referenceData.n_cols; ++i)
   {
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
   Timer::Start("knn_time");
 
-  ANNkd_tree*  kdTree = new ANNkd_tree(dataPts, maxPts, dim, lsInt);
+  ANNkd_tree*  kdTree = new ANNkd_tree(dataPts, referenceData.n_cols, referenceData.n_rows, lsInt);
 
   arma::vec queryPoint;
   for (int i = 0; i < queryData.n_cols; ++i)
