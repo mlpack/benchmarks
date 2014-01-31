@@ -94,7 +94,7 @@ Working directories
 
 The datasets are kept in a separate repository as a git submodule. You can get the datasets by updating the submodule from within your working directory.
 
-    $ git submodule update --init datasets
+    $ git submodule update --init
 
 This will checkout the datasets from the benchmark-datasets repository and place them in your working directory.
 
