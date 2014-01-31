@@ -235,5 +235,69 @@ class ALLKNN_WEKA_TEST(unittest.TestCase):
     result = self.instance.RunMethod("-k 3")
     self.assertTrue(result > 0)
 
+'''
+Test the ann All K-Nearest-Neighbors script.
+'''
+class ALLKNN_ANN_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = "datasets/wine.csv"
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/ann/allknn.py")
+    obj = getattr(module, "ALLKNN")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMethod' function.
+  '''
+  def test_RunMethod(self):
+    result = self.instance.RunMethod("-k 3")
+    self.assertTrue(result > 0)
+
+'''
+Test the flann All K-Nearest-Neighbors script.
+'''
+class ALLKNN_FLANN_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = "datasets/wine.csv"
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/flann/allknn.py")
+    obj = getattr(module, "ALLKNN")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMethod' function.
+  '''
+  def test_RunMethod(self):
+    result = self.instance.RunMethod("-k 3")
+    self.assertTrue(result > 0)
+
 if __name__ == '__main__':
   unittest.main()
