@@ -28,7 +28,7 @@ import collections
 
 
 # Use this colors to plot the graph.
-colors = ['#3366CC', '#DC3912', '#FF9900', '#FFFF32', '#109618', '#990099', 
+colors = ['#3366CC', '#DC3912', '#FF9900', '#FFFF32', '#109618', '#990099',
           '#DD4477', '#AAAA11', '#22AA99']
 
 '''
@@ -40,11 +40,11 @@ Generate a bar chart with the specified informations.
 @param bestlib - The name of the library which should be compared with the other
 libraries.
 @param backgroundColor - The color of the image background.
-@return The dataset count, total time, failure count, timeout count, 
+@return The dataset count, total time, failure count, timeout count,
 best libray count, timing data.
 '''
-def GenerateBarChart(results, libraries, fileName, bestlib="mlpack", 
-    backgroundColor="#FFFFFF", textColor="#6e6e6e"):
+def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
+    backgroundColor="#FFFFFF", textColor="#6e6e6e", gridColor="#6e6e6e"):
   # Bar chart settings.
   lineWidth = 0.1
   barWidth = 0.15
@@ -57,13 +57,13 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   # Create figure and set the color.
   matplotlib.rc('axes', facecolor=backgroundColor)
   matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight), 
+  fig = plt.figure(figsize=(windowWidth, windowHeight),
       facecolor=backgroundColor, dpi=100)
   plt.rc('lines', linewidth=lineWidth)
   ax = plt.subplot(1,1,1)
 
   # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth)
+  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
   ax.xaxis.grid(False)
   ax.spines['left'].set_visible(False)
   ax.spines['top'].set_visible(False)
@@ -80,7 +80,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   nextBar = 0
   legendPosition = 0
   legendBegin = 0
-  
+
   # use this variable to count the time.
   totalTime = 0
   # Use this variable to count the timeouts.
@@ -92,9 +92,9 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   timingData = {}
 
   # Use this variable to get use the data for the right library.
-  l = 0 
+  l = 0
   # Iterate through the data and plot the bar chart.
-  for result in results:    
+  for result in results:
     for i, data in enumerate(result):
       # The time value.
       time = data[3]
@@ -137,10 +137,10 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
       color = colors[l % len(colors)]
 
       if isFloat(value):
-        plt.bar(nextBar, value, barWidth, alpha=opacity, color=color, 
+        plt.bar(nextBar, value, barWidth, alpha=opacity, color=color,
             fill=fill,lw=0.2)
       else:
-        plt.bar(nextBar, maxValue, barWidth, alpha=opacity, color="gray", 
+        plt.bar(nextBar, maxValue, barWidth, alpha=opacity, color="gray",
             fill=fill, lw=0.2)
 
       time = value if isFloat(value) else 10
@@ -165,8 +165,8 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor=textColor)
 
   # Create the legend above the bar chart.
-  lgd = ax.legend(handler, libraries + ["failure/ timeout"], loc='upper center', 
-    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(libraries) / 6)), fancybox=True, 
+  lgd = ax.legend(handler, libraries + ["failure/ timeout"], loc='upper center',
+    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(libraries) / 6)), fancybox=True,
     shadow=False, ncol=6, fontsize=8)
   lgd.get_frame().set_linewidth(0)
   for label in lgd.get_texts():
@@ -177,7 +177,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
 
   # Save the bar chart.
   fig.tight_layout()
-  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
+  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight',
     facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
   plt.close()
 
@@ -192,7 +192,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
       results = [v if isFloat(v) else float('Inf') for v in results]
       if bestLibIndex == results.index(min(results)):
         bestLibCount += 1
-  
+
   return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData)
 
 '''
@@ -204,10 +204,10 @@ Generate a line chart with the specified informations.
 @param windowWidth - The width of the chart.
 @prama windowHeight - The height of the chart.
 '''
-def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF", 
-    windowWidth=8.1, windowHeight=1.3, textColor="#6e6e6e"):
-  
-  # Generate a list of scalar values. Use the privious or next elemnt to fill 
+def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
+    windowWidth=8.1, windowHeight=1.3, textColor="#6e6e6e", gridColor="#6e6e6e"):
+
+  # Generate a list of scalar values. Use the privious or next elemnt to fill
   # the gap.
   def NormalizeData(data):
     i = 0
@@ -229,13 +229,13 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
   # Create figure and set the color.
   matplotlib.rc('axes', facecolor=backgroundColor)
   matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight), 
+  fig = plt.figure(figsize=(windowWidth, windowHeight),
       facecolor=backgroundColor, dpi=100)
   plt.rc('lines', linewidth=lineWidth)
   ax = plt.subplot(1,1,1)
 
   # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth)
+  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
   ax.xaxis.grid(False)
   ax.spines['left'].set_visible(False)
   ax.spines['top'].set_visible(False)
@@ -250,11 +250,11 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
 
   data = NormalizeData(data)
 
-  # If we only have a single value we don't want to start from zero so we 
+  # If we only have a single value we don't want to start from zero so we
   # double the data.
   if len(data) == 1:
     data += data
-      
+
   # Create the data for the x-axis.
   X = list(range(len(data)))
 
@@ -271,7 +271,7 @@ def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
 
   # Save the line chart.
   fig.tight_layout()
-  fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(), 
+  fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(),
       edgecolor='none', dpi=100)
   plt.close()
 
@@ -282,7 +282,8 @@ Generate a memory chart with the specified informations.
 @param fileName - The filename of the memory chart.
 @param backgroundColor - The color of the image background.
 '''
-def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF", textColor="6e6e6e"):
+def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF",
+    textColor="6e6e6e", gridColor="#6e6e6e"):
   lineWidth = 1.5
   opacity = 0.9
   windowWidth = 8.1
@@ -292,13 +293,13 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF", textCo
   # Create figure and set the color.
   matplotlib.rc('axes', facecolor=backgroundColor)
   matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight), 
+  fig = plt.figure(figsize=(windowWidth, windowHeight),
       facecolor=backgroundColor, dpi=100)
   plt.rc('lines', linewidth=lineWidth)
   ax = plt.subplot(1,1,1)
 
   # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth)
+  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
   ax.xaxis.grid(False)
   ax.spines['left'].set_visible(False)
   ax.spines['top'].set_visible(False)
@@ -341,15 +342,15 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF", textCo
   plt.xlabel("snapshot", color=textColor)
 
   # Create the legend above the memory chart.
-  lgd = ax.legend((p1, p2, p3), 
-    ("mem heap B", "mem heap extra B", "mem stacks B"), loc='upper center', 
+  lgd = ax.legend((p1, p2, p3),
+    ("mem heap B", "mem heap extra B", "mem stacks B"), loc='upper center',
     bbox_to_anchor=(0.5, 1.3), fancybox=True, shadow=False, ncol=8, fontsize=8)
   lgd.get_frame().set_linewidth(0)
   for label in lgd.get_texts():
     label.set_color(textColor)
-         
+
   # Save the memory chart.
   fig.tight_layout()
-  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight', 
+  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight',
     facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
   plt.close()

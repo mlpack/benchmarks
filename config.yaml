@@ -5,9 +5,14 @@ settings:
     timeout: 9000
     database: 'reports/benchmark.db'
     keepReports: 20
+    # Background color of top generated graph.
     topChartColor: '#F3F3F3'
+    # Background color of generated graphs.
     chartColor: '#FFFFFF'
+    # Color of text in generated graphs.
     textColor: '#6E6E6E'
+    # Color of the grid in generated graphs.
+    gridColor: '#6E6E6E'
 ---
 #  MLPACK:
 #  A Scalable C++  Machine Learning Library
