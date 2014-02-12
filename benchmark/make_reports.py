@@ -33,16 +33,16 @@ Create the top line chart.
 @param db - The database object.
 @return The filename of the line chart.
 '''
-def CreateTopLineChart(db, topChartColor, textColor):
+def CreateTopLineChart(db, topChartColor, textColor, gridColor):
   res = db.GetResultsSum("mlpack")
   if res:
     build, results = res
   else:
     return ""
 
-  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) + 
+  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) +
       ".png", backgroundColor=topChartColor, windowWidth=9, windowHeight=1.6,
-      textColor=textColor)
+      textColor=textColor, gridColor=gridColor)
   return "img/mlpack_top_" + str(build) + ".png"
 
 '''
@@ -67,7 +67,7 @@ def CreateTimingTable(data, libraries):
       # Highlight the data with the best timing.
       if minData(timings) == time:
         time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
-        timingTable += '<td><p class="text-success"><strong>' + time 
+        timingTable += '<td><p class="text-success"><strong>' + time
         timingTable += "</strong></p></td>"
       else:
         time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
@@ -117,14 +117,14 @@ Create the content for the memory section.
 @param results - This data structure contains the memory results.
 @return A string that contains the content for the memory section.
 '''
-def CreateMemoryContent(results, chartColor, textColor):
+def CreateMemoryContent(results, chartColor, textColor, gridColor):
   memoryContent = ""
   if results:
     for result in results:
       memoryValues = {}
       memoryValues["name"] = result[7]
       memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
-      
+
       content = Profiler.MassifMemoryUsageReport(str(result[5]))
       try:
         content = content.decode()
@@ -133,7 +133,8 @@ def CreateMemoryContent(results, chartColor, textColor):
       memoryValues["content"] = content
 
       filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
-      CreateMassifChart(result[5], "reports/" + filename, chartColor, textColor)
+      CreateMassifChart(result[5], "reports/" + filename, chartColor, textColor,
+          gridColor)
       memoryValues["memoryChart"] = filename
 
       memoryContent += memoryPanelTemplate % memoryValues
@@ -161,7 +162,7 @@ def CreateMethodInfo(results, methodName):
 
     infoValues["content"] = content
     methodInfo = panelTemplate % infoValues
-  
+
   return methodInfo
 
 '''
@@ -170,7 +171,7 @@ Create the method container with the information from the database.
 @param db - The database object.
 @return HTML code which contains the information for the container.
 '''
-def MethodReports(db, chartColor, textColor):
+def MethodReports(db, chartColor, textColor, gridColor):
   methodsPage = ""
   numDatasets = 0
 
@@ -179,11 +180,11 @@ def MethodReports(db, chartColor, textColor):
   buildIds = []
   for libraryid in libraryIds:
     buildIds.append((db.GetLatestBuildFromLibary(libraryid[0]), libraryid[1]))
-  
+
   methodGroup = {}
   # Iterate throw all methods and create for each method a new container.
   for method in db.GetAllMethods():
-    
+
     methodResults = []
     methodLibararies = []
     resultBuildId = []
@@ -208,7 +209,7 @@ def MethodReports(db, chartColor, textColor):
     # Create the container.
     reportValues = {}
     reportValues["methodName"] = methodName
-    
+
     resultPanel = ""
     methodInfo = ""
     memoryContent = ""
@@ -229,7 +230,7 @@ def MethodReports(db, chartColor, textColor):
     for result in results:
       resultValues = {}
       groupPanel = {}
-      
+
       methodResults = result[0]
       methodLibararies = result[1]
       resultBuildId = result[2]
@@ -247,17 +248,17 @@ def MethodReports(db, chartColor, textColor):
       else:
         continue
 
-      GenerateSingleLineChart(data=methodResultsSum, 
-          fileName="reports/" + lineChartName, backgroundColor=chartColor, 
-          textColor=textColor)
+      GenerateSingleLineChart(data=methodResultsSum,
+          fileName="reports/" + lineChartName, backgroundColor=chartColor,
+          textColor=textColor, gridColor=gridColor)
 
       # Generate a "unique" name for the bar chart.
       barChartName = "img/bar_" + chartHash + ".png"
 
       # Create the bar chart.
-      ChartInfo = GenerateBarChart(results=methodResults, 
-          libraries=methodLibararies, fileName="reports/" + barChartName, 
-          backgroundColor=chartColor, textColor=textColor)
+      ChartInfo = GenerateBarChart(results=methodResults,
+          libraries=methodLibararies, fileName="reports/" + barChartName,
+          backgroundColor=chartColor, textColor=textColor, gridColor=gridColor)
 
       numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
 
@@ -292,20 +293,21 @@ def MethodReports(db, chartColor, textColor):
 
       # Create the memory content.
       if mlpackMemoryBuilId:
-        memoryResults = db.GetMemoryResults(mlpackMemoryBuilId, 
+        memoryResults = db.GetMemoryResults(mlpackMemoryBuilId,
             mlpackMemoryId[0][0], methodId)
 
-        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor, textColor)
+        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor,
+            textColor, gridColor)
         if groupPanel["content"]:
           groupPanel["nameID"] = chartHash + "_m"
           groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
-          
+
           memoryContent += resultsTemplate % groupPanel
 
       # Create the method info content.
       if not methodInfo:
         methodInfo = CreateMethodInfo(db.GetMethodInfo(methodId), methodName)
-      
+
     datasetTable = CreateDatasetTable(results)
 
     # Calculate the percent for the progress bar.
@@ -326,7 +328,7 @@ def MethodReports(db, chartColor, textColor):
       reportValues["progressPositive"] = "0%"
       reportValues["progressPositiveStyle"] = "0%;"
       reportValues["progressNegativeStyle"] = "100%" + progressBarStyle
-    
+
     reportValues["numLibararies"] = libCount
     reportValues["numDatasets"] = datasetCount
     reportValues["totalTime"] =  "{0:.2f}".format(totalTimeCount)
@@ -361,7 +363,7 @@ def GetMaxIndex():
     pattern = re.compile(r"""
         .*?index_(?P<id>.*?).html
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(f)
     if match:
       i = int(match.group("id"))
@@ -395,7 +397,7 @@ def AdjustPagination(maxFiles):
           content += '<li class="previous"><a href="index.html">&larr; Newer</a></li>\n'
         else:
           content += '<li class="previous"><a href="index_' + str(i - 1) + '.html">&larr; Newer</a></li>\n'
-        
+
         # If i equals maxId there is no next index file. In this case we can't
         # create a link to the next index file.
         if i == maxId:
@@ -410,7 +412,7 @@ def AdjustPagination(maxFiles):
         fid.write(content)
         fid.truncate()
 
-        # Delete unneeded files. We don't want to store all reports, for that 
+        # Delete unneeded files. We don't want to store all reports, for that
         # reason we delete the oldest report.
         if i < maxFiles:
           delFiles.extend(re.findall('src="img/(.*?)"', content))
@@ -432,14 +434,14 @@ Get the pagination for the new index.html file.
 def NewPagination():
   maxId, files = GetMaxIndex()
 
-  # This is the new index file, for that reason there is never a link to a 
+  # This is the new index file, for that reason there is never a link to a
   # previous index file.
   pagination = '<li class="previous disabled"><a href="#">&larr; Newer</a></li>\n'
-  # If i is greater then maxId there is no next index file. In this case we 
+  # If i is greater then maxId there is no next index file. In this case we
   # can't create a link to the next index file.
   if maxId > 0:
     pagination += '<li class="next"><a href="index_1.html">Older &rarr;</a></li>\n'
-  else:    
+  else:
     pagination += '<li class="next disabled"><a href="#">Older &rarr;</a></li>'
 
   return pagination
@@ -447,7 +449,7 @@ def NewPagination():
 '''
 Rename the index_[number].html files.
 '''
-def ShiftReports(): 
+def ShiftReports():
   maxId, files = GetMaxIndex()
 
   # Iterate through all index_[number].html files and increase the number.
@@ -473,6 +475,7 @@ def Main(configfile):
   topChartColor = "#F3F3F3"
   chartColor = "#FFFFFF"
   textColor = "#6e6e6e"
+  gridColor = "#6e6e6e"
 
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
@@ -494,6 +497,8 @@ def Main(configfile):
         chartColor = value
       elif key == "textColor":
         textColor = value
+      elif key == "gridColor":
+        gridColor = value
 
   db = Database(database)
   db.CreateTables()
@@ -503,9 +508,10 @@ def Main(configfile):
 
   # Get the values for the new index.html file.
   reportValues = {}
-  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor, textColor)
+  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
+      textColor, gridColor)
   reportValues["pagination"] = NewPagination()
-  reportValues["methods"] = MethodReports(db, chartColor, textColor)
+  reportValues["methods"] = MethodReports(db, chartColor, textColor, gridColor)
 
   template = pageTemplate % reportValues
 
@@ -514,13 +520,13 @@ def Main(configfile):
     fid.write(template)
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description="""Perform the memory benchmark 
+  parser = argparse.ArgumentParser(description="""Perform the memory benchmark
       with the given config.""")
-  parser.add_argument('-c','--config', help='Configuration file name.', 
+  parser.add_argument('-c','--config', help='Configuration file name.',
       required=True)
 
   args = parser.parse_args()
 
   if args:
     Main(args.config)
-  
+
