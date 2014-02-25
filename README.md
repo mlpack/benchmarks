@@ -1,5 +1,9 @@
 # Machine Learning Benchmark Scripts
 
+Develop branch build status:
+
+[![Build Status](http://big.cc.gt.atl.ga.us:8080/job/benchmark%20-%20checkout/badge/icon)](http://big.cc.gt.atl.ga.us:8080/job/benchmark%20-%20checkout/)
+
 This repository contains a collection of benchmark scripts for various machine learning libraries. The scripts serves as an infrastructure for measuring and comparing the performance, of different algorithms and libraries on various datasets using visual tools and different metrics. It aims to give the machine learning community a streamlined tool to get information on those changesets that may have caused speedups or slowdowns.
 
 The system has several key attributes that lead to its highly and easily customizable nature. It makes extensive use of the Python standard library and the YAML file format to provide a very easy way to efficiently run the performance measurements on custom setups with different operating systems. The tools and metrics used for the visualization are highly flexible, e.g. with one line you can measure the size of your program’s stack, get the variance or standard deviation of the measurements. The architecture is easily maintainable since each part is a single module. with the results that the framework can be easily integrated in the main workflow.
