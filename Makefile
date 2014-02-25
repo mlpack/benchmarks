@@ -49,6 +49,7 @@ UPDATE:=False
 # Specify the path for the libraries.
 export MLPACK_BIN=/usr/local/bin/
 export MLPACK_BIN_DEBUG=/usr/local/bin/
+export MLPACK_PATH=/usr/local/
 export MATLAB_BIN=/opt/matlab/bin/
 export MATLABPATH=methods/matlab/
 export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
@@ -167,8 +168,8 @@ endif
 	# Compile the shogun K-Means (with initial centroids) Clustering method.
 	g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
 	# Compile the ann scripts.
-	g++ -O0 methods/ann/src/allknn.cpp -o methods/ann/allknn -lANN -lmlpack -lboost_program_options
+	g++ -O0 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(MLPACK_PATH)/include -L$(MLPACK_PATH)/lib -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
-	g++ -O0 methods/flann/src/allknn.cpp -o methods/flann/allknn -lmlpack -lboost_program_options
+	g++ -O0 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(MLPACK_PATH)/include -L$(MLPACK_PATH)/lib -lmlpack -lboost_program_options
 .checks:
 	$(PYTHON_BIN) tests/tests.py
