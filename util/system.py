@@ -77,7 +77,7 @@ class SystemInfo(object):
       cmd = shlex.split("sysctl -n machdep.cpu.brand_string")
       modelName = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
           shell=False).strip()
-      return modelName
+      return modelName.decode()
 
     elif sys.platform.startswith('win'):
       modelName = platform.processor()
