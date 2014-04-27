@@ -90,6 +90,11 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+              options: '-I'
     KPCA:
         run: true
         script: methods/mlpack/kernel_pca.py
