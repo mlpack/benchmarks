@@ -58,10 +58,15 @@ UPDATE := False
 ################################################################################################
 
 # Set the environment variable for the mlpack executables.
-export MLPACK_BIN=$(shell dirname $(shell which allknn))/
+
+ifdef $(shell which allknn)
+	export MLPACK_BIN=$(shell dirname $(firstword $(shell which allknn)))/
+else
+	export MLPACK_BIN=""
+endif
 
 # Set the environment variable for the mlpack executables.
-export MLPACK_BIN_DEBUG=$(shell dirname $(shell which allknn))/
+export MLPACK_BIN_DEBUG=$(MLPACK_BIN)
 
 # Export the MLPACK_PATH environment variable.
 export MLPACK_PATH=$(shell dirname $(MLPACK_BIN))/
@@ -86,10 +91,10 @@ export SHOGUN_PATH=""
 export PYTHONPATH=""
 
 # Set the environment variable for the the ms_print executable.
-export MS_PRINT_BIN := $(shell which ms_print)
+export MS_PRINT_BIN=$(shell which ms_print)
 
 # Set the environment variable for the valgrind executable.
-export VALGRIND_BIN := $(shell which valgrind)
+export VALGRIND_BIN=$(shell which valgrind)
 
 # Export the path to the FLANN library.
 export FLANN_PATH=methods/flann/
