@@ -41,23 +41,60 @@ endif
 # Specify the benchmark settings.
 CONFIG := config.yaml
 BENCHMARKDDIR := benchmark
-LOG:=False
-BLOCK:=""
-METHODBLOCK:=""
-UPDATE:=False
+LOG := False
+BLOCK := ""
+METHODBLOCK := ""
+UPDATE := False
 
-# Specify the path for the libraries.
-export MLPACK_BIN=/usr/local/bin/
-export MLPACK_BIN_DEBUG=/usr/local/bin/
-export MLPACK_PATH=/usr/local/
-export MATLAB_BIN=/opt/matlab/bin/
+################################################################################################
+# How to use:                                                                                  #
+# Specify the environment variables in this file or set these variables from the command line. #
+# All environment path variables should end with a slash.                                      #
+# Note that four settings need to be changed for this to work.                                 #
+# 1) SHOGUN_PATH                                                                               #
+# 2) PYTHONPATH                                                                                #
+# 3) WEKA_CLASSPATH                                                                            #
+# 4) MATLAB_BIN                                                                                #
+################################################################################################
+
+# Set the environment variable for the mlpack executables.
+export MLPACK_BIN=$(shell dirname $(shell which allknn))/
+
+# Set the environment variable for the mlpack executables.
+export MLPACK_BIN_DEBUG=$(shell dirname $(shell which allknn))/
+
+# Export the MLPACK_PATH environment variable.
+export MLPACK_PATH=$(shell dirname $(MLPACK_BIN))/
+
+# Set the environment variable for the matlab executable.
+# You can use the following command to search the 'matlab' file everytime:
+# export MATLAB_BIN=$(shell find / -name matlab  -print 2>/dev/null -quit)
+export MATLAB_BIN=""
+
+# Export the MATLABPATH environment variable.
 export MATLABPATH=methods/matlab/
-export WEKA_CLASSPATH=".:/opt/weka/weka-3-6-9:/opt/weka/weka-3-6-9/weka.jar"
-export SHOGUN_PATH=/opt/shogun/shogun-2.1.0-mod
-export PYTHONPATH=/opt/scikit-learn/scikit-learn-0.13.1/lib/python3.3/site-packages/:/opt/mlpy/mlpy-3.5.0/lib/python3.3/site-packages/:/opt/shogun/shogun-2.1.0/lib/python3.3/dist-packages/
-export MS_PRINT_BIN=/usr/bin/ms_print
-export VALGRIND_BIN=/usr/bin/valgrind
+
+# Export the WEKA_CLASSPATH environment variable.
+# You can use the following command to search the 'weka.jar' file everytime:
+# export WEKA_CLASSPATH=".:$(shell find / -name weka.jar  -print 2>/dev/null -quit)"
+export WEKA_CLASSPATH=""
+
+# Export the SHOGUN_PATH environment variable.
+export SHOGUN_PATH=""
+
+# Export the PYTHONPATH environment variable.
+export PYTHONPATH=""
+
+# Set the environment variable for the the ms_print executable.
+export MS_PRINT_BIN := $(shell which ms_print)
+
+# Set the environment variable for the valgrind executable.
+export VALGRIND_BIN := $(shell which valgrind)
+
+# Export the path to the FLANN library.
 export FLANN_PATH=methods/flann/
+
+# Export the path to the ANN library.
 export ANN_PATH=methods/ann/
 
 # Color settings.
@@ -70,7 +107,7 @@ WARN_COLOR=\033[0;33m
 help: .check .help
 test: .check .test
 run: .check .run
-memory: .check .memory
+memory: .check .check_memory .memory
 reports: .check .check_reports .reports
 scripts: .scripts
 checks: .check .checks
@@ -147,6 +184,19 @@ endif
 ifndef NUMPY_INSTALLED
 	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'numpy' module \
 	was not found; please install the 'numpy' module to create the benchmark reports."
+	@exit 1
+endif
+
+.check_memory:
+ifndef VALGRIND_BIN
+	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The valgrind executable \
+	was not found; please install valgrind to run the memory benchmark."
+	@exit 1
+endif
+
+ifndef MS_PRINT_BIN
+	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The Massif 'ms_print' command was \
+	not found; please install the massif 'ms_print' command to run the memory benchmark."
 	@exit 1
 endif
 
