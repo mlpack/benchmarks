@@ -45,6 +45,10 @@ class Parser(object):
 
     try:
       Log.Info("Load config file: " + config, verbose)
+
+      # Parses the given stream and returns a sequence of Python objects
+      # corresponding to the documents in the stream. In the following we will
+      # iterate through the sequence with the next() operator.
       streams = yaml.load_all(open(config))
       self.streams = streams
 
@@ -62,23 +66,38 @@ class Parser(object):
   '''
   def GetConfigLibraryMethods(self):
     try:
+      # Get a single stream object from the sequence of stream objects.
       stream = next(self.streams)
     except StopIteration as e:
       # We have to catch the exception to stop at the end. There exists no 
       # hasNext().
       return False
 
+    # Check if the stream object contains the library key. If not return a key 
+    # error message.
     if not "library" in stream:
         return self.KeyErrorMsg("library", streamNum)
     else:
+      # Get the value from the library key.
       libraryName = stream["library"]
       Log.Info("Library: " + libraryName, self.verbose)
 
+    # Distinguish between a settings and a methods block. The general block 
+    # contains the settings block which contains all general settings.
     if stream["library"] == "general":
+      # Generate a namedtuple with named fields (libraryName, settings). To get
+      # the values from the tupel object we can call 'object.libraryName' and 
+      # 'object.settings'.
       attr = collections.namedtuple("attributes", ["libraryName", "settings"])
+      # Store the values into the namedtuple. The second argument is a a list of
+      # tuples: [('database', 'reports/benchmark.db'), ('gridColor', '#6E6E6E'),
+      # ('timeout', 9000), ...].
       return attr(libraryName, stream["settings"].items())
     else:
+      # Generate a namedtuple with named fields (libraryName, methods).
       attr = collections.namedtuple("attributes", ["libraryName", "methods"])
+      # Store the values into the namedtuple. The second argument is a a list of
+      # tuples with all information from the methods block.
       return attr(libraryName, stream["methods"].items())
 
   '''
@@ -89,19 +108,28 @@ class Parser(object):
   '''
   def GetConfigMethod(self, methods):
     try:
+      # The methods object is a list of tuples that contains for every method 
+      # the corresponding method settings. E.g [ ('ALLKNN', settings), 
+      # ('KMEANS', settings), ...], we use the 'mc' value to get just a single
+      # method form the list of tuples.
       method = list(methods)[self.mc]
+      # Increase the 'mc' value to work with the next method in the followng 
+      # method call.
       self.mc = self.mc + 1 
     except IndexError as e:
       # We have to catch the exception to stop at the end. There exists no 
       # hasNext().
       return False
 
+    # Get the method name form the list object.  
     methodName = method[0]
     Log.Info("Method: " + methodName, self.verbose)
 
+    # The second element contains all settings for the specified method.
     attributes = method[1]
 
-    # First check the required attributes. 
+    # First check the required attributes. If there isn't any value specified 
+    # return a error message.
     if "script" in attributes:
       script = attributes["script"]
       Log.Info("Script: " + script, self.verbose)
@@ -112,7 +140,7 @@ class Parser(object):
       format = attributes["format"]
       Log.Info("Format: " + str(format), self.verbose)
     else:
-      return self.gKeyErrorMsg('format')
+      return self.KeyErrorMsg('format')
 
     if "datasets" in attributes:
       datasets = attributes['datasets']
@@ -123,7 +151,8 @@ class Parser(object):
     else:
       return self.KeyErrorMsg("datasets")
 
-    # Check the optional attributes. 
+    # Check the optional attributes. Use the default values if there isn't any 
+    # values specified.
     if "run" in attributes:
       run = attributes["run"]
       Log.Info("Run: " + str(run), self.verbose)
@@ -138,9 +167,11 @@ class Parser(object):
       self.KeyWarnMsg("iteration")
       iteration = self.ITERATION
 
+    # Generate a namedtuple with named fields (methodName, script, format, ...).
     attr = collections.namedtuple("attributes", ["methodName", "script", 
         "format", "datasets", "run", "iteration"])
 
+    # Store all values in the namedtuple.
     return attr(methodName, script, format, datasets, run, iteration)
 
   '''
@@ -307,42 +338,92 @@ class Parser(object):
   @return Dictionary with all informations.
   '''
   def StreamMerge(self):
+    # Create a python dictionary (key/value store) to store te data from the 
+    # config file.
     streamData = {}
 
     # Iterate through all libraries.
     libraryMapping = self.GetConfigLibraryMethods()
+
+    # Iterate through all libary blocks until libraryMapping is False.
     while libraryMapping:
+      # Check if the stream data is a general block. Use the namedtuple function
+      # to get the 'libraryName' value.
       if libraryMapping.libraryName == "general":
+        # Store the general block settings in the dictionary. Afterwards we can 
+        # use the 'general' key to access the data.
         streamData["general"] = libraryMapping.settings
+
+      # Right now we distinguish between a general block and a library block. So
+      # if the block isn't a general bock its a library block.
       else:
-        # Iterate through all methods.
+        # Iterate through all methods. With the following line we get the first
+        # method.
         methodMapping = self.GetConfigMethod(libraryMapping.methods)
         while methodMapping and libraryMapping:
-          # Collect data only from method with run value = true.
+          # Collect data only from method with 'run' value = true.
           if methodMapping.run:
+            # We use the 'datasets' field from the named tuple to iterate
+            # through all datasets an the corresponding settings. The dataset 
+            # value is a key/value structure that looks like: 
+            # {'files': ['datasets/iris.csv', 'datasets/wine.csv'], 
+            # 'options': ''}.
             for dataset in methodMapping.datasets:
 
-              # Extract the information from every section and saves the 
-              # information into the dictionary.
+              # Extract the information from every section and store the 
+              # information into the dictionary. First check if the 'streamData'
+              # key/value store already contains the information for a given
+              # method name. The method name (e.g. KPCA) is the key for all 
+              # information from all libraries that implements the method 
+              # (e.g. KPCA).
+              # To access the values for the given method (e.g. KPCA) we store
+              # everything in a second dictionary an store that in the main 
+              # key,value structure.
+              #
+              # The structure of the second dictionary looks like:
+              # {'KPCA': d}
+              # d = {'-k linear': [('mlpack', ['datasets/circle_data.csv'], 3,
+              # 'methods/mlpack/kernel_pca.py', ['csv', 'txt'])]}
               if methodMapping.methodName in streamData:
+                # The main key/value already contains a dictionary with the 
+                # given method name as key (e.g. KPCA). In this case we use the
+                # dictionary and just add the new information.
+                # Get the dictionary with the method name as key (e.g. KPCA).
                 tempDict = streamData[methodMapping.methodName]
 
+                # We sort the libraries with the same method by the option which
+                # are specefied in the config file. So we check if the option is
+                # already in the second dictionary.
                 if dataset["options"] in tempDict:
+                  # Append the information for the libary to the already defined
+                  # option.
                   t = (libraryMapping.libraryName, dataset["files"], 
                     methodMapping.iteration, methodMapping.script, 
                     methodMapping.format)  
                   tempDict[dataset["options"]].append(t)
+
+                # This is are new options for the specified method name. So we
+                # create the new entry for the option.
                 else:
+                  # Store the infromation for the specified method name with the
+                  # option values as key.
                   t = (libraryMapping.libraryName, dataset["files"], 
                     methodMapping.iteration, methodMapping.script, 
                     methodMapping.format)
                   tempDict[dataset["options"]] = [t]
+
+              # Create the second dictionary if it doesn't exist.
               else:
                 d = {}
+                # Store the settings for the given method in a tuple.
                 t = (libraryMapping.libraryName, dataset["files"], 
                   methodMapping.iteration, methodMapping.script, 
                   methodMapping.format)
+
+                # To access the method options we can use the options key.
                 d[dataset["options"]] = [t]
+                # Store the initial second dictionary with the method name as
+                # key (e.g. KPCA) in the main key/value store.
                 streamData[methodMapping.methodName] = d
 
           methodMapping = self.GetConfigMethod(libraryMapping.methods)
