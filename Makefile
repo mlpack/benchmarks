@@ -1,5 +1,5 @@
 # Locate the python bin.
-PYTHON_BIN := $(shell which python3.2)
+PYTHON_BIN := $(shell which python3.3)
 ifndef PYTHON_BIN
   PYTHON_BIN := $(shell which python3)
   ifndef PYTHON_BIN
@@ -9,7 +9,7 @@ endif
 
 ifdef PYTHON_BIN
 # Get the python version.
-ifeq ($(shell expr `$(PYTHON_BIN) -c 'import sys; print(sys.version[:3])'` \>= 3.2)	, 1)
+ifeq ($(shell expr `$(PYTHON_BIN) -c 'import sys; print(sys.version[:3])'` \>= 3.3)	, 1)
   PYTHON_VERSION := 1
 endif
 
@@ -168,7 +168,7 @@ ifndef PYTHON_BIN
 else
 ifndef PYTHON_VERSION
 	@echo "$(WARN_COLOR)[WARN]$(NO_COLOR) The benchmark script requires \
-	python3.2+ to run all tests properly; however, some modules may still \
+	python3.3+ to run all tests properly; however, some modules may still \
 	work with older python versions."
 endif
 endif
