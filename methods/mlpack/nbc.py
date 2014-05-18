@@ -69,12 +69,12 @@ class NBC(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  def __del__(self):    
-    Log.Info("Clean up.", self.verbose)
-    filelist = ["gmon.out", "output.csv"]
-    for f in filelist:
-      if os.path.isfile(f):
-        os.remove(f)
+  #def __del__(self):    
+  #  Log.Info("Clean up.", self.verbose)
+  #  filelist = ["gmon.out", "output.csv"]
+  #  for f in filelist:
+  #    if os.path.isfile(f):
+  #      os.remove(f)
 
   '''
   Run valgrind massif profiler on the Parametric Naive Bayes Classifier method. 
@@ -148,7 +148,8 @@ class NBC(object):
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
-          timeout=self.timeout)
+      #exit() 
+      timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
