@@ -99,8 +99,16 @@ class NBC(object):
         + self.dataset[1] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
-
-
+    
+  '''
+  Create the confusion matrix from the two arrays containing the true labels and
+  the predicted labels. The confusion matrix contains all information about the
+  number of true and false positives and negatives for all the classes in 
+  consideration.
+  '''
+  def ConfusionMatrix(self, labels, prediction):
+      from sklearn.metrics import confusion_matrix
+      return confusion_matrix(labels, prediction)
 
   def RunMetrics(self, labels, prediction):
     import numpy as np
@@ -109,7 +117,8 @@ class NBC(object):
     # the filename of the classifier output. So we need to read in the data.
     labelsData = np.genfromtxt(labels, delimiter=',')
     predictionData = np.genfromtxt(prediction, delimiter=',')
-
+    confusionMatrix = self.ConfusionMatrix(labelsData, predictionData)
+    confusionMatrix
     Log.Info('Run metrics...')
     # Perform the metrics with the data from the labels and prediction file ....
 
