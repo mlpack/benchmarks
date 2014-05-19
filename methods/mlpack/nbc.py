@@ -109,6 +109,20 @@ class NBC(object):
   def ConfusionMatrix(self, labels, prediction):
       from sklearn.metrics import confusion_matrix
       return confusion_matrix(labels, prediction)
+ '''
+ This function is a great and simple one that can be used as a debugging tool
+ for metrics involving true/false positives/negatives. Uncomment the call to 
+ this function in RunMetrics(..) to see the Confusion Matrix visually!
+ '''
+  def VisualizeConfusionMatrix(self,CM):
+      import pylab as pl
+      print(CM)
+      pl.matshow(CM)
+      pl.title('Confusion Matrix')
+      pl.colorbar()
+      pl.ylabel('True Label')
+      pl.xlabel('Predicted Label')
+      pl.show()
 
   def RunMetrics(self, labels, prediction):
     import numpy as np
@@ -118,7 +132,7 @@ class NBC(object):
     labelsData = np.genfromtxt(labels, delimiter=',')
     predictionData = np.genfromtxt(prediction, delimiter=',')
     confusionMatrix = self.ConfusionMatrix(labelsData, predictionData)
-    confusionMatrix
+    #self.VisualizeConfusionMatrix(confusionMatrix)
     Log.Info('Run metrics...')
     # Perform the metrics with the data from the labels and prediction file ....
 
