@@ -109,11 +109,12 @@ class NBC(object):
   def ConfusionMatrix(self, labels, prediction):
       from sklearn.metrics import confusion_matrix
       return confusion_matrix(labels, prediction)
- '''
- This function is a great and simple one that can be used as a debugging tool
- for metrics involving true/false positives/negatives. Uncomment the call to 
- this function in RunMetrics(..) to see the Confusion Matrix visually!
- '''
+ 
+  '''
+  This function is a great and simple one that can be used as a debugging tool
+  for metrics involving true/false positives/negatives. Uncomment the call to 
+  this function in RunMetrics(..) to see the Confusion Matrix visually!
+  '''
   def VisualizeConfusionMatrix(self,CM):
       import pylab as pl
       print(CM)
@@ -124,6 +125,100 @@ class NBC(object):
       pl.xlabel('Predicted Label')
       pl.show()
 
+  '''
+  Average accuracy measure. The average accuracy is defined as the average/mean
+  of accuracies of prediction obtained for each class in consideration. We use
+  the confusion matrix as the parameter to this function.
+  '''
+  def AverageAccuracy(self,CM):
+      acc=0
+      Sum=0
+      l=len(CM)
+      for i in range(l):
+          for j in range(l):
+              Sum+=CM[i][j]
+          acc = acc + (CM[i][i]/Sum)*100
+          Sum=0
+      return acc/l
+
+
+  '''
+  Precision measure for a single class. Arguments provided to this method are the
+  confusion matrix and the class index in the confusion matrix (class_i). It is not
+  the actual label for the class.
+  '''
+  def PrecisionForAClass(self,class_i,CM):
+      l=len(CM)
+      truePositives=CM[class_i][class_i]
+      falsePositives=0
+      for j in range(l):
+          falsePositives+=CM[j][class_i]
+      totalPositives=truePositives+falsePositives
+      precision=truePositives/totalPositives
+      return precision
+
+  '''
+  Recall measure for a single class. Arguments provided to this method are the
+  confusion matrix and the class index in the confusion matrix (class_i). It is not
+  the actual label for the class.
+  '''
+  def RecallForAClass(self,class_i,CM):
+      l=len(CM)
+      truePositives=CM[class_i][class_i]
+      falseNegatives=0
+      for j in range(l):
+          falseNegatives+=CM[class_i][j]
+      total=truePositives+falseNegatives
+      recall=truePositives/total
+      return recall
+
+  '''
+  AvgPrecision(AvgRecall) represents the average of precisions obtained from each
+  classifier. Since precision and recall are defined for binary classifiers, we 
+  can only calculate these measures for all the classes individually. AvgPrecision
+  (AvgRecall) can be thought of as a new measure of performance for a multi-class 
+  classifier.
+  '''
+  def AvgPrecision(self,CM):
+      l=len(CM)
+      avgPrecision=0
+      for i in range(l):
+          precisionForClass=self.PrecisionForAClass(i,CM)
+          avgPrecision+=precisionForClass
+      avgPrecision=avgPrecision/l
+      return avgPrecision
+
+  def AvgRecall(self,CM):
+      l=len(CM)
+      avgRecall=0
+      for i in range(l):
+          recallForClass=self.RecallForAClass(i,CM)
+          avgRecall+=recallForClass
+      avgRecall=avgRecall/l
+      return avgRecall
+
+  '''
+  FMeasure for a class is defined as the harmonic mean of precision and recall.
+  '''
+  def FMeasureClass(self,class_i,CM):
+      precClass=self.PrecisionForAClass(class_i,CM)
+      recClass=self.RecallForAClass(class_i,CM)
+      fMeasure = 2*precClass*recClass/(precClass+recClass)
+      return fMeasure
+
+  '''
+  AvgFMeasure represents the average of FMeasures of all the classes in 
+  consideration.
+  '''
+  def AvgFMeasure(self,CM):
+      l=len(CM)
+      avgF=0
+      for i in range(l):
+          avgF+=self.FMeasureClass(i,CM)
+      avgF=avgF/l
+      return avgF
+
+  
   def RunMetrics(self, labels, prediction):
     import numpy as np
     # The labels and the prediction parameter contains the filename for the file
@@ -133,6 +228,10 @@ class NBC(object):
     predictionData = np.genfromtxt(prediction, delimiter=',')
     confusionMatrix = self.ConfusionMatrix(labelsData, predictionData)
     #self.VisualizeConfusionMatrix(confusionMatrix)
+    AvgAcc = self.AverageAccuracy(confusionMatrix)
+    AvgPrec = self.AvgPrecision(confusionMatrix)
+    AvgRec = self.AvgRecall(confusionMatrix)
+    AvgF = self.AvgFMeasure(confusionMatrix)
     Log.Info('Run metrics...')
     # Perform the metrics with the data from the labels and prediction file ....
 
