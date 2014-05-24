@@ -269,5 +269,5 @@ class Metrics(object):
 	  for i in range(instances):
 		  predictiveSum+=((actual[i]*math.log(predicted[i],2))+((1-actual[i])*math.log(1-predicted[i],2)))
 	  predictiveSum/=instances
-		  
+	  return predictiveSum	  
 		
