@@ -202,3 +202,72 @@ class Metrics(object):
 	  MCC=Numerator/Denominator
 	  return MCC
 	   	
+  '''
+  @param truelabelFile - Name of the file which contains the true label
+  for the instance
+  @param probabilities - Name of the file which contains the probabilities
+  for that instance to be in a particular class (CSV)
+  @param CM - The confusion matrix
+  Mean squared error for classifiers which return probabilities can be 
+  implemented in terms of the Quadratic Loss function as defined below.
+  '''
+  @staticmethod 		
+  def MeanSquaredError(truelabelFile, probabilities, CM):
+	  import numpy as np
+	  import math
+	  #l : Number of classes
+	  l=len(CM)
+	  #trueVec : Vector/list with trueVec[index]=1 for the true class, 0 otherwise
+	  Vec=np.genfromtxt(truelabelFile,delimiter=',')
+	  instances=len(Vec)
+	  trueVec=[]
+	  for i in range(instances):
+		  vec=[]
+		  for j in range(l):
+			  vec.append(0)
+		  vec[int(Vec[i])-1]=1
+		  trueVec.append(vec)
+	  #trueArray : 2D numpy array after converting trueVec
+	  trueArray=np.array(trueVec)
+	  #probVec : 2D numpy array with trueVec[index]=probability for the instance to be in that class.
+	  probVec=np.genfromtxt(probabilities,delimiter=',')
+	  diffArray=trueArray-probVec
+	  #Quadratic Loss Function
+	  quadraticLoss=[]
+	  for i in range(len(diffArray)):
+		  squaredloss=0
+		  for j in range(len(diffArray[i])):
+			  squaredloss+=diffArray[i][j]*diffArray[i][j]
+		  quadraticloss.append(squaredloss)
+	  quadraticloss=np.array(quadraticloss)
+	  #Divide the total squared loss for each instance by the number of classes
+	  quadraticloss=quadraticloss/l
+	  totalLoss=0
+	  for i in range(len(quadraticloss)):
+		  totalLoss+=quadraticloss[i]
+	  totalLoss=totalLoss/instances
+	  return totalLoss
+		   
+  
+  '''
+  @param truelabels - Name of the file which contains the true label
+  for the instance
+  @param predictedlabels - Name of the file which contains the predicted
+  labels for the instance
+  Mean predictive information is a metric closely related to cross
+  entropy and conveniently gives easily interpretable results.
+  The below implementation is only for binary classifiers. 
+  '''
+  @staticmethod 		
+  def MeanPredictiveInformation(truelabels, predictedlabels):
+	  import numpy as np
+	  import math
+	  predicted=np.genfromtxt(predictedlabels, delimiter=',')
+	  actual=np.genfromtxt(truelabels, delimiter=',')
+	  instances=len(actual)
+	  predictiveSum=0
+	  for i in range(instances):
+		  predictiveSum+=((actual[i]*math.log(predicted[i],2))+((1-actual[i])*math.log(1-predicted[i],2)))
+	  predictiveSum/=instances
+		  
+		
