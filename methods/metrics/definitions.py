@@ -5,7 +5,6 @@
     Implementation of various metrics common to all classifiers.
 '''
 
-from __future__ import print_function
 import re
 import sys
 
@@ -70,12 +69,12 @@ class Metrics(object):
   @staticmethod
   def PrecisionForAClass(class_i,CM):
       l=len(CM)
-      truePositives=CM[class_i][class_i]
-      falsePositives=0
+      truePositives = CM[class_i][class_i]
+      falsePositives = 0
       for j in range(l):
           falsePositives+=CM[j][class_i]
-      totalPositives=truePositives+falsePositives
-      precision=truePositives/totalPositives
+      totalPositives = truePositives + falsePositives
+      precision = truePositives/totalPositives
       return precision
 
   '''
@@ -88,12 +87,12 @@ class Metrics(object):
   @staticmethod
   def RecallForAClass(class_i,CM):
       l=len(CM)
-      truePositives=CM[class_i][class_i]
-      falseNegatives=0
+      truePositives = CM[class_i][class_i]
+      falseNegatives = 0
       for j in range(l):
           falseNegatives+=CM[class_i][j]
-      total=truePositives+falseNegatives
-      recall=truePositives/total
+      total = truePositives + falseNegatives
+      recall = truePositives/total
       return recall
 
   '''
@@ -107,21 +106,19 @@ class Metrics(object):
   @staticmethod
   def AvgPrecision(CM):
       l=len(CM)
-      avgPrecision=0
+      avgPrecision = 0
       for i in range(l):
-          precisionForClass=Metrics.PrecisionForAClass(i,CM)
-          avgPrecision+=precisionForClass
-      avgPrecision=avgPrecision/l
+          avgPrecision+=Metrics.PrecisionForAClass(i,CM)
+      avgPrecision = avgPrecision/l
       return avgPrecision
   
   @staticmethod
   def AvgRecall(CM):
       l=len(CM)
-      avgRecall=0
+      avgRecall = 0
       for i in range(l):
-          recallForClass=Metrics.RecallForAClass(i,CM)
-          avgRecall+=recallForClass
-      avgRecall=avgRecall/l
+          avgRecall+=Metrics.RecallForAClass(i,CM)
+      avgRecall = avgRecall/l
       return avgRecall
 
   '''
@@ -131,8 +128,8 @@ class Metrics(object):
   '''
   @staticmethod
   def FMeasureClass(class_i,CM):
-      precClass=Metrics.PrecisionForAClass(class_i,CM)
-      recClass=Metrics.RecallForAClass(class_i,CM)
+      precClass = Metrics.PrecisionForAClass(class_i,CM)
+      recClass = Metrics.RecallForAClass(class_i,CM)
       fMeasure = 2*precClass*recClass/(precClass+recClass)
       return fMeasure
 
@@ -147,7 +144,7 @@ class Metrics(object):
       avgF=0
       for i in range(l):
           avgF+=Metrics.FMeasureClass(i,CM)
-      avgF=avgF/l
+      avgF = avgF/l
       return avgF
    
   '''
@@ -160,20 +157,20 @@ class Metrics(object):
   def LiftForAClass(class_i,CM):
 	  l=len(CM)
 	  #pgt - positives greater than threshold
-	  pgt=0
+	  pgt = 0
 	  #tgt - total greater than threshold
-	  tgt=0
-	  total=0
+	  tgt = 0
+	  total = 0
 	  for i in range(l):
-		  pgt=pgt+CM[class_i][i]
-	  pgt=(1/pgt)*CM[class_i][class_i]
+		  pgt = pgt + CM[class_i][i]
+	  pgt = (1/pgt) * CM[class_i][class_i]
 	  for j in range(l):
-		  tgt=tgt+CM[j][0]
+		  tgt = tgt + CM[j][0]
 	  for i in range(l):
 		  for j in range(l):
-			  total=total+CM[i][j]
-	  tgt=tgt/total
-	  lift=pgt/tgt
+			  total = total + CM[i][j]
+	  tgt = tgt/total
+	  lift = pgt/tgt
 	  return lift	   
    
   '''
@@ -188,8 +185,8 @@ class Metrics(object):
   def MatthewsCorrelationCoefficientClass(class_i, CM):
 	  import math	
 	  l=len(CM)
-	  truePositives=CM[class_i][class_i]
-	  falsePositives=0
+	  truePositives = CM[class_i][class_i]
+	  falsePositives = 0
 	  for j in range(l):
 		  falsePositives+=CM[j][class_i]
 	  falseNegatives=0
@@ -197,9 +194,12 @@ class Metrics(object):
 		  falseNegatives+=CM[class_i][j]
 	  trueNegatives=0
 	  #calculate trueNegatives
-	  Numerator=(truePositives*trueNegatives)-(falsePositives*falseNegatives)
-	  Denominator=math.sqrt((truePositives+falsePositives)*(truePositives+falseNegatives)*(trueNegatives+falsePositives)*(trueNegatives+falseNegatives))
-	  MCC=Numerator/Denominator
+	  Numerator = (truePositives*trueNegatives) - (falsePositives*falseNegatives)
+	  Denominator=math.sqrt((truePositives + falsePositives)*
+							(truePositives + falseNegatives)*
+							(trueNegatives + falsePositives)*
+							(trueNegatives + falseNegatives))
+	  MCC = Numerator/Denominator
 	  return MCC
 	   	
   '''
@@ -218,7 +218,7 @@ class Metrics(object):
 	  #l : Number of classes
 	  l=len(CM)
 	  #trueVec : Vector/list with trueVec[index]=1 for the true class, 0 otherwise
-	  Vec=np.genfromtxt(truelabelFile,delimiter=',')
+	  Vec = np.genfromtxt(truelabelFile,delimiter=',')
 	  instances=len(Vec)
 	  trueVec=[]
 	  for i in range(instances):
@@ -229,9 +229,10 @@ class Metrics(object):
 		  trueVec.append(vec)
 	  #trueArray : 2D numpy array after converting trueVec
 	  trueArray=np.array(trueVec)
-	  #probVec : 2D numpy array with trueVec[index]=probability for the instance to be in that class.
-	  probVec=np.genfromtxt(probabilities,delimiter=',')
-	  diffArray=trueArray-probVec
+	  #probVec : 2D numpy array with trueVec[index]=probability for the instance
+	  #to be in that class.
+	  probVec = np.genfromtxt(probabilities,delimiter=',')
+	  diffArray = trueArray - probVec
 	  #Quadratic Loss Function
 	  quadraticLoss=[]
 	  for i in range(len(diffArray)):
@@ -241,11 +242,11 @@ class Metrics(object):
 		  quadraticloss.append(squaredloss)
 	  quadraticloss=np.array(quadraticloss)
 	  #Divide the total squared loss for each instance by the number of classes
-	  quadraticloss=quadraticloss/l
+	  quadraticloss = quadraticloss/l
 	  totalLoss=0
 	  for i in range(len(quadraticloss)):
 		  totalLoss+=quadraticloss[i]
-	  totalLoss=totalLoss/instances
+	  totalLoss = totalLoss/instances
 	  return totalLoss
 		   
   
@@ -267,7 +268,8 @@ class Metrics(object):
 	  instances=len(actual)
 	  predictiveSum=0
 	  for i in range(instances):
-		  predictiveSum+=((actual[i]*math.log(predicted[i],2))+((1-actual[i])*math.log(1-predicted[i],2)))
+		  predictiveSum+=((actual[i] * math.log(predicted[i],2))+
+						  ((1-actual[i]) * math.log(1-predicted[i],2)))
 	  predictiveSum/=instances
 	  return predictiveSum	  
 		
