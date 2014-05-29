@@ -26,7 +26,8 @@ modules = [
 'benchmark_nmf',
 'benchmark_pca',
 'benchmark_range_search',
-'benchmark_sparse_coding'
+'benchmark_sparse_coding',
+'metrics_unit_test'
 ]
 
 def load_tests(loader, tests, pattern):

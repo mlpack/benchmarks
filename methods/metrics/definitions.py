@@ -73,6 +73,7 @@ class Metrics(object):
       falsePositives = 0
       for j in range(l):
           falsePositives+=CM[j][class_i]
+      falsePositives-=truePositives
       totalPositives = truePositives + falsePositives
       precision = truePositives/totalPositives
       return precision
@@ -91,6 +92,7 @@ class Metrics(object):
       falseNegatives = 0
       for j in range(l):
           falseNegatives+=CM[class_i][j]
+      falseNegatives-=truePositives
       total = truePositives + falseNegatives
       recall = truePositives/total
       return recall
@@ -189,11 +191,18 @@ class Metrics(object):
 	  falsePositives = 0
 	  for j in range(l):
 		  falsePositives+=CM[j][class_i]
+	  falsePositives-=truePositives 
 	  falseNegatives=0
 	  for j in range(l):
 		  falseNegatives+=CM[class_i][j]
+	  falseNegatives-=truePositives
 	  trueNegatives=0
 	  #calculate trueNegatives
+	  for i in range(l):
+		  if i!=class_i:
+			  for j in range(l):
+				  trueNegatives+=CM[i][j]
+			  trueNegatives-=CM[i][class_i]
 	  Numerator = (truePositives*trueNegatives) - (falsePositives*falseNegatives)
 	  Denominator=math.sqrt((truePositives + falsePositives)*
 							(truePositives + falseNegatives)*
@@ -239,13 +248,13 @@ class Metrics(object):
 		  squaredloss=0
 		  for j in range(len(diffArray[i])):
 			  squaredloss+=diffArray[i][j]*diffArray[i][j]
-		  quadraticloss.append(squaredloss)
-	  quadraticloss=np.array(quadraticloss)
+		  quadraticLoss.append(squaredloss)
+	  quadraticLoss=np.array(quadraticLoss)
 	  #Divide the total squared loss for each instance by the number of classes
-	  quadraticloss = quadraticloss/l
+	  quadraticLoss = quadraticLoss/l
 	  totalLoss=0
-	  for i in range(len(quadraticloss)):
-		  totalLoss+=quadraticloss[i]
+	  for i in range(len(quadraticLoss)):
+		  totalLoss+=quadraticLoss[i]
 	  totalLoss = totalLoss/instances
 	  return totalLoss
 		   
