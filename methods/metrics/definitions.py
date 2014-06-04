@@ -337,8 +337,25 @@ class Metrics(object):
           predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
         
       predictiveSum/=count
-    return predictiveSum	  
-	
+    return predictiveSum	 
+
+  '''
+  This method extracts all the labels from the truelabels file in a list
+  and returns this list. We can get the actual label value of a particular
+  row in the CM using this list.
+  '''
+  @staticmethod
+  def GetActualLabels(truelabels):
+    labels=[]
+    cur_label = truelabels[0]
+    labels.append(truelabels[0])
+    for i in range(len(truelabels)):
+      if truelabels[i] != cur_label:
+        labels.append(truelabels[i])
+        cur_label = truelabels[i]
+    return labels
+
+    	
   '''
   @param CM - The confusion matrix
   @param truelabels - File with true labels for each instance
@@ -353,8 +370,8 @@ class Metrics(object):
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
     mpi=0
+    all_labels = GetActualLabels(truelabels)
     for i in range(len(CM)):
-      #The i needs to be changed here!
-      mpi+=MeanPredictiveInformationClass(i, truelabels, predictedlabels)
+      mpi+=MeanPredictiveInformationClass(all_labels[i], truelabels, predictedlabels)
     mpi/=len(CM)
     return mpi
