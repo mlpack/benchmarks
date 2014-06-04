@@ -99,11 +99,11 @@ class Metrics(object):
 
   '''
   @param CM - The confusion matrix
-  AvgPrecision(AvgRecall) represents the average of precisions obtained from each
+  AvgPrecision(AvgRecall) represents the average of precisions(recall) obtained from each
   classifier. Since precision and recall are defined for binary classifiers, we 
   can only calculate these measures for all the classes individually. AvgPrecision
   (AvgRecall) can be thought of as a new measure of performance for a multi-class 
-  classifier.
+  classifier (One vs All approach).
   '''
   @staticmethod
   def AvgPrecision(CM):
@@ -296,8 +296,8 @@ class Metrics(object):
       totalLoss+=quadraticLoss[i]
     totalLoss = totalLoss/instances
     return totalLoss
-		   
   
+
   '''
   @param truelabels - Name of the file which contains the true label
   for the instance
@@ -308,16 +308,53 @@ class Metrics(object):
   The below implementation is only for binary classifiers. 
   '''
   @staticmethod 		
-  def MeanPredictiveInformation(truelabels, predictedlabels):
+  def MeanPredictiveInformationClass(class_i, truelabels, predictedlabels):
     import numpy as np
     import math
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
     instances=len(actual)
     predictiveSum=0
+    count=0
     for i in range(instances):
-      predictiveSum+=((actual[i] * math.log(predicted[i],2))+
+      if actual[i] == class_i:
+        count+=1
+        '''
+        predictiveSum+=((actual[i] * math.log(predicted[i],2))+
 						  ((1-actual[i]) * math.log(1-predicted[i],2)))
-    predictiveSum/=instances
+        We take actual[i] to be 0. Hence, the formula :
+        We take 0.05 instead of absolute 0 and 0.95 instead of absolute 1 
+        to guarantee that an absolute 0 value doesn't become an argument
+        to logarithm.
+        '''
+        predicted=0.05
+        actual=0.05
+        if predicted[i] != actual[i]:
+          predicted = 0.95
+          predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
+
+        else:
+          predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
+        
+      predictiveSum/=count
     return predictiveSum	  
-		
+	
+  '''
+  @param CM - The confusion matrix
+  @param truelabels - File with true labels for each instance
+  @param predictedlabels - File with predicted label for each instance
+  This is the average mean predictive information measure. We calculate
+  MPI for each class applying the One vs All approach and take the average.
+  '''
+  @staticmethod
+  def AvgMeanPredictiveInformation(CM, truelabels, predictedlabels):
+    import numpy as np
+    import math
+    predicted=np.genfromtxt(predictedlabels, delimiter=',')
+    actual=np.genfromtxt(truelabels, delimiter=',')
+    mpi=0
+    for i in range(len(CM)):
+      #The i needs to be changed here!
+      mpi+=MeanPredictiveInformationClass(i, truelabels, predictedlabels)
+    mpi/=len(CM)
+    return mpi
