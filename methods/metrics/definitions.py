@@ -5,8 +5,9 @@
 Implementation of various metrics common to all classifiers.
 '''
 
-import re
 import sys
+import numpy as np
+import math
 
 class Metrics(object):
   
@@ -205,7 +206,6 @@ class Metrics(object):
   '''
   @staticmethod 		
   def MatthewsCorrelationCoefficientClass(class_i, CM):
-    import math	
     l=len(CM)
     truePositives = CM[class_i][class_i]
     falsePositives = 0
@@ -261,8 +261,6 @@ class Metrics(object):
   '''
   @staticmethod 		
   def MeanSquaredError(truelabelFile, probabilities, CM):
-    import numpy as np
-    import math
     #l : Number of classes
     l=len(CM)
     #trueVec : Vector/list with trueVec[index]=1 for the true class, 0 otherwise
@@ -309,8 +307,6 @@ class Metrics(object):
   '''
   @staticmethod 		
   def MeanPredictiveInformationClass(class_i, truelabels, predictedlabels):
-    import numpy as np
-    import math
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
     instances=len(actual)
@@ -331,10 +327,8 @@ class Metrics(object):
         actual=0.05
         if predicted[i] != actual[i]:
           predicted = 0.95
-          predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
-
-        else:
-          predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
+          
+        predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
         
       predictiveSum/=count
     return predictiveSum	 
@@ -347,12 +341,10 @@ class Metrics(object):
   @staticmethod
   def GetActualLabels(truelabels):
     labels=[]
-    cur_label = truelabels[0]
     labels.append(truelabels[0])
     for i in range(len(truelabels)):
-      if truelabels[i] != cur_label:
+      if truelabels[i] not in labels:
         labels.append(truelabels[i])
-        cur_label = truelabels[i]
     return labels
 
     	
@@ -365,8 +357,6 @@ class Metrics(object):
   '''
   @staticmethod
   def AvgMeanPredictiveInformation(CM, truelabels, predictedlabels):
-    import numpy as np
-    import math
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
     mpi=0
