@@ -92,19 +92,19 @@ class Metrics_Test(unittest.TestCase):
   Test for the MeanSquaredError metric (0.2577)
   '''	
   def test_MeanSquaredError(self):
-    result=Metrics.MeanSquaredError("true_labels.csv","probabilities.csv",self.CM)
+    result=Metrics.MeanSquaredError("tests/true_labels.csv","tests/probabilities.csv",self.CM)
     self.assertTrue(result > 0.25 and result < 0.26)
 
   '''
-  Test for MeanPredictiveInformationClass(...) metric (-2.709)
+  Test for MeanPredictiveInformationClass(...) metric (-1.709)
   '''
   def test_MeanPredictiveInformationClass(self):
-    result=Metrics.MeanPredictiveInformationClass(1, "true_labels.csv", "predicted_labels.csv")
-    self.assertTrue(result > -2.75 and result <= -2.7)
+    result=Metrics.MeanPredictiveInformationClass(1, "tests/true_labels.csv", "tests/predicted_labels.csv")
+    self.assertTrue(result > -1.75 and result <= -1.7)
 
   '''
-  Test for AvgMeanPredictiveInformation(....) metric (-2.6537)
+  Test for AvgMeanPredictiveInformation(....) metric (-1.6537)
   '''
   def test_AvgMeanPredictiveInformation(self):
-    result=Metrics.AvgMeanPredictiveInformation(self.CM, "true_labels.csv", "predicted_labels.csv")
-    self.assertTrue(result > -2.7 and result <= -2.6)
+    result=Metrics.AvgMeanPredictiveInformation(self.CM, "tests/true_labels.csv", "tests/predicted_labels.csv")
+    self.assertTrue(result > -1.7 and result <= -1.6)
