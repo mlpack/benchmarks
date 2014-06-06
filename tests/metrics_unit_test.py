@@ -102,9 +102,9 @@ class Metrics_Test(unittest.TestCase):
     result=Metrics.MeanPredictiveInformationClass(1, "true_labels.csv", "predicted_labels.csv")
     self.assertTrue(result > -2.75 and result <= -2.7)
 
-    '''
-    Test for AvgMeanPredictiveInformation(....) metric (-2.6537)
-    '''
-    def test_AvgMeanPredictiveInformation(self):
-      result=Metrics.AvgMeanPredictiveInformation(self.CM, "true_labels.csv", "predicted_labels.csv")
-      self.assertTrue(result > -2.7 and result <= -2.6)
+  '''
+  Test for AvgMeanPredictiveInformation(....) metric (-2.6537)
+  '''
+  def test_AvgMeanPredictiveInformation(self):
+    result=Metrics.AvgMeanPredictiveInformation(self.CM, "true_labels.csv", "predicted_labels.csv")
+    self.assertTrue(result > -2.7 and result <= -2.6)
