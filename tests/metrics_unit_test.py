@@ -68,11 +68,25 @@ class Metrics_Test(unittest.TestCase):
     self.assertTrue(result >= 5.0)
 
   '''
+  Test for the LiftMultiClass metric (3.38)
+  '''
+  def test_LiftMultiClass(self):
+    result=Metrics.LiftMultiClass(self.CM)
+    self.assertTrue(result >= 3.0 and result <=3.39)
+
+  '''
   Test for the MatthewsCorrelationCoefficientClass metric (0.43)
   '''	
   def test_MatthewsCoefficient(self):
     result=Metrics.MatthewsCorrelationCoefficientClass(1,self.CM)
     self.assertTrue(result > 0.4 and result < 0.5)
+
+  '''
+  Test for MCCMultiClass metric (0.2915)
+  '''
+  def test_MCCMultiClass(self):
+    result=Metrics.MCCMultiClass(self.CM)
+    self.assertTrue(result > 0.28 and result <= 0.3)
 
   '''
   Test for the MeanSquaredError metric (0.2577)
@@ -81,4 +95,16 @@ class Metrics_Test(unittest.TestCase):
     result=Metrics.MeanSquaredError("true_labels.csv","probabilities.csv",self.CM)
     self.assertTrue(result > 0.25 and result < 0.26)
 
+  '''
+  Test for MeanPredictiveInformationClass(...) metric (-2.709)
+  '''
+  def test_MeanPredictiveInformationClass(self):
+    result=Metrics.MeanPredictiveInformationClass(1, "true_labels.csv", "predicted_labels.csv")
+    self.assertTrue(result > -2.75 and result <= -2.7)
 
+    '''
+    Test for AvgMeanPredictiveInformation(....) metric (-2.6537)
+    '''
+    def test_AvgMeanPredictiveInformation(self):
+      result=Metrics.AvgMeanPredictiveInformation(self.CM, "true_labels.csv", "predicted_labels.csv")
+      self.assertTrue(result > -2.7 and result <= -2.6)

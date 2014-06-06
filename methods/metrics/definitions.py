@@ -191,7 +191,7 @@ class Metrics(object):
     AvgLift=0
     l=len(CM)
     for i in range(l):
-      AvgLift+=LiftForAClass(i,CM)
+      AvgLift+=Metrics.LiftForAClass(i,CM)
     AvgLift/=l
     return AvgLift
 
@@ -246,7 +246,7 @@ class Metrics(object):
     MCC=0
     l=len(CM)
     for i in range(l):
-      MCC+=MatthewsCorrelationCoefficientClass(i,CM)
+      MCC+=Metrics.MatthewsCorrelationCoefficientClass(i,CM)
     MCC/=l
     return MCC
 
@@ -323,14 +323,14 @@ class Metrics(object):
         to guarantee that an absolute 0 value doesn't become an argument
         to logarithm.
         '''
-        predicted=0.05
-        actual=0.05
+        predicted_val=0.05
+        actual_val=0.05
         if predicted[i] != actual[i]:
-          predicted = 0.95
+          predicted_val = 0.95
           
-        predictiveSum+=((actual*math.log(predicted,2)) + (predicted*math.log(1 - predicted,2)))
+        predictiveSum+=((actual_val*math.log(predicted_val,2)) + (predicted_val*math.log(1 - predicted_val,2)))
         
-      predictiveSum/=count
+    predictiveSum/=count
     return predictiveSum	 
 
   '''
@@ -360,8 +360,8 @@ class Metrics(object):
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
     mpi=0
-    all_labels = GetActualLabels(truelabels)
+    all_labels = Metrics.GetActualLabels(actual)
     for i in range(len(CM)):
-      mpi+=MeanPredictiveInformationClass(all_labels[i], truelabels, predictedlabels)
+      mpi+=Metrics.MeanPredictiveInformationClass(all_labels[i], truelabels, predictedlabels)
     mpi/=len(CM)
     return mpi
