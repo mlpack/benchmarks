@@ -72,13 +72,36 @@ class NBC(object):
           nbc = MultinomialNB()
           nbc.fit(trainData, labels)
           # Run Naive Bayes Classifier on the test dataset.
-          nbc.predict(testData)
+          predictedlabels = nbc.predict(testData)
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)
+
+      # Okay we have to check if we have enough datasets in the dataset list to 
+      # perform the additional evaluations.
+      if len(self.dataset) == 3:
+        # We need the propabilities, but instead of generating a new model we 
+        # resuse the model. So the only thing we need to do is to calculate the
+        # propabilities and run the metrics.
+        probabilities = nbc.predict_proba(testData)
+        truelabels = np.genfromtxt(self.dataset[2], delimiter=',')
+        confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+        AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+        AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+        AvgRec = Metrics.AvgRecall(confusionMatrix)
+        AvgF = Metrics.AvgFMeasure(confusionMatrix)
+        AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+        AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+        #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+        AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+
+        metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+        Log.Debug(str(metric_results))
+
+
       return time
 
     return timeout(RunNBCScikit, self.timeout)
@@ -140,8 +163,6 @@ class NBC(object):
       Log.Fatal("This method requires two or three datasets.")
       return -1
 
-    if len(self.dataset == 2):
+    if len(self.dataset) == 2 or len(self.dataset) == 3:
       return self.NBCScikit(options)
 
-    elif len(self.dataset == 3):
-      self.RunMetrics(self.dataset[2])
