@@ -16,8 +16,15 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from timer import *
+from definitions import *
 
 import numpy as np
 from sklearn.naive_bayes import MultinomialNB
@@ -75,6 +82,48 @@ class NBC(object):
       return time
 
     return timeout(RunNBCScikit, self.timeout)
+  
+  '''
+  Get probabilities for all instances. This method returns a matrix
+  containing the probabilities of each test instance of falling in 
+  a particular class.
+  '''
+  def GetAllProbabilities(self):
+    testData = np.genfromtxt(self.dataset[1], delimiter=',')
+    nbc = MultinomialNB()
+    probabilities = nbc.predict_proba(testData)
+    probabilities = np.array(probabilities)
+    return probabilities
+
+  '''
+  Get predicted labels for all test instances. This method returns the
+  predicted labels for all instances of the test data.
+  '''
+  def GetPredictedClasses(self):
+    testData = np.genfromtxt(self.dataset[1], delimiter=',')
+    nbc = MultinomialNB()
+    predicted = nbc.predict(testData)
+    predicted = np.array(predicted)
+    return predicted
+
+  '''
+  @param labels : the file containing true labels for the test data
+  Perform all metrics from the benchmarking system on this method.
+  '''
+  def RunMetrics(self, labels):
+    truelabels = np.genfromtxt(labels, delimiter=',')
+    predictedlabels = GetPredictedClasses()
+    probabilities = GetAllProbabilities()
+    confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+    #self.VisualizeConfusionMatrix(confusionMatrix)
+    AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+    AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+    AvgRec = Metrics.AvgRecall(confusionMatrix)
+    AvgF = Metrics.AvgFMeasure(confusionMatrix)
+    AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+    AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+    #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+    #AvgInformation = Metrics.AvgMeanPredictiveInformation(confusionMatrix, labels, predictedlabels)
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully 
@@ -87,8 +136,12 @@ class NBC(object):
   def RunMethod(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
-    if len(self.dataset) != 2:
-      Log.Fatal("This method requires two datasets.")
+    if (len(self.dataset) != 2) and (len(self.dataset) != 3):
+      Log.Fatal("This method requires two or three datasets.")
       return -1
 
-    return self.NBCScikit(options)
+    if len(self.dataset == 2):
+      return self.NBCScikit(options)
+
+    elif len(self.dataset == 3):
+      self.RunMetrics(self.dataset[2])
