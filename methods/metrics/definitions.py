@@ -333,6 +333,33 @@ class Metrics(object):
     predictiveSum/=count
     predictiveSum+=1
     return predictiveSum	 
+  
+  @staticmethod 		
+  def MPIArrayClass(class_i, truelabels, predictedlabels):
+    instances=len(truelabels)
+    predictiveSum=0
+    count=0
+    for i in range(instances):
+      if truelabels[i] == class_i:
+        count+=1
+        '''
+        predictiveSum+=((actual[i] * math.log(predicted[i],2))+
+						  ((1-actual[i]) * math.log(1-predicted[i],2)))
+        We take actual[i] to be 0. Hence, the formula :
+        We take 0.05 instead of absolute 0 and 0.95 instead of absolute 1 
+        to guarantee that an absolute 0 value doesn't become an argument
+        to logarithm.
+        '''
+        predicted_val=0.05
+        actual_val=0.05
+        if predictedlabels[i] != truelabels[i]:
+          predicted_val = 0.95
+          
+        predictiveSum+=((actual_val*math.log(predicted_val,2)) + (predicted_val*math.log(1 - predicted_val,2)))
+        
+    predictiveSum/=count
+    predictiveSum+=1
+    return predictiveSum	 
 
   '''
   This method extracts all the labels from the truelabels file in a list
@@ -364,5 +391,21 @@ class Metrics(object):
     all_labels = Metrics.GetActualLabels(actual)
     for i in range(len(CM)):
       mpi+=Metrics.MeanPredictiveInformationClass(all_labels[i], truelabels, predictedlabels)
+    mpi/=len(CM)
+    return mpi
+  
+  '''
+  @param CM - The confusion matrix
+  @param truelabels - Array with true labels for each instance
+  @param predictedlabels - Array with predicted label for each instance
+  This is the average mean predictive information measure. We calculate
+  MPI for each class applying the One vs All approach and take the average.
+  '''
+  @staticmethod
+  def AvgMPIArray(CM, truelabels, predictedlabels):
+    mpi=0
+    all_labels = Metrics.GetActualLabels(truelabels)
+    for i in range(len(CM)):
+      mpi+=Metrics.MPIArrayClass(all_labels[i], truelabels, predictedlabels)
     mpi/=len(CM)
     return mpi

@@ -123,7 +123,7 @@ class NBC(object):
     AvgLift = Metrics.LiftMultiClass(confusionMatrix)
     AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
     #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
-    #AvgInformation = Metrics.AvgMeanPredictiveInformation(confusionMatrix, labels, predictedlabels)
+    AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully 
