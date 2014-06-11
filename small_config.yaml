@@ -6,18 +6,15 @@ settings:
     database: 'reports/benchmark.db'
     keepReports: 20
 ---
-# MLPACK:
-# A Scalable C++  Machine Learning Library
-library: mlpack
+library: scikit
 methods:
     NBC:
-        run: true
+        run: ['timing', 'metric']
         iteration: 3
-        script: methods/mlpack/nbc.py
+        script: methods/scikit/nbc.py
         format: [csv, txt]
         datasets:
             # We need to add a new dataset to evaluate the classifiers 
             # prediction. One way to achive that is to add a file, that contains
             # the true labels of the test set.
-            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_train.csv'],
-                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv', 'datasets/transfusion_train.csv'] ]
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'] ]

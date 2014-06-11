@@ -162,3 +162,27 @@ def CreateDirectoryStructure(directories):
   for directory in directories:
     if not os.path.exists(directory):
        os.makedirs(directory)
+
+'''
+Load a given dataset.
+
+@param dataset - The location of the datasetfile.
+@ return The loaded dataset.
+'''
+def LoadDataset(dataset, delimiter=','):
+  import numpy as np
+  return np.genfromtxt(dataset, delimiter=delimiter)
+
+'''
+Split the train labels from the given train dataset.
+
+@param dataset - List which contains the dataset filenames.
+@return Tainset and the train labels as vector.
+'''
+def SplitTrainData(dataset):
+  import numpy as np
+  if len(dataset) >= 2:
+    trainData = np.genfromtxt(dataset[0], delimiter=',')
+    return (trainData[:,:-1], trainData[:, (trainData.shape[1] - 1)])
+  else:
+    return None

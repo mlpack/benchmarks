@@ -168,6 +168,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
           trials = libary[2]
           script = libary[3]
           format = libary[4]
+          tasks = libary[5]
 
           header.append(name)
           
@@ -235,51 +236,55 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     if methodDescription and not db.GetMethodInfo(methodId):
                       db.NewMethodInfo(methodId, methodDescription)
 
-                time = []
-                for trial in range(trials + 1):
-                  if trial > 0:
-                    try:
-                      time.append(instance.RunMethod(options));
+                if 'timing' in tasks:
+                  time = []
+                  for trial in range(trials + 1):
+                    if trial > 0:
+                      try:
+                        time.append(instance.RunTiming(options))
 
-                      # Method unsuccessful.
-                      if sum(time) < 0:
-                        break
-                    except Exception as e:
-                      Log.Fatal("Exception: " + str(e))
+                        # Method unsuccessful.
+                        if sum(time) < 0:
+                          break
+                      except Exception as e:
+                        Log.Fatal("Exception: " + str(e))
 
-                # Set the correct time label.
-                if sum(time) == -2:
-                  # Timout failure.
-                  dataMatrix[row][col] = ">" + str(timeout)
-                elif sum(time) < 0:
-                  # Exception.
-                  dataMatrix[row][col] = "failure"
-                else:
-                  # Measured time.
-                  dataMatrix[row][col] = "{0:.6f}".format(sum(time) / trials)
-
-                # Save the results in the databse if the user asked for.
-                if log:
-                  # Get the variance.
-                  var = 0
-                  if len(time) != 0:
-                    avg = sum(time) / len(time)
-                    var = sum((avg - value) ** 2 for value in time) / len(time)
-
-                  buildId, libaryId = build[name]
-                  if update:
-                    db.UpdateResult(buildId, libaryId, dataMatrix[row][col], 
-                        var, datasetId, methodId)
+                  # Set the correct time label.
+                  if sum(time) == -2:
+                    # Timout failure.
+                    dataMatrix[row][col] = ">" + str(timeout)
+                  elif sum(time) < 0:
+                    # Exception.
+                    dataMatrix[row][col] = "failure"
                   else:
-                    db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
-                        datasetId, methodId)
+                    # Measured time.
+                    dataMatrix[row][col] = "{0:.6f}".format(sum(time) / trials)
+
+                  # Save the results in the databse if the user asked for.
+                  if log:
+                    # Get the variance.
+                    var = 0
+                    if len(time) != 0:
+                      avg = sum(time) / len(time)
+                      var = sum((avg - value) ** 2 for value in time) / len(time)
+
+                    buildId, libaryId = build[name]
+                    if update:
+                      db.UpdateResult(buildId, libaryId, dataMatrix[row][col], 
+                          var, datasetId, methodId)
+                    else:
+                      db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
+                          datasetId, methodId)
+                elif 'metric' in tasks:
+                  instance.RunMetrics(options)
+
 
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
           col += 1
 
         # Show the results.
-        if not log and run > 0:
+        if not log and run > 0 and 'timing' in tasks:
           Log.Notice("\n\n")
           Log.PrintTable(AddMatrixToTable(dataMatrix, table))
           Log.Notice("\n\n")

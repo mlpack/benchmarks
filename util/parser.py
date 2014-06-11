@@ -39,7 +39,7 @@ class Parser(object):
     self.mc = 0
 
     # Default values.
-    self.RUN = True
+    self.RUN = []
     self.ITERATION = 3
     self.OPTIONS = ''
 
@@ -399,7 +399,7 @@ class Parser(object):
                   # option.
                   t = (libraryMapping.libraryName, dataset["files"], 
                     methodMapping.iteration, methodMapping.script, 
-                    methodMapping.format)  
+                    methodMapping.format, methodMapping.run)  
                   tempDict[dataset["options"]].append(t)
 
                 # This is are new options for the specified method name. So we
@@ -409,7 +409,7 @@ class Parser(object):
                   # option values as key.
                   t = (libraryMapping.libraryName, dataset["files"], 
                     methodMapping.iteration, methodMapping.script, 
-                    methodMapping.format)
+                    methodMapping.format, methodMapping.run)
                   tempDict[dataset["options"]] = [t]
 
               # Create the second dictionary if it doesn't exist.
@@ -418,7 +418,7 @@ class Parser(object):
                 # Store the settings for the given method in a tuple.
                 t = (libraryMapping.libraryName, dataset["files"], 
                   methodMapping.iteration, methodMapping.script, 
-                  methodMapping.format)
+                  methodMapping.format, methodMapping.run)
 
                 # To access the method options we can use the options key.
                 d[dataset["options"]] = [t]
