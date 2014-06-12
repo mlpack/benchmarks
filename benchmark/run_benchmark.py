@@ -275,7 +275,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     else:
                       db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
                           datasetId, methodId)
-                elif 'metric' in tasks:
+                if 'metric' in tasks:
                   instance.RunMetrics(options)
 
 
