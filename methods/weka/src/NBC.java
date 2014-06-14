@@ -39,19 +39,21 @@ public class NBC {
           probabilities.createNewFile();
         }
         FileWriter writer = new FileWriter(probabilities.getName(),true);
-        BufferedWriter Bwriter = new BufferedWriter(writer);
-        for (int i = 0; i < testData.numInstances(); i++) {
+        //BufferedWriter Bwriter = new BufferedWriter(writer);
+        int l=0,i=0;
+        for (i = 0; i < testData.numInstances(); i++) {
           probs = model.distributionForInstance(testData.instance(i));
           String data="";
-          int l;
           for(l=0; l<probs.length; l++) {
             String inst = Double.toString(probs[l]);
             data = data.concat(inst);
             data = data.concat(",");
           }
-          Bwriter.write(data);
+          writer.write(data);
+          writer.write("\n");
         }
-        Bwriter.close();
+        writer.write(Integer.toString(i));
+        writer.close();
       }catch(Exception e) {
         e.printStackTrace();
       }
@@ -106,12 +108,15 @@ public class NBC {
           predictedlabels.createNewFile();
         }
         FileWriter writer = new FileWriter(predictedlabels.getName(),true);
-        BufferedWriter Bwriter = new BufferedWriter(writer);
-        for (int i = 0; i < testData.numInstances(); i++)
+        //BufferedWriter Bwriter = new BufferedWriter(writer);
+        int i;
+        for (i = 0; i < testData.numInstances(); i++)
           prediction = cModel.classifyInstance(testData.instance(i));
           String pred = Double.toString(prediction);
-          Bwriter.write(pred);
-        Bwriter.close();
+          writer.write(pred);
+          writer.write("\n");
+        writer.write(Integer.toString(i));
+        writer.close();
       } catch(Exception e) {
         e.printStackTrace();
       }
