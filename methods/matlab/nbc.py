@@ -16,8 +16,15 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from profiler import *
+from definitions import *
 
 import shlex
 import subprocess
@@ -52,7 +59,7 @@ class NBC(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
     inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " " + options
@@ -82,6 +89,31 @@ class NBC(object):
       Log.Info(("total time: %fs" % time), self.verbose)
 
       return time
+
+  '''
+  RunMetrics method to run all the metrics for matlab NBC.
+  '''
+  def RunMetrics(self, options):
+    if len(self.dataset) == 3:    
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      probabilities = np.genfromtxt("matlab_probabs.csv", delimiter=',')
+      predictedlabels = np.genfromtxt("matlab_predicted.csv", delimiter=',')
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      Log.Debug(str(metric_results))
+    else:
+      Log.Fatal("This method requires three datasets!")
 
   '''
   Parse the timer data form a given string.
