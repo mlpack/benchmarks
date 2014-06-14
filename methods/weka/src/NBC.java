@@ -38,7 +38,7 @@ public class NBC {
         if(!probabilities.exists()) {
           probabilities.createNewFile();
         }
-        FileWriter writer = new FileWriter(probabilities.getName(),true);
+        FileWriter writer = new FileWriter(probabilities.getName(), false);
         //BufferedWriter Bwriter = new BufferedWriter(writer);
         int l=0,i=0;
         for (i = 0; i < testData.numInstances(); i++) {
@@ -50,9 +50,9 @@ public class NBC {
             data = data.concat(",");
           }
           writer.write(data);
-          writer.write("\n");
+          writer.write("\n");          
+          
         }
-        writer.write(Integer.toString(i));
         writer.close();
       }catch(Exception e) {
         e.printStackTrace();
@@ -94,7 +94,7 @@ public class NBC {
       // Create and train the classifier.   
       Classifier cModel = (Classifier)new NaiveBayes();
       cModel.buildClassifier(trainData);
-      
+
       // Get the probabilities.
       getProbabilities(cModel,testData);
 
@@ -107,15 +107,17 @@ public class NBC {
         if(!predictedlabels.exists()) {
           predictedlabels.createNewFile();
         }
-        FileWriter writer = new FileWriter(predictedlabels.getName(),true);
+        FileWriter writer = new FileWriter(predictedlabels.getName(), false);
         //BufferedWriter Bwriter = new BufferedWriter(writer);
-        int i;
-        for (i = 0; i < testData.numInstances(); i++)
+
+        for (int i = 0; i < testData.numInstances(); i++) {
           prediction = cModel.classifyInstance(testData.instance(i));
+          System.out.println(prediction);
           String pred = Double.toString(prediction);
           writer.write(pred);
           writer.write("\n");
-        writer.write(Integer.toString(i));
+        }
+        
         writer.close();
       } catch(Exception e) {
         e.printStackTrace();
