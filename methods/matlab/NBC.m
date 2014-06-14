@@ -27,13 +27,14 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-%classifier = NaiveBayes.fit(TrainData, labels);
-probabilities = NaiveBayes.fit(TrainData, 'Prior');
-csvwrite(probabilities, 'matlab_probabs.csv');
+classifier = NaiveBayes.fit(TrainData, labels);
 % Run Naive Bayes Classifier on the test dataset.
-%labels = classifier.predict(TestData);
-labels = probabilities.predict(TestData);
-csvwrite(labels, 'matlab_prediction.csv');
-
+labels = classifier.predict(TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
+
+% Save prediction of each class for test data.
+csvwrite('predictions.csv', labels);
+
+% Save posterior probability of each class for test data.
+csvwrite('probability.csv', posterior(classifier, TestData));
 end

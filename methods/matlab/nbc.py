@@ -25,6 +25,7 @@ if metrics_folder not in sys.path:
 from log import *
 from profiler import *
 from definitions import *
+from misc import *
 
 import shlex
 import subprocess
@@ -94,12 +95,16 @@ class NBC(object):
   RunMetrics method to run all the metrics for matlab NBC.
   '''
   def RunMetrics(self, options):
-    if len(self.dataset) == 3:    
+    if len(self.dataset) == 3:
+      # Check if the files to calculate the different metric are available.
+      if not CheckFileAvailable("predictions.csv") or not CheckFileAvailable("probability.csv"):
+        self.RunTiming(options)
+
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      probabilities = np.genfromtxt("matlab_probabs.csv", delimiter=',')
-      predictedlabels = np.genfromtxt("matlab_predicted.csv", delimiter=',')
+      probabilities = LoadDataset("probability.csv")
+      predictedlabels = LoadDataset("predictions.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
