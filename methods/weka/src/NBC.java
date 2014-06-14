@@ -13,6 +13,11 @@ import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.Exception;
+
 /**
  * This class use the weka libary to implement Naive Bayes Classifier.
  */
@@ -25,6 +30,32 @@ public class NBC {
       + "Required options:\n"
       + "-T [string]     A file containing the test set.\n"
       + "-t [string]     A file containing the training set.");
+
+  public static void getProbabilities(Classifier model, Instances testData) {
+    double[] probs;
+    try{
+        File probabilities = new File("../../../weka_probabilities.csv");
+        if(!probabilities.exists()) {
+          probabilities.createNewFile();
+        }
+        FileWriter writer = new FileWriter(probabilities.getName(),true);
+        BufferedWriter Bwriter = new BufferedWriter(writer);
+        for (int i = 0; i < testData.numInstances(); i++) {
+          probs = Model.distributionForInstance(testData.instance(i));
+          String data="";
+          int l;
+          for(l=0; l<probs.size(); l++) {
+            String inst = Double.toString(probs[l]);
+            data = data.concat(inst);
+            data = data.concat(",");
+          }
+          Bwriter.write(data);
+        }
+        Bwriter.close();
+      }catch(IOException e) {
+        e.printStackTrace();
+      }
+  }
   
   public static void main(String args[]) {
   Timers timer = new Timers();    
@@ -62,11 +93,28 @@ public class NBC {
       Classifier cModel = (Classifier)new NaiveBayes();
       cModel.buildClassifier(trainData);
       
+      //Get the probabilities
+      getProbabilities(cModel,testData);
+
       // Run Naive Bayes Classifier on the test dataset.
+      // Write predicted class values for each intance to 
+      // benchmarks/weka_predicted.csv.
       double prediction;
-      for (int i = 0; i < testData.numInstances(); i++)
-        prediction = cModel.classifyInstance(testData.instance(i));
-      
+      try{
+        File predictedlabels = new File("../../../weka_predicted.csv");
+        if(!predictedlabels.exists()) {
+          predictedlabels.createNewFile();
+        }
+        FileWriter writer = new FileWriter(predictedlabels.getName(),true);
+        BufferedWriter Bwriter = new BufferedWriter(writer);
+        for (int i = 0; i < testData.numInstances(); i++)
+          prediction = cModel.classifyInstance(testData.instance(i));
+          String pred = Integer.toString(prediction);
+          Bwriter.write(pred);
+        Bwriter.close();
+      }catch(IOException e) {
+        e.printStackTrace();
+      }
       timer.StopTimer("total_time");
       timer.PrintTimer("total_time");
       
