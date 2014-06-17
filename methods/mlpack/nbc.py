@@ -118,11 +118,15 @@ class NBC(object):
     labelsData = np.genfromtxt(labels, delimiter=',')
     predictionData = np.genfromtxt(prediction, delimiter=',')
     confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
+    probabilities = np.genfromtxt("probabilities.csv")
     #self.VisualizeConfusionMatrix(confusionMatrix)
     AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
     AvgPrec = Metrics.AvgPrecision(confusionMatrix)
     AvgRec = Metrics.AvgRecall(confusionMatrix)
     AvgF = Metrics.AvgFMeasure(confusionMatrix)
+    AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+    AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+    AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
     Log.Info('Run metrics...')
     # Perform the metrics with the data from the labels and prediction file ....
 
