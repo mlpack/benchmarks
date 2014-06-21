@@ -7,7 +7,8 @@
 #include <shogun/features/RealFileFeatures.h>
 #include <shogun/io/CSVFile.h>
 #include <fstream>
-
+#include <vector>
+#include <string>
 using namespace shogun;
 
 // Define a new GaussianNaiveBayes class with the opportunity to return the probabilities.
@@ -47,12 +48,29 @@ int main(int argc, char** argv)
   // Get the input dataset.
   const char* dataset_file = argv[1];
 
-  // Get the labels.
-  const char* labels_file = argv[2];
-
   //Get the test data
-  const char* testdata_file = argv[3];
+  const char* testdata_file = argv[2];
 
+
+  //Get the train data labels
+  std::string line;
+  std::ofstream outfile;
+  std::ifstream input(dataset_file);
+  outfile.open("shogun_trainlabels.csv",std::ios_base::app);
+  while (getline(input, line)) {
+    std::stringstream ss(line);
+    std::string item;
+    std::vector<std::string > tokens;
+    while (std::getline(ss, item, ',')) {
+      tokens.push_back(item);
+    }
+    int index = tokens.size();
+    outfile << tokens[index-1];
+    outfile << "\n";
+  }
+  outfile.close(); 
+
+  
   // Load the input dataset.
   //CAsciiFile* dfile = new CAsciiFile(dataset_file);
   CCSVFile* dfile = new CCSVFile(dataset_file,'r');
@@ -62,7 +80,7 @@ int main(int argc, char** argv)
 
   // Load the labels
   //CAsciiFile* lfile = new CAsciiFile(labels_file);
-  CCSVFile* cfile = new CCSVFile(labels_file,'r');
+  CCSVFile* cfile = new CCSVFile("shogun_trainlabels.csv",'r');
   SGVector<float64_t> lmat = SGVector<float64_t>();
   lmat.load(cfile);
   SG_UNREF(cfile);
@@ -95,13 +113,13 @@ int main(int argc, char** argv)
   //Get the predicted labels file
   CLabels* predicted_labels = ci->apply(test_features);
   SGVector<float64_t> predicted_values = predicted_labels->get_values();
-  std::ofstream outfile;
-  outfile.open("shogun_labels.csv",std::ios_base::app);
+  std::ofstream outfile_new;
+  outfile_new.open("shogun_labels.csv",std::ios_base::app);
   for (int i=0; i<predicted_values.size(); i++) {
-    outfile << std::to_string(predicted_values.vector[i]);
-    outfile << "\n";
+    outfile_new << std::to_string(predicted_values.vector[i]);
+    outfile_new << "\n";
   }
-  outfile.close(); 
+  outfile_new.close(); 
   exit_shogun();
 
   return 0;
