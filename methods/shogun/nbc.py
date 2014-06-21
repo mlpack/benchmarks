@@ -92,11 +92,20 @@ class NBC(object):
   NBC for metrics
   '''
   def RunMetrics(self, options):
+    if len(self.dataset) == 3:
     # Check if the files to calculate the different metric are available.
       cmd = shlex.split("methods/shogun/nbc " + self.dataset[0] 
            + " " + self.dataset[1])
       if not CheckFileAvailable("shogun_labels.csv") or not CheckFileAvailable("shogun_probs.csv"):
-        self.RunTiming(options)
+        try:
+          s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+              timeout=self.timeout)
+        except subprocess.TimeoutExpired as e:
+          Log.Warn(str(e))
+          return -2
+        except Exception as e:
+          Log.Fatal("Could not execute command: " + str(cmd))
+          return -1
         
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
@@ -116,7 +125,7 @@ class NBC(object):
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       Log.Debug(str(metric_results))
     else:
-      Log.Fatal("This method requires three datasets!")
+        Log.Fatal("This method requires three datasets!")
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully completed 
