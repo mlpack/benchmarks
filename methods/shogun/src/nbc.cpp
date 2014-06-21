@@ -23,18 +23,18 @@ class GaussianNaiveBayes : public CGaussianNaiveBayes
     set_labels(train_labels);
     set_features((CDotFeatures*)train_examples);
   }
-    virtual void get_probs(CFeatures* data) const {
+    virtual void get_probs(CFeatures* data) {
       if (data)
             set_features(data);
 
       ASSERT(m_features)
       int32_t num_vectors = m_features->get_num_vectors();
-      ofstream outfile;
+      std::ofstream outfile;
       outfile.open("shogun_probs.csv",std::ios_base::app);
       for (int i=0; i<num_vectors; i++) {
         apply_one(i);
         for (int j=0; j<m_num_classes; j++) {
-          outfile << to_string(m_rates.vector[j]);
+          outfile << std::to_string(m_rates.vector[j]);
           outfile << ",";
         }
         outfile << "\n";
@@ -64,8 +64,8 @@ int main(int argc, char** argv)
 
   // Load the labels
   CAsciiFile* cfile = new CAsciiFile(labels);
-  SGMatrix<float64_t> lmat = SGMatrix<float64_t>();
-  cmat.load(cfile);
+  SGVector<float64_t> lmat = SGVector<float64_t>();
+  lmat.load(lfile);
   SG_UNREF(cfile);
 
   // Load the test dataset.
