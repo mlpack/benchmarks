@@ -5,7 +5,7 @@
 
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/RealFileFeatures.h>
-#include <shogun/io/AsciiFile.h>
+#include <shogun/io/CSVFile.h>
 #include <fstream>
 
 using namespace shogun;
@@ -15,10 +15,7 @@ class GaussianNaiveBayes : public CGaussianNaiveBayes
 {
   public:
     GaussianNaiveBayes(CFeatures* train_examples,
-        CLabels* train_labels) : CNativeMulticlassMachine(), m_features(NULL),
-    m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
-    m_variances(), m_label_prob(), m_rates()
-
+        CLabels* train_labels)
   {
     set_labels(train_labels);
     set_features((CDotFeatures*)train_examples);
@@ -57,19 +54,22 @@ int main(int argc, char** argv)
   const char* testdata_file = argv[3];
 
   // Load the input dataset.
-  CAsciiFile* dfile = new CAsciiFile(dataset_file);
+  //CAsciiFile* dfile = new CAsciiFile(dataset_file);
+  CCSVFile* dfile = new CCSVFile(dataset_file,'r');
   SGMatrix<float64_t> dmat = SGMatrix<float64_t>();
   dmat.load(dfile);
   SG_UNREF(dfile);
 
   // Load the labels
-  CAsciiFile* lfile = new CAsciiFile(labels_file);
+  //CAsciiFile* lfile = new CAsciiFile(labels_file);
+  CCSVFile* cfile = new CCSVFile(labels_file,'r');
   SGVector<float64_t> lmat = SGVector<float64_t>();
-  lmat.load(lfile);
-  SG_UNREF(lfile);
+  lmat.load(cfile);
+  SG_UNREF(cfile);
 
   // Load the test dataset.
-  CAsciiFile* tfile = new CAsciiFile(testdata_file);
+  //CAsciiFile* tfile = new CAsciiFile(testdata_file);
+  CCSVFile* tfile = new CCSVFile(testdata_file,'r');
   SGMatrix<float64_t> tmat = SGMatrix<float64_t>();
   tmat.load(tfile);
   SG_UNREF(tfile);
@@ -82,16 +82,26 @@ int main(int argc, char** argv)
   CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(dmat);
   SG_REF(features);
 
-  CFeatures* test_features = new CFeatures(tmat);
+  CDenseFeatures<float64_t>* test_features = new CDenseFeatures<float64_t>(tmat);
   SG_REF(test_features);
 
   // Create the nbc classifier.
-  CGaussianNaiveBayes* ci = new GaussianNaiveBayes(features, labels);
+  GaussianNaiveBayes* ci = new GaussianNaiveBayes(features, labels);
   ci->train();
 
   // Get the propbs.
-  GVector<float64_t> p_test = ci->get_probs(test_features);
-
+  ci->get_probs(test_features);
+  
+  //Get the predicted labels file
+  CLabels* predicted_labels = ci->apply(test_features);
+  SGVector<float64_t> predicted_values = predicted_labels->get_values();
+  std::ofstream outfile;
+  outfile.open("shogun_labels.csv",std::ios_base::app);
+  for (int i=0; i<predicted_values.size(); i++) {
+    outfile << std::to_string(predicted_values.vector[i]);
+    outfile << "\n";
+  }
+  outfile.close(); 
   exit_shogun();
 
   return 0;
