@@ -48,28 +48,28 @@ int main(int argc, char** argv)
   init_shogun_with_defaults();
 
   // Get the input dataset.
-  const char* dataset = argv[1];
+  const char* dataset_file = argv[1];
 
   // Get the labels.
-  const char* labels = argv[2];
+  const char* labels_file = argv[2];
 
   //Get the test data
-  const char* testdata = argv[3];
+  const char* testdata_file = argv[3];
 
   // Load the input dataset.
-  CAsciiFile* dfile = new CAsciiFile(dataset);
+  CAsciiFile* dfile = new CAsciiFile(dataset_file);
   SGMatrix<float64_t> dmat = SGMatrix<float64_t>();
   dmat.load(dfile);
   SG_UNREF(dfile);
 
   // Load the labels
-  CAsciiFile* cfile = new CAsciiFile(labels);
+  CAsciiFile* lfile = new CAsciiFile(labels_file);
   SGVector<float64_t> lmat = SGVector<float64_t>();
   lmat.load(lfile);
-  SG_UNREF(cfile);
+  SG_UNREF(lfile);
 
   // Load the test dataset.
-  CAsciiFile* tfile = new CAsciiFile(testdata);
+  CAsciiFile* tfile = new CAsciiFile(testdata_file);
   SGMatrix<float64_t> tmat = SGMatrix<float64_t>();
   tmat.load(tfile);
   SG_UNREF(tfile);
