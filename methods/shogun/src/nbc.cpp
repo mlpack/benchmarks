@@ -1,3 +1,9 @@
+/**
+ ** @file nbc.cpp
+ ** @author Anand Soni
+ **
+ ** Extension to the Shogun NBC method.      
+*/
 #define private protected
 #include <shogun/multiclass/GaussianNaiveBayes.h>
 #undef private
