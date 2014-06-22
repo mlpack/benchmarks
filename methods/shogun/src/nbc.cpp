@@ -1,6 +1,6 @@
 /**
  ** @file nbc.cpp
- ** @author Anand Soni
+ ** @author Marcus Edel, Anand Soni
  **
  ** Extension to the Shogun NBC method.      
 */
