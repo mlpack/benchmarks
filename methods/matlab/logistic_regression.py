@@ -148,7 +148,7 @@ class LogisticRegression(object):
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      #probabilities = LoadDataset("weka_probabilities.csv")
+      probabilities = LoadDataset("matlab_lr_probs.csv")
       predictedlabels = LoadDataset("predictions.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
