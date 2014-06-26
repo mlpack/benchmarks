@@ -16,8 +16,15 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from profiler import *
+from definitions import *
 
 import shlex
 import subprocess
@@ -47,13 +54,14 @@ class LogisticRegression(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
+  '''
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
     filelist = ["predictions.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-    
+  '''  
   '''
   Logistic Regression benchmark instance. If the method has been successfully
   completed return the elapsed time in seconds.
@@ -132,4 +140,28 @@ class LogisticRegression(object):
     return timer.total_time
 
   def RunMetrics(self, options):
-    return None
+    if len(self.dataset) == 3:
+      # Check if the files to calculate the different metric are available.
+      if not CheckFileAvailable("predictions.csv"):
+        self.RunTiming(options)
+        
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      #probabilities = LoadDataset("weka_probabilities.csv")
+      predictedlabels = LoadDataset("predictions.csv")
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      Log.Debug(str(metric_results))
+    else:
+      Log.Fatal("This method requires three datasets!")
+  

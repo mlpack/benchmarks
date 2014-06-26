@@ -16,8 +16,15 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from timer import *
+from definitions import *
 
 import numpy as np
 from modshogun import MulticlassLogisticRegression
@@ -107,4 +114,22 @@ class LogisticRegression(object):
     if not self.predictions:
       self.RunTiming(options)
 
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      Log.Debug(str(metric_results))
+    else:
+      Log.Fatal("This method requires three datasets!")
+  
     # now the predictions are in self.predictions
+
