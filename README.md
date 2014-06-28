@@ -171,7 +171,7 @@ methods:
 | Syntax | `files: [...] or [ [...] ]` |
 | Required | Yes |
 | **run** | |
-| Description | List of benchmark task for this method. |
+| Description | List of benchmark tasks for this method. |
 | Syntax | `run: ['timing', 'metrics']` |
 | Default | `[]` |
 | Required | No |
