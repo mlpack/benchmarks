@@ -140,7 +140,7 @@ The libary block contains some settings that control the specified benchmark scr
 library: mlpack
 methods:
     PCA:
-        run: true
+        run: ['timing'] 
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -149,7 +149,7 @@ methods:
             - files: ['datasets/iris.csv', 'datasets/wine.csv']
               options: '-d 2'
     NMF:
-        run: false
+        run: [] 
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
@@ -167,13 +167,13 @@ methods:
 | Syntax | `script: name` |
 | Required | Yes |
 | **files** | |
-| Description | A array of datasets for this method. You can use the relative path from the benchmark root folder, a absolute path or a symlink. Requires a method more than one data set, you should add the data sets in an extra list. |
+| Description | List of datasets for this method. You can use the relative path from the benchmark root folder, a absolute path or a symlink. Requires a method more than one data set, you should add the data sets in an extra list. |
 | Syntax | `files: [...] or [ [...] ]` |
 | Required | Yes |
 | **run** | |
-| Description | A flag to indicate if the benchmark will be executed. |
-| Syntax | `run: True or False` |
-| Default | `True` |
+| Description | List of benchmark task for this method. |
+| Syntax | `run: ['timing', 'metrics']` |
+| Default | `[]` |
 | Required | No |
 | **iterations** | |
 | Description | The number of executions for this method. It is recommended to set the value higher than one in order to obtain meaningful results. |
@@ -220,7 +220,7 @@ methods:
     PCA:
         script: methods/mlpack/pca.py
         format: [csv, txt, hdf5, bin]
-        run: true
+        run: ['timing'] 
         iterations: 2
         datasets:
             - files: ['isolet.csv', 'cities']
