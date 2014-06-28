@@ -46,10 +46,10 @@ class LARS_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("")
     self.assertTrue(result > 0)
 
   '''
@@ -100,10 +100,10 @@ class LARS_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("")
     self.assertTrue(result > 0)
 
 '''
@@ -132,10 +132,10 @@ class LARS_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("")
     self.assertTrue(result > 0)
 
 if __name__ == '__main__':

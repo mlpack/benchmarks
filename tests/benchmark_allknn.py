@@ -46,10 +46,10 @@ class ALLKNN_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
   
   '''
@@ -101,10 +101,10 @@ class ALLKNN_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 '''
@@ -133,10 +133,10 @@ class ALLKNN_MLPY_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 '''
@@ -165,10 +165,10 @@ class ALLKNN_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 '''
@@ -197,10 +197,10 @@ class ALLKNN_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 '''
@@ -229,10 +229,10 @@ class ALLKNN_WEKA_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 '''
@@ -261,10 +261,10 @@ class ALLKNN_ANN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 '''
@@ -293,10 +293,10 @@ class ALLKNN_FLANN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-k 3")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
 if __name__ == '__main__':

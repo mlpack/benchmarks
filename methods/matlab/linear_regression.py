@@ -52,7 +52,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
 
     # If the dataset contains two files then the second file is the responses 

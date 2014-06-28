@@ -104,7 +104,7 @@ class KPCA(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform KPCA.", self.verbose)
 
     # Split the command using shell-like syntax.

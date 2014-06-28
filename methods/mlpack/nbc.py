@@ -138,7 +138,7 @@ class NBC(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
     # Here we check the dataset count. If the user specefies only two datasets

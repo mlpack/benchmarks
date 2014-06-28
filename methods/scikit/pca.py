@@ -94,7 +94,7 @@ class PCA(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
     return self.PCAScikit(options)

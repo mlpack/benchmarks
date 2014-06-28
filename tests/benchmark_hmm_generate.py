@@ -46,10 +46,10 @@ class HMMGENERATE_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-l 1")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-l 1")
     self.assertTrue(result > 0)
 
   '''

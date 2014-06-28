@@ -101,7 +101,7 @@ class HMMVITERBI(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform HMM VITERBI.", self.verbose)
 
     inputCmd = "-i " + self.dataset[0] + " -e emis_tmp.csv -t trans_tmp.csv " + options

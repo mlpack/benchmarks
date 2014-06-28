@@ -46,10 +46,10 @@ class NMF_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-r 6 -u multdist")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-r 6 -u multdist")
     self.assertTrue(result > 0)
 
   '''
@@ -100,10 +100,10 @@ class NMF_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-r 6 -u alspgrad")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-r 6 -u alspgrad")
     self.assertTrue(result > 0)
 
 '''
@@ -132,10 +132,10 @@ class NMF_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-r 6 -u multdist")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-r 6 -u multdist")
     self.assertTrue(result > 0)
 
 if __name__ == '__main__':

@@ -222,12 +222,12 @@ class Parser(object):
     return False
 
   '''
-  This function check if a script have the necessary class and the RunMethod 
+  This function check if a script have the necessary class and the RunTiming 
   function. 
 
   @param methodName - The method name.
   @param methodScript - The script path and name.
-  @return False if the script dosen't exist or the RunMethod method is not 
+  @return False if the script dosen't exist or the RunTiming method is not 
   available otherwise True.
   '''
   def CheckIfCallable(self, methodName, methodScript):
@@ -244,7 +244,7 @@ class Parser(object):
 
     methodClass = getattr(module, methodName, None)
     if callable(methodClass):
-      if getattr(methodClass, "RunMethod", None):
+      if getattr(methodClass, "RunTiming", None):
         return True
 
     return False

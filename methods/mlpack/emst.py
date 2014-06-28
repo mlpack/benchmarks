@@ -103,7 +103,7 @@ class EMST(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform EMST.", self.verbose)
 
     cmd = shlex.split(self.path + "emst -i " + self.dataset + " -v " + 

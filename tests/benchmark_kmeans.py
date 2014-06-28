@@ -44,10 +44,10 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-c 2")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
   '''
@@ -98,10 +98,10 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-c 2")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
 '''
@@ -130,10 +130,10 @@ class KMEANS_WEKA_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-c 2")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
 '''
@@ -162,10 +162,10 @@ class KMEANS_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-c 2")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
 '''
@@ -194,10 +194,10 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-c 2")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
 '''
@@ -226,10 +226,10 @@ class KMEANS_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunMethod' function.
+  Test the 'RunTiming' function.
   '''
-  def test_RunMethod(self):
-    result = self.instance.RunMethod("-c 2")
+  def test_RunTiming(self):
+    result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
 if __name__ == '__main__':

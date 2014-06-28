@@ -108,7 +108,7 @@ class KMEANS(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform K-Means Clustering.", self.verbose)
 
     # If the dataset contains two files then the second file is the centroids 
