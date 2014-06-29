@@ -67,7 +67,7 @@ class LogisticRegression(object):
     # file. In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
-        " LogisticRegression -i " + self.dataset[0] + " -r " + self.dataset[1] 
+        " LogisticRegression -i " + self.dataset[0] + " -t " + self.dataset[1] 
         + " " + options)
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
