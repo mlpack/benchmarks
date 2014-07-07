@@ -271,7 +271,10 @@ class Metrics(object):
       vec=[]
       for j in range(l):
         vec.append(0)
-        vec[int(Vec[i])-1]=1
+        if int(Vec[i])!=0:
+          vec[int(Vec[i])-1]=1
+        else:
+          vec[int(Vec[i])]=1
         trueVec.append(vec)
     #trueArray : 2D numpy array after converting trueVec
     trueArray=np.array(trueVec)
