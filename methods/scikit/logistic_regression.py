@@ -46,6 +46,7 @@ class LogisticRegression(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+
   '''
   Build the model for the Logistic Regression.
 
@@ -57,7 +58,7 @@ class LogisticRegression(object):
     # Create and train the classifier.
     lr = SLogisticRegression()
     lr.fit(data, labels)
-    return nbc
+    return lr
 
   '''
   Use the scikit libary to implement Logistic Regression.
@@ -88,7 +89,7 @@ class LogisticRegression(object):
           self.model = self.BuildModel(X,y)
           #model = SLogisticRegression()
           #model.fit(X, y, n_jobs=-1)
-          b = model.coef_
+          b = self.model.coef_
       except Exception as e:
         q.put(-1)
         return -1
