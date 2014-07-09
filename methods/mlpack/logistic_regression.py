@@ -26,6 +26,7 @@ if metrics_folder not in sys.path:
 from log import *
 from profiler import *
 from definitions import *
+from misc import *
 import shlex
 import subprocess
 import re
@@ -99,36 +100,14 @@ class LogisticRegression(object):
 
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset[0] + 
-          " -r " + self.dataset[1] + " -v " + options)
+          " -t " + self.dataset[1] + " -v " + options)
     else:
       cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset + 
           " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
-
-  '''
-  Run all the metrics for the classifier.  
-  '''  
-  def RunMetrics(self, labels, prediction):
-    # The labels and the prediction parameter contains the filename for the file
-    # that contains the true labels accordingly the prediction parameter contains
-    # the filename of the classifier output. So we need to read in the data.
-    labelsData = np.genfromtxt(labels, delimiter=',')
-    predictionData = np.genfromtxt(prediction, delimiter=',')
-    confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
-    #probabilities = np.genfromtxt("probabilities.csv")
-    #self.VisualizeConfusionMatrix(confusionMatrix)
-    AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-    AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-    AvgRec = Metrics.AvgRecall(confusionMatrix)
-    AvgF = Metrics.AvgFMeasure(confusionMatrix)
-    AvfLift = Metrics.LiftMultiClass(confusionMatrix)
-    AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-    AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
-    Log.Info('Run metrics...')
-    # Perform the metrics with the data from the labels and prediction file ....
 
   '''
   Perform Logistic Regression Prediction. If the method has been 
@@ -138,14 +117,14 @@ class LogisticRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "logistic_regression -i " + self.dataset[0] + 
-          " -r " + self.dataset[1] + " -v " + options)
+          " -t " + self.dataset[1] + " -v " + options)
     else:
       cmd = shlex.split(self.path + "logistic_regression -i " + self.dataset + 
           " -v " + options)
@@ -174,6 +153,36 @@ class LogisticRegression(object):
       return time
 
   '''
+  Run all the metrics for the classifier.
+  '''
+  def RunMetrics(self, options):
+    if len(self.dataset) >= 3:
+
+      # Check if we need to build and run the model.
+      if not CheckFileAvailable('predictions.csv'):
+        self.RunMethod(options)
+
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      predictedlabels = LoadDataset("predictions.csv")
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      Log.Debug(str(metric_results))
+
+    else:
+      Log.Fatal("This method requires three datasets.")
+
+  '''
   Parse the timer data form a given string.
 
   @param data - String to parse timer data from.
@@ -183,7 +192,9 @@ class LogisticRegression(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?regression: (?P<regression>.*?)s.*?
+        .*?loading_data: (?P<loading_data>.*?)s.*?
+        .*?saving_data: (?P<saving_data>.*?)s.*?
+        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
     match = pattern.match(data)
@@ -192,9 +203,9 @@ class LogisticRegression(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["regression"])
-      
-      return timer(float(match.group("regression")))
+      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
+      return timer(float(match.group("loading_data")),
+          float(match.group("total_time")), float(match.group("saving_data")))
 
   '''
   Return the elapsed time in seconds.
@@ -203,5 +214,6 @@ class LogisticRegression(object):
   @return Elapsed time in seconds.
   '''
   def GetTime(self, timer):
-    return timer.regression
+    time = timer.total_time - timer.loading_data - timer.saving_data
+    return time
     
