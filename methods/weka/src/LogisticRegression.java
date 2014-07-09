@@ -26,12 +26,16 @@ public class LogisticRegression {
           + "-t [string]   Optional file containing containing\n"
           + "              test dataset");
   
-  public static double maxProb(double[] probs) {
+  public static int maxProb(double[] probs) {
     double prediction=0;
+    int index=0;
     for (int i=0; i < probs.length; i++) {
-      if(probs[i] >= prediction) prediction=probs[i];
+      if(probs[i] >= prediction) {
+        prediction=probs[i];
+        index=i;
+      }
     }
-    return prediction;
+    return index;
   }
   
   public static void main(String args[]) {
