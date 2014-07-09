@@ -271,11 +271,9 @@ class Metrics(object):
       vec=[]
       for j in range(l):
         vec.append(0)
-        if int(Vec[i])!=0:
-          vec[int(Vec[i])-1]=1
-        else:
-          vec[int(Vec[i])]=1
-        trueVec.append(vec)
+      for j in range(l):
+        vec[int(Vec[i])-1]=1
+      trueVec.append(vec)
     #trueArray : 2D numpy array after converting trueVec
     trueArray=np.array(trueVec)
     #probVec : 2D numpy array with trueVec[index]=probability for the instance
