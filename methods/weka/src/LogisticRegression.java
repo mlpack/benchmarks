@@ -26,6 +26,21 @@ public class LogisticRegression {
           + "-t [string]   Optional file containing containing\n"
           + "              test dataset");
   
+  public static HashMap<Integer, Double> createClassMap(Instances Data) {
+   HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
+   int index=0;
+   for(int i=0; i<Data.numInstances(); i++) {
+    double cl = Data.instance(i).classValue();
+    Double class_i = new Double(cl);
+    if(!classMap.containsValue(class_i)) {
+      Integer ind = new Integer(index);
+      classMap.put(ind,class_i);
+      index++;
+    }
+   }
+   return classMap;
+  }
+
   public static int maxProb(double[] probs) {
     double prediction=0;
     int index=0;
@@ -50,6 +65,7 @@ public class LogisticRegression {
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
       Instances data = source.getDataSet();
+      HashMap<Integer, Double> classMap = createClassMap(data);
       
       // Did the user pass a test file?
       String testFile = Utils.getOption('t', args);
@@ -118,9 +134,11 @@ public class LogisticRegression {
               data.concat(String.valueOf(probabilities[k]));
               data.concat(",");
             }
-            double predictionForInstance = maxProb(probabilities);
+            int predictionForInstance = maxProb(probabilities);
+            Integer c_index = new Integer(predictionForInstance);
+            Double predictedClass = classMap.get(c_index);
             writer.write(data);
-            writer_predict.write(String.valueOf(predictionForInstance));
+            writer_predict.write(String.valueOf(predictedClass.doubleValue()));
           }
           writer.close();
           writer_predict.close();
