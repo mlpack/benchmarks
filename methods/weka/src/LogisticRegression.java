@@ -9,6 +9,9 @@ import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 /**
  * This class use the weka libary to implement Logistic Regression.
  */
@@ -22,6 +25,14 @@ public class LogisticRegression {
           + "Options:\n\n"
           + "-t [string]   Optional file containing containing\n"
           + "              test dataset");
+  
+  public static double maxProb(double[] probs) {
+    double prediction=0;
+    for (int i=0; i < probs.length; i++) {
+      if(probs[i] >= prediction) prediction=probs[i];
+    }
+    return prediction;
+  }
   
   public static void main(String args[]) {
     Timers timer = new Timers();
@@ -81,9 +92,36 @@ public class LogisticRegression {
       // Use the testdata to evaluate the modell.
       if (testFile.length() != 0)
       {
-        for (int i = 0; i < testData.numInstances(); i++) 
-        {
-          double[] probabilities = model.distributionForInstance(testData.instance(0));
+        try{
+          File probabs = new File("weka_lr_probabilities.csv");
+          if(!probabs.exists()) {
+            probabs.createNewFile();
+          }
+          FileWriter writer = new FileWriter(probabs.getName(), false);
+          
+          File predictions = new File("weka_lr_predictions.csv");
+          if(!predictions.exists()) {
+            predictions.createNewFile();
+          }
+          FileWriter writer_predict = new FileWriter(predictions.getName(), false);
+
+          for (int i = 0; i < testData.numInstances(); i++) 
+          {
+            double[] probabilities = model.distributionForInstance(testData.instance(i));
+            String data="";
+            String predict="";
+            for(int k=0; k<probabilities.length; k++) {
+              data.concat(String.valueOf(probabilities[k]));
+              data.concat(",");
+            }
+            double predictionForInstance = maxProb(probabilities);
+            writer.write(data);
+            writer_predict.write(String.valueOf(predictionForInstance));
+          }
+          writer.close();
+          writer_predict.close();
+        }catch(Exception e) {
+          e.printStackTrace();
         }
       }
       

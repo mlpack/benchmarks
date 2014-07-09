@@ -16,8 +16,15 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from profiler import *
+from definitions import *
 
 import shlex
 import subprocess
@@ -143,6 +150,28 @@ class LinearRegression(object):
       Log.Info(("total time: %fs" % (time)), self.verbose)
 
       return time
+
+  '''
+  Run all the metrics for the classifier.  
+  '''  
+  def RunMetrics(self, labels, prediction):
+    # The labels and the prediction parameter contains the filename for the file
+    # that contains the true labels accordingly the prediction parameter contains
+    # the filename of the classifier output. So we need to read in the data.
+    labelsData = np.genfromtxt(labels, delimiter=',')
+    predictionData = np.genfromtxt(prediction, delimiter=',')
+    confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
+    #probabilities = np.genfromtxt("probabilities.csv")
+    #self.VisualizeConfusionMatrix(confusionMatrix)
+    AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+    AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+    AvgRec = Metrics.AvgRecall(confusionMatrix)
+    AvgF = Metrics.AvgFMeasure(confusionMatrix)
+    AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+    AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+    AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+    Log.Info('Run metrics...')
+    # Perform the metrics with the data from the labels and prediction file ....
 
   '''
   Parse the timer data form a given string.
