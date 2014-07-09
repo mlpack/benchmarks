@@ -66,7 +66,6 @@ public class LogisticRegression {
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
       Instances data = source.getDataSet();
-      HashMap<Integer, Double> classMap = createClassMap(data);
       
       // Did the user pass a test file?
       String testFile = Utils.getOption('t', args);
@@ -105,6 +104,7 @@ public class LogisticRegression {
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
+      HashMap<Integer, Double> classMap = createClassMap(data);
       // Perform Logistic Regression.
       timer.StartTimer("total_time");
       weka.classifiers.functions.Logistic model = new weka.classifiers.functions.Logistic();
