@@ -12,6 +12,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import java.util.HashMap;
 /**
  * This class use the weka libary to implement Logistic Regression.
  */
