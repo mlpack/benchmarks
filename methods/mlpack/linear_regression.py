@@ -174,7 +174,7 @@ class LinearRegression(object):
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
       AvfLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       Log.Info('Run metrics...')
     else:
       Log.Fatal("This method requires three datasets.")
