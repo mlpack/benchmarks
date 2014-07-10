@@ -30,6 +30,7 @@ import shlex
 import subprocess
 import re
 import collections
+import numpy as np
 
 '''
 This class implements the Logistic Regression benchmark.
