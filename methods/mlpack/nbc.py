@@ -1,6 +1,6 @@
 '''
   @file nbc.py
-  @author Marcus Edel
+  @author Marcus Edel, Anand Soni
 
   Class to benchmark the mlpack Parametric Naive Bayes Classifier method.
 '''
@@ -25,11 +25,12 @@ if metrics_folder not in sys.path:
 from log import *
 from definitions import *
 from profiler import *
-
+from misc import *
 import shlex
 import subprocess
 import re
 import collections
+import numpy as np
 
 '''
 This class implements the Parametric Naive Bayes Classifier benchmark.
@@ -110,25 +111,27 @@ class NBC(object):
   '''
   Run all the metrics for the classifier.  
   '''  
-  def RunMetrics(self, labels, prediction):
-    import numpy as np
-    # The labels and the prediction parameter contains the filename for the file
-    # that contains the true labels accordingly the prediction parameter contains
-    # the filename of the classifier output. So we need to read in the data.
-    labelsData = np.genfromtxt(labels, delimiter=',')
-    predictionData = np.genfromtxt(prediction, delimiter=',')
-    confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
-    probabilities = np.genfromtxt("probabilities.csv")
-    #self.VisualizeConfusionMatrix(confusionMatrix)
-    AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-    AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-    AvgRec = Metrics.AvgRecall(confusionMatrix)
-    AvgF = Metrics.AvgFMeasure(confusionMatrix)
-    AvfLift = Metrics.LiftMultiClass(confusionMatrix)
-    AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-    AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
-    Log.Info('Run metrics...')
-    # Perform the metrics with the data from the labels and prediction file ....
+  def RunMetrics(self, options):
+    if len(self.dataset) >= 3:
+      # Check if we need to build and run the model.
+      if not CheckFileAvailable('output.csv'):
+        self.RunTiming(options)
+      labelsData = np.genfromtxt(self.dataset[2], delimiter=',')
+      predictionData = np.genfromtxt("output.csv", delimiter=',')
+      confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
+      probabilities = np.genfromtxt("probabilities.csv")
+      #self.VisualizeConfusionMatrix(confusionMatrix)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+      Log.Info('Run metrics...')
+    else:
+      Log.Fatal("This method requires three datasets.")
+
 
   '''
   Perform Parametric Naive Bayes Classifier. If the method has been successfully
@@ -138,7 +141,7 @@ class NBC(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
     # Here we check the dataset count. If the user specefies only two datasets
@@ -174,18 +177,6 @@ class NBC(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Okay we have to check if we have enough datasets in the dataset list to 
-    # perform the additional evaluations.
-    if len(self.dataset) == 3:
-      # The predicted labels for the test set will be written to the output.csv 
-      # file if we dosen't specify the '--output (-o)' option. So the file 
-      # should located in the benchmark root directory as 'output.csv' file. So 
-      # we can use the nbc output file and the true labels from the test 
-      # dataset. The name of the file that contains the true labels should be
-      # self.dataset[2].
-      self.RunMetrics(self.dataset[2], 'output.csv')
-
-
     # Return the elapsed time.
     timer = self.parseTimer(s)
     if not timer:
@@ -194,20 +185,8 @@ class NBC(object):
     else:
       time = self.GetTime(timer)
       Log.Info(("total time: %fs" % (time)), self.verbose)
-
-      # Check if we have to return a combination of time and metric information
-      # or just the time.
-      if len(self.dataset) == 3:
-        # The metrics paramater is a object that we can handel in the main
-        # benchmark loop (e.g. store the results into the database).
-        #return (time, metrics)
-
-        # We can't return (time, metrics) at this momemnt because we have to 
-        # modify the main benchmark loop do work in the correct way.
-        return time
-      else:
-        return time
-
+      return time
+  
   '''
   Parse the timer data form a given string.
 

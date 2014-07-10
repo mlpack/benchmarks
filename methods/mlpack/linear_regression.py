@@ -25,12 +25,12 @@ if metrics_folder not in sys.path:
 from log import *
 from profiler import *
 from definitions import *
-
+from misc import *
 import shlex
 import subprocess
 import re
 import collections
-
+import numpy as np
 '''
 This class implements the Simple Linear Regression Prediction benchmark.
 '''
@@ -76,13 +76,14 @@ class LinearRegression(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
+  '''
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "parameters.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-
+  '''
   '''
   Run valgrind massif profiler on the Simple Linear Regression Prediction 
   method. If the method has been successfully completed the report is saved in 
@@ -116,7 +117,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform Simple Linear Regression.", self.verbose)
 
     # If the dataset contains two files then the second file is the labels file.
@@ -154,24 +155,30 @@ class LinearRegression(object):
   '''
   Run all the metrics for the classifier.  
   '''  
-  def RunMetrics(self, labels, prediction):
-    # The labels and the prediction parameter contains the filename for the file
-    # that contains the true labels accordingly the prediction parameter contains
-    # the filename of the classifier output. So we need to read in the data.
-    labelsData = np.genfromtxt(labels, delimiter=',')
-    predictionData = np.genfromtxt(prediction, delimiter=',')
-    confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
-    #probabilities = np.genfromtxt("probabilities.csv")
-    #self.VisualizeConfusionMatrix(confusionMatrix)
-    AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-    AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-    AvgRec = Metrics.AvgRecall(confusionMatrix)
-    AvgF = Metrics.AvgFMeasure(confusionMatrix)
-    AvfLift = Metrics.LiftMultiClass(confusionMatrix)
-    AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-    AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
-    Log.Info('Run metrics...')
-    # Perform the metrics with the data from the labels and prediction file ....
+  def RunMetrics(self, options):
+    if len(self.dataset) >= 3:
+
+      # Check if we need to build and run the model.
+      if not CheckFileAvailable('parameters.csv'):
+        self.RunTiming(options)
+
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      predictedlabels = LoadDataset("parameters.csv")
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+      Log.Info('Run metrics...')
+    else:
+      Log.Fatal("This method requires three datasets.")
+
 
   '''
   Parse the timer data form a given string.
