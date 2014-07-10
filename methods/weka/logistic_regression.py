@@ -111,7 +111,7 @@ class LogisticRegression(object):
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      #probabilities = LoadDataset("weka_probabilities.csv")
+      probabilities = LoadDataset("weka_lr_probabilities.csv")
       predictedlabels = LoadDataset("weka_lr_predicted.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
@@ -121,7 +121,7 @@ class LogisticRegression(object):
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       Log.Debug(str(metric_results))

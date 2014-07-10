@@ -16,9 +16,15 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from profiler import *
-
+from definitions import *
 import shlex
 import subprocess
 import re
@@ -52,7 +58,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
 
     # Load input dataset.
@@ -92,6 +98,35 @@ class LinearRegression(object):
 
       return time
 
+  '''
+  Method to run all metrics for the weka Linear Regression method.
+  '''
+  def RunMetrics(self, options):
+    if len(self.dataset) == 3:
+      # Check if the files to calculate the different metric are available.
+      if not CheckFileAvailable("weka_linreg_predicted.csv"):
+        self.RunTiming(options)
+        
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      #probabilities = LoadDataset("weka_probabilities.csv")
+      predictedlabels = LoadDataset("weka_linreg_predicted.csv")
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      Log.Debug(str(metric_results))
+    else:
+      Log.Fatal("This method requires three datasets!")
+  
   '''
   Parse the timer data form a given string.
 
