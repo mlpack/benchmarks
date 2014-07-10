@@ -100,9 +100,9 @@ class LinearRegression(object):
 
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset[0] + 
-          " -r " + self.dataset[1] + " -v " + options)
+          " -t " + self.dataset[1] + " -v " + options)
     else:
       cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset + 
           " -v " + options)
@@ -122,9 +122,9 @@ class LinearRegression(object):
 
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "linear_regression -i " + self.dataset[0] + 
-          " -r " + self.dataset[1] + " -v " + options)
+          " -t " + self.dataset[1] + " -v " + options)
     else:
       cmd = shlex.split(self.path + "linear_regression -i " + self.dataset + 
           " -v " + options)
@@ -190,7 +190,9 @@ class LinearRegression(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?regression: (?P<regression>.*?)s.*?
+        .*?loading_data: (?P<loading_data>.*?)s.*?
+        .*?saving_data: (?P<saving_data>.*?)s.*?
+        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
     match = pattern.match(data)
@@ -199,9 +201,9 @@ class LinearRegression(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["regression"])
-      
-      return timer(float(match.group("regression")))
+      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"]) 
+      return timer(float(match.group("loading_data")), 
+          float(match.group("total_time")), float(match.group("saving_data")))
 
   '''
   Return the elapsed time in seconds.
@@ -210,5 +212,5 @@ class LinearRegression(object):
   @return Elapsed time in seconds.
   '''
   def GetTime(self, timer):
-    return timer.regression
-    
+    time = timer.total_time - timer.loading_data - timer.saving_data
+    return time
