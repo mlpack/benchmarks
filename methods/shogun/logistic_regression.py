@@ -64,7 +64,7 @@ class LogisticRegression(object):
       # file.
       try:
         Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
+        if len(self.dataset) >= 2:
           testSet = np.genfromtxt(self.dataset[1], delimiter=',')
           trainFile = self.dataset[0]
         else:
