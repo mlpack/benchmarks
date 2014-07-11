@@ -46,7 +46,22 @@ class LogisticRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-    self.predictions = None
+    self.z = 0;
+    self.model = None
+
+  '''
+  Build the model for the Logistic Regression.
+
+  @param data - The train data.
+  @param responses - The responses for the train set.
+  @return The created model.
+  '''
+  def BuildModel(self, data, responses):
+    # Create and train the classifier.
+    model = MulticlassLogisticRegression(self.z, RealFeatures(data.T), 
+        MulticlassLabels(responses))
+    model.train()
+    return model
 
   '''
   Use the shogun libary to implement Logistic Regression.
@@ -60,28 +75,22 @@ class LogisticRegression(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the test
-      # file.
+      # If the dataset contains two files then the second file is the test file.
       try:
-        Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) >= 2:
-          testSet = np.genfromtxt(self.dataset[1], delimiter=',')
-          trainFile = self.dataset[0]
-        else:
-          trainFile = self.dataset
-          
-        X = np.genfromtxt(trainFile, delimiter=',')
-        y = X[:, (X.shape[1] - 1)]
-        X = X[:,:-1]
+        if len(self.dataset) > 1:
+          testSet = LoadDataset(self.dataset[1])
+
+        # Use the last row of the training set as the responses.  
+        X, y = SplitTrainData(self.dataset)
 
         # Get the regularization value.
-        z = re.search("-l (\d+)", options)
-        z = 0 if not z else int(z.group(1))
+        self.z = re.search("-l (\d+)", options)
+        self.z = 0 if not z else int(z.group(1))
 
         with totalTimer:
           # Perform logistic regression.
-          model = MulticlassLogisticRegression(z, RealFeatures(X.T), MulticlassLabels((y))
-          model.train()
+          self.model = BuildModel(x, y)
+          self.model.train()
           
           if len(self.dataset) == 2:
             pred = classifier.apply(RealFeatures(testSet.T))
@@ -111,8 +120,13 @@ class LogisticRegression(object):
     return self.LogisticRegressionShogun(options)
 
   def RunMetrics(self, options):
-    if not self.predictions:
-      self.RunTiming(options)
+    if len(self.dataset) >= 3:
+
+      # Check if we need to create a model.
+      if not self.model:
+        trainData, responses = SplitTrainData(self.dataset)
+        self.model = self.BuildModel(trainData, responses)
+
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
