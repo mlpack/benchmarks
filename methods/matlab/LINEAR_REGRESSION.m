@@ -17,6 +17,8 @@ function linear_regression(cmd)
 % Load input dataset.
 regressorsFile = regexp(cmd, '.*?-i ([^\s]+)', 'tokens', 'once');
 responsesFile = regexp(cmd, '.*?-r ([^\s]+)', 'tokens', 'once');
+testFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
+estimatesFile = regexp(cmd, '.*?-o ([^\s]+)', 'tokens', 'once');
 
 X = csvread(regressorsFile{:});
 
@@ -30,6 +32,25 @@ end
 % Perform linear regression.
 total_time = tic;
 b = regress(y, X);
+B = fitlm(X, y);
+
+if ~isempty(testFile)
+    % Predicted the classes.
+    testSet = csvread(testFile{:});
+    predictions = feval(B, testSet);
+    % Map the probabilities to the actual classes.
+    [~, idx] = max(predictions, [], 2);
+end
+
+total_time = tic;
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
 
+if ~isempty(testFile)
+    csvwrite('predictions_matlab_linear.csv', idx);
+    csvwrite('matlab_linear_probs.csv', predictions);
+end
+
+if ~isempty(estimatesFile)
+    csvwrite(estimatesFile{:});
+end
 end
