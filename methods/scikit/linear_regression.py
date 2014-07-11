@@ -25,6 +25,7 @@ if metrics_folder not in sys.path:
 from log import *
 from timer import *
 from definitions import *
+from misc import *
 
 import numpy as np
 from sklearn.linear_model import LinearRegression as SLinearRegression
@@ -108,7 +109,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunMethod(self, options):
+  def RunTiming(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
 
     return self.LinearRegressionScikit(options)
