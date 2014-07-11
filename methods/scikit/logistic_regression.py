@@ -25,6 +25,7 @@ if metrics_folder not in sys.path:
 from log import *
 from timer import *
 from definitions import *
+from misc import *
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression as SLogisticRegression
@@ -51,13 +52,13 @@ class LogisticRegression(object):
   Build the model for the Logistic Regression.
 
   @param data - The train data.
-  @param labels - The labels for the train set.
+  @param responses - The responses for the train set.
   @return The created model.
   '''
-  def BuildModel(self, data, labels):
+  def BuildModel(self, data, responses):
     # Create and train the classifier.
     lr = SLogisticRegression()
-    lr.fit(data, labels)
+    lr.fit(data, responses)
     return lr
 
   '''
@@ -72,23 +73,18 @@ class LogisticRegression(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the responses 
-      # file.
+      # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) == 2:
-        X = np.genfromtxt(self.dataset[0], delimiter=',')
-        y = np.genfromtxt(self.dataset[1], delimiter=',')
-      else:
-        X = np.genfromtxt(self.dataset, delimiter=',')
-        y = X[:, (X.shape[1] - 1)]
-        X = X[:,:-1]
+      if len(self.dataset) > 1:
+        testSet = LoadDataset(self.dataset[1])
+      
+      # Use the last row of the training set as the responses.  
+      X, y = SplitTrainData(self.dataset)
 
       try:
         with totalTimer:
           # Perform logistic regression.
           self.model = self.BuildModel(X,y)
-          #model = SLogisticRegression()
-          #model.fit(X, y, n_jobs=-1)
           b = self.model.coef_
       except Exception as e:
         q.put(-1)

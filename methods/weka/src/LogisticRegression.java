@@ -120,6 +120,7 @@ public class LogisticRegression {
           }
           FileWriter writer = new FileWriter(probabs.getName(), false);
           
+          // 02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.0
           File predictions = new File("weka_lr_predictions.csv");
           if(!predictions.exists()) {
             predictions.createNewFile();
@@ -129,17 +130,19 @@ public class LogisticRegression {
           for (int i = 0; i < testData.numInstances(); i++) 
           {
             double[] probabilities = model.distributionForInstance(testData.instance(i));
-            String data="";
+            //System.out.println(probabilities[0]);
+            String fdata = "";
             String predict="";
             for(int k=0; k<probabilities.length; k++) {
-              data.concat(String.valueOf(probabilities[k]));
-              data.concat(",");
+              fdata = fdata.concat(String.valueOf(probabilities[k]));
+              fdata = fdata.concat(",");
             }
+
             int predictionForInstance = maxProb(probabilities);
             Integer c_index = new Integer(predictionForInstance);
             Double predictedClass = classMap.get(c_index);
-            writer.write(data);
-            writer_predict.write(String.valueOf(predictedClass.doubleValue()));
+            writer.write(fdata);
+            writer_predict.write(String.valueOf(predictedClass.doubleValue()) + "\n");
           }
           writer.close();
           writer_predict.close();

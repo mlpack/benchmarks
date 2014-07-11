@@ -8,6 +8,11 @@
 import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
+import java.util.HashMap;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 
 /**
  * This class use the weka libary to implement Linear Regression.
@@ -21,7 +26,7 @@ public class LinearRegression {
           + "-r [string]   Optional file containing y (responses).\n"
           + "              If not given, the responses are assumed\n"
           + "              to be the last row of the input file.");
-  
+
   public static void main(String args[]) {
     Timers timer = new Timers();
     try {
@@ -88,7 +93,6 @@ public class LinearRegression {
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
-      HashMap<Integer, Double> classMap = createClassMap(data);
       // Perform Linear Regression.
       timer.StartTimer("total_time");
       weka.classifiers.functions.LinearRegression model = new weka.classifiers.functions.LinearRegression();
@@ -98,7 +102,7 @@ public class LinearRegression {
       // Use the testdata to evaluate the modell.
       if (testFile.length() != 0)
       {
-        try{
+        try {
           
           File predictions = new File("weka_linreg_predictions.csv");
           if(!predictions.exists()) {
@@ -109,14 +113,14 @@ public class LinearRegression {
           for (int i = 0; i < testData.numInstances(); i++) 
           {
             double prediction = model.classifyInstance(testData.instance(i));
-            String data="";
+            String fdata="";
             String predict="";
-            data.concat(String.valueOf(prediction));
-            data.concat("\n");
-            writer_predict.write(data);
+            fdata.concat(String.valueOf(prediction));
+            fdata.concat("\n");
+            writer_predict.write(fdata);
           }
           writer_predict.close();
-        }catch(Exception e) {
+        } catch(Exception e) {
           e.printStackTrace();
         }
       }

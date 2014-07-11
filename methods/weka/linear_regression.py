@@ -68,7 +68,7 @@ class LinearRegression(object):
     # file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
-        " LinearRegression -i " + self.dataset[0] + " -r " + self.dataset[1] 
+        " LinearRegression -i " + self.dataset[0] + " -t " + self.dataset[1] 
         + " " + options)
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
@@ -79,6 +79,8 @@ class LinearRegression(object):
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
         timeout=self.timeout)
+
+      print(s)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
