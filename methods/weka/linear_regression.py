@@ -24,6 +24,7 @@ if metrics_folder not in sys.path:
 
 from log import *
 from profiler import *
+from misc import *
 from definitions import *
 import shlex
 import subprocess
@@ -65,7 +66,7 @@ class LinearRegression(object):
     # Load input dataset.
     # If the dataset contains two files then the second file is the responses
     # file. In this case we add this to the command line.
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
         " LinearRegression -i " + self.dataset[0] + " -r " + self.dataset[1] 
         + " " + options)
