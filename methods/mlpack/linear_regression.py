@@ -159,13 +159,13 @@ class LinearRegression(object):
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
-      if not CheckFileAvailable('parameters.csv'):
+      if not CheckFileAvailable('predictions.csv'):
         self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = LoadDataset("parameters.csv")
+      predictedlabels = LoadDataset("predictions.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
