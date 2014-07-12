@@ -79,7 +79,6 @@ class LinearRegression(object):
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
         timeout=self.timeout)
-
       print(s)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))

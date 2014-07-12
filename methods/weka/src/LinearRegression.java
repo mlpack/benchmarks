@@ -78,7 +78,7 @@ public class LinearRegression {
 
       // Are the responses in a separate file?
       String input_responsesFile = Utils.getOption('r', args);
-      if (regressorsFile.length() != 0)
+      if (input_reponsesFile.length() != 0)
       {
         // Merge the two datasets.
         source = new DataSource(input_responsesFile);
@@ -113,8 +113,8 @@ public class LinearRegression {
           for (int i = 0; i < testData.numInstances(); i++) 
           {
             double prediction = model.classifyInstance(testData.instance(i));
-            String fdata="";
-            String predict="";
+            String fdata = "";
+            String predict = "";
             fdata = fdata.concat(String.valueOf(prediction));
             fdata = fdata.concat("\n");
             writer_predict.write(fdata);

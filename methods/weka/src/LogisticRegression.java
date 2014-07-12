@@ -29,8 +29,8 @@ public class LogisticRegression {
   
   public static HashMap<Integer, Double> createClassMap(Instances Data) {
    HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
-   int index=0;
-   for(int i=0; i<Data.numInstances(); i++) {
+   int index = 0;
+   for(int i = 0; i < Data.numInstances(); i++) {
     double cl = Data.instance(i).classValue();
     Double class_i = new Double(cl);
     if(!classMap.containsValue(class_i)) {
@@ -43,12 +43,12 @@ public class LogisticRegression {
   }
 
   public static int maxProb(double[] probs) {
-    double prediction=0;
-    int index=0;
-    for (int i=0; i < probs.length; i++) {
+    double prediction = 0;
+    int index = 0;
+    for (int i = 0; i < probs.length; i++) {
       if(probs[i] >= prediction) {
-        prediction=probs[i];
-        index=i;
+        prediction = probs[i];
+        index = i;
       }
     }
     return index;
@@ -132,7 +132,7 @@ public class LogisticRegression {
             double[] probabilities = model.distributionForInstance(testData.instance(i));
             //System.out.println(probabilities[0]);
             String fdata = "";
-            String predict="";
+            String predict = "";
             for(int k=0; k<probabilities.length; k++) {
               fdata = fdata.concat(String.valueOf(probabilities[k]));
               fdata = fdata.concat(",");
