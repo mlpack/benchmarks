@@ -115,8 +115,8 @@ public class LinearRegression {
             double prediction = model.classifyInstance(testData.instance(i));
             String fdata="";
             String predict="";
-            fdata.concat(String.valueOf(prediction));
-            fdata.concat("\n");
+            fdata = fdata.concat(String.valueOf(prediction));
+            fdata = fdata.concat("\n");
             writer_predict.write(fdata);
           }
           writer_predict.close();
