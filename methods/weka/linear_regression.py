@@ -79,7 +79,6 @@ class LinearRegression(object):
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
         timeout=self.timeout)
-      print(s)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -107,14 +106,11 @@ class LinearRegression(object):
   def RunMetrics(self, options):
     if len(self.dataset) == 3:
       # Check if the files to calculate the different metric are available.
-      if not CheckFileAvailable("weka_linreg_predicted.csv"):
+      if not CheckFileAvailable("weka_linreg_predictions.csv"):
         self.RunTiming(options)
         
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-
-      #probabilities = LoadDataset("weka_probabilities.csv")
-      predictedlabels = LoadDataset("weka_linreg_predicted.csv")
+      predictedlabels = LoadDataset("weka_linreg_predictions.csv") + 1
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
@@ -123,7 +119,7 @@ class LinearRegression(object):
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      # MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       Log.Debug(str(metric_results))
@@ -140,8 +136,6 @@ class LinearRegression(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(r"""
-        .*?loading_data: (?P<loading_data>.*?)s.*?
-        .*?saving_data: (?P<saving_data>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
@@ -151,17 +145,12 @@ class LinearRegression(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
-      #timer = collections.namedtuple("timer", ["total_time"])
+      timer = collections.namedtuple("timer", ["total_time"])
       
       if match.group("total_time").count(".") == 1:
-        return timer(float(match.group("loading_data")),
-          float(match.group("total_time")), float(match.group("saving_data")))
-        #return timer(float(match.group("total_time")))
+        return timer(float(match.group("total_time")))
       else:
-        #return timer(float(match.group("total_time").replace(",", ".")))
-        return timer(float(match.group("loading_data")),
-          float(match.group("total_time").replace(",", ".")), float(match.group("saving_data").replace(",", ".")))
+        return timer(float(match.group("total_time").replace(",", ".")))
 
   '''
   Return the elapsed time in seconds.

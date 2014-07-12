@@ -78,7 +78,7 @@ public class LinearRegression {
 
       // Are the responses in a separate file?
       String input_responsesFile = Utils.getOption('r', args);
-      if (input_reponsesFile.length() != 0)
+      if (input_responsesFile.length() != 0)
       {
         // Merge the two datasets.
         source = new DataSource(input_responsesFile);
@@ -95,9 +95,9 @@ public class LinearRegression {
 
       // Perform Linear Regression.
       timer.StartTimer("total_time");
-      weka.classifiers.functions.LinearRegression model = new weka.classifiers.functions.LinearRegression();
+      weka.classifiers.meta.ClassificationViaRegression model = 
+          new weka.classifiers.meta.ClassificationViaRegression();
       model.buildClassifier(data);
-      double[] b = model.coefficients();  
       
       // Use the testdata to evaluate the modell.
       if (testFile.length() != 0)
