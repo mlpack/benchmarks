@@ -1,6 +1,6 @@
 '''
   @file linear_regression.py
-  @author Marcus Edel
+  @author Marcus Edel, Anand Soni
 
   Linear Regression with scikit.
 '''
@@ -16,8 +16,16 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from timer import *
+from definitions import *
+from misc import *
 
 import numpy as np
 from sklearn.linear_model import LinearRegression as SLinearRegression
@@ -38,6 +46,20 @@ class LinearRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.model = None
+
+  '''
+  Build the model for the Linear Regression.
+
+  @param data - The train data.
+  @param responses - The responses for the training set.
+  @return The created model.
+  '''
+  def BuildModel(self, data, responses):
+    # Create and train the classifier.
+    lr = SLinearRegression()
+    lr.fit(data, responses)
+    return lr
 
   '''
   Use the scikit libary to implement Linear Regression.
@@ -51,24 +73,21 @@ class LinearRegression(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the responses 
-      # file.
+      # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) == 2:
-        X = np.genfromtxt(self.dataset[0], delimiter=',')
-        y = np.genfromtxt(self.dataset[1], delimiter=',')
-      else:
-        X = np.genfromtxt(self.dataset, delimiter=',')
-        y = X[:, (X.shape[1] - 1)]
-        X = X[:,:-1]
+      if len(self.dataset) > 2:
+        testSet = LoadDataset(self.dataset[1])
+
+      # Use the last row of the training set as the responses.  
+      X, y = SplitTrainData(self.dataset)
 
       try:
         with totalTimer:
           # Perform linear regression.
-          model = SLinearRegression()
-          model.fit(X, y, n_jobs=-1)
-          b = model.coef_
+          self.model = self.BuildModel(X,y)
+          b = self.model.coef_
       except Exception as e:
+        print(e)
         q.put(-1)
         return -1
 
@@ -88,5 +107,35 @@ class LinearRegression(object):
   '''
   def RunTiming(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
-
     return self.LinearRegressionScikit(options)
+
+  '''
+  Run all the metrics for Linear Regression.
+  '''
+  def RunMetrics(self, options):
+    if len(self.dataset) >= 3:
+
+      # Check if we need to create a model.
+      if not self.model:
+        trainData, labels = SplitTrainData(self.dataset)
+        self.model = self.BuildModel(trainData, labels)
+
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      predictedlabels = np.rint(self.model.predict(testData))
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      Log.Debug(str(metric_results))
+
+    else:
+      Log.Fatal("This method requires three datasets.")

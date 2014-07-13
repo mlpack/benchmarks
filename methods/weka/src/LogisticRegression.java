@@ -1,32 +1,59 @@
 /**
- * @file LinearRegression.java
- * @author Marcus Edel
+ * @file LogisticRegression.java
+ * @author Anand Soni
  *
- * Linear Regression with weka.
+ * Logistic Regression with weka.
  */
 
 import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
-import java.util.HashMap;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
-
+import java.util.HashMap;
 /**
- * This class use the weka libary to implement Linear Regression.
+ * This class use the weka libary to implement Logistic Regression.
  */
-public class LinearRegression {
+public class LogisticRegression {
   private static final String USAGE = String
-  .format("Linear Regression.\n\n"
+  .format("Logistic Regression.\n\n"
           + "Required options:\n"
-          + "-i [string]     File containing X (regressors).\n\n"
+          + "-i [string]     File containing X (regressors).\n"
+          + "                The responses are assumed to be\n"
+          + "                the last row of the input file.\n\n"
           + "Options:\n\n"
-          + "-r [string]   Optional file containing y (responses).\n"
-          + "              If not given, the responses are assumed\n"
-          + "              to be the last row of the input file.");
+          + "-t [string]   Optional file containing containing\n"
+          + "              test dataset");
+  
+  public static HashMap<Integer, Double> createClassMap(Instances Data) {
+   HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
+   int index = 0;
+   for(int i = 0; i < Data.numInstances(); i++) {
+    double cl = Data.instance(i).classValue();
+    Double class_i = new Double(cl);
+    if(!classMap.containsValue(class_i)) {
+      Integer ind = new Integer(index);
+      classMap.put(ind,class_i);
+      index++;
+    }
+   }
+   return classMap;
+  }
 
+  public static int maxProb(double[] probs) {
+    double prediction = 0;
+    int index = 0;
+    for (int i = 0; i < probs.length; i++) {
+      if(probs[i] >= prediction) {
+        prediction = probs[i];
+        index = i;
+      }
+    }
+    return index;
+  }
+  
   public static void main(String args[]) {
     Timers timer = new Timers();
     try {
@@ -66,6 +93,7 @@ public class LinearRegression {
           // Merge the new dummy attribute with the testdata set.
           testData = Instances.mergeInstances(testData, myInstances);
         }
+
         // Set the class index for the testdata set. This isn't used in the 
         // evaluation process.
         if (testData.classIndex() == -1)
@@ -76,35 +104,24 @@ public class LinearRegression {
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
-      // Are the responses in a separate file?
-      String input_responsesFile = Utils.getOption('r', args);
-      if (input_responsesFile.length() != 0)
-      {
-        // Merge the two datasets.
-        source = new DataSource(input_responsesFile);
-        Instances responses = source.getDataSet();          
-        data = Instances.mergeInstances(data ,responses);     
-      }
-      
-      // The class is in the last row.
-      data.setClassIndex((data.numAttributes() - 1));     
-      
-      // Set the class fro the trainings set. The class is in the last row.
-      if (data.classIndex() == -1)
-        data.setClassIndex((data.numAttributes() - 1));
-
-      // Perform Linear Regression.
+      HashMap<Integer, Double> classMap = createClassMap(data);
+      // Perform Logistic Regression.
       timer.StartTimer("total_time");
-      weka.classifiers.meta.ClassificationViaRegression model = 
-          new weka.classifiers.meta.ClassificationViaRegression();
+      weka.classifiers.functions.Logistic model = new weka.classifiers.functions.Logistic();
       model.buildClassifier(data);
-      
+
       // Use the testdata to evaluate the modell.
       if (testFile.length() != 0)
       {
-        try {
+        try{
+          File probabs = new File("weka_lr_probabilities.csv");
+          if(!probabs.exists()) {
+            probabs.createNewFile();
+          }
+          FileWriter writer = new FileWriter(probabs.getName(), false);
           
-          File predictions = new File("weka_linreg_predictions.csv");
+          // 02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.0
+          File predictions = new File("weka_lr_predictions.csv");
           if(!predictions.exists()) {
             predictions.createNewFile();
           }
@@ -112,18 +129,28 @@ public class LinearRegression {
 
           for (int i = 0; i < testData.numInstances(); i++) 
           {
-            double prediction = model.classifyInstance(testData.instance(i));
+            double[] probabilities = model.distributionForInstance(testData.instance(i));
+            //System.out.println(probabilities[0]);
             String fdata = "";
             String predict = "";
-            fdata = fdata.concat(String.valueOf(prediction));
-            fdata = fdata.concat("\n");
-            writer_predict.write(fdata);
+            for(int k=0; k<probabilities.length; k++) {
+              fdata = fdata.concat(String.valueOf(probabilities[k]));
+              fdata = fdata.concat(",");
+            }
+
+            int predictionForInstance = maxProb(probabilities);
+            Integer c_index = new Integer(predictionForInstance);
+            Double predictedClass = classMap.get(c_index);
+            writer.write(fdata);
+            writer_predict.write(String.valueOf(predictedClass.doubleValue()) + "\n");
           }
+          writer.close();
           writer_predict.close();
-        } catch(Exception e) {
+        }catch(Exception e) {
           e.printStackTrace();
         }
       }
+      
       timer.StopTimer("total_time");
       timer.PrintTimer("total_time");
       

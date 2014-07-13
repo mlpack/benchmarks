@@ -1,8 +1,8 @@
 '''
-  @file linear_regression.py
+  @file logistic_regression.py
   @author Marcus Edel
 
-  Linear Regression with shogun.
+  Logistic Regression with shogun.
 '''
 
 import os
@@ -25,19 +25,20 @@ if metrics_folder not in sys.path:
 from log import *
 from timer import *
 from definitions import *
+
 import numpy as np
-from shogun.Features import RegressionLabels, RealFeatures
-from shogun.Regression import LeastSquaresRegression
+from modshogun import MulticlassLogisticRegression
+from modshogun import RealFeatures, MulticlassLabels
 
 '''
-This class implements the Linear Regression benchmark.
+This class implements the Logistic Regression benchmark.
 '''
-class LinearRegression(object):
+class LogisticRegression(object):
 
   ''' 
-  Create the Linear Regression benchmark instance.
+  Create the Logistic Regression benchmark instance.
   
-  @param dataset - Input dataset to perform Linear Regression on.
+  @param dataset - Input dataset to perform Logistic Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -45,41 +46,56 @@ class LinearRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.z = 0;
+    self.model = None
 
   '''
-  Use the shogun libary to implement Linear Regression.
+  Build the model for the Logistic Regression.
+
+  @param data - The train data.
+  @param responses - The responses for the train set.
+  @return The created model.
+  '''
+  def BuildModel(self, data, responses):
+    # Create and train the classifier.
+    model = MulticlassLogisticRegression(self.z, RealFeatures(data.T), 
+        MulticlassLabels(responses))
+    model.train()
+    return model
+
+  '''
+  Use the shogun libary to implement Logistic Regression.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def LinearRegressionShogun(self, options):
-    def RunLinearRegressionShogun(q):
+  def LogisticRegressionShogun(self, options):
+    def RunLogisticRegressionShogun(q):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the responses
-      # file.
+      # If the dataset contains two files then the second file is the test file.
       try:
-        Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
-          X = np.genfromtxt(self.dataset[0], delimiter=',')
-          y = np.genfromtxt(self.dataset[1], delimiter=',')
-        else:
-          X = np.genfromtxt(self.dataset, delimiter=',')
-          y = X[:, (X.shape[1] - 1)]
-          X = X[:,:-1]
+        if len(self.dataset) > 1:
+          testSet = LoadDataset(self.dataset[1])
+
+        # Use the last row of the training set as the responses.  
+        X, y = SplitTrainData(self.dataset)
+
+        # Get the regularization value.
+        self.z = re.search("-l (\d+)", options)
+        self.z = 0 if not z else int(z.group(1))
 
         with totalTimer:
-          # Perform linear regression.
-          model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))
-          model.train()
-          b = model.get_w()
+          # Perform logistic regression.
+          self.model = BuildModel(x, y)
+          self.model.train()
           
           if len(self.dataset) == 2:
             pred = classifier.apply(RealFeatures(testSet.T))
             self.predictions = pred.get_labels()
-      
+
       except Exception as e:
         q.put(-1)
         return -1
@@ -88,10 +104,10 @@ class LinearRegression(object):
       q.put(time)
       return time
 
-    return timeout(RunLinearRegressionShogun, self.timeout)
+    return timeout(RunLogisticRegressionShogun, self.timeout)
 
   '''
-  Perform Linear Regression. If the method has been successfully completed 
+  Perform Logistic Regression. If the method has been successfully completed 
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -99,13 +115,18 @@ class LinearRegression(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform Linear Regression.", self.verbose)
+    Log.Info("Perform Logistic Regression.", self.verbose)
 
-    return self.LinearRegressionShogun(options)
-  
+    return self.LogisticRegressionShogun(options)
+
   def RunMetrics(self, options):
-    if not self.predictions:
-      self.RunTiming(options)
+    if len(self.dataset) >= 3:
+
+      # Check if we need to create a model.
+      if not self.model:
+        trainData, responses = SplitTrainData(self.dataset)
+        self.model = self.BuildModel(trainData, responses)
+
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])

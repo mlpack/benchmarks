@@ -64,8 +64,8 @@ class NBC(object):
   def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
-    if len(self.dataset) != 2:
-      Log.Fatal("This method requires two datasets.")
+    if len(self.dataset) <= 2:
+      Log.Fatal("This method requires two or more datasets.")
       return -1
 
     # Split the command using shell-like syntax.

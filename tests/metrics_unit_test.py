@@ -89,11 +89,11 @@ class Metrics_Test(unittest.TestCase):
     self.assertTrue(result > 0.28 and result <= 0.3)
 
   '''
-  Test for the MeanSquaredError metric (0.2577)
+  Test for the MeanSquaredError metric (0.5191)
   '''	
   def test_MeanSquaredError(self):
     result=Metrics.MeanSquaredError("tests/true_labels.csv","tests/probabilities.csv",self.CM)
-    self.assertTrue(result > 0.25 and result < 0.26)
+    self.assertTrue(result > 0.5 and result < 0.52)
 
   '''
   Test for MeanPredictiveInformationClass(...) metric (-1.709)

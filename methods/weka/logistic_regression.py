@@ -1,8 +1,8 @@
 '''
-  @file linear_regression.py
-  @author Marcus Edel
+  @file logistic_regression.py
+  @author Anand Soni
 
-  Class to benchmark the weka Linear Regression method.
+  Class to benchmark the weka Logistic Regression method.
 '''
 
 import os
@@ -24,8 +24,8 @@ if metrics_folder not in sys.path:
 
 from log import *
 from profiler import *
-from misc import *
 from definitions import *
+from misc import *
 import shlex
 import subprocess
 import re
@@ -33,14 +33,14 @@ import collections
 import numpy as np
 
 '''
-This class implements the Linear Regression benchmark.
+This class implements the Logistic Regression benchmark.
 '''
-class LinearRegression(object):
+class LogisticRegression(object):
 
   ''' 
-  Create the Linear Regression benchmark instance.
+  Create the Logistic Regression benchmark instance.
   
-  @param dataset - Input dataset to perform Linear Regression on.
+  @param dataset - Input dataset to perform Logistic Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
@@ -53,7 +53,7 @@ class LinearRegression(object):
     self.timeout = timeout
     
   '''
-  Linear Regression. If the method has been successfully completed return 
+  Logistic Regression. If the method has been successfully completed return 
   the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -61,18 +61,18 @@ class LinearRegression(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform Linear Regression.", self.verbose)
+    Log.Info("Perform Logistic Regression.", self.verbose)
 
     # Load input dataset.
     # If the dataset contains two files then the second file is the responses
     # file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
-        " LinearRegression -i " + self.dataset[0] + " -t " + self.dataset[1] 
+        " LogisticRegression -i " + self.dataset[0] + " -t " + self.dataset[1] 
         + " " + options)
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
-        " LinearRegression -i " + self.dataset + " " + options)
+        " LogisticRegression -i " + self.dataset + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -101,16 +101,18 @@ class LinearRegression(object):
       return time
 
   '''
-  Method to run all metrics for the weka Linear Regression method.
+  Method to run all metrics for the weka Logistic Regression method.
   '''
   def RunMetrics(self, options):
     if len(self.dataset) == 3:
       # Check if the files to calculate the different metric are available.
-      if not CheckFileAvailable("weka_linreg_predictions.csv"):
+      if not CheckFileAvailable("weka_lr_predicted.csv"):
         self.RunTiming(options)
-        
+      
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = LoadDataset("weka_linreg_predictions.csv") + 1
+
+      probabilities = LoadDataset("weka_lr_probabilities.csv")
+      predictedlabels = LoadDataset("weka_lr_predictions.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
@@ -119,7 +121,7 @@ class LinearRegression(object):
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      # MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      # #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       Log.Debug(str(metric_results))

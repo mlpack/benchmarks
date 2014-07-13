@@ -177,11 +177,11 @@ def LoadDataset(dataset, delimiter=','):
 Split the train labels from the given train dataset.
 
 @param dataset - List which contains the dataset filenames.
-@return Tainset and the train labels as vector.
+@return Trainset and the train labels as vector.
 '''
 def SplitTrainData(dataset):
   import numpy as np
-  if len(dataset) >= 2:
+  if dataset:
     trainData = np.genfromtxt(dataset[0], delimiter=',')
     return (trainData[:,:-1], trainData[:, (trainData.shape[1] - 1)])
   else:
