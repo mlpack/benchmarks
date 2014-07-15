@@ -41,6 +41,18 @@ class Log(object):
           file=sys.stdout)
 
   '''
+  Prints the metrics with all related information with the appropriate tag: [METRICS].
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
+  @staticmethod
+  def Metric(line, verbose=True):
+    if verbose:
+      print(Log.BASH_GREEN + '[METRICS] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+          file=sys.stdout)
+
+  '''
   Prints informational messages prefixed with [INFO ].
 
   @param line - The line to print to the console.

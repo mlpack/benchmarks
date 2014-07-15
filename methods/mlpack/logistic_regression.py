@@ -177,7 +177,23 @@ class LogisticRegression(object):
       #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      metrics_line = "Library : Mlpack, Method : Logistic Regression"
+      metrics_line += "\nAverage Accuracy : "
+      metrics_line += str(AvgAcc)
+      metrics_line += "\nMultiClass Precision : "
+      metrics_line += str(AvgPrec)
+      metrics_line += "\nMultiClass Recall : "
+      metrics_line += str(AvgRec)
+      metrics_line += "\nMultiClass F-measure : "
+      metrics_line += str(Avgf)
+      metrics_line += "\nMultiClass Lift : "
+      metrics_line += str(AvgLift)
+      metrics_line += "\nMultiClass MCC : "
+      metrics_line += str(AvgMCC)
+      metrics_line += "\nMultiClass Information : "
+      metrics_line += str(AvgInformation)
       Log.Debug(str(metric_results))
+      Log.Metric(metrics_line)
 
     else:
       Log.Fatal("This method requires three datasets.")
