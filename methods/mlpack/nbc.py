@@ -125,7 +125,7 @@ class NBC(object):
       AvgPrec = Metrics.AvgPrecision(confusionMatrix)
       AvgRec = Metrics.AvgRecall(confusionMatrix)
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
       metrics_dict = {}

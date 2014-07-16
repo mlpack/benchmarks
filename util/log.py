@@ -141,4 +141,7 @@ class Log(object):
   def print_dict(m_dict):
     print(Log.BASH_GREEN + '[METRICS]' + Log.BASH_CLEAR)
     for key, val in m_dict.items():
-      print(key, " : ", val)
+      if type(val) is dict:
+        print(key, " :\n", Log.print_dict(val))
+      else:
+        print(key, " : ", val)
