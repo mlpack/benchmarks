@@ -131,3 +131,14 @@ class Log(object):
         col = format(row[i]).rjust(colPaddings[i] + 1)
         print(col, end=" ", file=sys.stdout)
       print(file=sys.stdout)
+
+  '''
+  Method to print metric dictionary
+
+  @param m_dict - Dictionary containing the metrics for a library
+  '''
+  @staticmethod
+  def print_dict(m_dict):
+    print(Log.BASH_GREEN + '[METRICS]' + Log.BASH_CLEAR)
+    for key, val in m_dict.items():
+      print(key, " : ", val)

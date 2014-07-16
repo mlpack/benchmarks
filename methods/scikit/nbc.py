@@ -133,22 +133,15 @@ class NBC(object):
       #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-      metrics_line = "Library : Scikit, Method : Naive Bayes"
-      metrics_line += "\nAverage Accuracy : "
-      metrics_line += str(AvgAcc)
-      metrics_line += "\nMultiClass Precision : "
-      metrics_line += str(AvgPrec)
-      metrics_line += "\nMultiClass Recall : "
-      metrics_line += str(AvgRec)
-      metrics_line += "\nMultiClass F-measure : "
-      metrics_line += str(AvgF)
-      metrics_line += "\nMultiClass Lift : "
-      metrics_line += str(AvgLift)
-      metrics_line += "\nMultiClass MCC : "
-      metrics_line += str(AvgMCC)
-      metrics_line += "\nMultiClass Information : "
-      metrics_line += str(AvgInformation)
-      Log.Metric(metrics_line)
+      metrics_dict = {}
+      metrics_dict['Avg Accuracy'] = AvgAcc
+      metrics_dict['MultiClass Precision'] = AvgPrec
+      metrics_dict['MultiClass Recall'] = AvgRec
+      metrics_dict['MultiClass FMeasure'] = AvgF
+      metrics_dict['MultiClass Lift'] = AvgLift
+      metrics_dict['MultiClass MCC'] = AvgMCC
+      metrics_dict['MultiClass Information'] = AvgInformation
+      return metrics_dict
 
     else:
       Log.Fatal("This method requires three datasets.")

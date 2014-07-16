@@ -128,7 +128,15 @@ class NBC(object):
       AvfLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
-      Log.Info('Run metrics...')
+      metrics_dict = {}
+      metrics_dict['Avg Accuracy'] = AvgAcc
+      metrics_dict['MultiClass Precision'] = AvgPrec
+      metrics_dict['MultiClass Recall'] = AvgRec
+      metrics_dict['MultiClass FMeasure'] = AvgF
+      metrics_dict['MultiClass Lift'] = AvgLift
+      metrics_dict['MultiClass MCC'] = AvgMCC
+      metrics_dict['MultiClass Information'] = AvgInformation
+      return metrics_dict
     else:
       Log.Fatal("This method requires three datasets.")
 
