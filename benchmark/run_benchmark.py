@@ -22,6 +22,7 @@ from convert import *
 from misc import *
 from database import *
 
+import random
 import argparse
 import datetime
 
@@ -111,6 +112,10 @@ def Main(configfile, blocks, log, methodBlocks, update):
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
 
+  #Create the bootstrapped method dictionary which will contain the
+  #normalized values of all metrics for all methods
+  bootstrapped_method_dict = {}
+  
   # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
@@ -136,6 +141,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
   build = {}
 
   # Iterate through all libraries.
+  method_dict = {}
   for method, sets in streamData.items():
     if method == "general":
       continue
@@ -275,14 +281,49 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     else:
                       db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
                           datasetId, methodId)
+                
                 if 'metric' in tasks:
-                  instance.RunMetrics(options)
+                  metric_dict = instance.RunMetrics(options)
+                  method_dict[method] = metric_dict
+                  Log.print_dict(method_dict)
+
+                if 'bootstrap' in tasks:
+                  bootstrap_dict={}
+                  print('Bootstrapping now!')
+                  l = len(datasets)
+                  #Bootstrapping for this method 100 times.
+                  for count in range(100):
+                    dataset_selected = random.randint(0,l)
+                    new_dataset = datasets[dataset_selected - 1]
+                    modDataset = GetDataset(new_dataset, format)
+                    new_instance = methodCall(modDataset[0], timeout=timeout, 
+                      verbose=False)
+
+                    metric_dict_method = new_instance.RunMetrics(options)
+                    #Add the obtained metrics to the bootstrap_dict dictionary which will
+                    #be the final dictionary of metrics as value and names as key
+                    for key in metric_dict_method:
+                      if key in bootstrap_dict:
+                        bootstrap_dict[key] += metric_dict_method[key]
+                      else:
+                        bootstrap_dict[key] = metric_dict_key
+                  
+                  #Now normalize each obtained metric and build a final
+                  #dictionary of metrics for this method. 
+                  for k in bootstrap_dict:
+                    bootstrap_dict[k] /= 100
+                  
+                  #This dictionary will look like:
+                  #{'NBC' : {'Metric1' : value, 'Metric2' : value, ..}, 'LinearRegression' : 
+                  #         {'Metric1' : value, 'Metric2' : value, ..}, ... }
+                  bootstrapped_method_dict[method] = bootstrap_dict
+
+                  #Finally print this dictionary. Add method here!
 
 
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
           col += 1
-
         # Show the results.
         if not log and run > 0 and 'timing' in tasks:
           Log.Notice("\n\n")
