@@ -173,7 +173,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
         run = 0
         for libary in libraries:
           name = libary[0]
-          datsets = libary[1]
+          datasets = libary[1]
           trials = libary[2]
           script = libary[3]
           format = libary[4]
@@ -209,7 +209,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
               Log.Fatal("Exception: " + str(e))
             else:
 
-              for dataset in datsets:
+              for dataset in datasets:
                 datasetName = NormalizeDatasetName(dataset)
                 row = FindRightRow(dataMatrix, datasetName, datasetCount)
 
