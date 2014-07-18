@@ -168,10 +168,10 @@ class Log(object):
       body += "\t\t"
       sub_dictionary = m_dict[key]
       for sub_k in sub_dictionary:
-        body += sub_dictionary[sub_k]
         tab_count = metric_tabs_count[sub_k]
         for i in range(tab_count):
           body += "\t"
+        body += sub_dictionary[sub_k]
       print(body)
     print("Bootstrapping for method ",method_name," done.")
     
