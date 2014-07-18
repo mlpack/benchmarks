@@ -146,6 +146,39 @@ class Log(object):
       else:
         print(key, " : ", val)
 
+  @staticmethod
+  def PrintMethodDictionary(method_name, m_dict):
+    print("Bootstrapping for method : ", method_name)
+    metric_tabs_dict = {}
+    metric_tabs_count = 2
+    header=""
+    for key in m_dict:
+      sub_dict = m_dict[key]
+      for sub_key in sub_dict:
+        if sub_key not in header:
+          header += sub_key
+          header += "\t\t"
+          metrics_tabs_count +=2
+          metric_tabs_dict[sub_key] = metrics_tabs_count
+    print("\t\t",header)
+
+    for key in m_dict:
+      body = ""
+      body += key
+      body += "\t\t"
+      sub_dictionary = m_dict[key]
+      for sub_k in sub_dictionary:
+        body += sub_dictionary[sub_k]
+        tab_count = metric_tabs_count[sub_k]
+        for i in range(tab_count):
+          body += "\t"
+      print(body)
+    print("Bootstrapping for method ",method_name," done.")
     
+
+
+
+
+
     
     

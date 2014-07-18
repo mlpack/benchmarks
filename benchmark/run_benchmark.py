@@ -141,7 +141,6 @@ def Main(configfile, blocks, log, methodBlocks, update):
   build = {}
 
   # Iterate through all libraries.
-  method_dict = {}
   for method, sets in streamData.items():
     if method == "general":
       continue
@@ -165,6 +164,10 @@ def Main(configfile, blocks, log, methodBlocks, update):
         # Create the matrix which contains the time and dataset informations.
         dataMatrix = [['-' for x in range(len(libraries) + 1)] for x in 
             range(datasetCount)] 
+        
+        #Dictionary which will contain key as the library name and value as 
+        #a dictionary of metrics for the current method
+        method_dict = {}
 
         col = 1
         run = 0
@@ -313,13 +316,15 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   for k in bootstrap_dict:
                     bootstrap_dict[k] /= 100
                   
-                  #This dictionary will look like:
-                  #{'NBC' : {'Metric1' : value, 'Metric2' : value, ..}, 'LinearRegression' : 
+                  '''
+                  #method_dict : This dictionary will look like:
+                  #{'Mlpack' : {'Metric1' : value, 'Metric2' : value, ..}, 'Scikit' : 
                   #         {'Metric1' : value, 'Metric2' : value, ..}, ... }
-                  bootstrapped_method_dict[method] = bootstrap_dict
-
-                  #Finally print this dictionary. Add method here!
-
+                  '''
+                  method_dict[library] = bootstrap_dict
+                  
+                  #Finally print this dictionary
+                  Log.PrintMethodDictionary(method, method_dict)
 
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
