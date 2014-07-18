@@ -309,7 +309,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                       if key in bootstrap_dict:
                         bootstrap_dict[key] += metric_dict_method[key]
                       else:
-                        bootstrap_dict[key] = metric_dict_key
+                        bootstrap_dict[key] = metric_dict_method[key]
                   
                   #Now normalize each obtained metric and build a final
                   #dictionary of metrics for this method. 
@@ -321,7 +321,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   #{'Mlpack' : {'Metric1' : value, 'Metric2' : value, ..}, 'Scikit' : 
                   #         {'Metric1' : value, 'Metric2' : value, ..}, ... }
                   '''
-                  method_dict[library] = bootstrap_dict
+                  method_dict[name] = bootstrap_dict
                   
                   #Finally print this dictionary
                   Log.PrintMethodDictionary(method, method_dict)
