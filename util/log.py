@@ -149,28 +149,32 @@ class Log(object):
   @staticmethod
   def PrintMethodDictionary(method_name, m_dict):
     print("Bootstrapping for method : ", method_name)
-    metric_tabs_dict = {}
-    metric_tabs_count = 1
-    header=""
+    #metric_tabs_dict = {}
+    #metric_tabs_count = 1
+    header="          "
     for key in m_dict:
       sub_dict = m_dict[key]
       for sub_key in sub_dict:
         if sub_key not in header:
           header += sub_key
-          header += "\t"
-          metric_tabs_count += 1
-          metric_tabs_dict[sub_key] = metric_tabs_count
-    print("\t",header)
+          header += "   "
+          #metric_tabs_count += 1
+          #metric_tabs_dict[sub_key] = metric_tabs_count
+    print("   ",header)
 
     for key in m_dict:
       body = ""
       body += key
-      body += "\t"
+      body += "   "
       sub_dictionary = m_dict[key]
       for sub_k in sub_dictionary:
-        tab_count = metric_tabs_dict[sub_k]
-        for i in range(tab_count):
-          body += "\t"
+        index = header.rfind(sub_k)
+        l = len(sub_k)
+        pos = index - len(body)
+        pos += l/3
+        for i in range(int(pos)):
+          body += " "
+
         body += str(sub_dictionary[sub_k])
       print(body)
     print("Bootstrapping for method ",method_name," done.")
