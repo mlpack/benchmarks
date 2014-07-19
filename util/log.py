@@ -141,11 +141,17 @@ class Log(object):
   def print_dict(m_dict):
     print(Log.BASH_GREEN + '[METRICS]' + Log.BASH_CLEAR)
     for key, val in m_dict.items():
-      if type(val) is dict:
-        print(key, " :\n", Log.print_dict(val))
-      else:
-        print(key, " : ", val)
+      print(key, " : ", val)
 
+
+  '''
+  Method to print the metrics for each library for a particular
+  method in a tabular from.
+
+  @param method_name - The name of the method bootstrapped
+  @param m_dict - Dictionary containing metric values with key
+  as lib name and value as metrics dictionary
+  '''
   @staticmethod
   def PrintMethodDictionary(method_name, m_dict):
     print("Bootstrapping for method : ", method_name)

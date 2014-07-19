@@ -287,8 +287,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 
                 if 'metric' in tasks:
                   metric_dict = instance.RunMetrics(options)
-                  method_dict[method] = metric_dict
-                  Log.print_dict(method_dict)
+                  Log.print_dict(metric_dict)
 
                 if 'bootstrap' in tasks:
                   bootstrap_dict={}
