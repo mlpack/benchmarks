@@ -124,7 +124,7 @@ class DecisionStump(object):
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "decision_stump -i " + self.dataset[0] + 
-          " -t " + self.dataset[1] + " -v " + options)
+          " -T " + self.dataset[1] + " -l decisionStump_predictions.csv" + " -v " + options)
     else:
       cmd = shlex.split(self.path + "decision_stump -i " + self.dataset + 
           " -v " + options)
@@ -159,13 +159,13 @@ class DecisionStump(object):
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
-      if not CheckFileAvailable('output_file'):
+      if not CheckFileAvailable('decisionStump_predictions.csv'):
         self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = LoadDataset("output_file")
+      predictedlabels = LoadDataset("decisionStump_predictions.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
