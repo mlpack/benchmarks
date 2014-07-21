@@ -96,7 +96,7 @@ class Perceptron(object):
   successful save the report file in the specified file.
   '''
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
-    Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
+    Log.Info("Perform Perceptron Memory Profiling.", self.verbose)
 
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
@@ -104,8 +104,7 @@ class Perceptron(object):
       cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] + 
           " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset + 
-          " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -126,8 +125,7 @@ class Perceptron(object):
       cmd = shlex.split(self.path + "perceptron -t " + self.dataset[0] + 
           " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "perceptron -t " + self.dataset + 
-          " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     # Run command with the nessecary arguments and return its output as a byte 
     # string. We have untrusted input so we disable all shell based features.

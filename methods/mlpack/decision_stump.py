@@ -1,5 +1,5 @@
 '''
-  @file perceptron.py
+  @file decision_stump.py
   @author Anand Soni
 
   Class to benchmark the mlpack decision stump method.
@@ -96,16 +96,15 @@ class DecisionStump(object):
   successful save the report file in the specified file.
   '''
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
-    Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
+    Log.Info("Perform Memory Profiling.", self.verbose)
 
-    # If the dataset contains two files then the second file is the labels file.
+    # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "decision_stump -t " + self.dataset[0] + 
           " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "decision_stump -t " + self.dataset + 
-          " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -126,8 +125,7 @@ class DecisionStump(object):
       cmd = shlex.split(self.path + "decision_stump -t " + self.dataset[0] + 
           " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "decision_stump -t " + self.dataset + 
-          " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     # Run command with the nessecary arguments and return its output as a byte 
     # string. We have untrusted input so we disable all shell based features.
