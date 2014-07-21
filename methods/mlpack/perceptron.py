@@ -101,10 +101,10 @@ class Perceptron(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "perceptron -i " + self.dataset[0] + 
-          " -T " + self.dataset[1] + " -l perceptron_predictions.csv" + " -v " + options)
+      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] + 
+          " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "perceptron -i " + self.dataset + 
+      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset + 
           " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -123,10 +123,10 @@ class Perceptron(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "perceptron -i " + self.dataset[0] + 
-          " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "perceptron -t " + self.dataset[0] + 
+          " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "perceptron -i " + self.dataset + 
+      cmd = shlex.split(self.path + "perceptron -t " + self.dataset + 
           " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte 
@@ -159,13 +159,13 @@ class Perceptron(object):
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
-      if not CheckFileAvailable('perceptron_predictions.csv'):
+      if not CheckFileAvailable('output'):
         self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = LoadDataset("perceptron_predictions.csv")
+      predictedlabels = LoadDataset("output")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
