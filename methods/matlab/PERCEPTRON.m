@@ -36,7 +36,7 @@ end
 total_time = tic;
 net = perceptron;
 net = train(net,X,y)
-view(net)
+% view(net)
 
 if ~isempty(testFile)
     % Predicted the classes.
