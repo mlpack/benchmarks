@@ -48,6 +48,7 @@ class Perceptron(object):
     self.timeout = timeout
     self.z = 0;
     self.model = None
+    self.iterations = 1000
 
   '''
   Build the model for the Perceptron.
@@ -60,6 +61,7 @@ class Perceptron(object):
     # Create and train the classifier.
     model = Perceptron(self.z, RealFeatures(data.T), 
         MulticlassLabels(responses))
+    model.set_max_iter(self.iterations)
     model.train()
     return model
 
@@ -73,29 +75,29 @@ class Perceptron(object):
   def PerceptronShogun(self, options):
     def RunPerceptronShogun(q):
       totalTimer = Timer()
-
       # Load input dataset.
       # If the dataset contains two files then the second file is the test file.
+      Log.Info("Loading dataset", self.verbose)
       try:
-        if len(self.dataset) > 1:
+        if len(self.dataset) >= 2:
           testSet = LoadDataset(self.dataset[1])
+        else:
+          Log.Fatal("This method requires atleast two datasets.")
 
-        # Use the last row of the training set as the responses.  
-        X, y = SplitTrainData(self.dataset)
+          # Use the last row of the training set as the responses.
+          X, y = SplitTrainData(self.dataset)
 
-        # Get the regularization value.
-        self.z = re.search("-l (\d+)", options)
-        self.z = 0 if not z else int(z.group(1))
+          # Gather all parameters.
+          s = re.search('-i (\d+)', options)
+          self.iterations = 1000 if not s else int(s.group(1))
 
-        with totalTimer:
-          # Perform perceptron classification.
-          self.model = BuildModel(x, y)
-          self.model.train()
-          
-          if len(self.dataset) == 2:
-            pred = self.model.apply(RealFeatures(testSet.T))
-            self.predictions = pred.get_labels()
+          with totalTimer:
+            # Perform perceptron classification.
+            self.model = BuildModel(X, y)
 
+            if len(self.dataset) == 2:
+              pred = self.model.apply(RealFeatures(testSet.T))
+              self.predictions = pred.get_labels()
       except Exception as e:
         q.put(-1)
         return -1
@@ -126,7 +128,6 @@ class Perceptron(object):
       if not self.model:
         trainData, responses = SplitTrainData(self.dataset)
         self.model = self.BuildModel(trainData, responses)
-
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
