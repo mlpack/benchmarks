@@ -33,7 +33,7 @@ from sklearn.linear_model import Perceptron
 '''
 This class implements the Perceptron benchmark.
 '''
-class Perceptron(object):
+class PERCEPTRON(object):
 
   ''' 
   Create the Perceptron benchmark instance.
@@ -47,6 +47,7 @@ class Perceptron(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.iterations = 1000
 
   '''
   Build the model for the Perceptron.
@@ -57,7 +58,7 @@ class Perceptron(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    p = Perceptron()
+    p = Perceptron(n_iter=self.iterations)
     p.fit(data, responses)
     return p
 
@@ -75,8 +76,14 @@ class Perceptron(object):
       # Load input dataset.
       # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) > 1:
+      if len(self.dataset) >= 2:
         testSet = LoadDataset(self.dataset[1])
+      else:
+        Log.Fatal("This method requires atleast two datasets.")
+
+      # Gather all parameters.
+      s = re.search('-i (\d+)', options)
+      self.iterations = 1000 if not s else int(s.group(1))
       
       # Use the last row of the training set as the responses.  
       X, y = SplitTrainData(self.dataset)
@@ -84,8 +91,8 @@ class Perceptron(object):
       try:
         with totalTimer:
           # Perform perceptron classification.
-          self.model = self.BuildModel(X,y)
-          b = self.model.coef_
+          self.model = self.BuildModel(X, y)
+          predictedlabels = self.model.predict(testSet)
       except Exception as e:
         q.put(-1)
         return -1

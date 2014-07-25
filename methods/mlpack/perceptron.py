@@ -35,7 +35,7 @@ import collections
 '''
 This class implements the Perceptron Prediction benchmark.
 '''
-class Perceptron(object):
+class PERCEPTRON(object):
 
   ''' 
   Create the Perceptron Prediction benchmark instance, show some
@@ -98,7 +98,7 @@ class Perceptron(object):
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform Perceptron Memory Profiling.", self.verbose)
 
-    # If the dataset contains two files then the second file is the labels file.
+    # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] + 
