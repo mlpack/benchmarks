@@ -7,53 +7,50 @@ function perceptron(cmd)
 % Perceptron and Prediction.
 %
 % Required options:
-%     (-i) [string]    File containing X (predictors).
+%     (-t) [string]    File containing the train set.
+%     (-T) [string]    File containing the test set.
 %
 % Options:
-%     (-r) [string]    File containing y (responses). If not given, the
-%                      responses are assumed to be the last row of the 
-%                      input file.
-%     (-t) [string]    File containing test dataset.
-%     (-o) [string]    This file is where the predicted responses will be 
-%                      saved
+%     (-l) [string]    A file containing labels for the training set.
+%     (-i) [int]       The maximum number of iterations the perceptron
+%                      is to be run  Default value 1000.
 
-% Load input dataset.
-regressorsFile = regexp(cmd, '.*?-i ([^\s]+)', 'tokens', 'once');
-responsesFile = regexp(cmd, '.*?-r ([^\s]+)', 'tokens', 'once');
-testFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
-estimatesFile = regexp(cmd, '.*?-o ([^\s]+)', 'tokens', 'once');
+%Load input dataset.
+trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
+testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
+labelsFile = regexp(cmd, '.*?-l ([^\s]+)', 'tokens', 'once');
+iterations = str2double(regexp(cmd,'.* -i (\d+)','tokens','once'));
 
-X = csvread(regressorsFile{:});
+X = csvread(trainFile{:})';
 
-if isempty(responsesFile)
-  y = X(:,end);
-  X = X(:,1:end-1);
+if isempty(labelsFile)
+  y = X(end,:);
+  X = X(1:end-1,:);
 else
-  y = csvread(responsesFile{:});
+  y = csvread(labelsFile{:})';
+end
+
+if isempty(iterations)
+  iterations = 1000;
 end
 
 % Perform perceptron prediction.
 total_time = tic;
+
 net = perceptron;
-net = train(net,X,y)
-% view(net)
+net.trainParam.epochs = iterations;
+net = train(net,X,y);
 
 if ~isempty(testFile)
     % Predicted the classes.
-    testSet = csvread(testFile{:});
-    predictions = net(testSet);
-    % Map the probabilities to the actual classes.
-    [~, idx] = max(predictions, [], 2);
+    testSet = csvread(testFile{:})';
+    predictions = net(testSet)';
 end
 
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
 
 if ~isempty(testFile)
-    csvwrite('matlab_pc_predictions.csv', idx);
-end
-
-if ~isempty(estimatesFile)
-    csvwrite(estimatesFile{:});
+    csvwrite('matlab_pc_predictions.csv', predictions);
 end
 
 end
