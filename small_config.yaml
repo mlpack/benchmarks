@@ -131,7 +131,7 @@ methods:
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LocalCoordinateCoding:
@@ -259,7 +259,7 @@ methods:
         script: methods/matlab/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     HMMGENERATE:
@@ -354,7 +354,7 @@ methods:
         script: methods/scikit/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     SparseCoding:
@@ -416,7 +416,7 @@ methods:
         script: methods/mlpy/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
@@ -479,7 +479,7 @@ methods:
         format: [csv, txt]
         datasets:
         datasets:
-             - files: [ ['datasets/diabetes.csv'] , ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'] , ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
@@ -524,7 +524,7 @@ methods:
         script: methods/weka/linear_regression.py
         format: [arff]
         datasets:
-             - files: [ ['datasets/diabetes.csv'] , ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'] , ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LogisticRegression:
@@ -533,6 +533,6 @@ methods:
         script: methods/weka/logistic_regression.py
         format: [arff]
         datasets:
-             - files: [ ['datasets/diabetes.csv'] , ['datasets/cosExp_X.csv'],
+             - files: [ ['datasets/diabetes_X.csv'] , ['datasets/cosExp_X.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
