@@ -34,7 +34,7 @@ import collections
 '''
 This class implements the Perceptron benchmark.
 '''
-class Perceptron(object):
+class PERCEPTRON(object):
 
   ''' 
   Create the Perceptron benchmark instance.
@@ -76,9 +76,9 @@ class Perceptron(object):
     # If the dataset contains two files then the second file is the test 
     # file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1] + " " + options
+      inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " " + options
     else:
-      inputCmd = "-i " + self.dataset + " " + options
+      inputCmd = "-t " + self.dataset + " " + options
     
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
