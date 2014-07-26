@@ -103,7 +103,7 @@ class LinearRegression(object):
       cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset[0] + 
           " -t " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset + 
+      cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset[0] + 
           " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
