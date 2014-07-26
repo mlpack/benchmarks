@@ -18,7 +18,7 @@ modules = [
 'benchmark_kernel_pca',
 'benchmark_kmeans',
 'benchmark_lars',
-'benchmark_linear_regression',
+#'benchmark_linear_regression',
 'benchmark_local_coordinate_coding',
 'benchmark_lsh',
 'benchmark_nbc',
