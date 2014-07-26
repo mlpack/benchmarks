@@ -12,7 +12,7 @@ library: mlpack
 methods:
     PCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -20,7 +20,7 @@ methods:
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
@@ -28,15 +28,15 @@ methods:
               options: '-r 6 -s 42 -u multdist'
     KMEANS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv'], ['datasets/iris.csv'], ['datasets/cloud.csv'], ['datasets/USCensus1990.csv'] ]
               options: '-c 3'
     NBC:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
@@ -44,15 +44,15 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/kernel_pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
+            - files: ['datasets/circle_data.csv', 'datasets/arcene_train.csv']
               options: '-k polynomial'
     LARS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/lars.py
         format: [csv, txt]
         datasets:
@@ -61,7 +61,7 @@ methods:
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'] ]
     LSH:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/lsh.py
         format: [csv, txt]
         datasets:
@@ -70,7 +70,7 @@ methods:
 
     ALLKNN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
@@ -78,7 +78,7 @@ methods:
               options: '-k 3 -s 42'
     ALLKFN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
@@ -86,7 +86,7 @@ methods:
               options: '-k 3'
     ALLKRANN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         datasets:
@@ -94,7 +94,7 @@ methods:
               options: '-k 3 -t 10'
     RANGESEARCH:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:
@@ -103,7 +103,7 @@ methods:
               options: '-M 20.3'
     GMM:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/gmm.py
         format: [csv, txt]
         datasets:
@@ -113,32 +113,30 @@ methods:
               options: '-s 42'
     DET:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris.csv', 'datasets/cloud.csv']
     EMST:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/emst.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris.csv']
     LinearRegression:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LocalCoordinateCoding:
         run: []
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
         datasets:
@@ -146,7 +144,7 @@ methods:
                options: '-k 12 -s 42'
     SparseCoding:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
         datasets:
@@ -154,7 +152,7 @@ methods:
               options: '-k 12 -s 42 -n 100'
     FastMKS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
@@ -162,7 +160,7 @@ methods:
               options: '-k 1 -K linear'
     NCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/nca.py
         format: [csv, txt]
         datasets:
@@ -170,7 +168,7 @@ methods:
               options: '-n 2000 -O sgd -s 42'
     HMMTRAIN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/hmm_train.py
         format: [csv, txt]
         datasets:
@@ -181,7 +179,7 @@ methods:
               options: '-t discrete -n 20 -s 42'
     HMMGENERATE:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpack/hmm_generate.py
         format: [csv, txt, xml]
         datasets:
@@ -189,14 +187,14 @@ methods:
               options: '-l 10000'
     HMMLOGLIK:
        run: ['timing']
-       iteration: 3
+       iteration: 1
        script: methods/mlpack/hmm_loglik.py
        format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
     HMMVITERBI:
        run: []
-       iteration: 3
+       iteration: 1
        script: methods/mlpack/hmm_viterbi.py
        format: [csv, txt, xml]
        datasets:
@@ -208,7 +206,7 @@ library: matlab
 methods:
     PCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/pca.py
         format: [csv, txt]
         datasets:
@@ -216,7 +214,7 @@ methods:
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/nmf.py
         format: [csv, txt]
         datasets:
@@ -224,15 +222,15 @@ methods:
               options: '-r 6 -s 42 -u multdist'
     KMEANS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv'], ['datasets/iris.csv'], ['datasets/cloud.csv'], ['datasets/USCensus1990.csv'] ]
               options: '-c 3'
     NBC:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/nbc.py
         format: [csv, txt]
         datasets:
@@ -240,7 +238,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     ALLKNN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/allknn.py
         format: [csv, txt]
         datasets:
@@ -248,7 +246,7 @@ methods:
               options: '-k 3 -s 42'
     RANGESEARCH:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/range_search.py
         format: [csv, txt]
         datasets:
@@ -257,18 +255,16 @@ methods:
               options: '-M 20.3'
     LinearRegression:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     HMMGENERATE:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/matlab/hmm_generate.py
         format: [csv, txt, xml]
         datasets:
@@ -276,7 +272,7 @@ methods:
               options: '-l 10000'
     HMMVITERBI:
        run: []
-       iteration: 3
+       iteration: 1
        script: methods/matlab/hmm_viterbi.py
        format: [csv, txt, xml]
        datasets:
@@ -287,7 +283,7 @@ library: scikit
 methods:
     PCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/pca.py
         format: [csv, txt]
         datasets:
@@ -295,7 +291,7 @@ methods:
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/nmf.py
         format: [csv, txt]
         datasets:
@@ -303,15 +299,15 @@ methods:
               options: '-r 6 -u alspgrad'
     KMEANS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv'], ['datasets/iris.csv'], ['datasets/cloud.csv'], ['datasets/USCensus1990.csv'] ]
               options: '-c 3'
     NBC:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/nbc.py
         format: [csv, txt]
         datasets:
@@ -319,7 +315,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/kernel_pca.py
         format: [csv, txt]
         datasets:
@@ -327,7 +323,7 @@ methods:
               options: '-k polynomial'
     LARS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/lars.py
         format: [csv, txt]
         datasets:
@@ -335,7 +331,7 @@ methods:
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     ALLKNN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/allknn.py
         format: [csv, txt]
         datasets:
@@ -343,7 +339,7 @@ methods:
               options: '-k 3 -s 42'
     GMM:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/gmm.py
         format: [csv, txt]
         datasets:
@@ -354,18 +350,16 @@ methods:
 
     LinearRegression:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     SparseCoding:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/scikit/sparse_coding.py
         format: [csv, txt]
         datasets:
@@ -378,7 +372,7 @@ library: mlpy
 methods:
     PCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpy/pca.py
         format: [csv, txt]
         datasets:
@@ -386,15 +380,15 @@ methods:
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     KMEANS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpy/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv'], ['datasets/iris.csv'], ['datasets/cloud.csv'], ['datasets/USCensus1990.csv'] ]
               options: '-c 3'
     KPCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpy/kernel_pca.py
         format: [csv, txt]
         datasets:
@@ -402,7 +396,7 @@ methods:
               options: '-k polynomial'
     LARS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpy/lars.py
         format: [csv, txt]
         datasets:
@@ -410,7 +404,7 @@ methods:
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     ALLKNN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpy/allknn.py
         format: [csv, txt]
         datasets:
@@ -418,22 +412,20 @@ methods:
               options: '-k 3 -s 42'
     LinearRegression:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/mlpy/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+             - files: [ ['datasets/diabetes.csv'], ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
 # Shogun - A Large Scale Machine Learning Toolbox
 library: shogun
 methods:
     PCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/pca.py
         format: [csv, txt]
         datasets:
@@ -441,15 +433,15 @@ methods:
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     KMEANS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv'], ['datasets/iris.csv'], ['datasets/cloud.csv'], ['datasets/USCensus1990.csv'] ]
               options: '-c 3'
     KPCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/kernel_pca.py
         format: [csv, txt]
         datasets:
@@ -457,7 +449,7 @@ methods:
               options: '-k polynomial'
     NBC:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/nbc.py
         format: [csv, txt]
         datasets:
@@ -465,7 +457,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     ALLKNN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/allknn.py
         format: [csv, txt]
         datasets:
@@ -473,7 +465,7 @@ methods:
               options: '-k 3 -s 42'
     GMM:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/gmm.py
         format: [csv, txt]
         datasets:
@@ -482,22 +474,21 @@ methods:
               options: '-s 42'
     LinearRegression:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/shogun/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+        datasets:
+             - files: [ ['datasets/diabetes.csv'] , ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
 # Weka: Data Mining Software in Java
 library: weka
 methods:
     PCA:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/weka/pca.py
         format: [arff]
         datasets:
@@ -505,7 +496,7 @@ methods:
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NBC:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/weka/nbc.py
         format: [arff]
         datasets:
@@ -513,15 +504,15 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KMEANS:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/weka/kmeans.py
         format: [arff]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv'], ['datasets/iris.csv'], ['datasets/cloud.csv'], ['datasets/USCensus1990.csv'] ]
               options: '-c 3'
     ALLKNN:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/weka/allknn.py
         format: [arff]
         datasets:
@@ -529,11 +520,19 @@ methods:
               options: '-k 3 -s 42'
     LinearRegression:
         run: ['timing']
-        iteration: 3
+        iteration: 1
         script: methods/weka/linear_regression.py
         format: [arff]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+             - files: [ ['datasets/diabetes.csv'] , ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
+    LogisticRegression:
+        run: []
+        iteration: 1
+        script: methods/weka/logistic_regression.py
+        format: [arff]
+        datasets:
+             - files: [ ['datasets/diabetes.csv'] , ['datasets/cosExp.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]

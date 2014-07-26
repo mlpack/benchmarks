@@ -51,6 +51,16 @@ class NBC(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+
+  '''
+  Destructor to clean up at the end. Use this method to remove created files.
+  '''
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["predictions.csv", "probability.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
     
   '''
   Naive Bayes Classifier. If the method has been successfully completed return 

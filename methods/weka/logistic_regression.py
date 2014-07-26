@@ -72,17 +72,19 @@ class LogisticRegression(object):
         + " " + options)
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
-        " LogisticRegression -i " + self.dataset + " " + options)
+        " LogisticRegression -i " + self.dataset[0] + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
         timeout=self.timeout)
+      print(s)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
-    except Exception:
+    except Exception as e:
+      print(e)
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 

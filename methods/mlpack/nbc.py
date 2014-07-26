@@ -1,6 +1,6 @@
 '''
   @file nbc.py
-  @author Marcus Edel, Anand Soni
+  @author Marcus Edel
 
   Class to benchmark the mlpack Parametric Naive Bayes Classifier method.
 '''
@@ -15,22 +15,14 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../util")))
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
-  
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
 
 from log import *
-from definitions import *
 from profiler import *
-from misc import *
+
 import shlex
 import subprocess
 import re
 import collections
-import numpy as np
 
 '''
 This class implements the Parametric Naive Bayes Classifier benchmark.
@@ -77,12 +69,12 @@ class NBC(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  #def __del__(self):    
-  #  Log.Info("Clean up.", self.verbose)
-  #  filelist = ["gmon.out", "output.csv"]
-  #  for f in filelist:
-  #    if os.path.isfile(f):
-  #      os.remove(f)
+  def __del__(self):    
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["gmon.out", "output.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
 
   '''
   Run valgrind massif profiler on the Parametric Naive Bayes Classifier method. 
@@ -107,31 +99,6 @@ class NBC(object):
         + self.dataset[1] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
-  
-  '''
-  Run all the metrics for the classifier.  
-  '''  
-  def RunMetrics(self, options):
-    if len(self.dataset) >= 3:
-      # Check if we need to build and run the model.
-      if not CheckFileAvailable('output.csv'):
-        self.RunTiming(options)
-      labelsData = np.genfromtxt(self.dataset[2], delimiter=',')
-      predictionData = np.genfromtxt("output.csv", delimiter=',')
-      confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
-      probabilities = np.genfromtxt("probabilities.csv")
-      #self.VisualizeConfusionMatrix(confusionMatrix)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvfLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
-      Log.Info('Run metrics...')
-    else:
-      Log.Fatal("This method requires three datasets.")
-
 
   '''
   Perform Parametric Naive Bayes Classifier. If the method has been successfully
@@ -144,32 +111,19 @@ class NBC(object):
   def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
-    # Here we check the dataset count. If the user specefies only two datasets
-    # we can't proform a evaluation of the classifier but we can measure the 
-    # runtime of the method. So we distinguish between the two cases.
-
-    # The dataset value should be a list, that contains the filename of the
-    # trainings set and the test set, and perhaps there is a third filename for
-    # the classifier evaluation.
-
-    # Check if the dataset list contains two or three datasets.
-    if (len(self.dataset) != 2) and (len(self.dataset) != 3):
-      Log.Fatal("This method requires two or three datasets.")      
+    if len(self.dataset) != 2:
+      Log.Fatal("This method requires two datasets.")
       return -1
 
-    # We use the first two files from the dataset list to perform the runtime 
-    # evaluation. So we use 'self.dataset[0]' and 'self.dataset[1]'.
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "nbc -t " + self.dataset[0] + " -T " 
         + self.dataset[1] + " -v " + options)
 
-    # Call the nbc method with the specified parameters.
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
-      #exit() 
-      timeout=self.timeout)
+          timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -185,8 +139,9 @@ class NBC(object):
     else:
       time = self.GetTime(timer)
       Log.Info(("total time: %fs" % (time)), self.verbose)
+
       return time
-  
+
   '''
   Parse the timer data form a given string.
 

@@ -1,6 +1,6 @@
 '''
   @file linear_regression.py
-  @author Marcus Edel
+  @author Marcus Edel, Anand Soni
 
   Linear Regression with mlpy.
 '''
@@ -16,8 +16,16 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from timer import *
+from definitions import *
+from misc import *
 
 import numpy as np
 import mlpy
@@ -38,6 +46,20 @@ class LinearRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.model = None
+
+  '''
+  Build the model for the Linear Regression.
+
+  @param data - The train data.
+  @param responses - The responses for the training set.
+  @return The created model.
+  '''
+  def BuildModel(self, data, responses):
+    # Create and train the classifier.
+    model = mlpy.OLS()
+    model.learn(data, responses)
+    return model
 
   '''
   Use the mlpy libary to implement Linear Regression.
@@ -51,23 +73,21 @@ class LinearRegression(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the responses
-      # file.
+      # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) == 2:
-        X = np.genfromtxt(self.dataset[0], delimiter=',')
-        y = np.genfromtxt(self.dataset[1], delimiter=',')
-      else:
-        X = np.genfromtxt(self.dataset, delimiter=',')
-        y = X[:, (X.shape[1] - 1)]
-        X = X[:,:-1]
+      if len(self.dataset) >= 2:
+        testSet = LoadDataset(self.dataset[1])
+
+      # Use the last row of the training set as the responses.  
+      X, y = SplitTrainData(self.dataset)
 
       try:
         with totalTimer:
           # Perform linear regression.
-          model = mlpy.OLS()
-          model.learn(X, y)
-          b =  model.beta()
+          self.model = self.BuildModel(X, y)
+          b =  self.model.beta()
+          if len(self.dataset) >= 2:
+            pred = self.model.pred(testSet)
       except Exception as e:
         q.put(-1)
         return -1
@@ -77,6 +97,42 @@ class LinearRegression(object):
       return time
 
     return timeout(RunLinearRegressionMlpy, self.timeout)
+
+  '''
+  Run all the metrics for the classifier.  
+  '''  
+  def RunMetrics(self, options):
+    if len(self.dataset) >= 3:
+
+      # Check if we need to create a model.
+      if not self.model:
+        trainData, labels = SplitTrainData(self.dataset)
+        self.model = self.BuildModel(trainData, labels)
+
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      predictedlabels = self.model.pred(testData)
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metrics_dict = {}
+      metrics_dict['Avg Accuracy'] = AvgAcc
+      metrics_dict['MultiClass Precision'] = AvgPrec
+      metrics_dict['MultiClass Recall'] = AvgRec
+      metrics_dict['MultiClass FMeasure'] = AvgF
+      metrics_dict['MultiClass Lift'] = AvgLift
+      metrics_dict['MultiClass MCC'] = AvgMCC
+      metrics_dict['MultiClass Information'] = AvgInformation
+      return metrics_dict
+    else:
+      Log.Fatal("This method requires three datasets.")
 
   '''
   Perform Linear Regression. If the method has been successfully completed 

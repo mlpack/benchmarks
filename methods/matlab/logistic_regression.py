@@ -54,14 +54,13 @@ class LogisticRegression(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  '''
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
-    filelist = ["predictions.csv"]
+    filelist = ["predictions.csv", "matlab_lr_probs.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-  '''  
+
   '''
   Logistic Regression benchmark instance. If the method has been successfully
   completed return the elapsed time in seconds.
@@ -78,7 +77,7 @@ class LogisticRegression(object):
     if len(self.dataset) == 2:
       inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1] + " " + options
     else:
-      inputCmd = "-i " + self.dataset + " " + options
+      inputCmd = "-i " + self.dataset[0] + " " + options
     
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

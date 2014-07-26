@@ -60,7 +60,7 @@ class KMEANS(object):
     if len(self.dataset) == 2:
       inputCmd = "-i " + self.dataset[0] + " -I " + self.dataset[1] + " " + options
     else:
-      inputCmd = "-i " + self.dataset + " " + options
+      inputCmd = "-i " + self.dataset[0] + " " + options
     
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

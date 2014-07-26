@@ -76,14 +76,14 @@ class LogisticRegression(object):
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
-  
+  '''  
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "predictions.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-  '''
+
   '''
   Run valgrind massif profiler on the Logistic Regression Prediction 
   method. If the method has been successfully completed the report is saved in 
@@ -98,13 +98,13 @@ class LogisticRegression(object):
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
 
-    # If the dataset contains two files then the second file is the labels file.
-    # In this case we add this to the command line.
+    # If the dataset contains two files then the second file is the test 
+    # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset[0] + 
           " -t " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset + 
+      cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset[0] + 
           " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -120,8 +120,8 @@ class LogisticRegression(object):
   def RunTiming(self, options):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
-    # If the dataset contains two files then the second file is the labels file.
-    # In this case we add this to the command line.
+    # If the dataset contains two files then the second file is the test 
+    # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "logistic_regression -i " + self.dataset[0] + 
           " -t " + self.dataset[1] + " -v " + options)

@@ -52,7 +52,7 @@ class KMEANS(object):
 
       # Load input dataset.
       Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset, delimiter=',')
+      data = np.genfromtxt(self.dataset[0], delimiter=',')
 
       # Gather all parameters.
       clusters = re.search('-c (\d+)', options)

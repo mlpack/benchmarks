@@ -49,6 +49,16 @@ class LinearRegression(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+
+  '''
+  Destructor to clean up at the end. Use this method to remove created files.
+  '''
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["predictions_matlab_linear.csv", "matlab_linear_probs.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
     
   '''
   Linear Regression benchmark instance. If the method has been successfully
@@ -61,12 +71,15 @@ class LinearRegression(object):
   def RunTiming(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
 
-    # If the dataset contains two files then the second file is the responses 
+    # If the dataset contains two files then the second file is the test 
     # file. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-i " + self.dataset[0] + " -r " + self.dataset[1] + " " + options
+      inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1] + " " + options
     else:
-      inputCmd = "-i " + self.dataset + " " + options
+      inputCmd = "-i " + self.dataset[0] + " " + options
+
+    print(self.path + "matlab -nodisplay -nosplash -r \"try, " +
+        "LINEAR_REGRESSION('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
     
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

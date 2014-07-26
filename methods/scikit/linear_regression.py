@@ -75,7 +75,7 @@ class LinearRegression(object):
       # Load input dataset.
       # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) > 2:
+      if len(self.dataset) >= 2:
         testSet = LoadDataset(self.dataset[1])
 
       # Use the last row of the training set as the responses.  
@@ -86,6 +86,9 @@ class LinearRegression(object):
           # Perform linear regression.
           self.model = self.BuildModel(X,y)
           b = self.model.coef_
+
+          if len(self.dataset) >= 2:
+            self.model.predict(testSet)          
       except Exception as e:
         print(e)
         q.put(-1)

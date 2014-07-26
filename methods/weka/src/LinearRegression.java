@@ -9,6 +9,8 @@ import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
 import java.util.HashMap;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -39,6 +41,16 @@ public class LinearRegression {
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
       Instances data = source.getDataSet();
+
+      // Transform numeric class to nominal class because the 
+      // classifier cannot handle numeric classes.
+      NumericToNominal nm = new NumericToNominal();
+      String[] options = new String[2];
+      options[0] = "-R";
+      options[1] = "last"; //set the attributes from indices 1 to 2 as
+      nm.setOptions(options);
+      nm.setInputFormat(data);
+      data = Filter.useFilter(data, nm);
       
       // Did the user pass a test file?
       String testFile = Utils.getOption('t', args);
@@ -72,7 +84,7 @@ public class LinearRegression {
           testData.setClassIndex((testData.numAttributes() - 1));
       }      
       
-      // Set the class fro the trainings set. The class is in the last row.
+      // Set the class for the trainings set. The class is in the last row.
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
@@ -84,16 +96,13 @@ public class LinearRegression {
         source = new DataSource(input_responsesFile);
         Instances responses = source.getDataSet();          
         data = Instances.mergeInstances(data ,responses);     
-      }
+      } 
       
-      // The class is in the last row.
-      data.setClassIndex((data.numAttributes() - 1));     
-      
-      // Set the class fro the trainings set. The class is in the last row.
+      // Set the class for the trainings set. The class is in the last row.
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
-      // Perform Linear Regression.
+      // // Perform Linear Regression.
       timer.StartTimer("total_time");
       weka.classifiers.meta.ClassificationViaRegression model = 
           new weka.classifiers.meta.ClassificationViaRegression();
@@ -102,17 +111,23 @@ public class LinearRegression {
       // Use the testdata to evaluate the modell.
       if (testFile.length() != 0)
       {
+        double[] predictions = new double[testData.numInstances()];
+        for (int i = 0; i < testData.numInstances(); i++) 
+        {
+            predictions[i] = model.classifyInstance(testData.instance(i));
+        }
+
+        timer.StopTimer("total_time");
         try {
-          
-          File predictions = new File("weka_linreg_predictions.csv");
-          if(!predictions.exists()) {
-            predictions.createNewFile();
+          File predictionsFile = new File("weka_linreg_predictions.csv");
+          if(!predictionsFile.exists()) {
+            predictionsFile.createNewFile();
           }
-          FileWriter writer_predict = new FileWriter(predictions.getName(), false);
+          FileWriter writer_predict = new FileWriter(predictionsFile.getName(), false);
 
           for (int i = 0; i < testData.numInstances(); i++) 
           {
-            double prediction = model.classifyInstance(testData.instance(i));
+            double prediction = predictions[i];
             String fdata = "";
             String predict = "";
             fdata = fdata.concat(String.valueOf(prediction));
@@ -124,7 +139,11 @@ public class LinearRegression {
           e.printStackTrace();
         }
       }
-      timer.StopTimer("total_time");
+      else
+      {
+        timer.StopTimer("total_time");
+      }
+
       timer.PrintTimer("total_time");
       
     } catch (IOException e) {

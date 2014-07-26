@@ -90,12 +90,12 @@ class KMEANS(object):
     Log.Info("Perform K-Means Memory Profiling.", self.verbose)
 
     # If the dataset contains two files then the second file is the centroids 
-    # file. In this case we run the the kmeans executable.
+    # file.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "kmeans -i " + self.dataset[0] + " -I " 
           + self.dataset[1] + " -o output.csv -v " + options)
     else:
-      cmd = shlex.split(self.debug + "kmeans -i " + self.dataset + 
+      cmd = shlex.split(self.debug + "kmeans -i " + self.dataset[0] + 
           " -o output.csv -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -112,12 +112,12 @@ class KMEANS(object):
     Log.Info("Perform K-Means Clustering.", self.verbose)
 
     # If the dataset contains two files then the second file is the centroids 
-    # file. In this case we run the the kmeans executable.
+    # file.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "kmeans -i " + self.dataset[0] + " -I " 
           + self.dataset[1] + " -o output.csv -v " + options)
     else:
-      cmd = shlex.split(self.path + "kmeans -i " + self.dataset + 
+      cmd = shlex.split(self.path + "kmeans -i " + self.dataset[0] + 
           " -o output.csv -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte 

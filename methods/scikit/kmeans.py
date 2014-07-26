@@ -58,7 +58,7 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset[0], delimiter=',')
         centroids = np.genfromtxt(self.dataset[1], delimiter=',')
       else:
-        data = np.genfromtxt(self.dataset, delimiter=',')
+        data = np.genfromtxt(self.dataset[0], delimiter=',')
 
       # Gather parameters.
       clusters = re.search("-c (\d+)", options)
@@ -82,7 +82,7 @@ class KMEANS(object):
         # Create the KMeans object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
-            kmeans = KMeans(k=centroids.shape[1], init=centroids, n_init=1, 
+            kmeans = KMeans(k=int(clusters.group(1)), init=centroids, n_init=1, 
                 max_iter=m)
           elif seed:
             kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', 

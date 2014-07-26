@@ -8,11 +8,15 @@
 import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.util.HashMap;
+import java.util.ArrayList;
+
 /**
  * This class use the weka libary to implement Logistic Regression.
  */
@@ -66,6 +70,16 @@ public class LogisticRegression {
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
       Instances data = source.getDataSet();
+
+      // Transform numeric class to nominal class because the 
+      // classifier cannot handle numeric classes.
+      NumericToNominal nm = new NumericToNominal();
+      String[] options = new String[2];
+      options[0] = "-R";
+      options[1] = "last"; //set the attributes from indices 1 to 2 as
+      nm.setOptions(options);
+      nm.setInputFormat(data);
+      data = Filter.useFilter(data, nm);
       
       // Did the user pass a test file?
       String testFile = Utils.getOption('t', args);
@@ -113,6 +127,12 @@ public class LogisticRegression {
       // Use the testdata to evaluate the modell.
       if (testFile.length() != 0)
       {
+        ArrayList<double[]> probabilityList = new ArrayList<double[]>();
+        for (int i = 0; i < testData.numInstances(); i++) 
+        {
+            probabilityList.add(model.distributionForInstance(testData.instance(i)));
+        }
+
         try{
           File probabs = new File("weka_lr_probabilities.csv");
           if(!probabs.exists()) {
@@ -120,7 +140,6 @@ public class LogisticRegression {
           }
           FileWriter writer = new FileWriter(probabs.getName(), false);
           
-          // 02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.02.0
           File predictions = new File("weka_lr_predictions.csv");
           if(!predictions.exists()) {
             predictions.createNewFile();
@@ -129,8 +148,7 @@ public class LogisticRegression {
 
           for (int i = 0; i < testData.numInstances(); i++) 
           {
-            double[] probabilities = model.distributionForInstance(testData.instance(i));
-            //System.out.println(probabilities[0]);
+            double[] probabilities = probabilityList.get(i);
             String fdata = "";
             String predict = "";
             for(int k=0; k<probabilities.length; k++) {
