@@ -331,7 +331,8 @@ class Metrics(object):
           
         predictiveSum+=((actual_val*math.log(predicted_val,2)) + (predicted_val*math.log(1 - predicted_val,2)))
         
-    predictiveSum/=count
+    if count != 0:
+      predictiveSum/=count
     predictiveSum+=1
     return predictiveSum	 
   
@@ -358,7 +359,8 @@ class Metrics(object):
           
         predictiveSum+=((actual_val*math.log(predicted_val,2)) + (predicted_val*math.log(1 - predicted_val,2)))
         
-    predictiveSum/=count
+    if count != 0:
+      predictiveSum/=count
     predictiveSum+=1
     return predictiveSum	 
 
