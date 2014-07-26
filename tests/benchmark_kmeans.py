@@ -27,7 +27,7 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -81,7 +81,7 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -113,7 +113,7 @@ class KMEANS_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -145,7 +145,7 @@ class KMEANS_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -177,7 +177,7 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -209,7 +209,7 @@ class KMEANS_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
