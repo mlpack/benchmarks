@@ -27,7 +27,7 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -83,7 +83,7 @@ class LinearRegression_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -108,7 +108,7 @@ class LinearRegression_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -140,7 +140,7 @@ class LinearRegression_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -172,7 +172,7 @@ class LinearRegression_MLPY_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -204,7 +204,7 @@ class LinearRegression_MATLAB_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
     self.timeout = 9000
 
