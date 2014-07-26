@@ -20,8 +20,8 @@ from log import *
 from timer import *
 
 import numpy as np
-from shogun.Features import RegressionLabels, RealFeatures
-from shogun.Regression import LeastAngleRegression
+from modshogun import RegressionLabels, RealFeatures
+from modshogun import LeastAngleRegression
 
 '''
 This class implements the Least Angle Regression benchmark.

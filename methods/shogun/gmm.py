@@ -20,8 +20,8 @@ from log import *
 from timer import *
 
 import numpy as np
-from shogun.Features import RealFeatures
-from shogun import Clustering
+from modshogun import RealFeatures
+from modshogun import GMM as SGMM
 
 '''
 This class implements the Gaussian Mixture Model benchmark.
@@ -67,7 +67,7 @@ class GMM(object):
         n = 250 if not n else int(n.group(1))
       
         # Create the Gaussian Mixture Model.
-        model = Clustering.GMM(g)
+        model = SGMM(g)
         model.set_features(dataFeat)
         with totalTimer:
           model.train_em(1e-9, n, 1e-9)

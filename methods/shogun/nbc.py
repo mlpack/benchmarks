@@ -27,8 +27,7 @@ from timer import *
 from definitions import *
 
 import numpy as np
-from shogun.Features import RealFeatures, MulticlassLabels
-from shogun.Classifier import GaussianNaiveBayes
+from modshogun import RealFeatures, MulticlassLabels, GaussianNaiveBayes
 
 '''
 This class implements the Naive Bayes Classifier benchmark.

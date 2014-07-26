@@ -26,8 +26,8 @@ from log import *
 from timer import *
 from definitions import *
 import numpy as np
-from shogun.Features import RegressionLabels, RealFeatures
-from shogun.Regression import LeastSquaresRegression
+from modshogun import RegressionLabels, RealFeatures
+from modshogun import LeastSquaresRegression
 
 '''
 This class implements the Linear Regression benchmark.
@@ -66,7 +66,7 @@ class LinearRegression(object):
           X = np.genfromtxt(self.dataset[0], delimiter=',')
           y = np.genfromtxt(self.dataset[1], delimiter=',')
         else:
-          X = np.genfromtxt(self.dataset, delimiter=',')
+          X = np.genfromtxt(self.dataset[0], delimiter=',')
           y = X[:, (X.shape[1] - 1)]
           X = X[:,:-1]
 

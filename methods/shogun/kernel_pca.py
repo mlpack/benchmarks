@@ -20,9 +20,8 @@ from log import *
 from timer import *
 
 import numpy as np
-from shogun.Features import RealFeatures
-from shogun.Classifier import KernelPCA
-from shogun.Kernel import GaussianKernel, PolyKernel, LinearKernel, SigmoidKernel
+from modshogun import RealFeatures, KernelPCA
+from modshogun import GaussianKernel, PolyKernel, LinearKernel, SigmoidKernel
 
 '''
 This class implements the Kernel Principal Components Analysis benchmark.

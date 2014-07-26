@@ -20,8 +20,8 @@ from log import *
 from timer import *
 
 import numpy as np
-from shogun.Features import RealFeatures
-from shogun.Classifier import PCA as ShogunPCA
+from modshogun import RealFeatures
+from modshogun import PCA as ShogunPCA
 
 '''
 This class implements the Principal Components Analysis benchmark.

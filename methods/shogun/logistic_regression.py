@@ -27,8 +27,8 @@ from timer import *
 from definitions import *
 
 import numpy as np
-from modshogun import MulticlassLogisticRegression
 from modshogun import RealFeatures, MulticlassLabels
+from modshogun import MulticlassLogisticRegression
 
 '''
 This class implements the Logistic Regression benchmark.
@@ -81,7 +81,7 @@ class LogisticRegression(object):
           testSet = LoadDataset(self.dataset[1])
 
         # Use the last row of the training set as the responses.  
-        X, y = SplitTrainData(self.dataset)
+        X, y = SplitTrainData(self.dataset[0])
 
         # Get the regularization value.
         self.z = re.search("-l (\d+)", options)
