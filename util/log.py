@@ -41,6 +41,18 @@ class Log(object):
           file=sys.stdout)
 
   '''
+  Prints the metrics with all related information with the appropriate tag: [METRICS].
+
+  @param line - The line to print to the console.
+  @verbose - Display informational messages.
+  '''
+  @staticmethod
+  def Metric(line, verbose=True):
+    if verbose:
+      print(Log.BASH_GREEN + '[METRICS] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+          file=sys.stdout)
+
+  '''
   Prints informational messages prefixed with [INFO ].
 
   @param line - The line to print to the console.
@@ -119,3 +131,64 @@ class Log(object):
         col = format(row[i]).rjust(colPaddings[i] + 1)
         print(col, end=" ", file=sys.stdout)
       print(file=sys.stdout)
+
+  '''
+  Method to print metric dictionary
+
+  @param m_dict - Dictionary containing the metrics for a library
+  '''
+  @staticmethod
+  def print_dict(m_dict):
+    print(Log.BASH_GREEN + '[METRICS]' + Log.BASH_CLEAR)
+    for key, val in m_dict.items():
+      print(key, " : ", val)
+
+
+  '''
+  Method to print the metrics for each library for a particular
+  method in a tabular from.
+
+  @param method_name - The name of the method bootstrapped
+  @param m_dict - Dictionary containing metric values with key
+  as lib name and value as metrics dictionary
+  '''
+  @staticmethod
+  def PrintMethodDictionary(method_name, m_dict):
+    print("Bootstrapping for method : ", method_name)
+    #metric_tabs_dict = {}
+    #metric_tabs_count = 1
+    header="          "
+    for key in m_dict:
+      sub_dict = m_dict[key]
+      for sub_key in sub_dict:
+        if sub_key not in header:
+          header += sub_key
+          header += "   "
+          #metric_tabs_count += 1
+          #metric_tabs_dict[sub_key] = metric_tabs_count
+    print("   ",header)
+
+    for key in m_dict:
+      body = ""
+      body += key
+      body += "   "
+      sub_dictionary = m_dict[key]
+      for sub_k in sub_dictionary:
+        index = header.rfind(sub_k)
+        l = len(sub_k)
+        pos = index - len(body)
+        pos += l/3
+        for i in range(int(pos)):
+          body += " "
+
+        body += str(sub_dictionary[sub_k])
+      print(body)
+    print("Bootstrapping for method ",method_name," done.")
+    
+
+
+
+
+
+    
+    

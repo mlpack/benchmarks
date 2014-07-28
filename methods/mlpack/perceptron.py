@@ -1,13 +1,14 @@
 '''
-  @file linear_regression.py
-  @author Marcus Edel
+  @file perceptron.py
+  @author Anand Soni
 
-  Class to benchmark the mlpack Simple Linear Regression Prediction method.
+  Class to benchmark the mlpack Perceptron method.
 '''
 
 import os
 import sys
 import inspect
+import numpy as np
 
 # Import the util path, this method even works if the path contains symlinks to 
 # modules.
@@ -30,17 +31,17 @@ import shlex
 import subprocess
 import re
 import collections
-import numpy as np
+
 '''
-This class implements the Simple Linear Regression Prediction benchmark.
+This class implements the Perceptron Prediction benchmark.
 '''
-class LinearRegression(object):
+class PERCEPTRON(object):
 
   ''' 
-  Create the Simple Linear Regression Prediction benchmark instance, show some
+  Create the Perceptron Prediction benchmark instance, show some
   informations and return the instance.
   
-  @param dataset - Input dataset to perform Linear Regression Prediction on.
+  @param dataset - Input dataset to perform Perceptron Prediction on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
@@ -54,7 +55,7 @@ class LinearRegression(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "linear_regression -h")
+    cmd = shlex.split(self.path + "perceptron -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
     except Exception as e:
@@ -75,16 +76,16 @@ class LinearRegression(object):
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
-  '''
+  
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
-    filelist = ["gmon.out", "parameters.csv", "predictions.csv"]
+    filelist = ["gmon.out", "output"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-
   '''
-  Run valgrind massif profiler on the Simple Linear Regression Prediction 
+  '''
+  Run valgrind massif profiler on the Perceptron Prediction 
   method. If the method has been successfully completed the report is saved in 
   the specified file.
 
@@ -95,21 +96,20 @@ class LinearRegression(object):
   successful save the report file in the specified file.
   '''
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
-    Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
+    Log.Info("Perform Perceptron Memory Profiling.", self.verbose)
 
-    # If the dataset contains two files then the second file is the test
-    # regressors file. In this case we add this to the command line.
+    # If the dataset contains two files then the second file is the test file.
+    # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset[0] + 
-          " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] + 
+          " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "linear_regression -i " + self.dataset[0] + 
-          " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Perform Simple Linear Regression Prediction. If the method has been 
+  Perform Perceptron Prediction. If the method has been 
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -117,16 +117,15 @@ class LinearRegression(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform Simple Linear Regression.", self.verbose)
+    Log.Info("Perform Perceptron Prediction.", self.verbose)
 
-    # If the dataset contains two files then the second file is the test 
-    # regressors file. In this case we add this to the command line.
+    # If the dataset contains two files then the second file is the labels file.
+    # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "linear_regression -i " + self.dataset[0] + 
-          " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "perceptron -t " + self.dataset[0] + 
+          " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "linear_regression -i " + self.dataset[0] + 
-          " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     # Run command with the nessecary arguments and return its output as a byte 
     # string. We have untrusted input so we disable all shell based features.
@@ -152,27 +151,28 @@ class LinearRegression(object):
       return time
 
   '''
-  Run all the metrics for the classifier.  
-  '''  
+  Run all the metrics for the classifier.
+  '''
   def RunMetrics(self, options):
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
-      if not CheckFileAvailable('predictions.csv'):
+      if not CheckFileAvailable('output'):
         self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = LoadDataset("predictions.csv")
+      predictedlabels = LoadDataset("output")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
       AvgPrec = Metrics.AvgPrecision(confusionMatrix)
       AvgRec = Metrics.AvgRecall(confusionMatrix)
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvfLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       metrics_dict = {}
       metrics_dict['Avg Accuracy'] = AvgAcc
@@ -183,9 +183,9 @@ class LinearRegression(object):
       metrics_dict['MultiClass MCC'] = AvgMCC
       metrics_dict['MultiClass Information'] = AvgInformation
       return metrics_dict
+
     else:
       Log.Fatal("This method requires three datasets.")
-
 
   '''
   Parse the timer data form a given string.
@@ -208,8 +208,8 @@ class LinearRegression(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"]) 
-      return timer(float(match.group("loading_data")), 
+      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
+      return timer(float(match.group("loading_data")),
           float(match.group("total_time")), float(match.group("saving_data")))
 
   '''
@@ -221,3 +221,4 @@ class LinearRegression(object):
   def GetTime(self, timer):
     time = timer.total_time - timer.loading_data - timer.saving_data
     return time
+    

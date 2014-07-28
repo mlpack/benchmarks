@@ -76,18 +76,23 @@ class LinearRegression(object):
       # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) >= 2:
-        testSet = LoadDataset(self.dataset[1])
-
-      # Use the last row of the training set as the responses.  
-      X, y = SplitTrainData(self.dataset)
-
+        X = np.genfromtxt(self.dataset[0], delimiter=',')
+        y = np.genfromtxt(self.dataset[2], delimiter=',')
+        #load the test data
+        test_data = np.genfromtxt(self.dataset[1], delimiter=',')
+      else:
+        X = np.genfromtxt(self.dataset, delimiter=',')
+        y = X[:, (X.shape[1] - 1)]
+        X = X[:,:-1]
       try:
         with totalTimer:
           # Perform linear regression.
-          self.model = self.BuildModel(X, y)
-          b =  self.model.beta()
-          if len(self.dataset) >= 2:
-            pred = self.model.pred(testSet)
+          model = mlpy.OLS()
+          model.learn(X, y)
+          b =  model.beta()
+          #prediction on the test data.
+          pred = model.pred(test_data)
+          np.savetxt("mlpy_lr_predictions.csv", pred, delimiter="\n")
       except Exception as e:
         q.put(-1)
         return -1
@@ -102,17 +107,16 @@ class LinearRegression(object):
   Run all the metrics for the classifier.  
   '''  
   def RunMetrics(self, options):
-    if len(self.dataset) >= 3:
+    if len(self.dataset) >= 2:
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
+      # Check if we need to build and run the model.
+      if not CheckFileAvailable('mlpy_lr_predictions.csv'):
+        self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = self.model.pred(testData)
+      predictedlabels = LoadDataset("mlpy_lr_predictions.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)

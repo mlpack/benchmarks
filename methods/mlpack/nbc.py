@@ -99,6 +99,39 @@ class NBC(object):
         + self.dataset[1] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
+  
+  '''
+  Run all the metrics for the classifier.  
+  '''  
+  def RunMetrics(self, options):
+    if len(self.dataset) >= 3:
+      # Check if we need to build and run the model.
+      if not CheckFileAvailable('output.csv'):
+        self.RunTiming(options)
+      labelsData = np.genfromtxt(self.dataset[2], delimiter=',')
+      predictionData = np.genfromtxt("output.csv", delimiter=',')
+      confusionMatrix = Metrics.ConfusionMatrix(labelsData, predictionData)
+      probabilities = np.genfromtxt("probabilities.csv")
+      #self.VisualizeConfusionMatrix(confusionMatrix)
+      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+      metrics_dict = {}
+      metrics_dict['Avg Accuracy'] = AvgAcc
+      metrics_dict['MultiClass Precision'] = AvgPrec
+      metrics_dict['MultiClass Recall'] = AvgRec
+      metrics_dict['MultiClass FMeasure'] = AvgF
+      metrics_dict['MultiClass Lift'] = AvgLift
+      metrics_dict['MultiClass MCC'] = AvgMCC
+      metrics_dict['MultiClass Information'] = AvgInformation
+      return metrics_dict
+    else:
+      Log.Fatal("This method requires three datasets.")
+
 
   '''
   Perform Parametric Naive Bayes Classifier. If the method has been successfully

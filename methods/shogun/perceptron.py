@@ -1,8 +1,8 @@
 '''
-  @file logistic_regression.py
-  @author Marcus Edel
+  @file perceptron.py
+  @author Anand Soni
 
-  Logistic Regression with shogun.
+  Perceptron Classification with shogun.
 '''
 
 import os
@@ -27,18 +27,18 @@ from timer import *
 from definitions import *
 
 import numpy as np
+from modshogun import Perceptron
 from modshogun import RealFeatures, MulticlassLabels
-from modshogun import MulticlassLogisticRegression
 
 '''
-This class implements the Logistic Regression benchmark.
+This class implements the Perceptron benchmark.
 '''
-class LogisticRegression(object):
+class Perceptron(object):
 
   ''' 
-  Create the Logistic Regression benchmark instance.
+  Create the Perceptron benchmark instance.
   
-  @param dataset - Input dataset to perform Logistic Regression on.
+  @param dataset - Input dataset to perform Perceptron on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -48,9 +48,10 @@ class LogisticRegression(object):
     self.timeout = timeout
     self.z = 0;
     self.model = None
+    self.iterations = 1000
 
   '''
-  Build the model for the Logistic Regression.
+  Build the model for the Perceptron.
 
   @param data - The train data.
   @param responses - The responses for the train set.
@@ -58,44 +59,45 @@ class LogisticRegression(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    model = MulticlassLogisticRegression(self.z, RealFeatures(data.T), 
+    model = Perceptron(self.z, RealFeatures(data.T), 
         MulticlassLabels(responses))
+    model.set_max_iter(self.iterations)
     model.train()
     return model
 
   '''
-  Use the shogun libary to implement Logistic Regression.
+  Use the shogun libary to implement Perceptron.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def LogisticRegressionShogun(self, options):
-    def RunLogisticRegressionShogun(q):
+  def PerceptronShogun(self, options):
+    def RunPerceptronShogun(q):
       totalTimer = Timer()
-
       # Load input dataset.
       # If the dataset contains two files then the second file is the test file.
+      Log.Info("Loading dataset", self.verbose)
       try:
-        if len(self.dataset) > 1:
+        if len(self.dataset) >= 2:
           testSet = LoadDataset(self.dataset[1])
+        else:
+          Log.Fatal("This method requires atleast two datasets.")
 
-        # Use the last row of the training set as the responses.  
-        X, y = SplitTrainData(self.dataset[0])
+          # Use the last row of the training set as the responses.
+          X, y = SplitTrainData(self.dataset)
 
-        # Get the regularization value.
-        self.z = re.search("-l (\d+)", options)
-        self.z = 0 if not z else int(z.group(1))
+          # Gather all parameters.
+          s = re.search('-i (\d+)', options)
+          self.iterations = 1000 if not s else int(s.group(1))
 
-        with totalTimer:
-          # Perform logistic regression.
-          self.model = BuildModel(x, y)
-          self.model.train()
-          
-          if len(self.dataset) == 2:
-            pred = classifier.apply(RealFeatures(testSet.T))
-            self.predictions = pred.get_labels()
+          with totalTimer:
+            # Perform perceptron classification.
+            self.model = BuildModel(X, y)
 
+            if len(self.dataset) == 2:
+              pred = self.model.apply(RealFeatures(testSet.T))
+              self.predictions = pred.get_labels()
       except Exception as e:
         q.put(-1)
         return -1
@@ -104,10 +106,10 @@ class LogisticRegression(object):
       q.put(time)
       return time
 
-    return timeout(RunLogisticRegressionShogun, self.timeout)
+    return timeout(RunPerceptronShogun, self.timeout)
 
   '''
-  Perform Logistic Regression. If the method has been successfully completed 
+  Perform Perceptron classification. If the method has been successfully completed 
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -115,9 +117,9 @@ class LogisticRegression(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform Logistic Regression.", self.verbose)
+    Log.Info("Perform Perceptron classification.", self.verbose)
 
-    return self.LogisticRegressionShogun(options)
+    return self.PerceptronShogun(options)
 
   def RunMetrics(self, options):
     if len(self.dataset) >= 3:
@@ -126,7 +128,6 @@ class LogisticRegression(object):
       if not self.model:
         trainData, responses = SplitTrainData(self.dataset)
         self.model = self.BuildModel(trainData, responses)
-
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])

@@ -71,13 +71,14 @@ class HMMVITERBI(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
+  '''
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-
+  '''
   '''
   Run valgrind massif profiler on the Hidden Markov Model Viterbi State 
   Prediction method. If the method has been successfully completed the report is
@@ -92,7 +93,7 @@ class HMMVITERBI(object):
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform HMM Viterbi Memory Profiling.", self.verbose)
 
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "hmm_viterbi -i " + self.dataset[0] + " -m " 
           + self.dataset[1] + " -v " + options) 
     else:
@@ -112,7 +113,7 @@ class HMMVITERBI(object):
   def RunTiming(self, options):
     Log.Info("Perform HMM Viterbi State Prediction.", self.verbose)
     
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "hmm_viterbi -i " + self.dataset[0] + " -m " 
           + self.dataset[1] + " -v " + options) 
     else:

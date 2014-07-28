@@ -22,6 +22,7 @@ from convert import *
 from misc import *
 from database import *
 
+import random
 import argparse
 import datetime
 
@@ -111,6 +112,10 @@ def Main(configfile, blocks, log, methodBlocks, update):
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
 
+  #Create the bootstrapped method dictionary which will contain the
+  #normalized values of all metrics for all methods
+  bootstrapped_method_dict = {}
+  
   # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
@@ -159,12 +164,16 @@ def Main(configfile, blocks, log, methodBlocks, update):
         # Create the matrix which contains the time and dataset informations.
         dataMatrix = [['-' for x in range(len(libraries) + 1)] for x in 
             range(datasetCount)] 
+        
+        #Dictionary which will contain key as the library name and value as 
+        #a dictionary of metrics for the current method
+        method_dict = {}
 
         col = 1
         run = 0
         for libary in libraries:
           name = libary[0]
-          datsets = libary[1]
+          datasets = libary[1]
           trials = libary[2]
           script = libary[3]
           format = libary[4]
@@ -200,7 +209,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
               Log.Fatal("Exception: " + str(e))
             else:
 
-              for dataset in datsets:
+              for dataset in datasets:
                 datasetName = NormalizeDatasetName(dataset)
                 row = FindRightRow(dataMatrix, datasetName, datasetCount)
 
@@ -275,14 +284,50 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     else:
                       db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
                           datasetId, methodId)
+                
                 if 'metric' in tasks:
-                  instance.RunMetrics(options)
+                  metric_dict = instance.RunMetrics(options)
+                  Log.print_dict(metric_dict)
 
+                if 'bootstrap' in tasks:
+                  bootstrap_dict={}
+                  print('Bootstrapping now!')
+                  l = len(datasets)
+                  #Bootstrapping for this method 100 times.
+                  for count in range(100):
+                    dataset_selected = random.randint(0,l)
+                    new_dataset = datasets[dataset_selected - 1]
+                    modDataset = GetDataset(new_dataset, format)
+                    new_instance = methodCall(modDataset[0], timeout=timeout, 
+                      verbose=False)
+
+                    metric_dict_method = new_instance.RunMetrics(options)
+                    #Add the obtained metrics to the bootstrap_dict dictionary which will
+                    #be the final dictionary of metrics as value and names as key
+                    for key in metric_dict_method:
+                      if key in bootstrap_dict:
+                        bootstrap_dict[key] += metric_dict_method[key]
+                      else:
+                        bootstrap_dict[key] = metric_dict_method[key]
+                  
+                  #Now normalize each obtained metric and build a final
+                  #dictionary of metrics for this method. 
+                  for k in bootstrap_dict:
+                    bootstrap_dict[k] /= 100
+                  
+                  '''
+                  #method_dict : This dictionary will look like:
+                  #{'Mlpack' : {'Metric1' : value, 'Metric2' : value, ..}, 'Scikit' : 
+                  #         {'Metric1' : value, 'Metric2' : value, ..}, ... }
+                  '''
+                  method_dict[name] = bootstrap_dict
+                  
+                  #Finally print this dictionary
+                  Log.PrintMethodDictionary(method, method_dict)
 
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
           col += 1
-
         # Show the results.
         if not log and run > 0 and 'timing' in tasks:
           Log.Notice("\n\n")
