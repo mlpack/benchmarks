@@ -129,6 +129,7 @@ class LinearRegression(object):
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       metrics_dict = {}
       metrics_dict['Avg Accuracy'] = AvgAcc
@@ -138,6 +139,7 @@ class LinearRegression(object):
       metrics_dict['MultiClass Lift'] = AvgLift
       metrics_dict['MultiClass MCC'] = AvgMCC
       metrics_dict['MultiClass Information'] = AvgInformation
+      metrics_dict['Simple MSE'] = SimpleMSE
       return metrics_dict
     else:
       Log.Fatal("This method requires three datasets!")

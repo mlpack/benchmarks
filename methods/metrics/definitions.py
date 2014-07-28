@@ -306,10 +306,13 @@ class Metrics(object):
       trueVec.append(vec)
     #trueArray : 2D numpy array after converting trueVec
     trueArray=np.array(trueVec)
+    print("True Vec : ",trueArray)
     #probVec : 2D numpy array with trueVec[index]=probability for the instance
     #to be in that class.
     probVec = np.genfromtxt(probabilities,delimiter=',')
+    print("probVec : ", probVec)
     diffArray = trueArray - probVec
+    print("diffArray : ",diffArray)
     #Quadratic Loss Function
     quadraticLoss=[]
     for i in range(len(diffArray)):
@@ -318,12 +321,14 @@ class Metrics(object):
         squaredloss+=diffArray[i][j]*diffArray[i][j]
         quadraticLoss.append(squaredloss)
     quadraticLoss=np.array(quadraticLoss)
+    print("quad loss : ",quadraticLoss)
 	#Divide the total squared loss for each instance by the number of classes     
     quadraticLoss = quadraticLoss/l
     totalLoss=0
     for i in range(len(quadraticLoss)):
       totalLoss+=quadraticLoss[i]
     totalLoss = totalLoss/instances
+    print("tot loss : ",totalLoss)
     return totalLoss
   
 
@@ -442,3 +447,20 @@ class Metrics(object):
       mpi+=Metrics.MPIArrayClass(all_labels[i], truelabels, predictedlabels)
     mpi/=len(CM)
     return mpi
+  
+  '''
+  @param truelabels - Array containing the true labels for the test data
+  @param predictedlabels - Array containing the predicted labels for test data
+  This method computes the Mean Squared Error based on the true labels and
+  predicted labels from a classifier. We use this method when we donot get the 
+  required probabilities to compute quadratic loss function.
+  '''
+  @staticmethod
+  def SimpleMeanSquaredError(truelabels, predictedlabels):
+    simplemse = 0
+    n = len(truelabels)
+    for i in range(n):
+      difference = truelabels[i] - predictedlabels[i]
+      simplemse += difference * difference
+    simplemse /= n
+    return simplemse

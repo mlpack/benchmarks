@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import numpy as np
 
 # Import the util path, this method even works if the path contains symlinks to 
 # modules.
@@ -16,9 +17,16 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
+#Import the metrics definitions path.
+metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
+  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
+if metrics_folder not in sys.path:
+  sys.path.insert(0, metrics_folder)  
+
 from log import *
 from profiler import *
-
+from misc import *
+from definitions import *
 import shlex
 import subprocess
 import re
@@ -69,13 +77,14 @@ class NBC(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
+  '''
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-
+  '''
   '''
   Run valgrind massif profiler on the Parametric Naive Bayes Classifier method. 
   If the method has been successfully completed the report is saved in the 
@@ -90,8 +99,8 @@ class NBC(object):
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform NBC Memory Profiling.", self.verbose)
 
-    if len(self.dataset) != 2:
-      Log.Fatal("This method requires two datasets.")
+    if len(self.dataset) < 3:
+      Log.Fatal("This method requires three or more datasets.")
       return -1
 
     # Split the command using shell-like syntax.
@@ -120,6 +129,7 @@ class NBC(object):
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+      MSE = Metrics.MeanSquaredError(self.dataset[2],"probabilities.csv",confusionMatrix)
       metrics_dict = {}
       metrics_dict['Avg Accuracy'] = AvgAcc
       metrics_dict['MultiClass Precision'] = AvgPrec
@@ -128,6 +138,7 @@ class NBC(object):
       metrics_dict['MultiClass Lift'] = AvgLift
       metrics_dict['MultiClass MCC'] = AvgMCC
       metrics_dict['MultiClass Information'] = AvgInformation
+      metrics_dict['Mean Squared Error'] = MSE
       return metrics_dict
     else:
       Log.Fatal("This method requires three datasets.")
@@ -144,8 +155,8 @@ class NBC(object):
   def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
-    if len(self.dataset) != 2:
-      Log.Fatal("This method requires two datasets.")
+    if len(self.dataset) < 3:
+      Log.Fatal("This method requires three or more datasets.")
       return -1
 
     # Split the command using shell-like syntax.
