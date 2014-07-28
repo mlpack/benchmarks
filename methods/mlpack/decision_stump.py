@@ -174,6 +174,7 @@ class DecisionStump(object):
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metrics_dict = {}
       metrics_dict['Avg Accuracy'] = AvgAcc
       metrics_dict['MultiClass Precision'] = AvgPrec
@@ -182,6 +183,7 @@ class DecisionStump(object):
       metrics_dict['MultiClass Lift'] = AvgLift
       metrics_dict['MultiClass MCC'] = AvgMCC
       metrics_dict['MultiClass Information'] = AvgInformation
+      metrics_dict['Simple MSE'] = SimpleMSE
       return metrics_dict
 
     else:
