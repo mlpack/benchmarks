@@ -181,28 +181,31 @@ methods:
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/waveform.csv']
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options: '-c 2'
 
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
 
-            - files: ['datasets/cloud.csv']
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
               options: '-c 5'
 
-            - files: ['datasets/USCensus1990.csv']
+            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
               options: '-c 6'
 
-            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
               options: '-c 7'
 
-            - files: ['datasets/isolet.csv']
+            - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
               options: '-c 26'
 
-            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
               options: '-c 10'
 
-            - files: ['datasets/1000000-10-randu.csv']
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     ALLKNN:
         run: ['timing']
@@ -379,12 +382,11 @@ methods:
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],
+                        ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LocalCoordinateCoding:
         run: ['timing']
         script: methods/mlpack/local_coordinate_coding.py
