@@ -76,7 +76,12 @@ class Metrics(object):
         falsePositives+=CM[j][class_i]
     falsePositives-=truePositives
     totalPositives = truePositives + falsePositives
-    precision = truePositives/totalPositives
+    if totalPositives != 0:
+      precision = truePositives/totalPositives
+    else:
+      #The class is not relevant (no predictions in this class)
+      #All instances predicted as negative, no spurious cases
+      precision = 1 
     return precision
 
   '''
@@ -133,7 +138,27 @@ class Metrics(object):
   def FMeasureClass(class_i,CM):
     precClass = Metrics.PrecisionForAClass(class_i,CM)
     recClass = Metrics.RecallForAClass(class_i,CM)
-    fMeasure = 2*precClass*recClass/(precClass+recClass)
+    if (precClass + recClass) != 0:
+      fMeasure = 2*precClass*recClass/(precClass+recClass)
+    else:
+      #Took care of the edge case here!
+      truePositives = CM[class_i][class_i]
+      falsePositives = 0
+      for j in range(l):
+        falsePositives+=CM[j][class_i]
+      falsePositives-=truePositives 
+      falseNegatives=0
+      for j in range(l):
+        falseNegatives+=CM[class_i][j]
+      falseNegatives-=truePositives
+      trueNegatives=0
+      #calculate trueNegatives
+      for i in range(l):
+        if i!=class_i:
+          for j in range(l):
+            trueNegatives+=CM[i][j]
+          trueNegatives-=CM[i][class_i]
+      fMeasure = 2*truePositives / (2*truePositives + falsePositives + falseNegatives)
     return fMeasure
 
 
@@ -228,7 +253,12 @@ class Metrics(object):
 							(truePositives + falseNegatives)*
 							(trueNegatives + falsePositives)*
 							(trueNegatives + falseNegatives))
-    MCC = Numerator/Denominator
+    if Denominator != 0:
+      MCC = Numerator/Denominator
+    else:
+      #Class is not relevant (no predictions in this class)
+      #The limiting case.
+      MCC = 0
     return MCC
 	   	
 
