@@ -100,6 +100,26 @@ class Database:
         """)
 
   '''
+  Create a new metric results table
+  '''
+  def CreateMetricResultsTable(self):
+    self.con.executescript("""
+        CREATE TABLE IF NOT EXISTS metrics (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          build_id INTEGER NOT NULL,
+          libary_id INTEGER NOT NULL,
+          metric TEXT NOT NULL,
+          dataset_id INTEGER NOT NULL,
+          method_id INTEGER NOT NULL,
+
+          FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
+          FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
+          FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
+          FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
+        );
+        """)
+
+  '''
   Create a new memory table.
   '''
   def CreateMemoryTable(self):
@@ -142,6 +162,7 @@ class Database:
     self.CreateDatasetsTable()
     self.CreateMethodsTable()
     self.CreateResultsTable()
+    self.CreateMetricResultsTable()
     self.CreateMemoryTable()
     self.CreateMethodInfoTable()
 
@@ -157,6 +178,19 @@ class Database:
           (datetime.datetime.now(), libaryId))
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
+
+  '''
+  Add a new metrics result record to the metric table.
+  @param buildId - The id of the build.
+  @param libaryId - The if ot the library.
+  @param metric - The metric result as string.
+  @param datasetId - The id of the dataset.
+  @param methodId - The id of the method.
+  '''
+  def NewMetricResult(self, buildId, libraryId, metric, datasetId, methodId):
+    with self.con:
+      self.cur.execute("INSERT INTO metrics VALUES (NULL,?,?,?,?,?)",
+          (buildId, libraryId, metric, datasetId, methodId))
 
   '''
   Add a new dataset record to the datasets table.
@@ -372,6 +406,20 @@ class Database:
   def GetMethodResultsForLibary(self, buildId, methodId):
     with self.con:
       self.cur.execute("SELECT * FROM results JOIN datasets ON" + 
+          " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+          " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
+      return self.cur.fetchall()
+  
+  '''
+  Get the metrics results for the specified method and build id.
+
+  @param buildId - The build id.
+  @param methodId - The method id.
+  @return A list with the results.
+  '''
+  def GetMethodMetricResultsForLibary(self, buildId, methodId):
+    with self.con:
+      self.cur.execute("SELECT metric FROM metrics JOIN datasets ON" + 
           " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()

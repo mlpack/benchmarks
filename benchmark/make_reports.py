@@ -26,6 +26,7 @@ import argparse
 import glob
 import re
 import collections
+import simplejson
 
 '''
 Create the top line chart.
@@ -190,6 +191,9 @@ def MethodReports(db, chartColor, textColor, gridColor):
     resultBuildId = []
     for buildId in buildIds:
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
+      metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0]
+      #Get the dictionary back by de-serializing the metrics string!
+      metrics_dict = simplejson.loads(metrics_string)    
 
       if results:
         methodLibararies.append(buildId[1])
