@@ -193,7 +193,28 @@ def MethodReports(db, chartColor, textColor, gridColor):
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
       metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0]
       #Get the dictionary back by de-serializing the metrics string!
-      metrics_dict = simplejson.loads(metrics_string)    
+      metrics_dict = simplejson.loads(metrics_string)
+      #Write the metrics dictionary into a CSV file
+      metrics_file = open('metrics.csv','w')
+      header = "Library Name,"
+      for key, value in metrics_dict.items():
+        for new_keys in sorted(value.items()):
+          header += new_keys
+          header += ","
+        header += '\n'
+        break
+      metrics_file.write(header)
+      
+      for key, value in metrics_dict.items():
+        body = ""
+        body += key
+        body += ","
+        for new_k, new_val in sorted(value.items()):
+          body += new_val
+          body += ","
+        body += "\n"
+        metrics_file.write(body)
+        
 
       if results:
         methodLibararies.append(buildId[1])
