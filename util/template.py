@@ -191,7 +191,7 @@ d3.csv("metrics.csv", function(error, data) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Population");
+      .text("Metric Value");
   var state = svg.selectAll(".state")
       .data(data)
       .enter().append("g")
