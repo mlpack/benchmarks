@@ -189,12 +189,14 @@ def MethodReports(db, chartColor, textColor, gridColor):
     methodResults = []
     methodLibararies = []
     resultBuildId = []
+    HTML = ""
     for buildId in buildIds:
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
       metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0]
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
       #Write the metrics dictionary into a CSV file
+      metricsFileName = "metrics.csv"
       metrics_file = open('metrics.csv','w')
       header = "LibName,"
       for key, value in metrics_dict.items():
@@ -214,7 +216,14 @@ def MethodReports(db, chartColor, textColor, gridColor):
           body += ","
         body += "\n"
         metrics_file.write(body)
-        
+      #Create the actual HTML string from template
+      HTML += groupedBarTemplate % metricsFileName
+      htmlFile = ""
+      htmlFile += method
+      htmlFile += ".html"
+      #Write the html string to the <method>.html file
+      html_file = open(htmlFile, 'w')
+      html_file.write(HTML)
 
       if results:
         methodLibararies.append(buildId[1])

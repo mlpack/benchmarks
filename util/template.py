@@ -171,7 +171,7 @@ var svg = d3.select("body").append("svg")
      .attr("height", height + margin.top + margin.bottom)
      .append("g")
      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-d3.csv("metrics.csv", function(error, data) {
+d3.csv(%(metricsFile), function(error, data) {
   var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "LibName"; });
   data.forEach(function(d) {
     d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });
