@@ -196,7 +196,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
       metrics_dict = simplejson.loads(metrics_string)
       #Write the metrics dictionary into a CSV file
       metrics_file = open('metrics.csv','w')
-      header = "Library Name,"
+      header = "LibName,"
       for key, value in metrics_dict.items():
         for new_keys in sorted(value.items()):
           header += new_keys
