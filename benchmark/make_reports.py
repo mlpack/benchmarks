@@ -217,7 +217,33 @@ def MethodReports(db, chartColor, textColor, gridColor):
         body += "\n"
         metrics_file.write(body)
       #Create the actual HTML string from template
+      methodName = method
+      HTML += groupedBarTemplate % methodName
       HTML += groupedBarTemplate % metricsFileName
+      #Print the dictionary too!
+      HTML += "<br><br>"
+      HTML += "<table><th><td></td>"
+      #First add the header (Metric Names)
+      for key, value in metrics_dict.items():
+        for k in sorted(value.items()):
+          HTML += "<td>"
+          HTML += k
+          HTML += "</td>"
+        break
+      HTML += "</th>"
+      #Now add the metric values
+      for key, value in metrics_dict.items():
+        HTML += "<tr>"
+        HTML += "<td>"
+        HTML += key
+        HTML += "</td>"
+        for k, v in sorted(value.items()):
+          HTML += "<td>"
+          HTML += v
+          HTML += "</td>"
+        HTML += "</tr>"
+      HTML += "</table>"
+
       htmlFile = ""
       htmlFile += method
       htmlFile += ".html"

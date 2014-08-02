@@ -147,6 +147,7 @@ body {
 }
 </style>
 <body>
+<h1>Metrics Representation and Analysis for method : %(methodName)</h1>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
