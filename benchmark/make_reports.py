@@ -36,7 +36,7 @@ Create the top line chart.
 '''
 def CreateTopLineChart(db, topChartColor, textColor, gridColor):
   res = db.GetResultsSum("mlpack")
-  if res:
+  if res and res[1][0]:
     build, results = res
   else:
     return ""
