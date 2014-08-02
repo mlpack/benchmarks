@@ -417,7 +417,7 @@ class Database:
   @param methodId - The method id.
   @return A list with the results.
   '''
-  def GetMethodMetricResultsForLibary(self, buildId, methodId):
+  def GetMethodMetricResultsForLibrary(self, buildId, methodId):
     with self.con:
       self.cur.execute("SELECT metric FROM metrics JOIN datasets ON" + 
           " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 

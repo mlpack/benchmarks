@@ -196,12 +196,12 @@ def MethodReports(db, chartColor, textColor, gridColor):
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
       #Write the metrics dictionary into a CSV file
-      metricsFileName = "metrics.csv"
+      metricsFileName = {'metricsFileName' : 'metrics.csv'}
       metrics_file = open('metrics.csv','w')
       header = "LibName,"
       for key, value in metrics_dict.items():
-        for new_keys in sorted(value.items()):
-          header += new_keys
+        for new_key, new_val in sorted(value.items()):
+          header += new_key
           header += ","
         header += '\n'
         break
@@ -217,7 +217,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
         body += "\n"
         metrics_file.write(body)
       #Create the actual HTML string from template
-      methodName = method
+      methodName = {'methodName': method}
       HTML += groupedBarTemplate % methodName
       HTML += groupedBarTemplate % metricsFileName
       #Print the dictionary too!
