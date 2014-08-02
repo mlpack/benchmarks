@@ -420,9 +420,9 @@ class Database:
   def GetMethodMetricResultsForLibary(self, buildId, methodId):
     with self.con:
       self.cur.execute("SELECT metric FROM metrics JOIN datasets ON" + 
-          " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+          " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
-      return self.cur.fetchall()
+      return self.cur.fetchall()[0][0]
   
   '''
   Get the sum of the time column of all build of the given method.
