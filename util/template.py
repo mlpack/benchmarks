@@ -147,7 +147,7 @@ body {
 }
 </style>
 <body>
-<h1>Metrics Representation and Analysis for method : %(methodName)</h1>
+<h1>Metrics Representation and Analysis for method : %(methodName)s</h1>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -172,7 +172,7 @@ var svg = d3.select("body").append("svg")
      .attr("height", height + margin.top + margin.bottom)
      .append("g")
      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-d3.csv(%(metricsFile), function(error, data) {
+d3.csv(%(metricsFile)s, function(error, data) {
   var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "LibName"; });
   data.forEach(function(d) {
     d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });

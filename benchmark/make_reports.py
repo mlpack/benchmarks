@@ -217,198 +217,199 @@ def MethodReports(db, chartColor, textColor, gridColor):
         body += "\n"
         metrics_file.write(body)
       #Create the actual HTML string from template
-      methodName = {'methodName': method}
+      methodName = {'methodName': method, 'metricsFile' : metricsFileName}
       HTML += groupedBarTemplate % methodName
-      HTML += groupedBarTemplate % metricsFileName
-      #Print the dictionary too!
+      
+      # Print the dictionary too!
       HTML += "<br><br>"
       HTML += "<table><th><td></td>"
-      #First add the header (Metric Names)
+      # First add the header (Metric Names)
       for key, value in metrics_dict.items():
         for k in sorted(value.items()):
           HTML += "<td>"
           HTML += k
           HTML += "</td>"
         break
-      HTML += "</th>"
-      #Now add the metric values
-      for key, value in metrics_dict.items():
-        HTML += "<tr>"
-        HTML += "<td>"
-        HTML += key
-        HTML += "</td>"
-        for k, v in sorted(value.items()):
-          HTML += "<td>"
-          HTML += str(v)
-          HTML += "</td>"
-        HTML += "</tr>"
-      HTML += "</table>"
+  #     HTML += "</th>"
+  #     #Now add the metric values
+  #     for key, value in metrics_dict.items():
+  #       HTML += "<tr>"
+  #       HTML += "<td>"
+  #       HTML += key
+  #       HTML += "</td>"
+  #       for k, v in sorted(value.items()):
+  #         HTML += "<td>"
+  #         HTML += str(v)
+  #         HTML += "</td>"
+  #       HTML += "</tr>"
+  #     HTML += "</table>"
 
-      htmlFile = ""
-      htmlFile += method
-      htmlFile += ".html"
-      #Write the html string to the <method>.html file
-      html_file = open(htmlFile, 'w')
-      html_file.write(HTML)
+  #     htmlFile = ""
+  #     htmlFile += method
+  #     htmlFile += ".html"
+  #     #Write the html string to the <method>.html file
+  #     html_file = open(htmlFile, 'w')
+  #     html_file.write(HTML)
 
-      if results:
-        methodLibararies.append(buildId[1])
-        resultBuildId.append(buildId[0])
-        methodResults.append(results)
+  #     if results:
+  #       methodLibararies.append(buildId[1])
+  #       resultBuildId.append(buildId[0])
+  #       methodResults.append(results)
 
-    if methodResults:
-      t = (methodResults, methodLibararies, resultBuildId)
-      if method[1] in methodGroup:
-        methodGroup[method[1]].append(t)
-      else:
-        methodGroup[method[1]] = [t]
+  #   if methodResults:
+  #     t = (methodResults, methodLibararies, resultBuildId)
+  #     if method[1] in methodGroup:
+  #       methodGroup[method[1]].append(t)
+  #     else:
+  #       methodGroup[method[1]] = [t]
 
-  methodGroup = collections.OrderedDict(sorted(methodGroup.items()))
-  collapseGroup = 0
-  for methodName, results in methodGroup.items():
-    # Create the container.
-    reportValues = {}
-    reportValues["methodName"] = methodName
+  # methodGroup = collections.OrderedDict(sorted(methodGroup.items()))
+  # collapseGroup = 0
+  # for methodName, results in methodGroup.items():
+  #   # Create the container.
+  #   reportValues = {}
+  #   reportValues["methodName"] = methodName
 
-    resultPanel = ""
-    methodInfo = ""
-    memoryContent = ""
+  #   resultPanel = ""
+  #   methodInfo = ""
+  #   memoryContent = ""
 
-    mlpackMemoryId = db.GetLibrary("mlpack_memory")
-    mlpackMemoryBuilId = ""
-    if mlpackMemoryId:
-        mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
+  #   mlpackMemoryId = db.GetLibrary("mlpack_memory")
+  #   mlpackMemoryBuilId = ""
+  #   if mlpackMemoryId:
+  #       mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
 
-    # Variables to count the status informations.
-    failureCount = 0
-    datasetCount = 0
-    timeoutCount = 0
-    bestLibCount = 0
-    totalTimeCount = 0
-    libCount = 0
+  #   # Variables to count the status informations.
+  #   failureCount = 0
+  #   datasetCount = 0
+  #   timeoutCount = 0
+  #   bestLibCount = 0
+  #   totalTimeCount = 0
+  #   libCount = 0
 
-    for result in results:
-      resultValues = {}
-      groupPanel = {}
+  #   for result in results:
+  #     resultValues = {}
+  #     groupPanel = {}
 
-      methodResults = result[0]
-      methodLibararies = result[1]
-      resultBuildId = result[2]
-      methodId = methodResults[0][0][6]
+  #     methodResults = result[0]
+  #     methodLibararies = result[1]
+  #     resultBuildId = result[2]
+  #     methodId = methodResults[0][0][6]
 
-      # Generate a "unique" hash for the chart name.
-      chartHash = str(hash(str(result)))
+  #     # Generate a "unique" hash for the chart name.
+  #     chartHash = str(hash(str(result)))
 
-      # Generate a "unique" name for the line chart.
-      lineChartName = "img/line_" + chartHash + ".png"
+  #     # Generate a "unique" name for the line chart.
+  #     lineChartName = "img/line_" + chartHash + ".png"
 
-      res = db.GetResultsMethodSum("mlpack", methodId)
-      if res:
-        build, methodResultsSum = res
-      else:
-        continue
+  #     res = db.GetResultsMethodSum("mlpack", methodId)
+  #     if res:
+  #       build, methodResultsSum = res
+  #     else:
+  #       continue
 
-      GenerateSingleLineChart(data=methodResultsSum,
-          fileName="reports/" + lineChartName, backgroundColor=chartColor,
-          textColor=textColor, gridColor=gridColor)
+  #     GenerateSingleLineChart(data=methodResultsSum,
+  #         fileName="reports/" + lineChartName, backgroundColor=chartColor,
+  #         textColor=textColor, gridColor=gridColor)
 
-      # Generate a "unique" name for the bar chart.
-      barChartName = "img/bar_" + chartHash + ".png"
+  #     # Generate a "unique" name for the bar chart.
+  #     barChartName = "img/bar_" + chartHash + ".png"
 
-      # Create the bar chart.
-      ChartInfo = GenerateBarChart(results=methodResults,
-          libraries=methodLibararies, fileName="reports/" + barChartName,
-          backgroundColor=chartColor, textColor=textColor, gridColor=gridColor)
+  #     # Create the bar chart.
+  #     ChartInfo = GenerateBarChart(results=methodResults,
+  #         libraries=methodLibararies, fileName="reports/" + barChartName,
+  #         backgroundColor=chartColor, textColor=textColor, gridColor=gridColor)
 
-      numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
+  #     numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
 
-      # Increase the status information.
-      failureCount += failure
-      datasetCount += numDatasets
-      timeoutCount += timeouts
-      bestLibCount += bestLibnum
-      totalTimeCount += totalTime
+  #     # Increase the status information.
+  #     failureCount += failure
+  #     datasetCount += numDatasets
+  #     timeoutCount += timeouts
+  #     bestLibCount += bestLibnum
+  #     totalTimeCount += totalTime
 
-      header, timingTable = CreateTimingTable(timingData, methodLibararies)
+  #     header, timingTable = CreateTimingTable(timingData, methodLibararies)
 
-      libCount = libCount if libCount >= len(methodLibararies) else len(methodLibararies)
+  #     libCount = libCount if libCount >= len(methodLibararies) else len(methodLibararies)
 
-      parameters = db.GetMethodParameters(methodId)
-      if parameters:
-        parameters = parameters[0][0]
-      else:
-        parameters = ""
+  #     parameters = db.GetMethodParameters(methodId)
+  #     if parameters:
+  #       parameters = parameters[0][0]
+  #     else:
+  #       parameters = ""
 
-      resultValues["parameters"] = lineChartName
-      resultValues["lineChart"] = lineChartName
-      resultValues["barChart"] = barChartName
-      resultValues["timingHeader"] = header
-      resultValues["timingTable"] = timingTable
+  #     resultValues["parameters"] = lineChartName
+  #     resultValues["lineChart"] = lineChartName
+  #     resultValues["barChart"] = barChartName
+  #     resultValues["timingHeader"] = header
+  #     resultValues["timingTable"] = timingTable
 
-      groupPanel["nameID"] = chartHash
-      groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
-      groupPanel["content"] = resultsPanel % resultValues
+  #     groupPanel["nameID"] = chartHash
+  #     groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
+  #     groupPanel["content"] = resultsPanel % resultValues
 
-      resultPanel += resultsTemplate % groupPanel
+  #     resultPanel += resultsTemplate % groupPanel
 
-      # Create the memory content.
-      if mlpackMemoryBuilId:
-        memoryResults = db.GetMemoryResults(mlpackMemoryBuilId,
-            mlpackMemoryId[0][0], methodId)
+  #     # Create the memory content.
+  #     if mlpackMemoryBuilId:
+  #       memoryResults = db.GetMemoryResults(mlpackMemoryBuilId,
+  #           mlpackMemoryId[0][0], methodId)
 
-        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor,
-            textColor, gridColor)
-        if groupPanel["content"]:
-          groupPanel["nameID"] = chartHash + "_m"
-          groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
+  #       groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor,
+  #           textColor, gridColor)
+  #       if groupPanel["content"]:
+  #         groupPanel["nameID"] = chartHash + "_m"
+  #         groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
 
-          memoryContent += resultsTemplate % groupPanel
+  #         memoryContent += resultsTemplate % groupPanel
 
-      # Create the method info content.
-      if not methodInfo:
-        methodInfo = CreateMethodInfo(db.GetMethodInfo(methodId), methodName)
+  #     # Create the method info content.
+  #     if not methodInfo:
+  #       methodInfo = CreateMethodInfo(db.GetMethodInfo(methodId), methodName)
 
-    datasetTable = CreateDatasetTable(results)
+  #   datasetTable = CreateDatasetTable(results)
 
-    # Calculate the percent for the progress bar.
-    if numDatasets != 0:
-      negative = (((datasetCount - bestLibCount) / float(datasetCount)) * 100.0)
-      reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
+  #   # Calculate the percent for the progress bar.
+  #   if numDatasets != 0:
+  #     negative = (((datasetCount - bestLibCount) / float(datasetCount)) * 100.0)
+  #     reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
 
-      if negative == 0:
-        reportValues["progressPositiveStyle"] = "{0:.2f}".format(100 - negative) + progressBarStyle
-      else:
-        reportValues["progressPositiveStyle"] = "{0:.2f}".format(100 - negative) + "%;"
+  #     if negative == 0:
+  #       reportValues["progressPositiveStyle"] = "{0:.2f}".format(100 - negative) + progressBarStyle
+  #     else:
+  #       reportValues["progressPositiveStyle"] = "{0:.2f}".format(100 - negative) + "%;"
 
-      if negative == 100:
-        reportValues["progressNegativeStyle"] = "{0:.2f}".format(negative) + progressBarStyle
-      else:
-        reportValues["progressNegativeStyle"] = "{0:.2f}".format(negative) + "%;"
-    else:
-      reportValues["progressPositive"] = "0%"
-      reportValues["progressPositiveStyle"] = "0%;"
-      reportValues["progressNegativeStyle"] = "100%" + progressBarStyle
+  #     if negative == 100:
+  #       reportValues["progressNegativeStyle"] = "{0:.2f}".format(negative) + progressBarStyle
+  #     else:
+  #       reportValues["progressNegativeStyle"] = "{0:.2f}".format(negative) + "%;"
+  #   else:
+  #     reportValues["progressPositive"] = "0%"
+  #     reportValues["progressPositiveStyle"] = "0%;"
+  #     reportValues["progressNegativeStyle"] = "100%" + progressBarStyle
 
-    reportValues["numLibararies"] = libCount
-    reportValues["numDatasets"] = datasetCount
-    reportValues["totalTime"] =  "{0:.2f}".format(totalTimeCount)
-    reportValues["failure"] = failureCount
-    reportValues["timeouts"] = timeoutCount
-    reportValues["datasetTable"] = datasetTable
-    reportValues["memoryContent"] = memoryContent
-    reportValues["methodInfo"] = methodInfo
-    reportValues["resultsPanel"] = resultPanel
-    reportValues["methods"] = len(results)
-    reportValues["groupOne"] = collapseGroup
-    reportValues["groupTwo"] = collapseGroup + 1
-    reportValues["groupThree"] = collapseGroup + 2
+  #   reportValues["numLibararies"] = libCount
+  #   reportValues["numDatasets"] = datasetCount
+  #   reportValues["totalTime"] =  "{0:.2f}".format(totalTimeCount)
+  #   reportValues["failure"] = failureCount
+  #   reportValues["timeouts"] = timeoutCount
+  #   reportValues["datasetTable"] = datasetTable
+  #   reportValues["memoryContent"] = memoryContent
+  #   reportValues["methodInfo"] = methodInfo
+  #   reportValues["resultsPanel"] = resultPanel
+  #   reportValues["methods"] = len(results)
+  #   reportValues["groupOne"] = collapseGroup
+  #   reportValues["groupTwo"] = collapseGroup + 1
+  #   reportValues["groupThree"] = collapseGroup + 2
 
-    methodsPage += methodTemplate % reportValues
+  #   methodsPage += methodTemplate % reportValues
 
-    # Increase the collapse group id.
-    collapseGroup += 3
+  #   # Increase the collapse group id.
+  #   collapseGroup += 3
 
-  return methodsPage
+  #return methodsPage
+  return None
 
 '''
 Search the highest index_[number].html number.
@@ -568,16 +569,16 @@ def Main(configfile):
 
   # Get the values for the new index.html file.
   reportValues = {}
-  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
-      textColor, gridColor)
-  reportValues["pagination"] = NewPagination()
+  # reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
+  #     textColor, gridColor)
+  # reportValues["pagination"] = NewPagination()
   reportValues["methods"] = MethodReports(db, chartColor, textColor, gridColor)
 
-  template = pageTemplate % reportValues
+  # template = pageTemplate % reportValues
 
-  # Write the new index.html file.
-  with open("reports/index.html", 'w') as fid:
-    fid.write(template)
+  # # Write the new index.html file.
+  # with open("reports/index.html", 'w') as fid:
+  #  fid.write(template)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the memory benchmark
