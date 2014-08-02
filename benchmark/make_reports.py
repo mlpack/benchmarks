@@ -196,7 +196,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
       #Write the metrics dictionary into a CSV file
-      metricsFileName = 'metrics.csv'
+      metricsFileName = "\"metrics.csv\""
       metrics_file = open('metrics.csv','w')
       header = "LibName,"
       for key, value in metrics_dict.items():
