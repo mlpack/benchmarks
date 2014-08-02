@@ -77,14 +77,13 @@ class NBC(object):
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  '''
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-  '''
+
   '''
   Run valgrind massif profiler on the Parametric Naive Bayes Classifier method. 
   If the method has been successfully completed the report is saved in the 
@@ -99,8 +98,8 @@ class NBC(object):
   def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform NBC Memory Profiling.", self.verbose)
 
-    if len(self.dataset) < 3:
-      Log.Fatal("This method requires three or more datasets.")
+    if len(self.dataset) < 2:
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     # Split the command using shell-like syntax.
@@ -155,8 +154,8 @@ class NBC(object):
   def RunTiming(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
-    if len(self.dataset) < 3:
-      Log.Fatal("This method requires three or more datasets.")
+    if len(self.dataset) < 2:
+      Log.Fatal("This method requires two datasets.")
       return -1
 
     # Split the command using shell-like syntax.
