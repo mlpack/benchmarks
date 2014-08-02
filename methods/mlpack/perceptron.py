@@ -157,13 +157,13 @@ class PERCEPTRON(object):
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
-      if not CheckFileAvailable('output'):
+      if not CheckFileAvailable('output.csv'):
         self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = LoadDataset("output")
+      predictedlabels = LoadDataset("output.csv")
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
