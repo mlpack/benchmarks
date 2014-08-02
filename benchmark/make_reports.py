@@ -192,7 +192,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
     HTML = ""
     for buildId in buildIds:
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
-      metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0]
+      metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0])
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
       #Write the metrics dictionary into a CSV file
@@ -212,7 +212,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
         body += key
         body += ","
         for new_k, new_val in sorted(value.items()):
-          body += new_val
+          body += str(new_val)
           body += ","
         body += "\n"
         metrics_file.write(body)
@@ -239,7 +239,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
         HTML += "</td>"
         for k, v in sorted(value.items()):
           HTML += "<td>"
-          HTML += v
+          HTML += str(v)
           HTML += "</td>"
         HTML += "</tr>"
       HTML += "</table>"
