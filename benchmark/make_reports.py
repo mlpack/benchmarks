@@ -569,16 +569,16 @@ def Main(configfile):
 
   # Get the values for the new index.html file.
   reportValues = {}
-  # reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
-  #     textColor, gridColor)
-  # reportValues["pagination"] = NewPagination()
+  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
+      textColor, gridColor)
+  reportValues["pagination"] = NewPagination()
   reportValues["methods"] = MethodReports(db, chartColor, textColor, gridColor)
 
-  # template = pageTemplate % reportValues
+  template = pageTemplate % reportValues
 
-  # # Write the new index.html file.
-  # with open("reports/index.html", 'w') as fid:
-  #  fid.write(template)
+  # Write the new index.html file.
+  with open("reports/index.html", 'w') as fid:
+   fid.write(template)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the memory benchmark
