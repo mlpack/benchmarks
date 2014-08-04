@@ -142,6 +142,14 @@ def CreateMemoryContent(results, chartColor, textColor, gridColor):
 
   return memoryContent
 
+def getMethodCount(db, buildIds, methodId):
+  count = 0
+  for buildId in buildIds:
+    metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], methodId)
+    if metrics_string:
+      count += 1
+  return count
+
 '''
 Create the method info content.
 
@@ -188,7 +196,8 @@ def MethodReports(db, chartColor, textColor, gridColor):
     methodResults = []
     methodLibararies = []
     resultBuildId = []
-    limit = len(buildIds)
+    limit = getMethodCount(db, buildIds, method[0])
+    print("//////////////////// ",buildIds, " ................ ",method)
     for buildId in buildIds:
       HTML = ""
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
@@ -207,9 +216,15 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
+      print("metrics dict - ",metrics_dict)
       #Write the metrics dictionary into a CSV file
-      metricsFileName = "\"metrics.csv\""
-      metrics_file = open('metrics.csv','w')
+      metricsFileName = "\"metrics"
+      metricsFileName += str(method[0])
+      metricsFileName += ".csv\""
+      metricsFile = "metrics"
+      metricsFile += str(method[0])
+      metricsFile += ".csv"
+      metrics_file = open(metricsFile,'w')
       header = "LibName,"
       for key, value in metrics_dict.items():
         for new_key, new_val in sorted(value.items()):
@@ -227,6 +242,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
           body += str(new_val)
           body += ","
         body += "\n"
+        print("writing to metrics : ",body)
         metrics_file.write(body)
       #Create the actual HTML string from template
       methodName = {'methodName': method[1], 'metricsFile' : metricsFileName}
