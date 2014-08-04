@@ -122,21 +122,31 @@ class NBC(object):
       probabilities = np.genfromtxt("probabilities.csv")
       #self.VisualizeConfusionMatrix(confusionMatrix)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgAcc = round(AvgAcc,5)
       AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgPrec = round(AvgPrec,5)
       AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgRec = round(AvgRec,5)
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgF = round(AvgF,5)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgLift = round(AvgLift,5)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+      AvgMCC = round(AvgMCC,5)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, labelsData, predictionData)
+      AvgInformation = round(AvgInformation,5)
+      SimpleMSE = Metrics.SimpleMeanSquaredError(labelsData, predictionData)
+      SimpleMSE = round(SimpleMSE,5)
       #MSE = Metrics.MeanSquaredError(self.dataset[2],"probabilities.csv",confusionMatrix)
       metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc/100
+      metrics_dict['Avg Accuracy'] = AvgAcc
       metrics_dict['MultiClass Precision'] = AvgPrec
       metrics_dict['MultiClass Recall'] = AvgRec
       metrics_dict['MultiClass FMeasure'] = AvgF
       metrics_dict['MultiClass Lift'] = AvgLift
       metrics_dict['MultiClass MCC'] = AvgMCC
       metrics_dict['MultiClass Information'] = AvgInformation
+      metrics_dict['Simple MSE'] = SimpleMSE
       #metrics_dict['Mean Squared Error'] = MSE
       return metrics_dict
     else:

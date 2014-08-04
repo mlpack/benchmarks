@@ -57,7 +57,8 @@ class Metrics(object):
             Sum+=CM[i][j]
         acc = acc + (CM[i][i]/Sum)*100
         Sum=0
-    return acc/l
+    acc = acc/l
+    return acc/100
 
 
   '''

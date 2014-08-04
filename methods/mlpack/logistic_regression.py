@@ -169,14 +169,21 @@ class LogisticRegression(object):
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+      AvgAcc = round(AvgAcc,5)
       AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+      AvgPrec = round(AvgPrec,5)
       AvgRec = Metrics.AvgRecall(confusionMatrix)
+      AvgRec = round(AvgRec,5)
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
+      AvgF = round(AvgF,5)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+      AvgLift = round(AvgLift,5)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
+      AvgMCC = round(AvgMCC,5)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      AvgInformation = round(AvgInformation,5)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      SimpleMSE = round(SimpleMSE,5)
       metrics_dict = {}
       metrics_dict['Avg Accuracy'] = AvgAcc
       metrics_dict['MultiClass Precision'] = AvgPrec
