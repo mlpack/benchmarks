@@ -316,6 +316,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   #dictionary of metrics for this method. 
                   for k in bootstrap_dict:
                     bootstrap_dict[k] /= 100
+                    bootstrap_dict[k] = round(bootstrap_dict[k],5)
                   
                   '''
                   #method_dict : This dictionary will look like:
