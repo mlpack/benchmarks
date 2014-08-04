@@ -210,7 +210,7 @@ d3.csv(%(metricsFile)s, function(error, data) {
       .data(ageNames.slice().reverse())
       .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(20," + i * 20 + ")"; });
   legend.append("rect")
       .attr("x", width - 18)
       .attr("width", 18)
