@@ -189,8 +189,9 @@ def MethodReports(db, chartColor, textColor, gridColor):
     methodResults = []
     methodLibararies = []
     resultBuildId = []
-    HTML = ""
+    limit = len(buildIds)
     for buildId in buildIds:
+      HTML = ""
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
       metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0])
       #Get the dictionary back by de-serializing the metrics string!
@@ -243,13 +244,15 @@ def MethodReports(db, chartColor, textColor, gridColor):
           HTML += "</td>"
         HTML += "</tr>"
       HTML += "</table>"
-
-      htmlFile = ""
-      htmlFile += method[1]
-      htmlFile += ".html"
-      #Write the html string to the <method>.html file
-      html_file = open(htmlFile, 'w')
-      html_file.write(HTML)
+      HTML += "</body>"
+      HTML += "</html>"
+      if buildId[0] == limit:
+        htmlFile = ""
+        htmlFile += method[1]
+        htmlFile += ".html"
+        #Write the html string to the <method>.html file
+        html_file = open(htmlFile, 'w')
+        html_file.write(HTML)
 
       if results:
         methodLibararies.append(buildId[1])

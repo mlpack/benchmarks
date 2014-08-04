@@ -324,16 +324,16 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   '''
                   method_dict[name] = bootstrap_dict
                   
-                  #Store the results in db if the user asked for it.
-                  if log:
-                    #Serialize the metrics dictionary
-                    metrics_string = simplejson.dumps(method_dict)
-                    buildID, libraryID = build[name]
-                    db.NewMetricResult(buildID, libraryID, metrics_string, datasetId, methodId)
 
                   #Finally print this dictionary
                   Log.PrintMethodDictionary(method, method_dict)
 
+                #Store the results in db if the user asked for it.
+                if log:
+                  #Serialize the metrics dictionary
+                  metrics_string = simplejson.dumps(method_dict)
+                  buildID, libraryID = build[name]
+                  db.NewMetricResult(buildID, libraryID, metrics_string, datasetId, methodId)
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
           col += 1

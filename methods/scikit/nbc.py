@@ -135,7 +135,7 @@ class NBC(object):
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
+      metrics_dict['Avg Accuracy'] = AvgAcc/100
       metrics_dict['MultiClass Precision'] = AvgPrec
       metrics_dict['MultiClass Recall'] = AvgRec
       metrics_dict['MultiClass FMeasure'] = AvgF
