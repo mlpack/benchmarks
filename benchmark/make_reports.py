@@ -185,7 +185,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
   methodGroup = {}
   # Iterate throw all methods and create for each method a new container.
   for method in db.GetAllMethods():
-
     methodResults = []
     methodLibararies = []
     resultBuildId = []
@@ -194,6 +193,18 @@ def MethodReports(db, chartColor, textColor, gridColor):
       HTML = ""
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
       metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0])
+
+      # Check if the result is empty. In this case there are no results for the
+      # particular method id.
+      if not metrics_string:
+        continue
+
+      print(method[1])
+
+      # The return value is a list of tupels. We are interested in the first
+      # element of the first tuple.
+      metrics_string = metrics_string[0][0]
+
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
       #Write the metrics dictionary into a CSV file
@@ -246,6 +257,8 @@ def MethodReports(db, chartColor, textColor, gridColor):
       HTML += "</table>"
       HTML += "</body>"
       HTML += "</html>"
+
+      print(limit)
       if buildId[0] == limit:
         htmlFile = ""
         htmlFile += method[1]
@@ -412,7 +425,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
     collapseGroup += 3
 
   return methodsPage
-  return None
 
 '''
 Search the highest index_[number].html number.

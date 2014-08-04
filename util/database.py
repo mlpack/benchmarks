@@ -422,7 +422,7 @@ class Database:
       self.cur.execute("SELECT metric FROM metrics JOIN datasets ON" + 
           " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
-      return self.cur.fetchall()[0][0]
+      return self.cur.fetchall()
   
   '''
   Get the sum of the time column of all build of the given method.
