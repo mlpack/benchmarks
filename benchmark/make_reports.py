@@ -197,7 +197,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
     methodLibararies = []
     resultBuildId = []
     limit = getMethodCount(db, buildIds, method[0])
-    print("//////////////////// ",buildIds, " ................ ",method)
     for buildId in buildIds:
       HTML = ""
       results = db.GetMethodResultsForLibary(buildId[0], method[0])
@@ -208,7 +207,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
       if not metrics_string:
         continue
 
-      print(method[1])
 
       # The return value is a list of tupels. We are interested in the first
       # element of the first tuple.
@@ -216,7 +214,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
       #Get the dictionary back by de-serializing the metrics string!
       metrics_dict = simplejson.loads(metrics_string)
-      print("metrics dict - ",metrics_dict)
       #Write the metrics dictionary into a CSV file
       metricsFileName = "\"metrics"
       metricsFileName += str(method[0])
@@ -242,7 +239,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
           body += str(new_val)
           body += ","
         body += "\n"
-        print("writing to metrics : ",body)
         metrics_file.write(body)
       #Create the actual HTML string from template
       methodName = {'methodName': method[1], 'metricsFile' : metricsFileName}
@@ -274,7 +270,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
       HTML += "</body>"
       HTML += "</html>"
 
-      print(limit)
       if buildId[0] == limit:
         htmlFile = ""
         htmlFile += method[1]
