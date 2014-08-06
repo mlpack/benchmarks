@@ -232,6 +232,24 @@ d3.csv(%(metricsFile)s, function(error, data) {
 });
 </script>
 <script>
+function data_display(){
+  e = document.getElementById('body');
+  var w = e.clientWidth;
+  // remove old svg if any -- otherwise resizing adds a second one
+  d3.select('svg').remove();
+  // create canvas
+  var svg = d3.select('#body').append('svg')
+              .attr('height', 100)
+              .attr('width', w);
+}
+
+data_display(); // call on page load
+
+window.addEventListener('resize', function(event){
+      data_display();
+});
+</script>
+<script>
 $(function(){
     $("#myTable").tablesorter(
       {
