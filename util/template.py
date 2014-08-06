@@ -130,10 +130,11 @@ groupedBarTemplate = """
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
+<link rel="stylesheet" href="util/css/theme.dropbox.css">
 <!-- load jQuery and tablesorter scripts -->
 <script type="text/javascript" src="util/js/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="util/js/jquery.tablesorter.js"></script>
-
+<script src="util/js/jquery.tablesorter.widgets.min.js"></script>
 </head>
 <style>
 body {
@@ -232,7 +233,24 @@ d3.csv(%(metricsFile)s, function(error, data) {
 </script>
 <script>
 $(function(){
-    $("#myTable").tablesorter();
+    $("#myTable").tablesorter(
+      {
+            theme : 'dropbox',
+             
+            sortList : [[1,0],[2,0],[3,0]],
+                  
+            // header layout template; {icon} needed for some themes
+            headerTemplate : '{content}{icon}',
+                           
+            // initialize column styling of the table
+            widgets : ["columns"],
+            widgetOptions : {
+            // change the default column class names
+            // primary is the first column sorted, secondary is the second, etc
+            columns : [ "primary", "secondary", "tertiary" ]
+            }
+      
+});
 });
 </script>
 """
