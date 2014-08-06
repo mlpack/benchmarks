@@ -131,9 +131,12 @@ groupedBarTemplate = """
 <meta charset="utf-8">
 <head>
 <link rel="stylesheet" href="util/css/theme.dropbox.css">
+<link rel="stylesheet" href="util/css/bootstrap-responsive.css">
+<link rel="stylesheet" href="util/css/bootstrap.css">
 <!-- load jQuery and tablesorter scripts -->
 <script type="text/javascript" src="util/js/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="util/js/jquery.tablesorter.js"></script>
+<script type="text/javascript" src="util/js/bootstrap.min.js"></script>
 <script src="util/js/jquery.tablesorter.widgets.min.js"></script>
 </head>
 <style>
@@ -154,6 +157,8 @@ body {
 }
 </style>
 <body>
+<div class = "row-fluid">
+<div class="span12">
 <h1>Metrics Representation and Analysis for method : %(methodName)s</h1>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
@@ -174,6 +179,7 @@ var yAxis = d3.svg.axis()
      .scale(y)
      .orient("left")
      .tickFormat(d3.format(".2s"));
+
 var svg = d3.select("body").append("svg")
      .attr("width", width + margin.left + margin.right)
      .attr("height", height + margin.top + margin.bottom)
@@ -232,6 +238,7 @@ d3.csv(%(metricsFile)s, function(error, data) {
 });
 </script>
 <script>
+/**
 function data_display(){
   e = document.getElementById('body');
   var w = e.clientWidth;
@@ -248,6 +255,7 @@ data_display(); // call on page load
 window.addEventListener('resize', function(event){
       data_display();
 });
+**/
 </script>
 <script>
 $(function(){
@@ -270,6 +278,8 @@ $(function(){
 });
 });
 </script>
+</div>
+</div>
 """
 
 pieChartTemplate = """
