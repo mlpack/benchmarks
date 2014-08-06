@@ -237,7 +237,7 @@ $(function(){
       {
             theme : 'dropbox',
              
-            sortList : [[1,0],[2,0],[3,0]],
+            sortList : [[1,0]],
                   
             // header layout template; {icon} needed for some themes
             headerTemplate : '{content}{icon}',
