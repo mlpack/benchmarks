@@ -236,8 +236,7 @@ $(function(){
     $("#myTable").tablesorter(
       {
             theme : 'dropbox',
-             
-            sortList : [[1,0]],
+            sortList : [[0,1]],
                   
             // header layout template; {icon} needed for some themes
             headerTemplate : '{content}{icon}',
