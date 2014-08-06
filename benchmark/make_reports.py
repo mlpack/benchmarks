@@ -246,15 +246,15 @@ def MethodReports(db, chartColor, textColor, gridColor):
       
       # Print the dictionary too!
       HTML += "<br><br>"
-      HTML += "<table><th>"
+      HTML += "<table id = \"myTable\" class = \"tablesorter\"><thead><tr><th></th>"
       # First add the header (Metric Names)
       for key, value in metrics_dict.items():
         for k,v in sorted(value.items()):
-          HTML += "<td>"
+          HTML += "<th>"
           HTML += k
-          HTML += "</td>"
+          HTML += "</th>"
         break
-      HTML += "</th>"
+      HTML += "</tr></thead><tbody>"
       #Now add the metric values
       for key, value in metrics_dict.items():
         HTML += "<tr>"
@@ -266,7 +266,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
           HTML += str(v)
           HTML += "</td>"
         HTML += "</tr>"
-      HTML += "</table>"
+      HTML += "</tbody></table>"
       HTML += "</body>"
       HTML += "</html>"
 

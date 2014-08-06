@@ -129,6 +129,12 @@ resultsPanel = """
 groupedBarTemplate = """
 <!DOCTYPE html>
 <meta charset="utf-8">
+<head>
+<!-- load jQuery and tablesorter scripts -->
+<script type="text/javascript" src="util/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="util/js/jquery.tablesorter.js"></script>
+
+</head>
 <style>
 body {
       font: 10px sans-serif;
@@ -222,6 +228,11 @@ d3.csv(%(metricsFile)s, function(error, data) {
       .attr("dy", ".35em")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
+});
+</script>
+<script>
+$(function(){
+    $("#myTable").tablesorter();
 });
 </script>
 """
