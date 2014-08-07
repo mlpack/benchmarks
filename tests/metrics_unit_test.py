@@ -96,6 +96,15 @@ class Metrics_Test(unittest.TestCase):
     self.assertTrue(result > 0.5 and result < 0.52)
 
   '''
+  Test for the SimpleMeanSquaredError metric (1.34667)
+  '''	
+  def test_SimpleMeanSquaredError(self):
+    true_labels = np.genfromtxt("tests/true_labels.csv",delimiter=',')
+    predicted_labels = np.genfromtxt("tests/predicted_labels.csv",delimiter=',')
+    result=Metrics.SimpleMeanSquaredError(true_labels,predicted_labels)
+    self.assertTrue(result > 1.33 and result < 1.35)
+  
+  '''
   Test for MeanPredictiveInformationClass(...) metric (-1.709)
   '''
   def test_MeanPredictiveInformationClass(self):
