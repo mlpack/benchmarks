@@ -274,6 +274,11 @@ def MethodReports(db, chartColor, textColor, gridColor):
         htmlFile = ""
         htmlFile += method[1]
         htmlFile += ".html"
+        #Check if this file already exists. Rename the file if so.
+        if os.path.isfile(htmlFile):
+          newName = method[1]
+          newName += "_old"
+          os.rename(htmlFile,newName)
         #Write the html string to the <method>.html file
         html_file = open(htmlFile, 'w')
         html_file.write(HTML)
