@@ -125,22 +125,14 @@ class NBC(object):
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgAcc = round(AvgAcc,5)
       AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgPrec = round(AvgPrec,5)
       AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgRec = round(AvgRec,5)
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgF = round(AvgF,5)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgLift = round(AvgLift,5)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgMCC = round(AvgMCC,5)
       #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      AvgInformation = round(AvgInformation,5)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      SimpleMSE = round(SimpleMSE,5)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
       metrics_dict = {}
       metrics_dict['Avg Accuracy'] = AvgAcc
