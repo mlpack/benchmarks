@@ -158,13 +158,20 @@ body {
 </style>
 <body>
 <div class = "row-fluid">
-<div class="span12">
 <h1>Metrics Representation and Analysis for method : %(methodName)s</h1>
+<div class="span12">
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var div_name = "div.span12"
+draw_graphs(div_name)
+
+function draw_graphs(reference) {
+  $(reference).empty()
+  var width = $(reference).width();
+  var height = 500;
+var margin = {top: 20, right: 20, bottom: 30, left: 40};
+width = width - 2*margin.left - 2*margin.right;
+height = height - margin.top - margin.bottom;
 var x0 = d3.scale.ordinal()
      .rangeRoundBands([0, width], .1);
 var x1 = d3.scale.ordinal();
@@ -180,7 +187,7 @@ var yAxis = d3.svg.axis()
      .orient("left")
      .tickFormat(d3.format(".2s"));
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select(reference).append("svg")
      .attr("width", width + margin.left + margin.right)
      .attr("height", height + margin.top + margin.bottom)
      .append("g")
@@ -236,26 +243,10 @@ d3.csv(%(metricsFile)s, function(error, data) {
       .style("text-anchor", "end")
       .text(function(d) { return d; });
 });
-</script>
-<script>
-/**
-function data_display(){
-  e = document.getElementById('body');
-  var w = e.clientWidth;
-  // remove old svg if any -- otherwise resizing adds a second one
-  d3.select('svg').remove();
-  // create canvas
-  var svg = d3.select('#body').append('svg')
-              .attr('height', 100)
-              .attr('width', w);
-}
-
-data_display(); // call on page load
-
-window.addEventListener('resize', function(event){
-      data_display();
+};
+$(window).resize(function() {
+  draw_graphs(div_name);
 });
-**/
 </script>
 <script>
 $(function(){
