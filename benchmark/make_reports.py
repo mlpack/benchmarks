@@ -6,6 +6,7 @@
 '''
 
 import os, sys, inspect
+import glob
 
 # Import the util path, this method even works if the path contains
 # symlinks to modules.
@@ -276,9 +277,33 @@ def MethodReports(db, chartColor, textColor, gridColor):
         htmlFile += ".html"
         #Check if this file already exists. Rename the file if so.
         if os.path.isfile(htmlFile):
-          newName = method[1]
-          newName += "_old"
-          os.rename(htmlFile,newName)
+          searchKey = method[1]
+          searchKey += "*"
+          fileList = glob.glob(searchKey)
+          index = len(method[1])
+          highestFileNum = []
+          stringNum = ""
+          for fileName in fileList:
+            stringNum = fileName[index]
+            if stringNum != '.':
+              num = int(stringNum)
+              highestFileNum.append(num)
+          if stringNum != "":
+            #Find max number
+            maxNum = 0
+            for num in highestFileNum:
+              if num >= maxNum:
+                maxNum = num
+            newName = method[1]
+            newName += str(maxNum+1)
+            newName += ".html"
+            os.rename(htmlFile,newName)
+          else:
+            newName = method[1]
+            newName += str(1)
+            newName += ".html"
+            os.rename(htmlFile,newName)
+
         #Write the html string to the <method>.html file
         html_file = open(htmlFile, 'w')
         html_file.write(HTML)
