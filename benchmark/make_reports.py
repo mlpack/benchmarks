@@ -176,6 +176,76 @@ def CreateMethodInfo(results, methodName):
   return methodInfo
 
 '''
+Print the dictionary of metrics obtained after bootstrapping
+
+@param metrics_dictionary - The dictionary containing the results of
+bootstrap analysis performed for the method
+@param HTML - The string containing the bar chart template as HTML and JS
+'''
+def PrintMetricsDict(metrics_dictionary):
+  HTML = ""
+  HTML += "<br><br>"
+  HTML += "<table id = \"myTable\" class = \"tablesorter\"><thead><tr><th></th>"
+  # First add the header (Metric Names)
+  for key, value in metrics_dictionary.items():
+    for k,v in sorted(value.items()):
+      HTML += "<th>"
+      HTML += k
+      HTML += "</th>"
+    break
+  HTML += "</tr></thead><tbody>"
+  #Now add the metric values
+  for key, value in metrics_dictionary.items():
+    HTML += "<tr>"
+    HTML += "<td>"
+    HTML += key
+    HTML += "</td>"
+    for k, v in sorted(value.items()):
+      HTML += "<td>"
+      HTML += str(v)
+      HTML += "</td>"
+    HTML += "</tr>"
+  HTML += "</tbody></table>"
+  HTML += "</body>"
+  HTML += "</html>"
+  return HTML
+
+'''
+Rename the report files if already exist.
+
+@param reportfile - Name of the HTML reports file to be renamed.
+@param methodName - Name of the method in consideration
+'''
+def RenameReportsFile(reportfile, methodName):
+  if os.path.isfile(reportfile):
+    searchKey = methodName
+    searchKey += "*"
+    fileList = glob.glob(searchKey)
+    index = len(methodName)
+    highestFileNum = []
+    stringNum = ""
+    for fileName in fileList:
+      stringNum = fileName[index]
+      if stringNum != '.':
+        num = int(stringNum)
+        highestFileNum.append(num)
+    if stringNum != "":
+      #Find max number
+      maxNum = 0
+      for num in highestFileNum:
+        if num >= maxNum:
+          maxNum = num
+      newName = methodName
+      newName += str(maxNum+1)
+      newName += ".html"
+      os.rename(reportfile,newName)
+    else:
+      newName = methodName
+      newName += str(1)
+      newName += ".html"
+      os.rename(reportfile,newName)
+
+'''
 Create the method container with the information from the database.
 
 @param db - The database object.
@@ -207,7 +277,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
       # particular method id.
       if not metrics_string:
         continue
-
 
       # The return value is a list of tupels. We are interested in the first
       # element of the first tuple.
@@ -246,64 +315,15 @@ def MethodReports(db, chartColor, textColor, gridColor):
       HTML += groupedBarTemplate % methodName
       
       # Print the dictionary too!
-      HTML += "<br><br>"
-      HTML += "<table id = \"myTable\" class = \"tablesorter\"><thead><tr><th></th>"
-      # First add the header (Metric Names)
-      for key, value in metrics_dict.items():
-        for k,v in sorted(value.items()):
-          HTML += "<th>"
-          HTML += k
-          HTML += "</th>"
-        break
-      HTML += "</tr></thead><tbody>"
-      #Now add the metric values
-      for key, value in metrics_dict.items():
-        HTML += "<tr>"
-        HTML += "<td>"
-        HTML += key
-        HTML += "</td>"
-        for k, v in sorted(value.items()):
-          HTML += "<td>"
-          HTML += str(v)
-          HTML += "</td>"
-        HTML += "</tr>"
-      HTML += "</tbody></table>"
-      HTML += "</body>"
-      HTML += "</html>"
-
+      HTML += PrintMetricsDict(metrics_dict)
+      
       if buildId[0] == limit:
         htmlFile = ""
         htmlFile += method[1]
         htmlFile += ".html"
         #Check if this file already exists. Rename the file if so.
-        if os.path.isfile(htmlFile):
-          searchKey = method[1]
-          searchKey += "*"
-          fileList = glob.glob(searchKey)
-          index = len(method[1])
-          highestFileNum = []
-          stringNum = ""
-          for fileName in fileList:
-            stringNum = fileName[index]
-            if stringNum != '.':
-              num = int(stringNum)
-              highestFileNum.append(num)
-          if stringNum != "":
-            #Find max number
-            maxNum = 0
-            for num in highestFileNum:
-              if num >= maxNum:
-                maxNum = num
-            newName = method[1]
-            newName += str(maxNum+1)
-            newName += ".html"
-            os.rename(htmlFile,newName)
-          else:
-            newName = method[1]
-            newName += str(1)
-            newName += ".html"
-            os.rename(htmlFile,newName)
-
+        RenameReportsFile(htmlFile, method[1])
+        
         #Write the html string to the <method>.html file
         html_file = open(htmlFile, 'w')
         html_file.write(HTML)
