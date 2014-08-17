@@ -19,7 +19,7 @@ Quick links to this file:
 
 ## Prerequisites
 
-* **[Python 3.2+](http://www.python.org "Python Website")**: The main benchmark script is written with the programming language python: The benchmark script by default uses the version of Python on your path.
+* **[Python 3.3+](http://www.python.org "Python Website")**: The main benchmark script is written with the programming language python: The benchmark script by default uses the version of Python on your path.
 * **[Python-yaml](http://pyyaml.org "Python-yaml Website")**: PyYAML is a YAML parser and emitter for Python. We've picked YAML as the configuration file format for specifying the structure for the project.
 * **[SQLite](http://www.sqlite.org "SQLite Website")**: SQLite is a lightweight disk-based database that doesn't require a separate server process. We use the python built-in SQLite database to save the benchmark results.
 * **[Valgrind](http://valgrind.org "Valgrind Website")** (**Optional**): Valgrind is a suite of tools for debugging and profiling. This package is only needed if you want to run the memory benchmarks.
@@ -140,20 +140,20 @@ The libary block contains some settings that control the specified benchmark scr
 library: mlpack
 methods:
     PCA:
-        run: ['timing'] 
+        run: ['timing', 'metric', 'benchmark'] 
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris.csv', 'datasets/wine.csv']
+            - files: [['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']]
 
-            - files: ['datasets/iris.csv', 'datasets/wine.csv']
+            - files: [['datasets/wine_train.csv', 'datasets/wine_test.csv', 'datasets/wine_labels.csv']]
               options: '-d 2'
     NMF:
         run: [] 
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/ionosphere.csv']
+            - files: [['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']]
               options: '-r 6 -s 42 -u multdist'
 ```
 
@@ -220,10 +220,10 @@ methods:
     PCA:
         script: methods/mlpack/pca.py
         format: [csv, txt, hdf5, bin]
-        run: ['timing'] 
+        run: ['timing', 'metric', 'benchmark'] 
         iterations: 2
         datasets:
-            - files: ['isolet.csv', 'cities']
+            - files: [['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']]
               options: '-s'
 ```
 
