@@ -140,7 +140,7 @@ The libary block contains some settings that control the specified benchmark scr
 library: mlpack
 methods:
     PCA:
-        run: ['timing', 'metric', 'benchmark'] 
+        run: ['timing', 'metric', 'bootstrap'] 
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -220,7 +220,7 @@ methods:
     PCA:
         script: methods/mlpack/pca.py
         format: [csv, txt, hdf5, bin]
-        run: ['timing', 'metric', 'benchmark'] 
+        run: ['timing', 'metric', 'bootstrap'] 
         iterations: 2
         datasets:
             - files: [['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']]
