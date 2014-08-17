@@ -107,6 +107,8 @@ This will checkout the datasets from the benchmark-datasets repository and place
 ## Configuration
 The benchmark script requires several parameters that specify the benchmark runs, the parameters of the graph to be generated, etc. 
 
+For complete details, refer the wiki page : https://github.com/zoq/benchmarks/wiki/Google-Summer-of-Code-2014-:-Improvement-of-Automatic-Benchmarking-System
+
 The benchmark script comes with a default configuration. The default configuration will run all available benchmarks. This configuration can take quite a while to run (more than two weeks), so it would be best to adjust the configuration to to suite your time constraints. You can also command line options to selectively run benchmarks the options are described below.
 
 
