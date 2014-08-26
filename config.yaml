@@ -668,12 +668,11 @@ methods:
         script: methods/matlab/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                         'datasets/mnist_all.csv', 'datasets/tinyImages100k.csv']
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],
+                        ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     HMMGENERATE:
         run: ['timing']
         iteration: 3
@@ -853,12 +852,11 @@ methods:
         script: methods/scikit/linear_regression.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                        'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],
+                        ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     SparseCoding:
         run: ['timing']
         iteration: 3
@@ -1005,12 +1003,11 @@ methods:
         script: methods/mlpy/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],
+                        ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
 # Shogun - A Large Scale Machine Learning Toolbox
 library: shogun
@@ -1159,12 +1156,11 @@ methods:
         script: methods/shogun/linear_regression.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],
+                        ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
 # Weka: Data Mining Software in Java
 library: weka
@@ -1265,12 +1261,11 @@ methods:
         script: methods/weka/linear_regression.py
         format: [arff]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                         'datasets/ticdata2000.csv', 'datasets/TomsHardware.csv',
-                         'datasets/mnist_all.csv',  'datasets/tinyImages100k.csv']
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],
+                        ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 ---
 #  ANN:
 #  A Library for Approximate Nearest Neighbor Searching

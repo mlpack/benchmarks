@@ -79,7 +79,7 @@ class LinearRegression(object):
         testSet = LoadDataset(self.dataset[1])
 
       # Use the last row of the training set as the responses.  
-      X, y = SplitTrainData(self.dataset)
+      X, y = SplitTrainData(self.dataset[0])
 
       try:
         with totalTimer:
