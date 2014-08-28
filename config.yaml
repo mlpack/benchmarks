@@ -1056,7 +1056,7 @@ methods:
         run: ['timing']
         iteration: 3
         script: methods/shogun/kmeans.py
-        format: [csv, txt]
+        format: [arff, csv, txt]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options: '-c 2'
