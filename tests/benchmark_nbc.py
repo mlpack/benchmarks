@@ -72,37 +72,37 @@ class NBC_MLPACK_TEST(unittest.TestCase):
 
     self.assertTrue(clean)
 
-'''
-Test the weka Parametric Naive Bayes Classifier script.
-'''
-class NBC_WEKA_TEST(unittest.TestCase):
+# '''
+# Test the weka Parametric Naive Bayes Classifier script.
+# '''
+# class NBC_WEKA_TEST(unittest.TestCase):
 
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
-    self.verbose = False
-    self.timeout = 9000
+#   '''
+#   Test initialization.
+#   '''
+#   def setUp(self):
+#     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
+#     self.verbose = False
+#     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/weka/nbc.py")
-    obj = getattr(module, "NBC")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+#     module = Loader.ImportModuleFromPath("methods/weka/nbc.py")
+#     obj = getattr(module, "NBC")
+#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
   
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
+#   '''
+#   Test the constructor.
+#   '''
+#   def test_Constructor(self):
+#     self.assertEqual(self.instance.verbose, self.verbose)
+#     self.assertEqual(self.instance.timeout, self.timeout)
+#     self.assertEqual(self.instance.dataset, self.dataset)
 
-  '''
-  Test the 'RunTiming' function.
-  '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+#   '''
+#   Test the 'RunTiming' function.
+#   '''
+#   def test_RunTiming(self):
+#     result = self.instance.RunTiming("")
+#     self.assertTrue(result > 0)
 
 '''
 Test the shogun Parametric Naive Bayes Classifier script.

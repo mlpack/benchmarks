@@ -203,37 +203,37 @@ class ALLKNN_SHOGUN_TEST(unittest.TestCase):
     result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
 
-'''
-Test the weka All K-Nearest-Neighbors script.
-'''
-class ALLKNN_WEKA_TEST(unittest.TestCase):
+# '''
+# Test the weka All K-Nearest-Neighbors script.
+# '''
+# class ALLKNN_WEKA_TEST(unittest.TestCase):
 
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = "datasets/wine.csv"
-    self.verbose = False
-    self.timeout = 9000
+#   '''
+#   Test initialization.
+#   '''
+#   def setUp(self):
+#     self.dataset = "datasets/wine.csv"
+#     self.verbose = False
+#     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/weka/allknn.py")
-    obj = getattr(module, "ALLKNN")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+#     module = Loader.ImportModuleFromPath("methods/weka/allknn.py")
+#     obj = getattr(module, "ALLKNN")
+#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
+#   '''
+#   Test the constructor.
+#   '''
+#   def test_Constructor(self):
+#     self.assertEqual(self.instance.verbose, self.verbose)
+#     self.assertEqual(self.instance.timeout, self.timeout)
+#     self.assertEqual(self.instance.dataset, self.dataset)
 
-  '''
-  Test the 'RunTiming' function.
-  '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+#   '''
+#   Test the 'RunTiming' function.
+#   '''
+#   def test_RunTiming(self):
+#     result = self.instance.RunTiming("-k 3")
+#     self.assertTrue(result > 0)
 
 '''
 Test the ann All K-Nearest-Neighbors script.

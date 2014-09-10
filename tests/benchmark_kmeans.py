@@ -104,37 +104,37 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
     result = self.instance.RunTiming("-c 2")
     self.assertTrue(result > 0)
 
-'''
-Test the weka K-Means clustering script.
-'''
-class KMEANS_WEKA_TEST(unittest.TestCase):
+# '''
+# Test the weka K-Means clustering script.
+# '''
+# class KMEANS_WEKA_TEST(unittest.TestCase):
 
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = ['datasets/iris.csv']
-    self.verbose = False
-    self.timeout = 9000
+#   '''
+#   Test initialization.
+#   '''
+#   def setUp(self):
+#     self.dataset = ['datasets/iris.csv']
+#     self.verbose = False
+#     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/weka/kmeans.py")
-    obj = getattr(module, "KMEANS")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+#     module = Loader.ImportModuleFromPath("methods/weka/kmeans.py")
+#     obj = getattr(module, "KMEANS")
+#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
   
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
+#   '''
+#   Test the constructor.
+#   '''
+#   def test_Constructor(self):
+#     self.assertEqual(self.instance.verbose, self.verbose)
+#     self.assertEqual(self.instance.timeout, self.timeout)
+#     self.assertEqual(self.instance.dataset, self.dataset)
 
-  '''
-  Test the 'RunTiming' function.
-  '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-c 2")
-    self.assertTrue(result > 0)
+#   '''
+#   Test the 'RunTiming' function.
+#   '''
+#   def test_RunTiming(self):
+#     result = self.instance.RunTiming("-c 2")
+#     self.assertTrue(result > 0)
 
 '''
 Test the scikit K-Means clustering script.

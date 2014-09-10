@@ -74,30 +74,30 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
 
     self.assertTrue(clean)
 
-'''
-Test the weka Simple Linear Regression Prediction script.
-'''
-class LinearRegression_WEKA_TEST(unittest.TestCase):
+# '''
+# Test the weka Simple Linear Regression Prediction script.
+# '''
+# class LinearRegression_WEKA_TEST(unittest.TestCase):
 
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = ['datasets/iris_test.arff']
-    self.verbose = False
-    self.timeout = 9000
+#   '''
+#   Test initialization.
+#   '''
+#   def setUp(self):
+#     self.dataset = ['datasets/iris_test.arff']
+#     self.verbose = False
+#     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/weka/linear_regression.py")
-    obj = getattr(module, "LinearRegression")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+#     module = Loader.ImportModuleFromPath("methods/weka/linear_regression.py")
+#     obj = getattr(module, "LinearRegression")
+#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
   
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
+#   '''
+#   Test the constructor.
+#   '''
+#   def test_Constructor(self):
+#     self.assertEqual(self.instance.verbose, self.verbose)
+#     self.assertEqual(self.instance.timeout, self.timeout)
+#     self.assertEqual(self.instance.dataset, self.dataset)
 
 '''
 Test the shogun Simple Linear Regression Prediction script.
