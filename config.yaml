@@ -179,7 +179,7 @@ methods:
     KMEANS:
         run: ['timing']
         script: methods/mlpack/kmeans.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options: '-c 2'
@@ -377,6 +377,7 @@ methods:
             - files: ['datasets/iris.csv', 'datasets/vehicle.csv',
                       'datasets/waveform.csv']
               options: '-n'
+
     LinearRegression:
         run: ['timing']
         script: methods/mlpack/linear_regression.py
@@ -597,30 +598,33 @@ methods:
         run: ['timing']
         iteration: 3
         script: methods/matlab/kmeans.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
-            - files: ['datasets/waveform.csv']
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options: '-c 2'
 
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
 
-            - files: ['datasets/cloud.csv']
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
               options: '-c 5'
 
-            - files: ['datasets/USCensus1990.csv']
+            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
               options: '-c 6'
 
-            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
               options: '-c 7'
 
-            - files: ['datasets/isolet.csv']
+            - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
               options: '-c 26'
 
-            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
               options: '-c 10'
 
-            - files: ['datasets/1000000-10-randu.csv']
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     NBC:
         run: ['timing']
@@ -748,30 +752,33 @@ methods:
         run: ['timing']
         iteration: 3
         script: methods/scikit/kmeans.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
-            - files: ['datasets/waveform.csv']
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options: '-c 2'
 
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
 
-            - files: ['datasets/cloud.csv']
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
               options: '-c 5'
 
-            - files: ['datasets/USCensus1990.csv']
+            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
               options: '-c 6'
 
-            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
               options: '-c 7'
 
-            - files: ['datasets/isolet.csv']
+            - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
               options: '-c 26'
 
-            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
               options: '-c 10'
 
-            - files: ['datasets/1000000-10-randu.csv']
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     NBC:
         run: ['timing']
@@ -920,30 +927,33 @@ methods:
         run: ['timing']
         iteration: 3
         script: methods/mlpy/kmeans.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
-            - files: ['datasets/waveform.csv']
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options: '-c 2'
 
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
 
-            - files: ['datasets/cloud.csv']
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
               options: '-c 5'
 
-            - files: ['datasets/USCensus1990.csv']
+            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
               options: '-c 6'
 
-            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
               options: '-c 7'
 
-            - files: ['datasets/isolet.csv']
+            - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
               options: '-c 26'
 
-            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
               options: '-c 10'
 
-            - files: ['datasets/1000000-10-randu.csv']
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     KPCA:
         run: ['timing']
@@ -997,6 +1007,7 @@ methods:
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42'
+
     LinearRegression:
         run: ['timing']
         iteration: 3
@@ -1139,8 +1150,10 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
-                      'datasets/1000000-10-randu.csv']
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42'
+
     GMM:
         run: ['timing']
         iteration: 3
@@ -1218,7 +1231,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
     KMEANS:
-        run: ['timing']
+        run: []
         iteration: 3
         script: methods/weka/kmeans.py
         format: [arff]
@@ -1258,6 +1271,7 @@ methods:
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42'
+
     LinearRegression:
         run: ['timing']
         iteration: 3
