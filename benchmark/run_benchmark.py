@@ -280,8 +280,11 @@ def Main(configfile, blocks, log, methodBlocks, update):
 
                     buildId, libaryId = build[name]
                     if update:
-                      db.UpdateResult(buildId, libaryId, dataMatrix[row][col], 
+                      try:
+                        db.UpdateResult(buildId, libaryId, dataMatrix[row][col], 
                           var, datasetId, methodId)
+                      except Exception:
+                        pass
                     else:
                       db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
                           datasetId, methodId)
