@@ -220,8 +220,6 @@ endif
 .scripts:
 	# Compile the java files for the weka methods.
 	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
-	# Compile the shogun K-Means (with initial centroids) Clustering method.
-	g++ -O0 methods/shogun/src/kmeans.cpp -o methods/shogun/kmeans -I$(SHOGUN_PATH)/include -L$(SHOGUN_PATH)/lib -lshogun
 	# Compile the ann scripts.
 	g++ -O0 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(MLPACK_PATH)/include -L$(MLPACK_PATH)/lib -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
