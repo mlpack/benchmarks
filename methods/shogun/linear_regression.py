@@ -25,6 +25,8 @@ if metrics_folder not in sys.path:
 from log import *
 from timer import *
 from definitions import *
+from misc import *
+
 import numpy as np
 from modshogun import RegressionLabels, RealFeatures
 from modshogun import LeastSquaresRegression
@@ -63,12 +65,10 @@ class LinearRegression(object):
       try:
         Log.Info("Loading dataset", self.verbose)
         if len(self.dataset) == 2:
-          X = np.genfromtxt(self.dataset[0], delimiter=',')
-          y = np.genfromtxt(self.dataset[1], delimiter=',')
-        else:
-          X = np.genfromtxt(self.dataset[0], delimiter=',')
-          y = X[:, (X.shape[1] - 1)]
-          X = X[:,:-1]
+          testSet = np.genfromtxt(self.dataset[1], delimiter=',')
+
+        # Use the last row of the training set as the responses.
+        X, y = SplitTrainData(self.dataset[0])
 
         with totalTimer:
           # Perform linear regression.
