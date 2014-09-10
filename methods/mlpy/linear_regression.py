@@ -76,29 +76,31 @@ class LinearRegression(object):
       # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) >= 2:
-        X = np.genfromtxt(self.dataset[0], delimiter=',')
-        y = np.genfromtxt(self.dataset[2], delimiter=',')
-        #load the test data
         test_data = np.genfromtxt(self.dataset[1], delimiter=',')
-      else:
-        X = np.genfromtxt(self.dataset, delimiter=',')
-        y = X[:, (X.shape[1] - 1)]
-        X = X[:,:-1]
+
+      # Use the last row of the training set as the responses.
+      X, y = SplitTrainData(self.dataset[0])
+
       try:
         with totalTimer:
           # Perform linear regression.
           model = mlpy.OLS()
           model.learn(X, y)
           b =  model.beta()
-          #prediction on the test data.
-          pred = model.pred(test_data)
-          np.savetxt("mlpy_lr_predictions.csv", pred, delimiter="\n")
+
+          if len(self.dataset) >= 2:
+            #prediction on the test data.
+            pred = model.pred(test_data)
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
       q.put(time)
+
+      if len(self.dataset) >= 2:
+        np.savetxt("mlpy_lr_predictions.csv", pred, delimiter="\n")
+
       return time
 
     return timeout(RunLinearRegressionMlpy, self.timeout)
