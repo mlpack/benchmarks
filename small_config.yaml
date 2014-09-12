@@ -32,7 +32,8 @@ methods:
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
     NBC:
         run: ['timing']
@@ -131,11 +132,9 @@ methods:
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
-             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
-                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
-                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
-                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+             - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
+                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LocalCoordinateCoding:
         run: []
         iteration: 3
