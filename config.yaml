@@ -147,6 +147,54 @@ methods:
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
               options: '-k cosine'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
+              options: '-k gaussian --nystroem_method -s kmeans'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
+              options: '-k polynomial --nystroem_method -s kmeans'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
+              options: '-k cosine --nystroem_method -s kmeans'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
+              options: '-k gaussian --nystroem_method -s random'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
+              options: '-k polynomial --nystroem_method -s random'
+
+            - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
+                      'datasets/abalone.csv', 'datasets/bank8FM.csv',
+                      'datasets/waveform.csv', 'datasets/TomsHardware.csv',
+                      'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
+                      'datasets/pendigits.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv']
+              options: '-k cosine --nystroem_method -s random'
     LARS:
           run: ['timing']
           script: methods/mlpack/lars.py
@@ -195,7 +243,7 @@ methods:
               options: '-c 6'
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
-                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
               options: '-c 7'
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
@@ -614,7 +662,7 @@ methods:
               options: '-c 6'
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
-                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
               options: '-c 7'
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
@@ -768,7 +816,7 @@ methods:
               options: '-c 6'
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
-                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
               options: '-c 7'
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
@@ -943,7 +991,7 @@ methods:
               options: '-c 6'
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
-                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
               options: '-c 7'
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
@@ -1083,7 +1131,7 @@ methods:
               options: '-c 6'
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
-                       ['datasets/wine_qual.csv', 'datasets/wine_qual.csv'] ]
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
               options: '-c 7'
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
