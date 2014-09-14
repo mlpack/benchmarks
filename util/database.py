@@ -192,6 +192,24 @@ class Database:
       self.cur.execute("INSERT INTO metrics VALUES (NULL,?,?,?,?,?)",
           (buildId, libraryId, metric, datasetId, methodId))
 
+
+  def UpdateMetricResult(self, buildId, libraryId, metric, datasetId, methodId):
+    with self.con:
+      if self.GetMetricResult(buildId, libaryId, datasetId, methodId):
+        self.cur.execute("UPDATE metrics SET metric=" + str(metric)
+            + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
+            + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+            + " AND method_id=" + str(methodId))
+      else:
+        self.NewMetricResult(buildId, libraryId, metric, datasetId, methodId)
+
+  def GetMetricResult(self, buildId, libaryId, datasetId, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId) 
+          + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
+          + str(datasetId) + " AND method_id=" + str(methodId))
+      return self.cur.fetchall()
+
   '''
   Add a new dataset record to the datasets table.
 

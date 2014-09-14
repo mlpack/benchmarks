@@ -133,25 +133,19 @@ class PERCEPTRON(object):
       #probabilities = self.model.predict_proba(testData)
       predictedlabels = self.model.predict(testData)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc/100
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      return metrics_dict
+      # Datastructure to store the results.
+      metrics = {}
 
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      return metrics
     else:
-      Log.Fatal("This method requires three datasets.")
+      Log.Warn("This method requires three datasets.")
+      return None

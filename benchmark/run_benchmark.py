@@ -297,7 +297,8 @@ def Main(configfile, blocks, log, methodBlocks, update):
                       buildID, libraryID = build[name]
                       if update:
                         try:
-                          pass
+                          db.UpdateMetricResult(buildID, libraryID,
+                            simplejson.dumps(metrics), datasetId, methodId)
                         except Exception:
                           pass
                       else:

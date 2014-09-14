@@ -826,11 +826,9 @@ methods:
         script: methods/scikit/perceptron.py
         format: [csv, txt, arff]
         datasets:
-            - files: [ ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
-                       ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
-                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv'],
-                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv'],
-                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
               options: '-i 10000'
 
@@ -847,7 +845,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -u alspgrad'
     KMEANS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/kmeans.py
         format: [csv, txt, arff]
@@ -952,7 +950,7 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
     LinearRegression:
-        run: ['timing']
+        run: []
         iteration: 3
         script: methods/scikit/linear_regression.py
         format: [csv, txt]

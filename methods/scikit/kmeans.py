@@ -82,8 +82,8 @@ class KMEANS(object):
         # Create the KMeans object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
-            kmeans = KMeans(k=int(clusters.group(1)), init=centroids, n_init=1, 
-                max_iter=m)
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), init=centroids, 
+                n_init=1, max_iter=m)
           elif seed:
             kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', 
                 n_init=1, max_iter=m, random_state=int(seed.group(1)))
