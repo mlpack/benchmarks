@@ -66,8 +66,11 @@ methodTemplate = """
 </div></div>
 <div id="collapse%(groupOne)s" class="container__bottomContent graph collapse">
 <div><div class="panel panel-default">
-<div class="panel-heading">Benchmark Results</div>
-<div class="panel-body">%(resultsPanel)s</div></div></div></div>
+<div class="panel-heading">Timing Results</div>
+<div class="panel-body">%(resultsPanel)s</div></div></div>
+<div><div class="panel panel-default">
+<div class="panel-heading">Metric Results</div>
+<div class="panel-body">%(resultsPanelMetric)s</div></div></div></div>
 <div id="collapse%(groupTwo)s" class="container__bottomContent infos collapse">
 <div>
 <div class="panel panel-default">
@@ -126,201 +129,15 @@ resultsPanel = """
 </table></div></div></div>
 """
 
-groupedBarTemplate = """
-<!DOCTYPE html>
-<meta charset="utf-8">
-<head>
-<link rel="stylesheet" href="util/css/theme.dropbox.css">
-<link rel="stylesheet" href="util/css/bootstrap-responsive.css">
-<link rel="stylesheet" href="util/css/bootstrap.css">
-<!-- load jQuery and tablesorter scripts -->
-<script type="text/javascript" src="util/js/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="util/js/jquery.tablesorter.js"></script>
-<script type="text/javascript" src="util/js/bootstrap.min.js"></script>
-<script src="util/js/jquery.tablesorter.widgets.min.js"></script>
-</head>
-<style>
-body {
-      font: 10px sans-serif;
-}
-.axis path,
-.axis line {
-    fill: none;
-      stroke: #000;
-        shape-rendering: crispEdges;
-}
-.bar {
-    fill: steelblue;
-}
-.x.axis path {
-    display: none;
-}
-</style>
-<body>
-<div class = "row-fluid">
-<h1>Metrics Representation and Analysis for method : %(methodName)s</h1>
-<div class="span12">
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-var div_name = "div.span12"
-draw_graphs(div_name)
-
-function draw_graphs(reference) {
-  $(reference).empty()
-  var width = $(reference).width();
-  var height = 500;
-var margin = {top: 20, right: 20, bottom: 30, left: 40};
-width = width - 2*margin.left - 2*margin.right;
-height = height - margin.top - margin.bottom;
-var x0 = d3.scale.ordinal()
-     .rangeRoundBands([0, width], .1);
-var x1 = d3.scale.ordinal();
-var y = d3.scale.linear()
-    .range([height, -1]);
-var color = d3.scale.ordinal()
-     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#d0859b", "#c0743f",]);
-var xAxis = d3.svg.axis()
-     .scale(x0)
-     .orient("bottom");
-var yAxis = d3.svg.axis()
-     .scale(y)
-     .orient("left")
-     .tickFormat(d3.format(".2s"));
-
-var svg = d3.select(reference).append("svg")
-     .attr("width", width + margin.left + margin.right)
-     .attr("height", height + margin.top + margin.bottom)
-     .append("g")
-     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-d3.csv(%(metricsFile)s, function(error, data) {
-  var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "LibName"; });
-  data.forEach(function(d) {
-    d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });
-  });
-  x0.domain(data.map(function(d) { return d.LibName; }));
-  x1.domain(ageNames).rangeRoundBands([0, x0.rangeBand()]);
-  y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Metric Value");
-  var state = svg.selectAll(".state")
-      .data(data)
-      .enter().append("g")
-      .attr("class", "g")
-      .attr("transform", function(d) { return "translate(" + x0(d.LibName) + ",0)"; });
-  state.selectAll("rect")
-      .data(function(d) { return d.ages; })
-      .enter().append("rect")
-      .attr("width", x1.rangeBand())
-      .attr("x", function(d) { return x1(d.name); })
-      .attr("y", function(d) { return y(d.value); })
-      .attr("height", function(d) { return height - y(d.value); })
-      .style("fill", function(d) { return color(d.name); });
-  var legend = svg.selectAll(".legend")
-      .data(ageNames.slice().reverse())
-      .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(20," + i * 20 + ")"; });
-  legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
-  legend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) { return d; });
-});
-};
-$(window).resize(function() {
-  draw_graphs(div_name);
-});
-</script>
-<script>
-$(function(){
-    $("#myTable").tablesorter(
-      {
-            theme : 'dropbox',
-            sortList : [[1,1]],
-                  
-            // header layout template; {icon} needed for some themes
-            headerTemplate : '{content}{icon}',
-                           
-            // initialize column styling of the table
-            widgets : ["columns"],
-            widgetOptions : {
-            // change the default column class names
-            // primary is the first column sorted, secondary is the second, etc
-            columns : [ "primary", "secondary", "tertiary" ]
-            }
-      
-});
-});
-</script>
-</div>
-</div>
-"""
-
-pieChartTemplate = """
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-body {
-    font: 10px sans-serif;
-}
-.arc path {
-    stroke: #fff;
-}
-</style>
-<body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-var width = 960,
-    height = 500,
-    radius = Math.min(width, height) / 2;
-var color = d3.scale.ordinal()
-     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-var arc = d3.svg.arc()
-     .outerRadius(radius - 10)
-     .innerRadius(0);
-var pie = d3.layout.pie()
-     .sort(null)
-     .value(function(d) { return d.population; });
-var svg = d3.select("body").append("svg")
-     .attr("width", width)
-     .attr("height", height)
-     .append("g")
-     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-d3.csv(%(metricFile)s, function(error, data) {
-  data.forEach(function(d) {
-    d.population = +d.population;
-  });
-  var g = svg.selectAll(".arc")
-     .data(pie(data))
-     .enter().append("g")
-     .attr("class", "arc");
-  g.append("path")
-     .attr("d", arc)
-     .style("fill", function(d) { return color(d.data.age); });
-  g.append("text")
-     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
-     .attr("dy", ".35em")
-     .style("text-anchor", "middle")
-     .text(function(d) { return d.data.age; });
-});
-</script>
+resultsPanelMetric = """
+<div class="panel-body">
+<div class="text-center"><h5>%(datasetName)s</h5></div>
+<div><img class="panel" src="%(barChart)s" alt="" style="max-width: 100%%;"></div>
+<div><div class="panel">
+<table class="table table-striped">
+<thead><tr><th></th>%(timingHeader)s</tr></thead>
+<tbody>%(timingTable)s</tbody>
+</table></div></div></div>
 """
 
 progressBarStyle = "%;-webkit-border-radius:4px 4px 4px 4px;-moz-border-radius:4px 4px 4px 4px;border-radius:4px 4px 4px 4px;"

@@ -419,7 +419,7 @@ class Database:
   '''
   def GetMethodMetricResultsForLibrary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT metric FROM metrics JOIN datasets ON" + 
+      self.cur.execute("SELECT * FROM metrics JOIN datasets ON" + 
           " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()

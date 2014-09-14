@@ -291,8 +291,18 @@ def Main(configfile, blocks, log, methodBlocks, update):
 
                 
                 if 'metric' in tasks:
-                  metric_dict = instance.RunMetrics(options)
-                  Log.print_dict(metric_dict)
+                  metrics = instance.RunMetrics(options)
+                  if metrics:
+                    if log:
+                      buildID, libraryID = build[name]
+                      if update:
+                        try:
+                          pass
+                        except Exception:
+                          pass
+                      else:
+                        db.NewMetricResult(buildID, libraryID,
+                            simplejson.dumps(metrics), datasetId, methodId)
 
                 if 'bootstrap' in tasks:
                   bootstrap_dict={}
@@ -338,6 +348,8 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   metrics_string = simplejson.dumps(method_dict)
                   buildID, libraryID = build[name]
                   db.NewMetricResult(buildID, libraryID, metrics_string, datasetId, methodId)
+
+
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
           col += 1

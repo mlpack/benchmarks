@@ -25,11 +25,185 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import re
 import collections
+import simplejson
 
 
 # Use this colors to plot the graph.
 colors = ['#3366CC', '#DC3912', '#FF9900', '#FFFF32', '#109618', '#990099',
           '#DD4477', '#AAAA11', '#22AA99']
+
+
+
+def GenerateBarChartMetric(results, libraries, fileName, datasetName, bestlib="mlpack",
+    backgroundColor="#FFFFFF", textColor="#6e6e6e", gridColor="#6e6e6e"):
+  # Bar chart settings.
+  lineWidth = 0.1
+  barWidth = 0.15
+  opacity = 0.9
+  fill = True
+  windowWidth = 8.1
+  windowHeight = 3.3
+  gridLineWidth = 0.2
+
+  # Create figure and set the color.
+  matplotlib.rc('axes', facecolor=backgroundColor)
+  matplotlib.rcParams.update({'font.size': 8})
+  fig = plt.figure(figsize=(windowWidth, windowHeight),
+      facecolor=backgroundColor, dpi=100)
+  plt.rc('lines', linewidth=lineWidth)
+  ax = plt.subplot(1,1,1)
+
+  # Set the grid style.
+  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
+  ax.xaxis.grid(False)
+  ax.spines['left'].set_visible(False)
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.get_xaxis().tick_bottom()
+  ax.get_yaxis().tick_left()
+  ax.spines['bottom'].set_linewidth(gridLineWidth)
+
+  # Data structures to set the legend and the right postions for the bar chart.
+  legendIndex = []
+  color = {}
+  chartHandler = []
+  legendNames = []
+  nextBar = 0
+  legendPosition = 0
+  legendBegin = 0
+
+  # use this variable to count the time.
+  totalTime = 0
+  # Use this variable to count the timeouts.
+  timeouts = 0
+  # Use this variable to count the failures.
+  failure = 0
+
+  # Use this data structures to generate the timing table and the progress bar.
+  timingData = {}
+
+  # Use this variable to get use the data for the right library.
+  l = 0
+
+
+  # Iterate through the data and plot the bar chart.
+  for result in results:
+    for i, data in enumerate(result):
+      if data[7] == datasetName:
+        for key, value in simplejson.loads(data[3]).items():
+
+          # The time value.
+          time = value
+
+          # The name of the dataset.
+          dataset = key
+
+          # Save the timing data for the timing table.
+          if dataset in timingData:
+            timingData[dataset][l] = time
+          else:
+            timingData[dataset] = ['-' for x in range(len(libraries))]
+            timingData[dataset][l] = time
+
+          # We can only plot scalar values so we jump over the other.
+          if time == "failure":
+            failure += 1
+            continue
+          elif str(time).count(">") > 0:
+            timeouts += 1
+            continue
+
+          totalTime += time
+    l += 1
+
+  timingData = collections.OrderedDict(sorted(timingData.items()))
+
+  tmp = timingData.copy()
+  if failure > 0 or timeouts > 0:
+    # Get the maximum value of the results.
+    values = [item for sublist in timingData.values() for item in sublist]
+    maxValue = [v if isFloat(v) else 1 for v in values]
+    maxValue = max(maxValue)
+  else:
+    maxValue = 0
+
+  for key, values in timingData.items():
+    l = 0
+    legendIndex.append(nextBar)
+    for value in values:
+      color = colors[l % len(colors)]
+
+      if isFloat(value):
+        plt.bar(nextBar, value, barWidth, alpha=opacity, color=color,
+            fill=fill,lw=0.2)
+      else:
+        plt.bar(nextBar, maxValue, barWidth, alpha=opacity, color="gray",
+            fill=fill, lw=0.2)
+
+      time = value if isFloat(value) else 10
+
+      nextBar += barWidth
+      l += 1
+    nextBar += (4 * barWidth)
+
+  # Create a proxy artist for the legend.
+  handler = []
+  for l, library in enumerate(libraries):
+    color = colors[l % len(colors)]
+    handler.append(plt.Rectangle((0, 0), 1, 1, fc=color, alpha=0.6))
+
+  handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
+
+  # Set the label for the x-axis.
+  plt.xticks(legendIndex , list(timingData.keys()), rotation=30, ha='right')
+
+  # Set the color and the font of the x-axis and y-axis label.
+  ax.tick_params(axis='both', which='major', labelsize=8, labelcolor=textColor)
+  ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor=textColor)
+
+  # Create the legend above the bar chart.
+  lgd = ax.legend(handler, libraries + ["failure/ timeout"], loc='upper center',
+    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(libraries) / 6)), fancybox=True,
+    shadow=False, ncol=6, fontsize=8)
+  lgd.get_frame().set_linewidth(0)
+  for label in lgd.get_texts():
+    label.set_color(textColor)
+
+  # Set axis labels.
+  plt.ylabel("time [s]", color=textColor)
+
+  # Save the bar chart.
+  fig.tight_layout()
+  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight',
+    facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
+  plt.close()
+
+  # Count the time in which bestlib is the best.
+  bestLibCount = 0
+  # try:
+  #   bestLibIndex = libraries.index(bestlib)
+  # except ValueError:
+  #   pass
+  # else:
+  #   for dataset, results in timingData.items():
+  #     results = [v if isFloat(v) else float('Inf') for v in results]
+  #     if bestLibIndex == results.index(min(results)):
+  #       bestLibCount += 1
+
+  return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 '''
 Generate a bar chart with the specified informations.

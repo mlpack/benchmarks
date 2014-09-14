@@ -76,14 +76,14 @@ class PERCEPTRON(object):
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
-  
+  '''
   def __del__(self):    
     Log.Info("Clean up.", self.verbose)
-    filelist = ["gmon.out", "output"]
+    filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-  '''
+  
   '''
   Run valgrind massif profiler on the Perceptron Prediction 
   method. If the method has been successfully completed the report is saved in 
@@ -162,32 +162,24 @@ class PERCEPTRON(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-
       predictedlabels = LoadDataset("output.csv")
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['SimpleMSE'] = SimpleMSE
-      return metrics_dict
+      # Datastructure to store the results.
+      metrics = {}
 
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      return metrics
     else:
-      Log.Fatal("This method requires three datasets.")
+      Log.Warn("This method requires three datasets.")
+      return None
 
   '''
   Parse the timer data form a given string.

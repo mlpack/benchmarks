@@ -6,7 +6,6 @@
 '''
 
 import os, sys, inspect
-import glob
 
 # Import the util path, this method even works if the path contains
 # symlinks to modules.
@@ -37,7 +36,7 @@ Create the top line chart.
 '''
 def CreateTopLineChart(db, topChartColor, textColor, gridColor):
   res = db.GetResultsSum("mlpack")
-  if res and res[1][0]:
+  if res:
     build, results = res
   else:
     return ""
@@ -91,9 +90,9 @@ def CreateDatasetTable(resultList):
   for results in resultList:
     results = results[0]
     for result in results:
+      result = result["timing"]
       for data in result:
         datasetName = data[8]
-
         if datasetName not in datasets:
          datasets.append(datasetName)
 
@@ -143,14 +142,6 @@ def CreateMemoryContent(results, chartColor, textColor, gridColor):
 
   return memoryContent
 
-def getMethodCount(db, buildIds, methodId):
-  count = 0
-  for buildId in buildIds:
-    metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], methodId)
-    if metrics_string:
-      count += 1
-  return count
-
 '''
 Create the method info content.
 
@@ -176,76 +167,6 @@ def CreateMethodInfo(results, methodName):
   return methodInfo
 
 '''
-Print the dictionary of metrics obtained after bootstrapping
-
-@param metrics_dictionary - The dictionary containing the results of
-bootstrap analysis performed for the method
-@param HTML - The string containing the bar chart template as HTML and JS
-'''
-def PrintMetricsDict(metrics_dictionary):
-  HTML = ""
-  HTML += "<br><br>"
-  HTML += "<table id = \"myTable\" class = \"tablesorter\"><thead><tr><th></th>"
-  # First add the header (Metric Names)
-  for key, value in metrics_dictionary.items():
-    for k,v in sorted(value.items()):
-      HTML += "<th>"
-      HTML += k
-      HTML += "</th>"
-    break
-  HTML += "</tr></thead><tbody>"
-  #Now add the metric values
-  for key, value in metrics_dictionary.items():
-    HTML += "<tr>"
-    HTML += "<td>"
-    HTML += key
-    HTML += "</td>"
-    for k, v in sorted(value.items()):
-      HTML += "<td>"
-      HTML += str(v)
-      HTML += "</td>"
-    HTML += "</tr>"
-  HTML += "</tbody></table>"
-  HTML += "</body>"
-  HTML += "</html>"
-  return HTML
-
-'''
-Rename the report files if already exist.
-
-@param reportfile - Name of the HTML reports file to be renamed.
-@param methodName - Name of the method in consideration
-'''
-def RenameReportsFile(reportfile, methodName):
-  if os.path.isfile(reportfile):
-    searchKey = methodName
-    searchKey += "*"
-    fileList = glob.glob(searchKey)
-    index = len(methodName)
-    highestFileNum = []
-    stringNum = ""
-    for fileName in fileList:
-      stringNum = fileName[index]
-      if stringNum != '.':
-        num = int(stringNum)
-        highestFileNum.append(num)
-    if stringNum != "":
-      #Find max number
-      maxNum = 0
-      for num in highestFileNum:
-        if num >= maxNum:
-          maxNum = num
-      newName = methodName
-      newName += str(maxNum+1)
-      newName += ".html"
-      os.rename(reportfile,newName)
-    else:
-      newName = methodName
-      newName += str(1)
-      newName += ".html"
-      os.rename(reportfile,newName)
-
-'''
 Create the method container with the information from the database.
 
 @param db - The database object.
@@ -264,81 +185,41 @@ def MethodReports(db, chartColor, textColor, gridColor):
   methodGroup = {}
   # Iterate throw all methods and create for each method a new container.
   for method in db.GetAllMethods():
+
     methodResults = []
     methodLibararies = []
     resultBuildId = []
-    limit = getMethodCount(db, buildIds, method[0])
     for buildId in buildIds:
-      HTML = ""
-      results = db.GetMethodResultsForLibary(buildId[0], method[0])
-      metrics_string = db.GetMethodMetricResultsForLibrary(buildId[0], method[0])
+      timing_results = db.GetMethodResultsForLibary(buildId[0], method[0])
+      metric_results = db.GetMethodMetricResultsForLibrary(buildId[0], method[0])
 
-      # Check if the result is empty. In this case there are no results for the
-      # particular method id.
-      if not metrics_string:
-        continue
+      results = {}
+      if timing_results:
+        results["timing"] = timing_results
 
-      # The return value is a list of tupels. We are interested in the first
-      # element of the first tuple.
-      metrics_string = metrics_string[0][0]
+      if metric_results:
+        results["metric"] = metric_results
 
-      #Get the dictionary back by de-serializing the metrics string!
-      metrics_dict = simplejson.loads(metrics_string)
-      #Write the metrics dictionary into a CSV file
-      metricsFileName = "\"metrics"
-      metricsFileName += str(method[0])
-      metricsFileName += ".csv\""
-      metricsFile = "metrics"
-      metricsFile += str(method[0])
-      metricsFile += ".csv"
-      metrics_file = open(metricsFile,'w')
-      header = "LibName,"
-      for key, value in metrics_dict.items():
-        for new_key, new_val in sorted(value.items()):
-          header += new_key
-          header += ","
-        header += '\n'
-        break
-      metrics_file.write(header)
-      
-      for key, value in metrics_dict.items():
-        body = ""
-        body += key
-        body += ","
-        for new_k, new_val in sorted(value.items()):
-          body += str(new_val)
-          body += ","
-        body += "\n"
-        metrics_file.write(body)
-      #Create the actual HTML string from template
-      methodName = {'methodName': method[1], 'metricsFile' : metricsFileName}
-      HTML += groupedBarTemplate % methodName
-      
-      # Print the dictionary too!
-      HTML += PrintMetricsDict(metrics_dict)
-      
-      if buildId[0] == limit:
-        htmlFile = ""
-        htmlFile += method[1]
-        htmlFile += ".html"
-        #Check if this file already exists. Rename the file if so.
-        RenameReportsFile(htmlFile, method[1])
-        
-        #Write the html string to the <method>.html file
-        html_file = open(htmlFile, 'w')
-        html_file.write(HTML)
+      results["id"] = method[0]
 
-      if results:
+      # # Merge the timing and the metric values and add the method id at the end.
+      # # We also add a flag to the list which indicates if the results contains
+      # # metric or timing results.
+      # results = [ (timing_results + ('timing',) if timing_results else []) +
+      #             (metric_results + ('metric',) if metric_results else []) +
+      #             (method[0],) ]
+
+      if 'timing' in results or 'metric' in results:
         methodLibararies.append(buildId[1])
         resultBuildId.append(buildId[0])
         methodResults.append(results)
 
-      if methodResults:
-        t = (methodResults, methodLibararies, resultBuildId)
-        if method[1] in methodGroup:
-          methodGroup[method[1]].append(t)
-        else:
-          methodGroup[method[1]] = [t]
+    if methodResults:
+      t = (methodResults, methodLibararies, resultBuildId)
+      if method[1] in methodGroup:
+        methodGroup[method[1]].append(t)
+      else:
+        methodGroup[method[1]] = [t]  
 
   methodGroup = collections.OrderedDict(sorted(methodGroup.items()))
   collapseGroup = 0
@@ -348,6 +229,8 @@ def MethodReports(db, chartColor, textColor, gridColor):
     reportValues["methodName"] = methodName
 
     resultPanel = ""
+    resultPanelMetric = ""
+
     methodInfo = ""
     memoryContent = ""
 
@@ -368,16 +251,33 @@ def MethodReports(db, chartColor, textColor, gridColor):
       resultValues = {}
       groupPanel = {}
 
-      methodResults = result[0]
+      groupPanelMetric = {}
+
+      resultValuesMetric = {}
+
+
+      methodResultsTiming = []
+      for resTiming in result[0]:
+        methodResultsTiming.append(resTiming["timing"])
+
+      methodResultsMetric = []
+      for resMetric in result[0]:
+        methodResultsMetric.append(resMetric["metric"])
+
       methodLibararies = result[1]
       resultBuildId = result[2]
-      methodId = methodResults[0][0][6]
+      methodId = result[0][0]["id"]
+
+      
 
       # Generate a "unique" hash for the chart name.
       chartHash = str(hash(str(result)))
 
-      # Generate a "unique" name for the line chart.
-      lineChartName = "img/line_" + chartHash + ".png"
+      # Generate a "unique" name for the timing line chart.
+      lineChartNameTiming = "img/line_" + chartHash + "_timing.png"
+
+      # Generate a "unique" name for the metric line chart.
+      lineChartNameMetric = "img/line_" + chartHash + "_metric.png"
 
       res = db.GetResultsMethodSum("mlpack", methodId)
       if res:
@@ -385,20 +285,30 @@ def MethodReports(db, chartColor, textColor, gridColor):
       else:
         continue
 
+
+      parameters = db.GetMethodParameters(methodId)
+      if parameters:
+        parameters = parameters[0][0]
+      else:
+        parameters = ""
+
       GenerateSingleLineChart(data=methodResultsSum,
-          fileName="reports/" + lineChartName, backgroundColor=chartColor,
+          fileName="reports/" + lineChartNameTiming, backgroundColor=chartColor,
           textColor=textColor, gridColor=gridColor)
 
-      # Generate a "unique" name for the bar chart.
-      barChartName = "img/bar_" + chartHash + ".png"
+      # Generate a "unique" name for the timing bar chart.
+      barChartNameTiming = "img/bar_" + chartHash + "_timing.png"
 
-      # Create the bar chart.
-      ChartInfo = GenerateBarChart(results=methodResults,
-          libraries=methodLibararies, fileName="reports/" + barChartName,
+      
+
+      # Create the timing bar chart.
+      ChartInfoTiming = GenerateBarChart(results=methodResultsTiming,
+          libraries=methodLibararies, fileName="reports/" + barChartNameTiming,
           backgroundColor=chartColor, textColor=textColor, gridColor=gridColor)
 
-      numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfo
+      numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfoTiming
 
+      
       # Increase the status information.
       failureCount += failure
       datasetCount += numDatasets
@@ -410,23 +320,54 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
       libCount = libCount if libCount >= len(methodLibararies) else len(methodLibararies)
 
-      parameters = db.GetMethodParameters(methodId)
-      if parameters:
-        parameters = parameters[0][0]
-      else:
-        parameters = ""
-
-      resultValues["parameters"] = lineChartName
-      resultValues["lineChart"] = lineChartName
-      resultValues["barChart"] = barChartName
+      resultValues["parameters"] = lineChartNameTiming
+      resultValues["lineChart"] = lineChartNameTiming
+      resultValues["barChart"] = barChartNameTiming
       resultValues["timingHeader"] = header
       resultValues["timingTable"] = timingTable
 
-      groupPanel["nameID"] = chartHash
+      groupPanel["nameID"] = chartHash + "t"
       groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
       groupPanel["content"] = resultsPanel % resultValues
 
+
+
+
+      datasetNames = []
+      for data in methodResultsMetric:
+        for res in data:
+          datasetNames.append(res[7])
+
+      groupPanelMetric["nameID"] = chartHash + "m"
+      groupPanelMetric["name"] = "Parameters: " + (parameters if parameters else "None")
+
+      groupPanelMetric["content"] = ""
+      for dataSetName in set(datasetNames):
+        # Generate a "unique" name for the metric bar chart.
+        barChartNameMetric = "img/bar_" + chartHash + "_metric_" + dataSetName + ".png"
+
+        ChartInfoMetric = GenerateBarChartMetric(results=methodResultsMetric,
+            libraries=methodLibararies, fileName="reports/" + barChartNameMetric,
+            datasetName=dataSetName, backgroundColor=chartColor, 
+            textColor=textColor, gridColor=gridColor)
+        numDatasetsMetric, totalTimeMetric, failureMetric, timeoutsMetric, bestLibnumMetric, timingDataMetric = ChartInfoMetric
+        headerMetric, timingTableMetric = CreateTimingTable(timingDataMetric, methodLibararies)
+
+        resultValuesMetric["parameters"] = lineChartNameMetric
+        resultValuesMetric["datasetName"] = dataSetName
+        resultValuesMetric["barChart"] = barChartNameMetric
+        resultValuesMetric["timingHeader"] = headerMetric
+        resultValuesMetric["timingTable"] = timingTableMetric
+
+        groupPanelMetric["content"] += resultsPanelMetric % resultValuesMetric
+        # Increase the status information.
+        failureCount += failureMetric
+        timeoutCount += timeoutsMetric
+        bestLibCount += bestLibnumMetric
+
       resultPanel += resultsTemplate % groupPanel
+      resultPanelMetric += resultsTemplate % groupPanelMetric
+
 
       # Create the memory content.
       if mlpackMemoryBuilId:
@@ -474,7 +415,13 @@ def MethodReports(db, chartColor, textColor, gridColor):
     reportValues["datasetTable"] = datasetTable
     reportValues["memoryContent"] = memoryContent
     reportValues["methodInfo"] = methodInfo
+
+
     reportValues["resultsPanel"] = resultPanel
+    reportValues["resultsPanelMetric"] = resultPanelMetric
+
+
+
     reportValues["methods"] = len(results)
     reportValues["groupOne"] = collapseGroup
     reportValues["groupTwo"] = collapseGroup + 1
@@ -653,8 +600,8 @@ def Main(configfile):
   template = pageTemplate % reportValues
 
   # Write the new index.html file.
-  with open("reports/index.html", 'w') as fid:
-   fid.write(template)
+  with open("reports/index.html", 'wb') as fid:
+    fid.write(template.encode('UTF-8'))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the memory benchmark
@@ -666,4 +613,3 @@ if __name__ == '__main__':
 
   if args:
     Main(args.config)
-
