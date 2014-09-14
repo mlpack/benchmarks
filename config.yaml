@@ -65,8 +65,8 @@ methods:
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
                        ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
-                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv', 'datasets/madelon_labels.csv'],
-                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv', 'datasets/arcene_labels.csv'] ]
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
+                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
               options: '-i 10000'
 
     DecisionStump:
@@ -656,15 +656,13 @@ methods:
               options: '-d 2 -s'
 
     PERCEPTRON:
-        run: []
+        run: ['metric', 'timing']
         script: methods/matlab/perceptron.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
-            - files: [ ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
-                       ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
-                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv'],
-                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv'],
-                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
               options: '-i 10000'
 
@@ -753,7 +751,7 @@ methods:
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
               options: '-M 0.02'
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/linear_regression.py
         format: [csv, txt]
@@ -824,9 +822,9 @@ methods:
               options: '-d 2 -s'
 
     PERCEPTRON:
-        run: []
+        run: ['metric', 'timing']
         script: methods/scikit/perceptron.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
                        ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
@@ -954,7 +952,7 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/linear_regression.py
         format: [csv, txt]
