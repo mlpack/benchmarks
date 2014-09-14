@@ -950,10 +950,10 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/linear_regression.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
              - files: [ ['datasets/diabetes_X.csv'], ['datasets/cosExp_X.csv'],
                         ['datasets/mnist_all.csv'], ['datasets/tinyImages100k.csv'],

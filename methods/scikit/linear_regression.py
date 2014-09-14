@@ -79,7 +79,7 @@ class LinearRegression(object):
         testSet = LoadDataset(self.dataset[1])
 
       # Use the last row of the training set as the responses.  
-      X, y = SplitTrainData(self.dataset[0])
+      X, y = SplitTrainData(self.dataset)
 
       try:
         with totalTimer:
@@ -90,7 +90,6 @@ class LinearRegression(object):
           if len(self.dataset) >= 2:
             self.model.predict(testSet)          
       except Exception as e:
-        print(e)
         q.put(-1)
         return -1
 
