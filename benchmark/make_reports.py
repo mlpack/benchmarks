@@ -27,6 +27,7 @@ import glob
 import re
 import collections
 import simplejson
+import codecs
 
 '''
 Create the top line chart.
@@ -262,7 +263,8 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
       methodResultsMetric = []
       for resMetric in result[0]:
-        methodResultsMetric.append(resMetric["metric"])
+        if 'metric' in resMetric:
+          methodResultsMetric.append(resMetric["metric"])
 
       methodLibararies = result[1]
       resultBuildId = result[2]
@@ -299,8 +301,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
       # Generate a "unique" name for the timing bar chart.
       barChartNameTiming = "img/bar_" + chartHash + "_timing.png"
 
-      
-
       # Create the timing bar chart.
       ChartInfoTiming = GenerateBarChart(results=methodResultsTiming,
           libraries=methodLibararies, fileName="reports/" + barChartNameTiming,
@@ -308,7 +308,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
       numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfoTiming
 
-      
       # Increase the status information.
       failureCount += failure
       datasetCount += numDatasets
@@ -330,13 +329,11 @@ def MethodReports(db, chartColor, textColor, gridColor):
       groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
       groupPanel["content"] = resultsPanel % resultValues
 
-
-
-
       datasetNames = []
       for data in methodResultsMetric:
-        for res in data:
-          datasetNames.append(res[7])
+        for dataRes in data:
+          if dataRes[3] != '{}':
+            datasetNames.append(dataRes[7])
 
       groupPanelMetric["nameID"] = chartHash + "m"
       groupPanelMetric["name"] = "Parameters: " + (parameters if parameters else "None")
@@ -366,8 +363,9 @@ def MethodReports(db, chartColor, textColor, gridColor):
         bestLibCount += bestLibnumMetric
 
       resultPanel += resultsTemplate % groupPanel
-      resultPanelMetric += resultsTemplate % groupPanelMetric
 
+      if datasetNames:
+        resultPanelMetric += resultsTemplate % groupPanelMetric
 
       # Create the memory content.
       if mlpackMemoryBuilId:
@@ -418,10 +416,14 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
 
     reportValues["resultsPanel"] = resultPanel
-    reportValues["resultsPanelMetric"] = resultPanelMetric
 
-
-
+    if datasetNames:
+      reportValues["MetricResultsPanel"] = '<div><div class="panel panel-default"><div class="panel-heading">Metric Results</div>'
+      reportValues["resultsPanelMetric"] = '<div class="panel-body">' + resultPanelMetric + '</div></div></div>'
+    else:
+      reportValues["MetricResultsPanel"] = ""
+      reportValues["resultsPanelMetric"] = ""
+    
     reportValues["methods"] = len(results)
     reportValues["groupOne"] = collapseGroup
     reportValues["groupTwo"] = collapseGroup + 1
@@ -469,7 +471,7 @@ def AdjustPagination(maxFiles):
 
   for i in range(1, files + 1):
     try:
-      with open("reports/index_" + str(i) + ".html", "r+") as fid:
+      with codecs.open("reports/index_" + str(i) + ".html", "r+", 'utf-8') as fid:
         content = fid.read()
         pattern = '<ul class="pagination">'
         pos = content.rfind(pattern)
@@ -590,18 +592,18 @@ def Main(configfile):
   ShiftReports()
   AdjustPagination(keepReports)
 
-  # Get the values for the new index.html file.
-  reportValues = {}
-  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
-      textColor, gridColor)
-  reportValues["pagination"] = NewPagination()
-  reportValues["methods"] = MethodReports(db, chartColor, textColor, gridColor)
+  # # Get the values for the new index.html file.
+  # reportValues = {}
+  # reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
+  #     textColor, gridColor)
+  # reportValues["pagination"] = NewPagination()
+  # reportValues["methods"] = MethodReports(db, chartColor, textColor, gridColor)
 
-  template = pageTemplate % reportValues
+  # template = pageTemplate % reportValues
 
-  # Write the new index.html file.
-  with open("reports/index.html", 'wb') as fid:
-    fid.write(template.encode('UTF-8'))
+  # # Write the new index.html file.
+  # with open("reports/index.html", 'wb') as fid:
+  #   fid.write(template.encode('UTF-8'))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the memory benchmark

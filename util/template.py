@@ -68,9 +68,9 @@ methodTemplate = """
 <div><div class="panel panel-default">
 <div class="panel-heading">Timing Results</div>
 <div class="panel-body">%(resultsPanel)s</div></div></div>
-<div><div class="panel panel-default">
-<div class="panel-heading">Metric Results</div>
-<div class="panel-body">%(resultsPanelMetric)s</div></div></div></div>
+%(MetricResultsPanel)s
+%(resultsPanelMetric)s
+</div>
 <div id="collapse%(groupTwo)s" class="container__bottomContent infos collapse">
 <div>
 <div class="panel panel-default">
