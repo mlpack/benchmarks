@@ -187,21 +187,21 @@ class Database:
   @param datasetId - The id of the dataset.
   @param methodId - The id of the method.
   '''
-  def NewMetricResult(self, buildId, libraryId, metric, datasetId, methodId):
+  def NewMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
     with self.con:
       self.cur.execute("INSERT INTO metrics VALUES (NULL,?,?,?,?,?)",
-          (buildId, libraryId, metric, datasetId, methodId))
+          (buildId, libaryId, str(metric), datasetId, methodId))
 
 
-  def UpdateMetricResult(self, buildId, libraryId, metric, datasetId, methodId):
+  def UpdateMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
     with self.con:
       if self.GetMetricResult(buildId, libaryId, datasetId, methodId):
-        self.cur.execute("UPDATE metrics SET metric=" + str(metric)
+        self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
             + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
             + str(libaryId) + " AND dataset_id=" + str(datasetId) 
             + " AND method_id=" + str(methodId))
       else:
-        self.NewMetricResult(buildId, libraryId, metric, datasetId, methodId)
+        self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId)
 
   def GetMetricResult(self, buildId, libaryId, datasetId, methodId):
     with self.con:
