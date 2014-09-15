@@ -33,7 +33,7 @@ from modshogun import RealFeatures, MulticlassLabels
 '''
 This class implements the Perceptron benchmark.
 '''
-class Perceptron(object):
+class PERCEPTRON(object):
 
   ''' 
   Create the Perceptron benchmark instance.
