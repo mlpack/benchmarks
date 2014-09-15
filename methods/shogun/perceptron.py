@@ -25,6 +25,7 @@ if metrics_folder not in sys.path:
 from log import *
 from timer import *
 from definitions import *
+from misc import *
 
 import numpy as np
 from modshogun import Perceptron
