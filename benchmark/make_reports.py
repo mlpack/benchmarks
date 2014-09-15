@@ -79,6 +79,32 @@ def CreateTimingTable(data, libraries):
 
   return (header, timingTable)
 
+
+def CreateTimingTableMetric(data, libraries):
+  # Create the table header.
+  header = ""
+  for library in libraries:
+    header += "<th>" + library + "</th>"
+
+  # Create the table timing content.
+  timingTable = ""
+  for dataset, timings in data.items():
+    timingTable += "<tr><td>" + dataset + "</td>"
+    for time in timings:
+
+      # Highlight the data with the best timing.
+      if maxData(timings) == time:
+        time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
+        timingTable += '<td><p class="text-success"><strong>' + time
+        timingTable += "</strong></p></td>"
+      else:
+        time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
+        timingTable += "<td>" + time + "</td>"
+
+    timingTable += "</tr>"
+
+  return (header, timingTable)
+
 '''
 Create the table with the datasets informations.
 
@@ -348,7 +374,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
             datasetName=dataSetName, backgroundColor=chartColor, 
             textColor=textColor, gridColor=gridColor)
         numDatasetsMetric, totalTimeMetric, failureMetric, timeoutsMetric, bestLibnumMetric, timingDataMetric = ChartInfoMetric
-        headerMetric, timingTableMetric = CreateTimingTable(timingDataMetric, methodLibararies)
+        headerMetric, timingTableMetric = CreateTimingTableMetric(timingDataMetric, methodLibararies)
 
         resultValuesMetric["parameters"] = lineChartNameMetric
         resultValuesMetric["datasetName"] = dataSetName

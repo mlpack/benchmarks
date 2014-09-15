@@ -34,6 +34,13 @@ def minData(data):
       minData = d
   return minData
 
+def maxData(data):
+  maxData = float('-Inf')
+  for d in data:
+    if isFloat(d) and d > maxData:
+      maxData = d
+  return maxData
+
 '''
 Count all datasets to determine the dataset size.
 
