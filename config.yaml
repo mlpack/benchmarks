@@ -1161,15 +1161,13 @@ methods:
               options: '-d 2 -s'
 
     PERCEPTRON:
-        run: []
+        run: ['metric', 'timing']
         script: methods/shogun/perceptron.py
-        format: [csv, txt]
+        format: [csv, txt, arff]
         datasets:
-            - files: [ ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
-                       ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
-                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv'],
-                       ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv'],
-                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
               options: '-i 10000'
 

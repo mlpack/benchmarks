@@ -68,7 +68,7 @@ class LinearRegression(object):
           testSet = np.genfromtxt(self.dataset[1], delimiter=',')
 
         # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset[0])
+        X, y = SplitTrainData(self.dataset)
 
         with totalTimer:
           # Perform linear regression.

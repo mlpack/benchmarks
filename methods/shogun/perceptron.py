@@ -46,7 +46,6 @@ class Perceptron(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-    self.z = 0;
     self.model = None
     self.iterations = 1000
 
@@ -59,8 +58,7 @@ class Perceptron(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    model = Perceptron(self.z, RealFeatures(data.T), 
-        MulticlassLabels(responses))
+    model = Perceptron(RealFeatures(data.T), MulticlassLabels(responses))
     model.set_max_iter(self.iterations)
     model.train()
     return model
@@ -132,27 +130,19 @@ class Perceptron(object):
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      return metrics_dict
-    else:
-      Log.Fatal("This method requires three datasets!")
-  
-    # now the predictions are in self.predictions
+      # Datastructure to store the results.
+      metrics = {}
 
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      return metrics
+    else:
+      Log.Warn("This method requires three datasets!")
+      return None
