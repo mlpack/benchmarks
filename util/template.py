@@ -5,6 +5,74 @@
   This file contains the page templates.
 '''
 
+chartTemplate = r"""
+$(document).ready(function() {
+  var options = {
+    chart: {
+        renderTo: '%(container)s',
+        type: '%(type)s'
+    },
+    title: {
+        text: '%(title)s'
+    },
+    subtitle: {
+        text: '%(subtitle)s'
+    },
+    xAxis: {
+        enabled:false,
+        categories: []
+    },
+    yAxis: {
+        title: {
+            text: '%(yAxis)s'
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+
+    series: []
+  };
+
+  $.get('%(data)s', function(data) {
+    var lines = data.split('\n');
+    $.each(lines, function(lineNo, line) {
+        var items = line.split(',');
+        if (lineNo == 0) {
+          $.each(items, function(itemNo, item) {
+            if (itemNo > 0) options.xAxis.categories.push(item);
+          });
+        }
+        else {
+          var series = {
+            data: []
+          };
+          $.each(items, function(itemNo, item) {
+            if (itemNo == 0) {
+              series.name = item;
+            } else {
+              series.data.push(parseFloat(item));
+            }
+          });
+          options.series.push(series);
+        }
+    });
+    var chart = new Highcharts.Chart(options);
+  });
+});
+"""
+
 pageTemplate = """
 <!doctype html>
 <html>
@@ -16,6 +84,36 @@ pageTemplate = """
 <link rel="stylesheet" href="framework/bs3/css/bootstrap.min.css">
 <link rel="stylesheet" href="framework/font/style.css">
 <link rel="stylesheet" href="css/style.css">
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/highcharts.js"></script>
+<script src="js/sand-signika.js"></script>
+<script src="js/exporting.js"></script>
+
+<script type="text/javascript">
+function loadScript( url, callback ) {
+  var script = document.createElement( "script" )
+  script.type = "text/javascript";
+  if(script.readyState) {  //IE
+    script.onreadystatechange = function() {
+      if ( script.readyState === "loaded" || script.readyState === "complete" ) {
+        script.onreadystatechange = null;
+        callback();
+      }
+    };
+  } else {  //Others
+    script.onload = function() {
+      callback();
+    };
+  }
+
+  script.src = url;
+  document.getElementsByTagName( "head" )[0].appendChild( script );
+}
+</script>
+
+%(scripts)s
+
 </head>
 <body>
 <div class="container">
@@ -24,7 +122,9 @@ pageTemplate = """
 <div class="text-center"><h4>Benchmarks</h4></div>
 <div class="container--graph collapse-group well overall-timing-chart">
 <div class="container__topContent">
-<div class="overall-timing-chart"><img class="center--image" src="%(topLineChart)s" alt="" style="max-width: 100%%;"></div>
+<div class="overall-timing-chart">
+<div id="%(container)s" style="width: 100%%; height: 100%%; margin: 0 auto"></div>
+</div>
 </div></div>%(methods)s</div></div></div>
 <div class="pagination--holder">
 <ul class="pagination">%(pagination)s</ul></div>
@@ -97,12 +197,7 @@ methodTemplate = """
 """
 
 memoryPanelTemplate = """
-<div class="panel">
-<div><img class="center--image" src="%(memoryChart)s" alt="" style="max-width: 100%%;"></div>
-<div class="accordion-group">
-<div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(nameID)s">%(name)s</a></div>
-<div id="%(nameID)s" class="accordion-body collapse">
-<div class="accordion-inner"><pre>%(content)s</pre></div></div></div></div>
+<div id="%(container)s" style="width: 100%%; height: 100%%;"></div>
 """
 
 panelTemplate = """
@@ -114,25 +209,14 @@ panelTemplate = """
 
 resultsTemplate = """
 <div class="accordion-group">
-<div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#%(nameID)s">%(name)s</a></div>
+<div class="accordion-heading">
+<a id="%(containerID)s" class="accordion-toggle chart" data-toggle="collapse" data-parent="#accordion2" href="#%(nameID)s">%(name)s</a></div>
 <div id="%(nameID)s" class="accordion-body collapse"><div class="accordion-inner">%(content)s</div></div></div>
 """
 
 resultsPanel = """
 <div class="panel-body">
-<div class="overall-timing-chart"><img class="panel" src="%(lineChart)s" alt="" style="max-width: 100%%;"></div>
-<div><img class="panel" src="%(barChart)s" alt="" style="max-width: 100%%;"></div>
-<div><div class="panel">
-<table class="table table-striped">
-<thead><tr><th></th>%(timingHeader)s</tr></thead>
-<tbody>%(timingTable)s</tbody>
-</table></div></div></div>
-"""
-
-resultsPanelMetric = """
-<div class="panel-body">
-<div class="text-center"><h5>%(datasetName)s</h5></div>
-<div><img class="panel" src="%(barChart)s" alt="" style="max-width: 100%%;"></div>
+<div id="%(container)s" style="width: 100%%; height: 100%%;"></div>
 <div><div class="panel">
 <table class="table table-striped">
 <thead><tr><th></th>%(timingHeader)s</tr></thead>

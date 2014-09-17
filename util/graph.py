@@ -16,62 +16,22 @@ if cmd_subfolder not in sys.path:
 
 from misc import *
 from log import *
+from template import *
 
-import matplotlib
+import re, collections, simplejson, datetime
 
-matplotlib.use("Agg")
+'''
+Generate a bar chart for the metrics with the specified informations.
 
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
-import re
-import collections
-import simplejson
-
-
-# Use this colors to plot the graph.
-colors = ['#3366CC', '#DC3912', '#FF9900', '#FFFF32', '#109618', '#990099',
-          '#DD4477', '#AAAA11', '#22AA99']
-
-
-
-def GenerateBarChartMetric(results, libraries, fileName, datasetName, bestlib="mlpack",
-    backgroundColor="#FFFFFF", textColor="#6e6e6e", gridColor="#6e6e6e"):
-  # Bar chart settings.
-  lineWidth = 0.1
-  barWidth = 0.15
-  opacity = 0.9
-  fill = True
-  windowWidth = 8.1
-  windowHeight = 3.3
-  gridLineWidth = 0.2
-
-  # Create figure and set the color.
-  matplotlib.rc('axes', facecolor=backgroundColor)
-  matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight),
-      facecolor=backgroundColor, dpi=100)
-  plt.rc('lines', linewidth=lineWidth)
-  ax = plt.subplot(1,1,1)
-
-  # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
-  ax.xaxis.grid(False)
-  ax.spines['left'].set_visible(False)
-  ax.spines['top'].set_visible(False)
-  ax.spines['right'].set_visible(False)
-  ax.get_xaxis().tick_bottom()
-  ax.get_yaxis().tick_left()
-  ax.spines['bottom'].set_linewidth(gridLineWidth)
-
-  # Data structures to set the legend and the right postions for the bar chart.
-  legendIndex = []
-  color = {}
-  chartHandler = []
-  legendNames = []
-  nextBar = 0
-  legendPosition = 0
-  legendBegin = 0
-
+@param results - Contains the values to plot.
+@param libraries - A list that contains the names of the libraries.
+@param fileName - The filename of the line chart.
+@param bestlib - The name of the library which should be compared with the other
+libraries.
+@return The dataset count, total time, failure count, timeout count,
+best libray count, timing data.
+'''
+def GenerateBarChartMetric(results,libraries, fileName, datasetName, bestlib="mlpack"):
   # use this variable to count the time.
   totalTime = 0
   # Use this variable to count the timeouts.
@@ -84,7 +44,6 @@ def GenerateBarChartMetric(results, libraries, fileName, datasetName, bestlib="m
 
   # Use this variable to get use the data for the right library.
   l = 0
-
 
   # Iterate through the data and plot the bar chart.
   for result in results:
@@ -127,83 +86,46 @@ def GenerateBarChartMetric(results, libraries, fileName, datasetName, bestlib="m
   else:
     maxValue = 0
 
-  for key, values in timingData.items():
-    l = 0
-    legendIndex.append(nextBar)
-    for value in values:
-      color = colors[l % len(colors)]
+  build = str(abs(hash(datetime.datetime.now())))
 
-      if isFloat(value):
-        plt.bar(nextBar, value, barWidth, alpha=opacity, color=color,
-            fill=fill,lw=0.2)
-      else:
-        plt.bar(nextBar, maxValue, barWidth, alpha=opacity, color="gray",
-            fill=fill, lw=0.2)
+  fileName = 'graphs/metric_' + str(build)
 
-      time = value if isFloat(value) else 10
+  header = 'dummy,'
+  for dataset, timings in timingData.items():
+    header += dataset + ','
+  header = header[:-1] + '\n'
 
-      nextBar += barWidth
-      l += 1
-    nextBar += (4 * barWidth)
+  # Write the csv file that contains the data.
+  with open('reports/' + fileName + '.csv', 'wb+') as fid:
+    # Write header line to file.
+    fid.write(header.encode('UTF-8'))
 
-  # Create a proxy artist for the legend.
-  handler = []
-  for l, library in enumerate(libraries):
-    color = colors[l % len(colors)]
-    handler.append(plt.Rectangle((0, 0), 1, 1, fc=color, alpha=0.6))
+    for i in range(len(libraries)):
+      c = libraries[i] + ','
+      for dataset, timings in timingData.items():
+        if timings[i] == 'failure' or '>' in str(timings[i]) or '-' == timings[i]:
+          c += '0,'
+        else:
+          c += str(timings[i]) + ','
 
-  handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
+      c = c[:-1]
+      if i < len(libraries) - 1:
+        c += '\n'
+      fid.write(c.encode('UTF-8'))
 
-  # Set the label for the x-axis.
-  plt.xticks(legendIndex , list(timingData.keys()), rotation=30, ha='right')
+  content = {}
+  content['container'] = build
+  content['type'] = 'column'
+  content['title'] = datasetName
+  content['subtitle'] = 'Hide data series by clicking the legend item.'
+  content['yAxis'] = 'Time [s]'
+  content['data'] = fileName + '.csv'
 
-  # Set the color and the font of the x-axis and y-axis label.
-  ax.tick_params(axis='both', which='major', labelsize=8, labelcolor=textColor)
-  ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor=textColor)
+  with open('reports/' + fileName + '.js', 'wb+') as fid:
+      c = chartTemplate % content
+      fid.write(c.encode('UTF-8'))
 
-  # Create the legend above the bar chart.
-  lgd = ax.legend(handler, libraries + ["failure/ timeout"], loc='upper center',
-    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(libraries) / 6)), fancybox=True,
-    shadow=False, ncol=6, fontsize=8)
-  lgd.get_frame().set_linewidth(0)
-  for label in lgd.get_texts():
-    label.set_color(textColor)
-
-  # Set axis labels.
-  plt.ylabel("time [s]", color=textColor)
-
-  # Save the bar chart.
-  fig.tight_layout()
-  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight',
-    facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
-  plt.close()
-
-  # Count the time in which bestlib is the best.
-  bestLibCount = 0
-  # try:
-  #   bestLibIndex = libraries.index(bestlib)
-  # except ValueError:
-  #   pass
-  # else:
-  #   for dataset, results in timingData.items():
-  #     results = [v if isFloat(v) else float('Inf') for v in results]
-  #     if bestLibIndex == results.index(min(results)):
-  #       bestLibCount += 1
-
-  return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData)
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return (len(timingData), totalTime, failure, timeouts, 0, timingData, fileName + '.js', build)
 
 '''
 Generate a bar chart with the specified informations.
@@ -213,48 +135,10 @@ Generate a bar chart with the specified informations.
 @param fileName - The filename of the line chart.
 @param bestlib - The name of the library which should be compared with the other
 libraries.
-@param backgroundColor - The color of the image background.
 @return The dataset count, total time, failure count, timeout count,
 best libray count, timing data.
 '''
-def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
-    backgroundColor="#FFFFFF", textColor="#6e6e6e", gridColor="#6e6e6e"):
-  # Bar chart settings.
-  lineWidth = 0.1
-  barWidth = 0.15
-  opacity = 0.9
-  fill = True
-  windowWidth = 8.1
-  windowHeight = 3.3
-  gridLineWidth = 0.2
-
-  # Create figure and set the color.
-  matplotlib.rc('axes', facecolor=backgroundColor)
-  matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight),
-      facecolor=backgroundColor, dpi=100)
-  plt.rc('lines', linewidth=lineWidth)
-  ax = plt.subplot(1,1,1)
-
-  # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
-  ax.xaxis.grid(False)
-  ax.spines['left'].set_visible(False)
-  ax.spines['top'].set_visible(False)
-  ax.spines['right'].set_visible(False)
-  ax.get_xaxis().tick_bottom()
-  ax.get_yaxis().tick_left()
-  ax.spines['bottom'].set_linewidth(gridLineWidth)
-
-  # Data structures to set the legend and the right postions for the bar chart.
-  legendIndex = []
-  color = {}
-  chartHandler = []
-  legendNames = []
-  nextBar = 0
-  legendPosition = 0
-  legendBegin = 0
-
+def GenerateBarChart(results, libraries, fileName, bestlib="mlpack"):
   # use this variable to count the time.
   totalTime = 0
   # Use this variable to count the timeouts.
@@ -304,56 +188,45 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
   else:
     maxValue = 0
 
-  for key, values in timingData.items():
-    l = 0
-    legendIndex.append(nextBar)
-    for value in values:
-      color = colors[l % len(colors)]
 
-      if isFloat(value):
-        plt.bar(nextBar, value, barWidth, alpha=opacity, color=color,
-            fill=fill,lw=0.2)
-      else:
-        plt.bar(nextBar, maxValue, barWidth, alpha=opacity, color="gray",
-            fill=fill, lw=0.2)
+  build = str(abs(hash(datetime.datetime.now())))
 
-      time = value if isFloat(value) else 10
+  fileName = 'graphs/timing_' + str(build)
 
-      nextBar += barWidth
-      l += 1
-    nextBar += (4 * barWidth)
+  header = 'dummy,'
+  for dataset, timings in timingData.items():
+    header += dataset + ','
+  header = header[:-1] + '\n'
 
-  # Create a proxy artist for the legend.
-  handler = []
-  for l, library in enumerate(libraries):
-    color = colors[l % len(colors)]
-    handler.append(plt.Rectangle((0, 0), 1, 1, fc=color, alpha=0.6))
+  # Write the csv file that contains the data.
+  with open('reports/' + fileName + '.csv', 'wb+') as fid:
+    # Write header line to file.
+    fid.write(header.encode('UTF-8'))
+  
+    for i in range(len(libraries)):
+      c = libraries[i] + ','
+      for dataset, timings in timingData.items():
+        if timings[i] == 'failure' or ('>' in str(timings[i])) or '-' == timings[i]:
+          c += '0,'
+        else:
+          c += str(timings[i]) + ','
 
-  handler.append(plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.6))
+      c = c[:-1]
+      if i < len(libraries) - 1:
+        c += '\n'
+      fid.write(c.encode('UTF-8'))
 
-  # Set the label for the x-axis.
-  plt.xticks(legendIndex , list(timingData.keys()), rotation=30, ha='right')
+  content = {}
+  content['container'] = build
+  content['type'] = 'column'
+  content['title'] = ''
+  content['subtitle'] = 'Hide data series by clicking the legend item.'
+  content['yAxis'] = 'Time [s]'
+  content['data'] = fileName + '.csv'
 
-  # Set the color and the font of the x-axis and y-axis label.
-  ax.tick_params(axis='both', which='major', labelsize=8, labelcolor=textColor)
-  ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor=textColor)
-
-  # Create the legend above the bar chart.
-  lgd = ax.legend(handler, libraries + ["failure/ timeout"], loc='upper center',
-    bbox_to_anchor=(0.5, 1.3 + (0.2 * len(libraries) / 6)), fancybox=True,
-    shadow=False, ncol=6, fontsize=8)
-  lgd.get_frame().set_linewidth(0)
-  for label in lgd.get_texts():
-    label.set_color(textColor)
-
-  # Set axis labels.
-  plt.ylabel("time [s]", color=textColor)
-
-  # Save the bar chart.
-  fig.tight_layout()
-  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight',
-    facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
-  plt.close()
+  with open('reports/' + fileName + '.js', 'wb+') as fid:
+      c = chartTemplate % content
+      fid.write(c.encode('UTF-8'))
 
   # Count the time in which bestlib is the best.
   bestLibCount = 0
@@ -367,121 +240,14 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack",
       if bestLibIndex == results.index(min(results)):
         bestLibCount += 1
 
-  return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData)
-
-'''
-Generate a line chart with the specified informations.
-
-@param data - Contains the information for the line chart.
-@param fileName - The filename of the line chart.
-@param backgroundColor - The color of the image background.
-@param windowWidth - The width of the chart.
-@prama windowHeight - The height of the chart.
-'''
-def GenerateSingleLineChart(data, fileName, backgroundColor="#FFFFFF",
-    windowWidth=8.1, windowHeight=1.3, textColor="#6e6e6e", gridColor="#6e6e6e"):
-
-  # Generate a list of scalar values. Use the privious or next elemnt to fill
-  # the gap.
-  def NormalizeData(data):
-    i = 0
-    while len(data) != i:
-      if not data[i]:
-        if i > 0 and data[i - 1]:
-          data[i] = data[i - 1]
-        else:
-          del data[i]
-          i -= 1
-      i += 1
-    return data
-
-  # Line chart settings.
-  lineWidth = 1.5
-  opacity = 0.9
-  gridLineWidth = 0.2
-
-  # Create figure and set the color.
-  matplotlib.rc('axes', facecolor=backgroundColor)
-  matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight),
-      facecolor=backgroundColor, dpi=100)
-  plt.rc('lines', linewidth=lineWidth)
-  ax = plt.subplot(1,1,1)
-
-  # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
-  ax.xaxis.grid(False)
-  ax.spines['left'].set_visible(False)
-  ax.spines['top'].set_visible(False)
-  ax.spines['right'].set_visible(False)
-  ax.get_xaxis().tick_bottom()
-  ax.get_yaxis().tick_left()
-  ax.spines['bottom'].set_linewidth(gridLineWidth)
-
-  # Set ticks for the x-axis.
-  myLocator = mticker.MultipleLocator(1)
-  ax.xaxis.set_major_locator(myLocator)
-
-  data = NormalizeData(data)
-
-  # If we only have a single value we don't want to start from zero so we
-  # double the data.
-  if len(data) == 1:
-    data += data
-
-  # Create the data for the x-axis.
-  X = list(range(len(data)))
-
-  # Plot the line chart.
-  plt.plot(X, data, color=colors[0], alpha=opacity, linewidth=1.7)
-
-  # Set the color and the font of the x-axis and y-axis labels.
-  ax.tick_params(axis='both', which='major', labelsize=8, labelcolor=textColor)
-  ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor=textColor)
-
-  # Set axis labels.
-  plt.ylabel("time [s]", color=textColor)
-  plt.xlabel("benchmark build", color=textColor)
-
-  # Save the line chart.
-  fig.tight_layout()
-  fig.savefig(fileName, bbox_inches='tight', facecolor=fig.get_facecolor(),
-      edgecolor='none', dpi=100)
-  plt.close()
+  return (len(timingData), totalTime, failure, timeouts, bestLibCount, timingData, fileName + '.js', build)
 
 '''
 Generate a memory chart with the specified informations.
 
 @param massiflogFile - The massif logfile.
-@param fileName - The filename of the memory chart.
-@param backgroundColor - The color of the image background.
 '''
-def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF",
-    textColor="6e6e6e", gridColor="#6e6e6e"):
-  lineWidth = 1.5
-  opacity = 0.9
-  windowWidth = 8.1
-  windowHeight = 1.3
-  gridLineWidth = 0.2
-
-  # Create figure and set the color.
-  matplotlib.rc('axes', facecolor=backgroundColor)
-  matplotlib.rcParams.update({'font.size': 8})
-  fig = plt.figure(figsize=(windowWidth, windowHeight),
-      facecolor=backgroundColor, dpi=100)
-  plt.rc('lines', linewidth=lineWidth)
-  ax = plt.subplot(1,1,1)
-
-  # Set the grid style.
-  ax.yaxis.grid(True, linestyle='-', linewidth=gridLineWidth, color=gridColor)
-  ax.xaxis.grid(False)
-  ax.spines['left'].set_visible(False)
-  ax.spines['top'].set_visible(False)
-  ax.spines['right'].set_visible(False)
-  ax.get_xaxis().tick_bottom()
-  ax.get_yaxis().tick_left()
-  ax.spines['bottom'].set_linewidth(gridLineWidth)
-
+def CreateMassifChart(massiflogFile, datasetName):
   # Read the massif logfile.
   try:
     with open(massiflogFile, "r") as fid:
@@ -498,33 +264,121 @@ def CreateMassifChart(massiflogFile, fileName, backgroundColor="#FFFFFF",
   # Plot the memory information.
   X = list(range(len(memHeapExtraB)))
   X = [x+0.0001 for x in X]
-  plt.fill_between(X, memHeapExtraB, 0, color="#109618", alpha=0.6)
-  plt.fill_between(X, memHeapExtraB, memHeapB, color="#DC3912", alpha=0.6)
-  plt.fill_between(X, memHeapExtraB, memStackB, color="#3366CC", alpha=0.6)
 
-  # Set the color and the font of the x-axis and y-axis labels.
-  ax.tick_params(axis='both', which='major', labelsize=8, labelcolor=textColor)
-  ax.tick_params(axis='both', which='minor', labelsize=6, labelcolor=textColor)
 
-  # Create a proxy artist, because fill_between hasn't a chart handler.
-  p1 = plt.Rectangle((0, 0), 1, 1, fc="#109618", alpha=0.6)
-  p2 = plt.Rectangle((0, 0), 1, 1, fc="#DC3912", alpha=0.6)
-  p3 = plt.Rectangle((0, 0), 1, 1, fc="#3366CC", alpha=0.6)
+  build = str(abs(hash(datetime.datetime.now())+hash(datetime.datetime.now())))
 
-  # Set axis labels.
-  plt.ylabel("memory [KB]", color=textColor)
-  plt.xlabel("snapshot", color=textColor)
+  fileName = 'graphs/memory_' + str(build)
 
-  # Create the legend above the memory chart.
-  lgd = ax.legend((p1, p2, p3),
-    ("mem heap B", "mem heap extra B", "mem stacks B"), loc='upper center',
-    bbox_to_anchor=(0.5, 1.3), fancybox=True, shadow=False, ncol=8, fontsize=8)
-  lgd.get_frame().set_linewidth(0)
-  for label in lgd.get_texts():
-    label.set_color(textColor)
+  header = 'dummy,' + str(X)[1:-1] + '\n'
 
-  # Save the memory chart.
-  fig.tight_layout()
-  fig.savefig(fileName, bbox_extra_artists=(lgd,), bbox_inches='tight',
-    facecolor=fig.get_facecolor(), edgecolor='none', format='png', dpi=100)
-  plt.close()
+  # Write the csv file that contains the data.
+  with open('reports/' + fileName + '.csv', 'wb+') as fid:
+    fid.write(header.encode('UTF-8'))
+
+    memHeapExtra = 'memHeapExtraB, ' + str(memHeapExtraB)[1:-1]  + '\n'
+    fid.write(memHeapExtra.encode('UTF-8'))
+
+    memHeapB = 'memHeapB, ' + str(memHeapB)[1:-1]  + '\n'
+    fid.write(memHeapB.encode('UTF-8'))
+
+    memStackB = 'memStackB, ' + str(memStackB)[1:-1]
+    fid.write(memStackB.encode('UTF-8'))
+
+  content = {}
+  content['container'] = build
+  content['type'] = 'area'
+  content['title'] = datasetName
+  content['subtitle'] = 'Hide data series by clicking the legend item.'
+  content['yAxis'] = 'memory [KB]'
+  content['data'] = fileName + '.csv'
+
+  with open('reports/' + fileName + '.js', 'wb+') as fid:
+      c = chartTemplate % content
+      fid.write(c.encode('UTF-8'))
+
+  return (fileName + '.js', build)
+
+'''
+Create the top line chart.
+
+@param db - The database object.
+@return The filename of the line chart.
+'''
+def CreateTopLineChart(db):
+  # Generate a list of scalar values. Use the privious or next elemnt to fill
+  # the gap.
+  def NormalizeData(data):
+    i = 0
+    while len(data) != i:
+      if not data[i]:
+        if i > 0 and data[i - 1]:
+          data[i] = data[i - 1]
+        else:
+          del data[i]
+          i -= 1
+      i += 1
+    return data
+
+  build = str(abs(hash(datetime.datetime.now())))
+
+  res = db.GetLibraryIds()
+  if res:
+    header = ''
+    sums = []
+
+    i = 1
+    for id, name in res:
+      if 'memory' not in name:
+        # Add library name to the header.
+        header += str(i) + ','
+
+        i += 1
+
+        # Add the calcuated sum over all timing data for the specified data
+        # to the list.
+        lsum = db.GetResultsSum(name)
+        if lsum:
+          sums.append(lsum[1])
+        else:
+          sums.append([])
+
+
+    # Remove the last comma from the header.
+    if header:
+      header = 'dummy,' + header[:-1] + '\n'
+
+    fileName = 'graphs/top_' + str(build)
+    # Write the csv file that contains the data.
+    with open('reports/' + fileName + '.csv', 'wb+') as fid:
+      # Write header line to file.
+      fid.write(header.encode('UTF-8'))
+      
+      # Normalize data and fill existing gaps.
+      lenSum = [len(x) for x in sums]
+      for i, sum in enumerate(sums):
+        sum = NormalizeData(sum)
+        while len(sum) < max(lenSum):
+          sum.append(sum[-1])
+
+        c = str(res[i][1]) + ', ' + str(sum)[1:-1]
+        if i < len(sums) - 1:
+          c += '\n'
+
+        fid.write(c.encode('UTF-8'))
+
+    content = {}
+    content['container'] = build
+    content['type'] = 'area'
+    content['title'] = ''
+    content['subtitle'] = 'Hide data series by clicking the legend item.'
+    content['yAxis'] = 'Time [s]'
+    content['data'] = fileName + '.csv'
+
+    with open('reports/' + fileName + '.js', 'wb+') as fid:
+      c = chartTemplate % content
+      fid.write(c.encode('UTF-8'))
+
+    return (fileName + '.js', build)
+  else:
+    return ''

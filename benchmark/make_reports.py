@@ -22,39 +22,17 @@ from template import *
 from misc import *
 from profiler import *
 
-import argparse
-import glob
-import re
-import collections
-import simplejson
-import codecs
-
-'''
-Create the top line chart.
-
-@param db - The database object.
-@return The filename of the line chart.
-'''
-def CreateTopLineChart(db, topChartColor, textColor, gridColor):
-  res = db.GetResultsSum("mlpack")
-  if res:
-    build, results = res
-  else:
-    return ""
-
-  GenerateSingleLineChart(results, "reports/img/mlpack_top_" + str(build) +
-      ".png", backgroundColor=topChartColor, windowWidth=9, windowHeight=1.6,
-      textColor=textColor, gridColor=gridColor)
-  return "img/mlpack_top_" + str(build) + ".png"
+import argparse, glob, re, collections, simplejson, codecs
 
 '''
 Create the timings table.
 
 @param data - Dictionary which contains the timings.
 @libraries - List which contains the library names.
+@type - The type of the timing table ('metric' or 'timing').
 @return HTML code which contains the header and the timing data.
 '''
-def CreateTimingTable(data, libraries):
+def CreateTimingTable(data, libraries, type):
   # Create the table header.
   header = ""
   for library in libraries:
@@ -66,34 +44,11 @@ def CreateTimingTable(data, libraries):
     timingTable += "<tr><td>" + dataset + "</td>"
     for time in timings:
 
-      # Highlight the data with the best timing.
-      if minData(timings) == time:
-        time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
-        timingTable += '<td><p class="text-success"><strong>' + time
-        timingTable += "</strong></p></td>"
-      else:
-        time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
-        timingTable += "<td>" + time + "</td>"
-
-    timingTable += "</tr>"
-
-  return (header, timingTable)
-
-
-def CreateTimingTableMetric(data, libraries):
-  # Create the table header.
-  header = ""
-  for library in libraries:
-    header += "<th>" + library + "</th>"
-
-  # Create the table timing content.
-  timingTable = ""
-  for dataset, timings in data.items():
-    timingTable += "<tr><td>" + dataset + "</td>"
-    for time in timings:
+      # Distinguish between the metric and the timing type. 
+      c = minData(timings) if type == 'timing' else maxData(timings)
 
       # Highlight the data with the best timing.
-      if maxData(timings) == time:
+      if c == time:
         time = str("{0:.4f}".format(time)) + "s" if isFloat(str(time)) else time
         timingTable += '<td><p class="text-success"><strong>' + time
         timingTable += "</strong></p></td>"
@@ -145,29 +100,38 @@ Create the content for the memory section.
 @param results - This data structure contains the memory results.
 @return A string that contains the content for the memory section.
 '''
-def CreateMemoryContent(results, chartColor, textColor, gridColor):
+def CreateMemoryContent(results):
   memoryContent = ""
+  ids = ""
+
   if results:
     for result in results:
       memoryValues = {}
-      memoryValues["name"] = result[7]
-      memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
+      # memoryValues["name"] = result[7]
+      # memoryValues["nameID"] = result[7] + str(hash(datetime.datetime.now()))
 
       content = Profiler.MassifMemoryUsageReport(str(result[5]))
       try:
         content = content.decode()
       except AttributeError:
         pass
-      memoryValues["content"] = content
+      # memoryValues["content"] = content
+      memoryValues["content"] = ""
 
-      filename = "img/massif_" + os.path.basename(result[5]).split('.')[0] + ".png"
-      CreateMassifChart(result[5], "reports/" + filename, chartColor, textColor,
-          gridColor)
-      memoryValues["memoryChart"] = filename
+      chartInfo = CreateMassifChart(result[5], result[7])
 
+      if not chartInfo:
+        continue
+
+      containerID, container = chartInfo
+      memoryValues['container'] = container
+      ids += containerID + ","
       memoryContent += memoryPanelTemplate % memoryValues
 
-  return memoryContent
+  if ids:
+    ids = ids[:-1]
+
+  return (memoryContent, ids)
 
 '''
 Create the method info content.
@@ -199,7 +163,7 @@ Create the method container with the information from the database.
 @param db - The database object.
 @return HTML code which contains the information for the container.
 '''
-def MethodReports(db, chartColor, textColor, gridColor):
+def MethodReports(db):
   methodsPage = ""
   numDatasets = 0
 
@@ -229,13 +193,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
       results["id"] = method[0]
 
-      # # Merge the timing and the metric values and add the method id at the end.
-      # # We also add a flag to the list which indicates if the results contains
-      # # metric or timing results.
-      # results = [ (timing_results + ('timing',) if timing_results else []) +
-      #             (metric_results + ('metric',) if metric_results else []) +
-      #             (method[0],) ]
-
       if 'timing' in results or 'metric' in results:
         methodLibararies.append(buildId[1])
         resultBuildId.append(buildId[0])
@@ -257,7 +214,6 @@ def MethodReports(db, chartColor, textColor, gridColor):
 
     resultPanel = ""
     resultPanelMetric = ""
-
     methodInfo = ""
     memoryContent = ""
 
@@ -274,29 +230,30 @@ def MethodReports(db, chartColor, textColor, gridColor):
     totalTimeCount = 0
     libCount = 0
 
+    # Iterate through all results.
     for result in results:
+      # Initialze the datastructures used to set the template values.
       resultValues = {}
-      groupPanel = {}
-
+      groupPanelTiming = {}
       groupPanelMetric = {}
-
       resultValuesMetric = {}
 
-
+      # Generate a list of timing results.
       methodResultsTiming = []
       for resTiming in result[0]:
         methodResultsTiming.append(resTiming["timing"])
 
+      # Generate a list of metric results.
       methodResultsMetric = []
       for resMetric in result[0]:
         if 'metric' in resMetric:
           methodResultsMetric.append(resMetric["metric"])
 
+      # Names of the libaries that have timing or metric result.
       methodLibararies = result[1]
-      resultBuildId = result[2]
-      methodId = result[0][0]["id"]
 
-      
+      # The id of the current method.
+      methodId = result[0][0]["id"]
 
       # Generate a "unique" hash for the chart name.
       chartHash = str(hash(str(result)))
@@ -313,84 +270,84 @@ def MethodReports(db, chartColor, textColor, gridColor):
       else:
         continue
 
-
+      # use the method parameter as title for the panel.
       parameters = db.GetMethodParameters(methodId)
-      if parameters:
-        parameters = parameters[0][0]
-      else:
-        parameters = ""
-
-      GenerateSingleLineChart(data=methodResultsSum,
-          fileName="reports/" + lineChartNameTiming, backgroundColor=chartColor,
-          textColor=textColor, gridColor=gridColor)
+      parameters = parameters[0][0] if parameters else ''
 
       # Generate a "unique" name for the timing bar chart.
       barChartNameTiming = "img/bar_" + chartHash + "_timing.png"
 
       # Create the timing bar chart.
-      ChartInfoTiming = GenerateBarChart(results=methodResultsTiming,
-          libraries=methodLibararies, fileName="reports/" + barChartNameTiming,
-          backgroundColor=chartColor, textColor=textColor, gridColor=gridColor)
-
-      numDatasets, totalTime, failure, timeouts, bestLibnum, timingData = ChartInfoTiming
+      ChartInfoTiming = GenerateBarChart(methodResultsTiming, methodLibararies,
+                                         "reports/" + barChartNameTiming)
 
       # Increase the status information.
-      failureCount += failure
-      datasetCount += numDatasets
-      timeoutCount += timeouts
-      bestLibCount += bestLibnum
-      totalTimeCount += totalTime
+      failureCount += ChartInfoTiming[2]
+      datasetCount += ChartInfoTiming[0]
+      timeoutCount += ChartInfoTiming[3]
+      bestLibCount += ChartInfoTiming[4]
+      totalTimeCount += ChartInfoTiming[1]
 
-      header, timingTable = CreateTimingTable(timingData, methodLibararies)
+      # Create the content for the timing table.
+      headerTiming, timingTableTiming = CreateTimingTable(ChartInfoTiming[5],
+                                                          methodLibararies,
+                                                          'timing')
 
+      # Set the number of libraries.
       libCount = libCount if libCount >= len(methodLibararies) else len(methodLibararies)
 
-      resultValues["parameters"] = lineChartNameTiming
-      resultValues["lineChart"] = lineChartNameTiming
-      resultValues["barChart"] = barChartNameTiming
-      resultValues["timingHeader"] = header
-      resultValues["timingTable"] = timingTable
+      # Set the parameters for the timing template.
+      resultValues["container"] = ChartInfoTiming[7]
+      resultValues["timingHeader"] = headerTiming
+      resultValues["timingTable"] = timingTableTiming
+      groupPanelTiming["nameID"] = chartHash + "t"
+      groupPanelTiming["name"] = "Parameters: " + (parameters if parameters else "None")
+      groupPanelTiming["content"] = resultsPanel % resultValues
+      groupPanelTiming["containerID"] = ChartInfoTiming[6]
 
-      groupPanel["nameID"] = chartHash + "t"
-      groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
-      groupPanel["content"] = resultsPanel % resultValues
-
+      # Get the datasets that have metric results.
       datasetNames = []
       for data in methodResultsMetric:
         for dataRes in data:
           if dataRes[3] != '{}':
             datasetNames.append(dataRes[7])
 
+      # Set the parameters for the metric template.
       groupPanelMetric["nameID"] = chartHash + "m"
       groupPanelMetric["name"] = "Parameters: " + (parameters if parameters else "None")
 
+      # Iterate through the datasets and set the other template values.
       groupPanelMetric["content"] = ""
+      groupPanelMetric["containerID"] = ""
       for dataSetName in set(datasetNames):
         # Generate a "unique" name for the metric bar chart.
         barChartNameMetric = "img/bar_" + chartHash + "_metric_" + dataSetName + ".png"
 
-        ChartInfoMetric = GenerateBarChartMetric(results=methodResultsMetric,
-            libraries=methodLibararies, fileName="reports/" + barChartNameMetric,
-            datasetName=dataSetName, backgroundColor=chartColor, 
-            textColor=textColor, gridColor=gridColor)
-        numDatasetsMetric, totalTimeMetric, failureMetric, timeoutsMetric, bestLibnumMetric, timingDataMetric = ChartInfoMetric
-        headerMetric, timingTableMetric = CreateTimingTableMetric(timingDataMetric, methodLibararies)
+        # Generate the metrics bar chart.
+        ChartInfoMetric = GenerateBarChartMetric(methodResultsMetric, 
+                                                 methodLibararies, "reports/" +
+                                                 barChartNameMetric, dataSetName)
 
-        resultValuesMetric["parameters"] = lineChartNameMetric
-        resultValuesMetric["datasetName"] = dataSetName
-        resultValuesMetric["barChart"] = barChartNameMetric
+        # Create the content for the metric timing table.
+        headerMetric, timingTableMetric = CreateTimingTable(ChartInfoMetric[5],
+                                                            methodLibararies,
+                                                            'metric')
+        # Set the parameters for the metric template.
         resultValuesMetric["timingHeader"] = headerMetric
         resultValuesMetric["timingTable"] = timingTableMetric
+        resultValuesMetric["container"] = ChartInfoMetric[7]
+        groupPanelMetric["content"] += resultsPanel % resultValuesMetric
+        groupPanelMetric["containerID"] += ChartInfoMetric[6] + ','
 
-        groupPanelMetric["content"] += resultsPanelMetric % resultValuesMetric
         # Increase the status information.
-        failureCount += failureMetric
-        timeoutCount += timeoutsMetric
-        bestLibCount += bestLibnumMetric
+        failureCount += ChartInfoMetric[2]
+        timeoutCount += ChartInfoMetric[3]
+        bestLibCount += ChartInfoMetric[4]
 
-      resultPanel += resultsTemplate % groupPanel
+      resultPanel += resultsTemplate % groupPanelTiming
 
       if datasetNames:
+        groupPanelMetric["containerID"] = groupPanelMetric["containerID"][:-1]
         resultPanelMetric += resultsTemplate % groupPanelMetric
 
       # Create the memory content.
@@ -398,22 +355,24 @@ def MethodReports(db, chartColor, textColor, gridColor):
         memoryResults = db.GetMemoryResults(mlpackMemoryBuilId,
             mlpackMemoryId[0][0], methodId)
 
-        groupPanel["content"] = CreateMemoryContent(memoryResults, chartColor,
-            textColor, gridColor)
-        if groupPanel["content"]:
-          groupPanel["nameID"] = chartHash + "_m"
-          groupPanel["name"] = "Parameters: " + (parameters if parameters else "None")
+        groupPanelTiming["content"], ids = CreateMemoryContent(memoryResults)
 
-          memoryContent += resultsTemplate % groupPanel
+        if groupPanelTiming["content"]:
+          groupPanelTiming["nameID"] = chartHash + "_m"
+          groupPanelTiming["name"] = "Parameters: " + (parameters if parameters else "None")
+          groupPanelTiming["containerID"] = ids
+
+          memoryContent += resultsTemplate % groupPanelTiming
 
       # Create the method info content.
       if not methodInfo:
         methodInfo = CreateMethodInfo(db.GetMethodInfo(methodId), methodName)
 
+    # Create the dataset table content.
     datasetTable = CreateDatasetTable(results)
 
     # Calculate the percent for the progress bar.
-    if numDatasets != 0:
+    if ChartInfoTiming[0] != 0:
       negative = (((datasetCount - bestLibCount) / float(datasetCount)) * 100.0)
       reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
 
@@ -431,6 +390,7 @@ def MethodReports(db, chartColor, textColor, gridColor):
       reportValues["progressPositiveStyle"] = "0%;"
       reportValues["progressNegativeStyle"] = "100%" + progressBarStyle
 
+    # Set the parameters for the panel informations.
     reportValues["numLibararies"] = libCount
     reportValues["numDatasets"] = datasetCount
     reportValues["totalTime"] =  "{0:.2f}".format(totalTimeCount)
@@ -439,10 +399,9 @@ def MethodReports(db, chartColor, textColor, gridColor):
     reportValues["datasetTable"] = datasetTable
     reportValues["memoryContent"] = memoryContent
     reportValues["methodInfo"] = methodInfo
-
-
     reportValues["resultsPanel"] = resultPanel
 
+    # Don't add an empty metric panel.
     if datasetNames:
       reportValues["MetricResultsPanel"] = '<div><div class="panel panel-default"><div class="panel-heading">Metric Results</div>'
       reportValues["resultsPanelMetric"] = '<div class="panel-body">' + resultPanelMetric + '</div></div></div>'
@@ -581,16 +540,12 @@ Create the new report.
 @param configfile - Create the reports with the given configuration file.
 '''
 def Main(configfile):
-  # Report settings.
+  # Default report settings.
   database = "reports/benchmark.db"
   keepReports = 3
-  topChartColor = "#F3F3F3"
-  chartColor = "#FFFFFF"
-  textColor = "#6e6e6e"
-  gridColor = "#6e6e6e"
 
   # Create the folder structure.
-  CreateDirectoryStructure(["reports/img", "reports/etc"])
+  CreateDirectoryStructure(["reports/img", "reports/etc", "reports/graphs"])
 
   # Read the config.
   config = Parser(configfile, verbose=False)
@@ -603,27 +558,24 @@ def Main(configfile):
         database = value
       elif key == "keepReports":
         keepReports = value
-      elif key == "topChartColor":
-        topChartColor = value
-      elif key == "chartColor":
-        chartColor = value
-      elif key == "textColor":
-        textColor = value
-      elif key == "gridColor":
-        gridColor = value
 
+  # Create a database object and create the necessary tables.
   db = Database(database)
   db.CreateTables()
 
+  # Rename the old index files.
   ShiftReports()
+
+  # Adjust the pagination in the existing index files.
   AdjustPagination(keepReports)
 
-  # Get the values for the new index.html file.
+  # Get the values for the new index.html files.
   reportValues = {}
-  reportValues["topLineChart"] = CreateTopLineChart(db, topChartColor,
-      textColor, gridColor)
+  chartInfoTop = CreateTopLineChart(db)
+  reportValues["container"] = chartInfoTop[1]
   reportValues["pagination"] = NewPagination()
-  reportValues["methods"] = MethodReports(db, chartColor, textColor, gridColor)
+  reportValues["methods"] = MethodReports(db)
+  reportValues["scripts"] = '<script src="' + chartInfoTop[0] + '"></script>'
 
   template = pageTemplate % reportValues
 
