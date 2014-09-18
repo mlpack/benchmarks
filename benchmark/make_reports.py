@@ -21,6 +21,7 @@ from database import *
 from template import *
 from misc import *
 from profiler import *
+from system import *
 
 import argparse, glob, re, collections, simplejson, codecs
 
@@ -558,6 +559,10 @@ def Main(configfile):
         database = value
       elif key == "keepReports":
         keepReports = value
+      elif key == "libraries":
+        libraries = value
+      elif key == "version":
+        version = value
 
   # Create a database object and create the necessary tables.
   db = Database(database)
@@ -572,6 +577,20 @@ def Main(configfile):
   # Get the values for the new index.html files.
   reportValues = {}
   chartInfoTop = CreateTopLineChart(db)
+
+  reportValues["CPUModel"] =  SystemInfo.GetCPUModel()
+  reportValues["Distribution"] =  SystemInfo.GetDistribution()
+  reportValues["Platform"] =  SystemInfo.GetPlatform()
+  reportValues["Memory"] =  SystemInfo.GetMemory()
+  reportValues["CPUCores"] =  SystemInfo.GetCPUCores()
+
+  reportValues["LibraryInformation"] = ""
+  for i, libary in enumerate(libraries):
+    information = {}
+    information["name"] = libary
+    information["version"] = version[i]    
+    reportValues["LibraryInformation"] += LibraryInformation % information
+
   reportValues["container"] = chartInfoTop[1]
   reportValues["pagination"] = NewPagination()
   reportValues["methods"] = MethodReports(db)

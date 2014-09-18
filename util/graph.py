@@ -118,7 +118,10 @@ def GenerateBarChartMetric(results,libraries, fileName, datasetName, bestlib="ml
   content['type'] = 'column'
   content['title'] = datasetName
   content['subtitle'] = 'Hide data series by clicking the legend item.'
+  content['xAxisLabels'] = 'true'
+  content['xAxisRotation'] = '0' if len(header) < 130 else '-45'
   content['yAxis'] = 'Time [s]'
+  content['tooltipText'] = 's'
   content['data'] = fileName + '.csv'
 
   with open('reports/' + fileName + '.js', 'wb+') as fid:
@@ -221,7 +224,10 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack"):
   content['type'] = 'column'
   content['title'] = ''
   content['subtitle'] = 'Hide data series by clicking the legend item.'
+  content['xAxisLabels'] = 'true'
+  content['xAxisRotation'] = '0' if len(header) < 130 else '-45'
   content['yAxis'] = 'Time [s]'
+  content['tooltipText'] = 's'
   content['data'] = fileName + '.csv'
 
   with open('reports/' + fileName + '.js', 'wb+') as fid:
@@ -290,7 +296,10 @@ def CreateMassifChart(massiflogFile, datasetName):
   content['type'] = 'area'
   content['title'] = datasetName
   content['subtitle'] = 'Hide data series by clicking the legend item.'
+  content['xAxisLabels'] = 'false'
+  content['xAxisRotation'] = '0' if len(header) < 130 else '-45'
   content['yAxis'] = 'memory [KB]'
+  content['tooltipText'] = 'KB'
   content['data'] = fileName + '.csv'
 
   with open('reports/' + fileName + '.js', 'wb+') as fid:
@@ -370,9 +379,12 @@ def CreateTopLineChart(db):
     content = {}
     content['container'] = build
     content['type'] = 'area'
-    content['title'] = ''
+    content['title'] = 'Overall Timing'
     content['subtitle'] = 'Hide data series by clicking the legend item.'
+    content['xAxisLabels'] = 'true'
+    content['xAxisRotation'] = '0' if len(header) < 130 else '-45'
     content['yAxis'] = 'Time [s]'
+    content['tooltipText'] = 's'
     content['data'] = fileName + '.csv'
 
     with open('reports/' + fileName + '.js', 'wb+') as fid:

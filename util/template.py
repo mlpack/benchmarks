@@ -19,7 +19,11 @@ $(document).ready(function() {
         text: '%(subtitle)s'
     },
     xAxis: {
-        enabled:false,
+        labels:
+        {
+          enabled: %(xAxisLabels)s,
+          rotation: %(xAxisRotation)s
+        },
         categories: []
     },
     yAxis: {
@@ -30,7 +34,7 @@ $(document).ready(function() {
     tooltip: {
         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            '<td style="padding:0"><b>{point.y:.4f} %(tooltipText)s</b></td></tr>',
         footerFormat: '</table>',
         shared: true,
         useHTML: true
@@ -39,6 +43,26 @@ $(document).ready(function() {
         column: {
             pointPadding: 0.2,
             borderWidth: 0
+        },
+        area: {
+            stacking: 'normal',
+            lineColor: '#666666',
+            lineWidth: 1,
+            marker: {
+                lineWidth: 1,
+                lineColor: '#666666'
+            }
+        },
+        series: {
+            cursor: 'pointer',
+            events: {
+                click: function (event) {
+                    alert(this.name + ' clicked\n' +
+                          'Alt: ' + event.altKey + '\n' +
+                          'Control: ' + event.ctrlKey + '\n' +
+                          'Shift: ' + event.shiftKey + '\n');
+                }
+            }
         }
     },
 
@@ -114,6 +138,7 @@ function loadScript( url, callback ) {
 
 %(scripts)s
 
+
 </head>
 <body>
 <div class="container">
@@ -125,7 +150,28 @@ function loadScript( url, callback ) {
 <div class="overall-timing-chart">
 <div id="%(container)s" style="width: 100%%; height: 100%%; margin: 0 auto"></div>
 </div>
-</div></div>%(methods)s</div></div></div>
+
+</div></div>
+
+<div class="panel panel-default">
+<div class="panel-heading"><b>System Information</b></div>
+<div class="row">
+<div class="col-lg-3">CPU Model: %(CPUModel)s</div>
+<div class="col-lg-3">Distribution: %(Distribution)s</div>
+<div class="col-lg-2">Platform: %(Platform)s</div>
+<div class="col-lg-2">Memory: %(Memory)s</div>
+<div class="col-lg-2">CPU Cores: %(CPUCores)s</div>
+</div></div>
+
+<div class="panel panel-default">
+<div class="panel-heading"><b>Library Information</b></div>
+
+<div class="row">
+%(LibraryInformation)s
+</div>
+</div>
+
+%(methods)s</div></div></div>
 <div class="pagination--holder">
 <ul class="pagination">%(pagination)s</ul></div>
 <script src="framework/jquery/jquery.min.js"></script>
@@ -136,6 +182,10 @@ function loadScript( url, callback ) {
 <![endif]-->
 </body>
 </html>
+"""
+
+LibraryInformation = """
+<div class="col-lg-2">%(name)s: %(version)s</div>
 """
 
 paginationTemplate = """
