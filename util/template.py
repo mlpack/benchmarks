@@ -44,15 +44,6 @@ $(document).ready(function() {
             pointPadding: 0.2,
             borderWidth: 0
         },
-        area: {
-            stacking: 'normal',
-            lineColor: '#666666',
-            lineWidth: 1,
-            marker: {
-                lineWidth: 1,
-                lineColor: '#666666'
-            }
-        },
         series: {
             cursor: 'pointer',
             events: {
