@@ -115,9 +115,13 @@ def CreateMemoryContent(results):
       try:
         content = content.decode()
       except AttributeError:
+        continue
         pass
-      # memoryValues["content"] = content
-      memoryValues["content"] = ""
+
+      fileName = 'memory/memory_' + result[7] + str(hash(result[5])) + '.txt'
+
+      with open('reports/' + fileName, 'wb+') as fid:
+        fid.write(content.encode('UTF-8'))
 
       chartInfo = CreateMassifChart(result[5], result[7])
 
@@ -126,6 +130,9 @@ def CreateMemoryContent(results):
 
       containerID, container = chartInfo
       memoryValues['container'] = container
+      memoryValues['massifFilePath'] = fileName
+      memoryValues['massifFile'] = result[7]
+
       ids += containerID + ","
       memoryContent += memoryPanelTemplate % memoryValues
 
@@ -546,7 +553,7 @@ def Main(configfile):
   keepReports = 3
 
   # Create the folder structure.
-  CreateDirectoryStructure(["reports/img", "reports/etc", "reports/graphs"])
+  CreateDirectoryStructure(["reports/img", "reports/etc", "reports/graphs", "reports/memory"])
 
   # Read the config.
   config = Parser(configfile, verbose=False)

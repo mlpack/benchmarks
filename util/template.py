@@ -45,15 +45,7 @@ $(document).ready(function() {
             borderWidth: 0
         },
         series: {
-            cursor: 'pointer',
-            events: {
-                click: function (event) {
-                    alert(this.name + ' clicked\n' +
-                          'Alt: ' + event.altKey + '\n' +
-                          'Control: ' + event.ctrlKey + '\n' +
-                          'Shift: ' + event.shiftKey + '\n');
-                }
-            }
+            cursor: 'pointer'
         }
     },
 
@@ -239,6 +231,11 @@ methodTemplate = """
 
 memoryPanelTemplate = """
 <div id="%(container)s" style="width: 100%%; height: 100%%;"></div>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <center><a href="%(massifFilePath)s">%(massifFile)s - Profiler Output</a></center>
+  </div>
+</div>
 """
 
 panelTemplate = """
