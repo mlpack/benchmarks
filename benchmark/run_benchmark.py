@@ -296,7 +296,6 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 
                 if 'metric' in tasks:
                   metrics = instance.RunMetrics(options)
-                  print(metrics)
                   if metrics:
                     if log:
                       buildID, libraryID = build[name]
