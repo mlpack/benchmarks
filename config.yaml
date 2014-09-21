@@ -5,6 +5,7 @@ settings:
     timeout: 9000
     database: 'reports/benchmark.db'
     keepReports: 20
+    bootstrap: 10
     libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann']
     version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2']
 ---
@@ -13,7 +14,7 @@ settings:
 library: mlpack
 methods:
     PCA:
-        run: ['timing']
+        run: []
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -21,13 +22,23 @@ methods:
                       'datasets/cities.csv', 'datasets/diabetes_X.csv']
 
     PERCEPTRON:
-        run: ['timing']
+        run: ['metric', 'timing', 'bootstrap']
         script: methods/mlpack/perceptron.py
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
-                    ]
-              options: '-i 10000'
+                       ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                       ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                       ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                       ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                       ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                       ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                       ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                       ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                       ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                       ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                       ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+              options: '-i 1000'
 
     DecisionStump:
         run: []
@@ -616,15 +627,23 @@ methods:
               options: '-d 2 -s'
 
     PERCEPTRON:
-        run: ['metric', 'timing']
+        run: ['timing']
         script: methods/matlab/perceptron.py
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
-                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
-                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
-                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
-              options: '-i 10000'
+                       ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                       ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                       ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                       ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                       ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                       ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                       ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                       ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                       ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                       ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                       ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+              options: '-i 1000'
 
     NMF:
         run: []
@@ -782,15 +801,23 @@ methods:
               options: '-d 2 -s'
 
     PERCEPTRON:
-        run: ['metric', 'timing']
+        run: ['metric', 'timing', 'bootstrap']
         script: methods/scikit/perceptron.py
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
-                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
-                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
-                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
-              options: '-i 10000'
+                       ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                       ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                       ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                       ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                       ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                       ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                       ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                       ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                       ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                       ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                       ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+              options: '-i 1000'
 
     NMF:
         run: []
@@ -805,7 +832,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -u alspgrad'
     KMEANS:
-        run: ['timing']
+        run: []
         iteration: 3
         script: methods/scikit/kmeans.py
         format: [csv, txt, arff]
@@ -910,7 +937,7 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
     LinearRegression:
-        run: ['timing']
+        run: []
         iteration: 3
         script: methods/scikit/linear_regression.py
         format: [csv, txt, arff]
@@ -940,45 +967,12 @@ methods:
 library: mlpy
 methods:
     PCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/mlpy/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris.csv', 'datasets/wine.csv',
-                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
-                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
-                      'datasets/bank8FM.csv', 'datasets/faces.csv',
-                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
-                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
-                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
-                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
-                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
-                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-
-            - files: ['datasets/iris.csv', 'datasets/wine.csv',
-                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
-                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
-                      'datasets/bank8FM.csv', 'datasets/faces.csv',
-                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
-                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
-                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
-                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
-                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
-                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2'
-
-            - files: ['datasets/iris.csv', 'datasets/wine.csv',
-                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
-                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
-                      'datasets/bank8FM.csv', 'datasets/faces.csv',
-                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
-                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
-                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
-                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
-                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
-                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2 -s'
+            - files: ['datasets/iris.csv', 'datasets/wine.csv']
     KMEANS:
         run: []
         iteration: 3
