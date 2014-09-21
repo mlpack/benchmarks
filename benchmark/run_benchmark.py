@@ -296,6 +296,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 
                 if 'metric' in tasks:
                   metrics = instance.RunMetrics(options)
+                  print(metrics)
                   if metrics:
                     if log:
                       buildID, libraryID = build[name]
@@ -340,9 +341,9 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     if update:
                       try:
                         db.UpdateBootstrapResult(buildID, libraryID,
-                            simplejsfson.dumps(bootstrap_metrics), datasetId,
+                            simplejson.dumps(bootstrap_metrics), datasetId,
                             methodId)
-                      except Exception:
+                      except Exception as e:
                         pass
                     else:
                       db.NewBootstrapResult(buildID, libraryID,
