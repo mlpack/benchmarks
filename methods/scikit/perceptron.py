@@ -140,11 +140,10 @@ class PERCEPTRON(object):
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      # metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       return metrics
     else:
       Log.Warn("This method requires three datasets.")
