@@ -120,6 +120,26 @@ class Database:
         """)
 
   '''
+  Create a new metric results table
+  '''
+  def CreateMetricBootstrapTable(self):
+    self.con.executescript("""
+        CREATE TABLE IF NOT EXISTS bootstrap (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          build_id INTEGER NOT NULL,
+          libary_id INTEGER NOT NULL,
+          metric TEXT NOT NULL,
+          dataset_id INTEGER NOT NULL,
+          method_id INTEGER NOT NULL,
+
+          FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
+          FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
+          FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
+          FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
+        );
+        """)
+
+  '''
   Create a new memory table.
   '''
   def CreateMemoryTable(self):
@@ -165,6 +185,7 @@ class Database:
     self.CreateMetricResultsTable()
     self.CreateMemoryTable()
     self.CreateMethodInfoTable()
+    self.CreateMetricBootstrapTable()
 
   '''
   Add a new build record to the builds table.
@@ -192,20 +213,50 @@ class Database:
       self.cur.execute("INSERT INTO metrics VALUES (NULL,?,?,?,?,?)",
           (buildId, libaryId, str(metric), datasetId, methodId))
 
+  '''
+  Add a new metric result record to the bootstrap table.
+  @param buildId - The id of the build.
+  @param libaryId - The if ot the library.
+  @param metric - The metric result as string.
+  @param datasetId - The id of the dataset.
+  @param methodId - The id of the method.
+  '''
+  def NewBootstrapResult(self, buildId, libaryId, metric, datasetId, methodId):
+    with self.con:
+      self.cur.execute("INSERT INTO bootstrap VALUES (NULL,?,?,?,?,?)",
+          (buildId, libaryId, str(metric), datasetId, methodId))
+
 
   def UpdateMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
     with self.con:
       if self.GetMetricResult(buildId, libaryId, datasetId, methodId):
         self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
-            + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
+            + " WHERE build_id=" + str(buildId) + " AND libary_id="
             + str(libaryId) + " AND dataset_id=" + str(datasetId) 
             + " AND method_id=" + str(methodId))
       else:
         self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId)
 
+  def UpdateBootstrapResult(self, buildId, libaryId, metric, datasetId, methodId):
+    with self.con:
+      if self.GetBootstrapResult(buildId, libaryId, datasetId, methodId):
+        self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
+            + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
+            + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+            + " AND method_id=" + str(methodId))
+      else:
+        self.NewBootstrapResult(buildId, libaryId, metric, datasetId, methodId)
+
   def GetMetricResult(self, buildId, libaryId, datasetId, methodId):
     with self.con:
       self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId) 
+          + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
+          + str(datasetId) + " AND method_id=" + str(methodId))
+      return self.cur.fetchall()
+
+  def GetBootstrapResult(self, buildId, libaryId, datasetId, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId) 
           + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
           + str(datasetId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
@@ -439,6 +490,20 @@ class Database:
     with self.con:
       self.cur.execute("SELECT * FROM metrics JOIN datasets ON" + 
           " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+          " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
+      return self.cur.fetchall()
+
+  '''
+  Get the bootstrap results for the specified method and build id.
+
+  @param buildId - The build id.
+  @param methodId - The method id.
+  @return A list with the results.
+  '''
+  def GetMethodBootstrapResultsForLibrary(self, buildId, methodId):
+    with self.con:
+      self.cur.execute("SELECT * FROM bootstrap JOIN datasets ON" + 
+          " bootstrap.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
   

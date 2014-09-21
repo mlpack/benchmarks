@@ -23,7 +23,7 @@ from misc import *
 from profiler import *
 from system import *
 
-import argparse, glob, re, collections, simplejson, codecs
+import argparse, glob, re, collections, simplejson, codecs, random
 
 '''
 Create the timings table.
@@ -61,6 +61,56 @@ def CreateTimingTable(data, libraries, type):
 
   return (header, timingTable)
 
+def GetBootstrapTimingTable(results, libraries, datasetName):
+  # Use this data structures to generate the timing table and the progress bar.
+  timingData = {}
+
+  # Use this variable to get use the data for the right library.
+  l = 0
+
+  # Iterate through the data and plot the bar chart.
+  for result in results:
+    for i, data in enumerate(result):
+      if data[7] == datasetName:
+        for key, value in simplejson.loads(data[3]).items():
+
+          # The time value.
+          time = value
+
+          # The name of the dataset.
+          dataset = key
+
+          # Save the timing data for the timing table.
+          if dataset in timingData:
+            if time == 'failure' or '>' in str(time):
+              time = '-'
+
+            timingData[dataset][l] = time
+          else:
+            timingData[dataset] = ['-' for x in range(len(libraries))]
+            timingData[dataset][l] = time
+
+          # We can only plot scalar values so we jump over the other.
+          if time == "failure":
+            continue
+          elif str(time).count(">") > 0:
+            continue
+
+    l += 1
+
+  timingData = collections.OrderedDict(sorted(timingData.items()))
+
+  keyCount = 0
+  failureData = [0 for x in range(len(libraries))]
+  for key, value in timingData.items():
+    keyCount += 1
+
+    pos = [i for i, x in enumerate(value) if x == '-']
+    for p in pos:
+      failureData[p] += 1
+
+  return (timingData, failureData)
+
 '''
 Create the table with the datasets informations.
 
@@ -94,6 +144,30 @@ def CreateDatasetTable(resultList):
          datasetTable += "</tr>"
 
   return datasetTable
+
+def CreateBootstrapTable(result, libaries, counter):
+  content = '<table class="table table-striped"><thead><tr><th></th>'
+
+  for i in range(len(libaries)):
+    if 4 <= (i + 1) <= 20 or 24 <= i <= 30:
+      suffix = "TH"
+    else:
+        suffix = ["ST", "ND", "RD"][(i + 1) % 10 - 1]
+
+    content += '<th>' + str(i + 1)  + suffix + '</th>'
+
+  content += '</tr></thead><tbody>'
+
+  for lib in libaries:
+    # Name of the model.
+    content += '<tr><td>' + lib + '</td>'
+    for res in result[lib]:
+      content += '<td>' + str(res /  counter) + '</td>'
+
+    content += '</tr>'
+
+  content += '</tbody></table>'
+  return content
 
 '''
 Create the content for the memory section.
@@ -169,9 +243,10 @@ def CreateMethodInfo(results, methodName):
 Create the method container with the information from the database.
 
 @param db - The database object.
+@param bootstrapCountb - The number of selections from the metric results.
 @return HTML code which contains the information for the container.
 '''
-def MethodReports(db):
+def MethodReports(db, bootstrapCount):
   methodsPage = ""
   numDatasets = 0
 
@@ -186,28 +261,48 @@ def MethodReports(db):
   for method in db.GetAllMethods():
 
     methodResults = []
-    methodLibararies = []
+    methodLibarariesTiming = []
+    methodLibarariesMetric = []
+    methodLibarariesBootstrap = []
+
     resultBuildId = []
     for buildId in buildIds:
       timing_results = db.GetMethodResultsForLibary(buildId[0], method[0])
-      metric_results = db.GetMethodMetricResultsForLibrary(buildId[0], method[0])
+
+      metric_results = db.GetMethodMetricResultsForLibrary(buildId[0],
+                                                           method[0])
+
+      bootstrap_results = db.GetMethodBootstrapResultsForLibrary(buildId[0],
+                                                                 method[0])
 
       results = {}
       if timing_results:
         results["timing"] = timing_results
+        methodLibarariesTiming.append(buildId[1])
 
       if metric_results:
         results["metric"] = metric_results
+        methodLibarariesMetric.append(buildId[1])
+
+      if bootstrap_results:
+        results["bootstrap"] = bootstrap_results
+        methodLibarariesBootstrap.append(buildId[1])
+
 
       results["id"] = method[0]
 
-      if 'timing' in results or 'metric' in results:
-        methodLibararies.append(buildId[1])
+      if 'timing' in results or 'metric' in results or 'bootstrap' in results:
+        # methodLibararies.append(buildId[1])
         resultBuildId.append(buildId[0])
         methodResults.append(results)
 
     if methodResults:
-      t = (methodResults, methodLibararies, resultBuildId)
+      t = (methodResults,
+           methodLibarariesTiming,
+           methodLibarariesMetric,
+           methodLibarariesBootstrap,
+           resultBuildId)
+
       if method[1] in methodGroup:
         methodGroup[method[1]].append(t)
       else:
@@ -244,6 +339,7 @@ def MethodReports(db):
       resultValues = {}
       groupPanelTiming = {}
       groupPanelMetric = {}
+      resultPanelBootstrap = {}
       resultValuesMetric = {}
 
       # Generate a list of timing results.
@@ -257,8 +353,17 @@ def MethodReports(db):
         if 'metric' in resMetric:
           methodResultsMetric.append(resMetric["metric"])
 
+      # Generate a list of bootstrap results.
+      methodResultsBootstrap = []
+      for resBootstrap in result[0]:
+        if 'bootstrap' in resBootstrap:
+          methodResultsBootstrap.append(resBootstrap["bootstrap"])
+
       # Names of the libaries that have timing or metric result.
-      methodLibararies = result[1]
+      # print(result)
+      methodLibarariesTiming = result[1]
+      methodLibarariesMetric = result[2]
+      methodLibarariesBootstrap = result[3]
 
       # The id of the current method.
       methodId = result[0][0]["id"]
@@ -286,7 +391,8 @@ def MethodReports(db):
       barChartNameTiming = "img/bar_" + chartHash + "_timing.png"
 
       # Create the timing bar chart.
-      ChartInfoTiming = GenerateBarChart(methodResultsTiming, methodLibararies,
+      ChartInfoTiming = GenerateBarChart(methodResultsTiming,
+                                         methodLibarariesTiming,
                                          "reports/" + barChartNameTiming)
 
       # Increase the status information.
@@ -298,11 +404,12 @@ def MethodReports(db):
 
       # Create the content for the timing table.
       headerTiming, timingTableTiming = CreateTimingTable(ChartInfoTiming[5],
-                                                          methodLibararies,
+                                                          methodLibarariesTiming,
                                                           'timing')
 
       # Set the number of libraries.
-      libCount = libCount if libCount >= len(methodLibararies) else len(methodLibararies)
+      libCount = libCount if libCount >= len(methodLibarariesTiming) else len(
+          methodLibarariesTiming)
 
       # Set the parameters for the timing template.
       resultValues["container"] = ChartInfoTiming[7]
@@ -314,11 +421,71 @@ def MethodReports(db):
       groupPanelTiming["containerID"] = ChartInfoTiming[6]
 
       # Get the datasets that have metric results.
-      datasetNames = []
+      datasetNamesMetric = []
       for data in methodResultsMetric:
         for dataRes in data:
           if dataRes[3] != '{}':
-            datasetNames.append(dataRes[7])
+            datasetNamesMetric.append(dataRes[7])
+
+      # Get the datasets that have bootstrap results.
+      datasetNamesBootstrap = []
+      for data in methodResultsBootstrap:
+        for dataRes in data:
+          if dataRes[3] != '{}':
+            datasetNamesBootstrap.append(dataRes[7])
+
+      # Extract from the bootstrap results the values that we can use for
+      # bootstraping.
+      bootstrapMetricContainer = []
+      bootstrapDatasetContainer = []
+      for dataSetName in set(datasetNamesBootstrap):
+        bootstrapTable, failureData = GetBootstrapTimingTable(
+                                                 methodResultsBootstrap,
+                                                 methodLibarariesBootstrap,
+                                                 dataSetName)
+
+        # We can't use the metric if not all libaries contain a value for this
+        # dataset.
+        bootstrapTableTemp = {}
+        for key, value in bootstrapTable.items():
+          if not '-' in value:
+            bootstrapTableTemp[key] = value
+        if bootstrapTableTemp:
+          bootstrapDatasetContainer.append(dataSetName)
+          bootstrapMetricContainer.append(bootstrapTableTemp)
+
+      bootstrapContent = ""
+      bootstrapResults = {}
+      for lib in methodLibarariesBootstrap:
+        bootstrapResults[lib] = [0 for x in range(len(methodLibarariesBootstrap))]
+
+      if methodLibarariesBootstrap:
+        for i in range(bootstrapCount):
+          # Select a random dataset.
+          random_idx = random.randrange(0, len(bootstrapDatasetContainer))
+
+          # Select a random metric.
+          metric = random.choice(list(bootstrapMetricContainer[random_idx].keys()))
+
+          # Get the results from the selected metric.
+          result = bootstrapMetricContainer[random_idx][metric]
+
+          # Sort the metric results and return the index.
+          sortedResult = sorted(range(len(result)), key=result.__getitem__, reverse=True)
+
+          for i, lib in enumerate(methodLibarariesBootstrap):
+            bootstrapResults[lib][sortedResult[i]] += 1
+
+        bootstrapContent = CreateBootstrapTable(bootstrapResults,
+                                                methodLibarariesBootstrap,
+                                                bootstrapCount)
+
+      if bootstrapContent:
+        resultPanelBootstrap["containerID"] = ""
+        resultPanelBootstrap["nameID"] = chartHash + 'b'
+        resultPanelBootstrap["name"] = "Bootstrap"
+        resultPanelBootstrap["content"] = bootstrapContent
+        bootstrapContent = resultsTemplate % resultPanelBootstrap
 
       # Set the parameters for the metric template.
       groupPanelMetric["nameID"] = chartHash + "m"
@@ -327,18 +494,18 @@ def MethodReports(db):
       # Iterate through the datasets and set the other template values.
       groupPanelMetric["content"] = ""
       groupPanelMetric["containerID"] = ""
-      for dataSetName in set(datasetNames):
+      for dataSetName in set(datasetNamesMetric):
         # Generate a "unique" name for the metric bar chart.
         barChartNameMetric = "img/bar_" + chartHash + "_metric_" + dataSetName + ".png"
 
         # Generate the metrics bar chart.
         ChartInfoMetric = GenerateBarChartMetric(methodResultsMetric, 
-                                                 methodLibararies, "reports/" +
+                                                 methodLibarariesMetric, "reports/" +
                                                  barChartNameMetric, dataSetName)
 
         # Create the content for the metric timing table.
         headerMetric, timingTableMetric = CreateTimingTable(ChartInfoMetric[5],
-                                                            methodLibararies,
+                                                            methodLibarariesMetric,
                                                             'metric')
         # Set the parameters for the metric template.
         resultValuesMetric["timingHeader"] = headerMetric
@@ -354,7 +521,7 @@ def MethodReports(db):
 
       resultPanel += resultsTemplate % groupPanelTiming
 
-      if datasetNames:
+      if datasetNamesMetric:
         groupPanelMetric["containerID"] = groupPanelMetric["containerID"][:-1]
         resultPanelMetric += resultsTemplate % groupPanelMetric
 
@@ -410,12 +577,18 @@ def MethodReports(db):
     reportValues["resultsPanel"] = resultPanel
 
     # Don't add an empty metric panel.
-    if datasetNames:
+    if datasetNamesMetric:
       reportValues["MetricResultsPanel"] = '<div><div class="panel panel-default"><div class="panel-heading">Metric Results</div>'
-      reportValues["resultsPanelMetric"] = '<div class="panel-body">' + resultPanelMetric + '</div></div></div>'
+      reportValues["MetricResultsPanel"] += '<div class="panel-body">' + resultPanelMetric + '</div></div></div>'
     else:
       reportValues["MetricResultsPanel"] = ""
       reportValues["resultsPanelMetric"] = ""
+
+    if bootstrapContent:
+      reportValues["resultsPanelBootstrap"] = '<div><div class="panel panel-default"><div class="panel-heading">Bootstrap Results</div>'
+      reportValues["resultsPanelBootstrap"] += '<div class="panel-body">' + bootstrapContent + '</div></div></div>'
+    else:
+      reportValues["resultsPanelBootstrap"] = ""
     
     reportValues["methods"] = len(results)
     reportValues["groupOne"] = collapseGroup
@@ -551,9 +724,13 @@ def Main(configfile):
   # Default report settings.
   database = "reports/benchmark.db"
   keepReports = 3
+  bootstrapCount = 10
 
   # Create the folder structure.
-  CreateDirectoryStructure(["reports/img", "reports/etc", "reports/graphs", "reports/memory"])
+  CreateDirectoryStructure(["reports/img",
+                            "reports/etc",
+                            "reports/graphs",
+                            "reports/memory"])
 
   # Read the config.
   config = Parser(configfile, verbose=False)
@@ -570,6 +747,8 @@ def Main(configfile):
         libraries = value
       elif key == "version":
         version = value
+      elif key == "bootstrap":
+        bootstrapCount = value
 
   # Create a database object and create the necessary tables.
   db = Database(database)
@@ -600,7 +779,7 @@ def Main(configfile):
 
   reportValues["container"] = chartInfoTop[1]
   reportValues["pagination"] = NewPagination()
-  reportValues["methods"] = MethodReports(db)
+  reportValues["methods"] = MethodReports(db, bootstrapCount)
   reportValues["scripts"] = '<script src="' + chartInfoTop[0] + '"></script>'
 
   template = pageTemplate % reportValues

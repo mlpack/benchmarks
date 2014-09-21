@@ -202,7 +202,7 @@ methodTemplate = """
 <div class="panel-heading">Timing Results</div>
 <div class="panel-body">%(resultsPanel)s</div></div></div>
 %(MetricResultsPanel)s
-%(resultsPanelMetric)s
+%(resultsPanelBootstrap)s
 </div>
 <div id="collapse%(groupTwo)s" class="container__bottomContent infos collapse">
 <div>

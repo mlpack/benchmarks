@@ -110,6 +110,8 @@ def Main(configfile, blocks, log, methodBlocks, update):
   timeout = 23000
   database = "reports/benchmark.db"
 
+  bootstrapCount = 10
+
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
 
@@ -128,6 +130,8 @@ def Main(configfile, blocks, log, methodBlocks, update):
         timeout = value
       if key == "database":
         database = value
+      if key == "bootstrap":
+        bootstrapCount = value
 
   # Create database connection if the user asked for to save the reports.
   if log:
@@ -297,8 +301,8 @@ def Main(configfile, blocks, log, methodBlocks, update):
                       buildID, libraryID = build[name]
                       if update:
                         try:
-                          db.UpdateMetricResult(buildID, libraryID,
-                            simplejson.dumps(metrics), datasetId, methodId)
+                          db.UpdateMetricResult(buildID, libraryID, 
+                              simplejson.dumps(metrics), datasetId, methodId)
                         except Exception:
                           pass
                       else:
@@ -306,50 +310,44 @@ def Main(configfile, blocks, log, methodBlocks, update):
                             simplejson.dumps(metrics), datasetId, methodId)
 
                 if 'bootstrap' in tasks:
-                  bootstrap_dict={}
-                  print('Bootstrapping now!')
-                  l = len(datasets)
-                  #Bootstrapping for this method 100 times.
-                  for count in range(100):
-                    dataset_selected = random.randint(0,l)
-                    new_dataset = datasets[dataset_selected - 1]
-                    modDataset = GetDataset(new_dataset, format)
-                    new_instance = methodCall(modDataset[0], timeout=timeout, 
-                      verbose=False)
+                  bootstrap_metrics = {}
 
-                    metric_dict_method = new_instance.RunMetrics(options)
-                    #Add the obtained metrics to the bootstrap_dict dictionary which will
-                    #be the final dictionary of metrics as value and names as key
-                    for key in metric_dict_method:
-                      if key in bootstrap_dict:
-                        bootstrap_dict[key] += metric_dict_method[key]
-                      else:
-                        bootstrap_dict[key] = metric_dict_method[key]
-                  
-                  #Now normalize each obtained metric and build a final
-                  #dictionary of metrics for this method. 
-                  for k in bootstrap_dict:
-                    bootstrap_dict[k] /= 100
-                    bootstrap_dict[k] = round(bootstrap_dict[k],5)
-                  
-                  '''
-                  #method_dict : This dictionary will look like:
-                  #{'Mlpack' : {'Metric1' : value, 'Metric2' : value, ..}, 'Scikit' : 
-                  #         {'Metric1' : value, 'Metric2' : value, ..}, ... }
-                  '''
-                  method_dict[name] = bootstrap_dict
-                  
+                  # Start bootstrapping for this method.
+                  bootstrapCounter = 0
+                  for i in range(bootstrapCount):
+                    instance = methodCall(modifiedDataset[0], timeout=timeout,
+                        verbose=False)
 
-                  #Finally print this dictionary
-                  Log.PrintMethodDictionary(method, method_dict)
+                    # Get the metric results for the specified method.
+                    metrics = instance.RunMetrics(options)
 
-                #Store the results in db if the user asked for it.
-                if log:
-                  #Serialize the metrics dictionary
-                  metrics_string = simplejson.dumps(method_dict)
-                  buildID, libraryID = build[name]
-                  db.NewMetricResult(buildID, libraryID, metrics_string, datasetId, methodId)
+                    # Merge the obtained metrics with the existing.
+                    if metrics:
+                      bootstrapCounter += 1
+                      bootstrap_metrics = { m: metrics.get(m, 0) +
+                                            bootstrap_metrics.get(m, 0)
+                                            for m in set(metrics) }
 
+                  # Normalize each obtained metric.
+                  for m in bootstrap_metrics:
+                    bootstrap_metrics[m] = float("{0:.6f}".format
+                                                 (round(bootstrap_metrics[m] /
+                                                  bootstrapCounter, 5)))
+
+                  # Store the results in db if the user asked for it.
+                  if log:
+                    buildID, libraryID = build[name]
+                    if update:
+                      try:
+                        db.UpdateBootstrapResult(buildID, libraryID,
+                            simplejsfson.dumps(bootstrap_metrics), datasetId,
+                            methodId)
+                      except Exception:
+                        pass
+                    else:
+                      db.NewBootstrapResult(buildID, libraryID,
+                          simplejson.dumps(bootstrap_metrics), datasetId,
+                          methodId)
 
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
