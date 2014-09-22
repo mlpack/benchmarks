@@ -213,7 +213,7 @@
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Add x axis.
-    svg.append("g")
+    svg.append("g").attr("id", "xaxis")
       .attr("class", "x axis")
       .attr("transform", "translate(0, " + height + ")")
       .call(xAxis);
@@ -292,6 +292,11 @@
         .style("text-anchor", "start")
         .text(function(d) { return d; })
         .on('click', function(d, i) { toggleLibrary(d); });
+
+    // Allow clicking on the dataset.
+    d3.select('#xaxis')
+        .selectAll('.tick')
+        .on('click', function(d, i) { toggleDataset(d); });
   }
 
   function toggleLibrary(library)
@@ -307,6 +312,24 @@
     {
       // Deactivate the library.
       active_libraries.splice(index, 1);
+    }
+    clearChart();
+    buildRuntimeComparisonChart();
+  }
+
+  function toggleDataset(dataset)
+  {
+    console.log("toggle dataset " + dataset);
+    var index = active_datasets.indexOf(dataset);
+    if(index == -1)
+    {
+      // Activate the dataset.
+      active_datasets.push(dataset);
+    }
+    else
+    {
+      // Deactivate the dataset.
+      active_datasets.splice(index, 1);
     }
     clearChart();
     buildRuntimeComparisonChart();
