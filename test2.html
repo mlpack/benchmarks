@@ -195,7 +195,7 @@
     var library_scale = d3.scale.ordinal()
         .domain(active_libraries)
         .rangeRoundBands([0, group_scale.rangeBand()]);
-    var max_runtime = d3.max(results[0].values, function(d) { if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
+    var max_runtime = d3.max(results[0].values, function(d) { if(active_datasets.indexOf(d[4]) == -1) { return 0; } else if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
 
     var runtime_scale = d3.scale.linear()
         .domain([0, max_runtime])
