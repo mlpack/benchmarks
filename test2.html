@@ -254,7 +254,7 @@
             var ret = [];
             for(i = 0; i < results[0].values.length; i++)
             {
-              if(results[0].values[i][4] == d) { ret.push(results[0].values[i]); }
+              if(results[0].values[i][4] == d && active_libraries.indexOf(results[0].values[i][3]) != -1) { ret.push(results[0].values[i]); }
             }
             console.log(JSON.stringify(ret));
             return ret;
@@ -295,6 +295,18 @@
   function toggleLibrary(library)
   {
     console.log("toggle library " + library);
+    var index = active_libraries.indexOf(library);
+    if(index == -1)
+    {
+      // Activate the library.
+    }
+    else
+    {
+      // Deactivate the library.
+      active_libraries.splice(index, 1);
+    }
+    clearChart();
+    buildRuntimeComparisonChart();
   }
 
   xhr.onload = function(e) {
