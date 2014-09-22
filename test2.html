@@ -168,8 +168,8 @@
     libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
     // By default, everything is active.
-    active_datasets = datasets;
-    active_libraries = libraries;
+    active_datasets = datasets.slice(0); // Force a copy.
+    active_libraries = libraries.slice(0);
 
     clearChart();
     buildRuntimeComparisonChart();
@@ -269,6 +269,8 @@
         .on('mouseout', tip.hide);
 
     // Add a horizontal legend at the bottom.
+    console.log(JSON.stringify(libraries));
+    console.log(JSON.stringify(active_libraries));
     var legend = svg.selectAll(".legend")
         .data(libraries) // All libraries are used here.
         .enter().append("g")
@@ -299,6 +301,7 @@
     if(index == -1)
     {
       // Activate the library.
+      active_libraries.push(library);
     }
     else
     {
