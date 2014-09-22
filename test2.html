@@ -86,6 +86,9 @@
   var param_name; // Name of currently active parameters.
   var results; // Results for current method and parameters.
 
+  // Static bindings of library names to colors.
+  var color = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
   function listMethods()
   {
     var methods = db.exec("SELECT DISTINCT name FROM methods ORDER BY name;");
@@ -168,8 +171,17 @@
     libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
     // By default, everything is active.
-    active_datasets = datasets.slice(0); // Force a copy.
-    active_libraries = libraries.slice(0);
+    active_datasets = {};
+    for(i = 0; i < datasets.length; i++)
+    {
+      active_datasets[datasets[i]] = true;
+    }
+
+    active_libraries = {};
+    for(i = 0; i < libraries.length; i++)
+    {
+      active_libraries[libraries[i]] = true;
+    }
 
     clearChart();
     buildRuntimeComparisonChart();
@@ -185,17 +197,16 @@
     // Basic chart parameters.
     var width = 800; // This should be parameterizable...
     var height = 600; // This should be parameterizable...
-    var color = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
     var margin = { top: 20, right: 20, bottom: 80, left: 40 };
 
     // Set up scales.
     var group_scale = d3.scale.ordinal()
-        .domain(active_datasets)
+        .domain(datasets.map(function(d) { return d; }).reduce(function(p, c) { if(active_datasets[c] == true) { p.push(c); } return p; }, []))
         .rangeRoundBands([0, width], .1);
     var library_scale = d3.scale.ordinal()
-        .domain(active_libraries)
+        .domain(libraries.map(function(d) { return d; }).reduce(function(p, c) { if(active_libraries[c] == true) { p.push(c); } return p; }, []))
         .rangeRoundBands([0, group_scale.rangeBand()]);
-    var max_runtime = d3.max(results[0].values, function(d) { if(active_datasets.indexOf(d[4]) == -1) { return 0; } else if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
+    var max_runtime = d3.max(results[0].values, function(d) { if(active_datasets[d[4]] == false) { return 0; } else if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
 
     var runtime_scale = d3.scale.linear()
         .domain([0, max_runtime])
@@ -231,7 +242,7 @@
 
     // Create groups.
     var group = svg.selectAll(".group")
-      .data(active_datasets)
+      .data(datasets.map(function(d) { return d; }).reduce(function(p, c) { if(active_datasets[c] == true) { p.push(c); } return p; }, []))
       .enter().append("g")
       .attr("class", "g")
       .attr("transform", function(d) { return "translate(" + group_scale(d) + ", 0)"; });
@@ -254,7 +265,7 @@
             var ret = [];
             for(i = 0; i < results[0].values.length; i++)
             {
-              if(results[0].values[i][4] == d && active_libraries.indexOf(results[0].values[i][3]) != -1) { ret.push(results[0].values[i]); }
+              if(results[0].values[i][4] == d && active_libraries[results[0].values[i][3]] == true) { ret.push(results[0].values[i]); }
             }
             console.log(JSON.stringify(ret));
             return ret;
@@ -302,17 +313,8 @@
   function toggleLibrary(library)
   {
     console.log("toggle library " + library);
-    var index = active_libraries.indexOf(library);
-    if(index == -1)
-    {
-      // Activate the library.
-      active_libraries.push(library);
-    }
-    else
-    {
-      // Deactivate the library.
-      active_libraries.splice(index, 1);
-    }
+    active_libraries[library] = !active_libraries[library];
+
     clearChart();
     buildRuntimeComparisonChart();
   }
@@ -320,26 +322,27 @@
   function toggleDataset(dataset)
   {
     console.log("toggle dataset " + dataset);
-    var index = active_datasets.indexOf(dataset);
-    if(index == -1)
-    {
-      // Activate the dataset.
-      active_datasets.push(dataset);
-    }
-    else
-    {
-      // Deactivate the dataset.
-      active_datasets.splice(index, 1);
-    }
+    active_datasets[dataset] = !active_datasets[dataset];
+
     clearChart();
     buildRuntimeComparisonChart();
+  }
+
+  // Query for the list of libraries, and create a mapping from library names to
+  // colors for use by the graphs.
+  function createColorMapping()
+  {
+    var librarylist = db.exec("SELECT libraries.name FROM libraries;");
+
+    libraries = librarylist[0].values.map(function(d) { return d[0]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+    color.domain(libraries);
   }
 
   xhr.onload = function(e) {
     var uInt8Array = new Uint8Array(this.response);
     db = new SQL.Database(uInt8Array);
-    var contents = db.exec("SELECT * FROM builds");
 
+    createColorMapping();
     listMethods();
   };
 
