@@ -197,7 +197,7 @@
     // Basic chart parameters.
     var width = 800; // This should be parameterizable...
     var height = 600; // This should be parameterizable...
-    var margin = { top: 20, right: 20, bottom: 80, left: 40 };
+    var margin = { top: 20, right: 20, bottom: 120, left: 40 };
 
     // Set up scales.
     var group_scale = d3.scale.ordinal()
@@ -286,7 +286,6 @@
         .data(libraries) // All libraries are used here.
         .enter().append("g")
         .attr("class", "legend")
-        .attr("background-color", "#888")
         .attr("transform", function(d, i) { return "translate(" + i * 50 + ",0)"; });
 
     legend.append("rect")
@@ -317,6 +316,30 @@
     // Allow clicking on the dataset.
     d3.select('#xaxis')
         .selectAll('.tick')
+        .on('click', function(d, i) { toggleDataset(d); });
+
+    // Add another horizontal legend for the datasets which aren't in use.
+    var dataset_legend = svg.selectAll(".datalegend")
+        .data(datasets.map(function(d) { return d; }).reduce(function(p, c) { if(active_datasets[c] == false) { p.push(c); } return p; }, []))
+        .enter().append("g")
+        .attr("class", "datalegend")
+        .attr("transform", function(d, i) { return "translate(" + i * 50 + ",0)"; });
+
+/*    dataset_legend.append("rect")
+        .attr("x", function(d, i) { return i * 50; })
+        .attr("y", height + 100)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color)
+        .on('click', function(d, i) { toggleDataset(d); });*/
+
+    dataset_legend.append("text")
+        .attr("x", function(d, i) { return i * 50 + 25; })
+        .attr("y", height + 100)
+        .attr("dy", ".85em")
+        .style("text-anchor", "start")
+        .style("fill", "#000000")
+        .text(function(d) { return d; })
         .on('click', function(d, i) { toggleDataset(d); });
   }
 
