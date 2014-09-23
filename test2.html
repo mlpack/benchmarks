@@ -254,7 +254,7 @@
         .html(function(d) {
             var runtime = d[0];
             if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
-            return "<strong>Runtime for " + d[3] + ":</strong> <span style='color:steelblue'>" + runtime + "s</span>"; });
+            return "<strong>Runtime for " + d[3] + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; });
 
     svg.call(tip);
 
@@ -286,7 +286,16 @@
         .data(libraries) // All libraries are used here.
         .enter().append("g")
         .attr("class", "legend")
+        .attr("background-color", "#888")
         .attr("transform", function(d, i) { return "translate(" + i * 50 + ",0)"; });
+
+    legend.append("rect")
+        .attr("x", function(d, i) { return i * 50 - 2; })
+        .attr("y", height + 48)
+        .attr("width", 75)
+        .attr("height", 22)
+        .attr("fill", function(d) { if(active_libraries[d]) { return "none"; } else { return "#888888" } })
+        .on('click', function(d, i) { toggleLibrary(d); });
 
     legend.append("rect")
         .attr("x", function(d, i) { return i * 50; })
@@ -301,6 +310,7 @@
         .attr("y", height + 50)
         .attr("dy", ".85em")
         .style("text-anchor", "start")
+        .style("fill", "#000000")
         .text(function(d) { return d; })
         .on('click', function(d, i) { toggleLibrary(d); });
 
