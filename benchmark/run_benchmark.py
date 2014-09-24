@@ -87,8 +87,8 @@ Count all datasets to determine the dataset number of datasets.
 '''
 def CountLibrariesDatasets(libraries):
   datasetList = []
-  for libary in libraries:
-    for dataset in libary[1]:
+  for library in libraries:
+    for dataset in library[1]:
       name = NormalizeDatasetName(dataset)
       if not name in datasetList:
         datasetList.append(name)
@@ -176,34 +176,34 @@ def Main(configfile, blocks, log, methodBlocks, update):
 
         col = 1
         run = 0
-        for libary in libraries:
-          name = libary[0]
-          datasets = libary[1]
-          trials = libary[2]
-          script = libary[3]
-          format = libary[4]
-          tasks = libary[5]
+        for library in libraries:
+          name = library[0]
+          datasets = library[1]
+          trials = library[2]
+          script = library[3]
+          format = library[4]
+          tasks = library[5]
 
           header.append(name)
           
           if not blocks or name in blocks:
             run += 1
-            Log.Info("Libary: " + name)
+            Log.Info("Library: " + name)
 
             # Logging: create a new build and library record for this library.
             if log and name not in build:
-              libaryId = db.GetLibrary(name)
-              libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name)
+              libraryId = db.GetLibrary(name)
+              libraryId = libraryId[0][0] if libraryId else db.NewLibrary(name)
 
               if update:
-                buildId = db.GetLatestBuildFromLibary(libaryId)
+                buildId = db.GetLatestBuildFromLibary(libraryId)
                 if buildId >= 0:
-                  build[name] = (buildId, libaryId)
+                  build[name] = (buildId, libraryId)
                 else:
                   Log.Warn("Nothing to update.")
                   continue
               else:
-                build[name] = (db.NewBuild(libaryId), libaryId)
+                build[name] = (db.NewBuild(libraryId), libraryId)
 
             # Load the script.
             try:
@@ -282,15 +282,15 @@ def Main(configfile, blocks, log, methodBlocks, update):
                       avg = sum(time) / len(time)
                       var = sum((avg - value) ** 2 for value in time) / len(time)
 
-                    buildId, libaryId = build[name]
+                    buildId, libraryId = build[name]
                     if update:
                       try:
-                        db.UpdateResult(buildId, libaryId, dataMatrix[row][col], 
+                        db.UpdateResult(buildId, libraryId, dataMatrix[row][col], 
                           var, datasetId, methodId)
                       except Exception:
                         pass
                     else:
-                      db.NewResult(buildId, libaryId, dataMatrix[row][col], var, 
+                      db.NewResult(buildId, libraryId, dataMatrix[row][col], var, 
                           datasetId, methodId)
 
                 
