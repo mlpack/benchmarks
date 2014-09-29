@@ -621,6 +621,7 @@ for an algorithm/parameter/dataset combination</label>
     var selectHolder = d3.select(".selectholder");
     selectHolder.selectAll('label').remove();
     selectHolder.selectAll('select').remove();
+    selectHolder.selectAll('br').remove();
 
     if (chartType == "algorithm-parameter-comparison")
     {
@@ -720,7 +721,7 @@ for an algorithm/parameter/dataset combination</label>
     dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
 
     // Okay, now get the results of the query for that method, parameters, and dataset.
-    var sqlstr = "SELECT results.time, results.var, results.build_id, builds.build from results, methods, libraries, builds, datasets WHERE methods.id == results.method_id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND results.libary_id == libraries.id AND builds.id == results.build_id AND datasets.id == results.dataset_id AND datasets.name == '" + dataset_name + "';";
+    var sqlstr = "SELECT results.time, results.var, results.build_id, builds.build, libraries.name from results, methods, libraries, builds, datasets WHERE methods.id == results.method_id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND results.libary_id == libraries.id AND builds.id == results.build_id AND datasets.id == results.dataset_id AND datasets.name == '" + dataset_name + "';";
     results = db.exec(sqlstr);
 
     clearChart();
@@ -732,7 +733,7 @@ for an algorithm/parameter/dataset combination</label>
     // Set up x axis scale.
     var min_build = d3.min(results[0].values, function(d) { return d[2]; });
     var max_build = d3.max(results[0].values, function(d) { return d[2]; });
-    var build_scale = d3.scale.linear().domain([min_build, max_build]).range([height, 0]);
+    var build_scale = d3.scale.linear().domain([min_build, max_build]).range([0, width]);
 
     // Set up y axis scale.
     var max_runtime = d3.max(results[0].values, function(d) { if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
@@ -779,11 +780,21 @@ for an algorithm/parameter/dataset combination</label>
 
     console.log(JSON.stringify(results[0].values));
 
-    svg.append('svg:path')
-        .attr('d', lineFunc(results[0].values))
-        .attr('stroke', 'blue')
-        .attr('stroke-width', 2)
-        .attr('fill', 'none');
+    var lineResults = [];
+    for (var l in libraries)
+    {
+      console.log(l);
+      lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
+    }
+    console.log(JSON.stringify(lineResults));
+    for(i = 0; i < lineResults.length; i++)
+    {
+      svg.append('svg:path')
+          .attr('d', lineFunc(lineResults[i]))
+          .attr('stroke', color(libraries[i]))
+          .attr('stroke-width', 2)
+          .attr('fill', 'none');
+    }
   }
 
   xhr.onload = function(e) {
