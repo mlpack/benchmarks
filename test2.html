@@ -158,9 +158,16 @@ svg text {
   padding: 10px;
 }
 
-.method-select-label, .param-select-label {
+.method-select-label, .param-select-label, .dataset-select-label {
+  float: left;
   font-size: 75%;
   color: #ffffff;
+  margin-right: 8px;
+}
+
+#method_select, #param_select, #dataset_select {
+  float: left;
+  margin-right: 20px;
 }
 
 .chart-type-radio {
@@ -174,7 +181,9 @@ svg text {
   font-size: 75%;
   text-align: left;
 }
-
+.selectholder {
+  padding-top: 1em;
+}
 </style>
 <link rel="stylesheet" href="http://www.mlpack.org/style.css">
 <link href="http://fonts.googleapis.com/css?family=Maven+Pro:500" rel="stylesheet" type="text/css">
@@ -189,16 +198,7 @@ type="radio" name="chart-type" value="historical-comparison"
 id="chart-type-radio-1" onclick="chartTypeSelect()"><label
 for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots
 for an algorithm/parameter/dataset combination</label>
-<br />
-<label for="method_select" class="method-select-label">Select method:</label>
-<select id="method_select" onchange="methodSelect()">
-  <option>Loading...</option>
-</select>
-
-<label for="param_select" class="param-select-label">Select parameters:</label>
-<select id="param_select" onchange="paramSelect()">
-  <option>Loading...</option>
-</select>
+<div class="selectholder"></div>
 <div class="clear"></div>
 <div class="mainbox-content">
 <div class="svgholder"></div>
@@ -226,7 +226,13 @@ for an algorithm/parameter/dataset combination</label>
   var active_datasets; // Full list of active datasets for this method and parameters.
   var method_name; // Name of currently active method;
   var param_name; // Name of currently active parameters.
+  var dataset_name; // Name of currently active dataset (for historical runtime view).
   var results; // Results for current method and parameters.
+
+  // Basic chart parameters.
+  var width = 800; // This should be parameterizable...
+  var height = 600; // This should be parameterizable...
+  var margin = { top: 20, right: 20, bottom: 120, left: 40 };
 
   // Static bindings of library names to colors.
   var color = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
@@ -352,11 +358,6 @@ for an algorithm/parameter/dataset combination</label>
 
   function buildRuntimeComparisonChart()
   {
-    // Basic chart parameters.
-    var width = 800; // This should be parameterizable...
-    var height = 600; // This should be parameterizable...
-    var margin = { top: 20, right: 20, bottom: 120, left: 40 };
-
     // Set up scales.
     var group_scale = d3.scale.ordinal()
         .domain(datasets.map(function(d) { return d; }).reduce(function(p, c) { if(active_datasets[c] == true) { p.push(c); } return p; }, []))
@@ -537,7 +538,7 @@ for an algorithm/parameter/dataset combination</label>
         .attr("onClick", function(d) { return "toggleDataset(\"" + d + "\");"; });
 
     datasetDivs.append("label")
-        .attr('for', function(d) { return d + 'dataset-checkbox'; })
+        .attr('for', function(d) { return d + '-dataset-checkbox'; })
         .attr('class', 'dataset-select-label')
         .text(function(d) { return d; });
 
@@ -615,7 +616,174 @@ for an algorithm/parameter/dataset combination</label>
       }
     }
 
-    console.log(chartType);
+    // Ditch whatever's there.
+    clearChart();
+    var selectHolder = d3.select(".selectholder");
+    selectHolder.selectAll('label').remove();
+    selectHolder.selectAll('select').remove();
+
+    if (chartType == "algorithm-parameter-comparison")
+    {
+      selectHolder.append("label")
+          .attr("for", "method_select")
+          .attr("class", "method-select-label")
+          .text("Select method:");
+      selectHolder.append("select")
+          .attr("id", "method_select")
+          .attr("onchange", "methodSelect()");
+      selectHolder.append("label")
+          .attr("for", "param_select")
+          .attr("class", "param-select-label")
+          .text("Select parameters:");
+      selectHolder.append("select")
+          .attr("id", "param_select")
+          .attr("onchange", "paramSelect()");
+
+      listMethods();
+    }
+    else if (chartType == "historical-comparison")
+    {
+      selectHolder.append("label")
+          .attr("for", "method_select")
+          .attr("class", "method-select-label")
+          .text("Select method:");
+      selectHolder.append("select")
+          .attr("id", "method_select")
+          .attr("onchange", "methodSelect()");
+      selectHolder.append("label")
+          .attr("for", "param_select")
+          .attr("class", "param-select-label")
+          .text("Select parameters:");
+      selectHolder.append("select")
+          .attr("id", "param_select")
+          .attr("onchange", "paramSelectHistorical()");
+      selectHolder.append("br");
+      selectHolder.append("label")
+          .attr("for", "dataset_select")
+          .attr("class", "dataset-select-label")
+          .text("Select dataset:");
+      selectHolder.append("select")
+          .attr("id", "dataset_select")
+          .attr("onchange", "datasetSelect()");
+
+      listMethods();
+    }
+  }
+
+  function paramSelectHistorical()
+  {
+        // The user has selected a library and parameters.  Now we need to
+        // generate
+    // a chart for all applicable datasets.
+    var method_select_box = document.getElementById("method_select");
+    var method_name = method_select_box.options[method_select_box.selectedIndex].text;
+    var param_select_box = document.getElementById("param_select");
+    var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
+    // Parse out actual parameters.
+    param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+    if (param_name == "[no parameters]") { param_name = ""; }
+
+    // Given a method name and parameters, query the SQLite database for all of
+    // the runs.
+    var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " + 
+        "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
+        "AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.id == results.libary_id " +
+        "GROUP BY datasets.id, libraries.id;";
+    results = db.exec(sqlstr);
+
+    // Obtain unique list of datasets.
+    datasets = results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+    // Obtain unique list of libraries.
+    libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+
+    var dataset_select_box = document.getElementById("dataset_select");
+
+    // Remove old things.
+    for(i = dataset_select_box.options.length - 1; i >= 0; i--)
+    {
+      dataset_select_box.options[i] = null;
+    }
+
+    for(i = 0; i < datasets.length; i++)
+    {
+      var new_option = document.createElement("option");
+      new_option.text = datasets[i];
+      dataset_select_box.add(new_option);
+    }
+    dataset_select_box.selectedIndex = -1;
+  }
+
+  function datasetSelect()
+  {
+    // The user has selected a method, parameters, and a dataset.  Now we need to generate a chart.  We have method_name and param_name.
+    var dataset_select_box = document.getElementById("dataset_select");
+    dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
+
+    // Okay, now get the results of the query for that method, parameters, and dataset.
+    var sqlstr = "SELECT results.time, results.var, results.build_id, builds.build from results, methods, libraries, builds, datasets WHERE methods.id == results.method_id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND results.libary_id == libraries.id AND builds.id == results.build_id AND datasets.id == results.dataset_id AND datasets.name == '" + dataset_name + "';";
+    results = db.exec(sqlstr);
+
+    clearChart();
+    buildHistoricalRuntimeChart();
+  }
+
+  function buildHistoricalRuntimeChart()
+  {
+    // Set up x axis scale.
+    var min_build = d3.min(results[0].values, function(d) { return d[2]; });
+    var max_build = d3.max(results[0].values, function(d) { return d[2]; });
+    var build_scale = d3.scale.linear().domain([min_build, max_build]).range([height, 0]);
+
+    // Set up y axis scale.
+    var max_runtime = d3.max(results[0].values, function(d) { if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
+    var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
+
+    // Set up axes.
+    var xAxis = d3.svg.axis().scale(build_scale).orient("bottom");
+    var yAxis = d3.svg.axis().scale(runtime_scale).orient("left").tickFormat(d3.format(".2s"));
+
+    // Create svg object.
+    var svg = d3.select(".svgholder").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add x axis.
+    svg.append("g").attr("id", "xaxis")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0, " + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)");
+
+    // Add y axis.
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Runtime (s)");
+
+    // Add all of the data points.
+    var lineFunc = d3.svg.line()
+        .x(function(d) { return build_scale(d[2]); })
+        .y(function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .interpolate("linear");
+
+    console.log(JSON.stringify(results[0].values));
+
+    svg.append('svg:path')
+        .attr('d', lineFunc(results[0].values))
+        .attr('stroke', 'blue')
+        .attr('stroke-width', 2)
+        .attr('fill', 'none');
   }
 
   xhr.onload = function(e) {
@@ -623,7 +791,6 @@ for an algorithm/parameter/dataset combination</label>
     db = new SQL.Database(uInt8Array);
 
     createColorMapping();
-    listMethods();
   };
 
   xhr.send(); // Load the dataset.
