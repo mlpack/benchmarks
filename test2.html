@@ -244,6 +244,10 @@ svg text {
     var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
     // Parse out actual parameters.
     param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+    if (param_name == "[no parameters]")
+    {
+      param_name = "";
+    }
 
     // Given a method name and parameters, query the SQLite database for all of
     // the runs.
