@@ -180,9 +180,14 @@ svg text {
 <link href="http://fonts.googleapis.com/css?family=Maven+Pro:500" rel="stylesheet" type="text/css">
 
 <div class="mainbox">
-<input class="chart-type-radio" type="radio" name="chart-type" value="algorithm-parameter-comparison" id="chart-type-radio-0" /><label for="chart-type-radio-0" class="chart-type-radio-label" onclick="chartTypeSelect()">Compare
-library runtimes for an algorithm/parameter combination</label>
-<input class="chart-type-radio" type="radio" name="chart-type" value="historical-comparison" id="chart-type-radio-1" onclick="chartTypeSelect()"><label for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots
+<input class="chart-type-radio" type="radio" name="chart-type"
+value="algorithm-parameter-comparison" id="chart-type-radio-0" 
+onclick="chartTypeSelect()" /><label for="chart-type-radio-0"
+class="chart-type-radio-label">Compare library runtimes for an
+algorithm/parameter combination</label> <input class="chart-type-radio"
+type="radio" name="chart-type" value="historical-comparison"
+id="chart-type-radio-1" onclick="chartTypeSelect()"><label
+for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots
 for an algorithm/parameter/dataset combination</label>
 <br />
 <label for="method_select" class="method-select-label">Select method:</label>
@@ -598,7 +603,19 @@ for an algorithm/parameter/dataset combination</label>
 
   function chartTypeSelect()
   {
-    
+    var radios = document.getElementsByName('chart-type');
+    var chartType = "";
+
+    for (i = 0; i < radios.length; i++)
+    {
+      if (radios[i].checked)
+      {
+        chartType = radios[i].value;
+        break;
+      }
+    }
+
+    console.log(chartType);
   }
 
   xhr.onload = function(e) {
