@@ -108,10 +108,48 @@ svg text {
   color: #fff;
 }
 
-.dataset-select-title {
+.dataset-select-title, .library-select-title {
   font-size: 75%;
   color: #eab72c;
   padding: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+}
+
+.dataset-select-title-text, .library-select-title-text {
+  display: inline;
+  padding-right: 20px;
+}
+
+.dataset-select-title-enable-all, .dataset-select-title-disable-all,
+.library-select-title-enable-all, .library-select-title-disable-all {
+  display: inline;
+  font-size: 60%;
+  color: #ffffff;
+  padding-bottom: 4px;
+}
+
+.dataset-select-title-enable-all:hover, .dataset-select-title-disable-all:hover,
+.library-select-title-enable-all:hover, .library-select-title-disable-all:hover
+{
+  color: #bb2222;
+}
+
+.dataset-select-title-bar, .library-select-title-bar {
+  display: inline;
+  font-size: 60%;
+  color: #ffffff;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 4px;
+}
+
+.dataset-select-title-open-paren, .dataset-select-title-close-paren,
+.library-select-title-open-paren, .library-select-title-close-paren {
+  font-size: 60%;
+  color: #ffffff;
+  display: inline;
 }
 
 .library-select-title {
@@ -124,11 +162,29 @@ svg text {
   font-size: 75%;
   color: #ffffff;
 }
+
+.chart-type-radio {
+  float: left;
+  color: #ffffff;
+  font-size: 75%;
+}
+.chart-type-radio-label {
+  display: block;
+  color: #ffffff;
+  font-size: 75%;
+  text-align: left;
+}
+
 </style>
 <link rel="stylesheet" href="http://www.mlpack.org/style.css">
 <link href="http://fonts.googleapis.com/css?family=Maven+Pro:500" rel="stylesheet" type="text/css">
 
 <div class="mainbox">
+<input class="chart-type-radio" type="radio" name="chart-type" value="algorithm-parameter-comparison" id="chart-type-radio-0" /><label for="chart-type-radio-0" class="chart-type-radio-label" onclick="chartTypeSelect()">Compare
+library runtimes for an algorithm/parameter combination</label>
+<input class="chart-type-radio" type="radio" name="chart-type" value="historical-comparison" id="chart-type-radio-1" onclick="chartTypeSelect()"><label for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots
+for an algorithm/parameter/dataset combination</label>
+<br />
 <label for="method_select" class="method-select-label">Select method:</label>
 <select id="method_select" onchange="methodSelect()">
   <option>Loading...</option>
@@ -382,9 +438,28 @@ svg text {
         .on('mouseout', tip.hide);
 
     // Add a horizontal legend at the bottom.
-    d3.select(".legendholder").append("div")
-        .attr("class", "library-select-title")
+    var librarySelectTitle = d3.select(".legendholder").append("div")
+        .attr("class", "library-select-title");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-text")
         .text("Libraries:");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-open-paren")
+        .text("(");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-enable-all")
+        .text("enable all")
+        .on('click', function() { enableAllLibraries(); });
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-bar")
+        .text("|");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-disable-all")
+        .text("disable all")
+        .on('click', function() { disableAllLibraries(); });
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-close-paren")
+        .text(")");
 
     var libraryDivs = d3.select(".legendholder").selectAll("input")
         .data(libraries)
@@ -413,9 +488,28 @@ svg text {
     // Add a clear box.
     d3.select(".legendholder").append("div").attr("class", "clear");
 
-    d3.select(".legendholder").append("div")
-        .attr("class", "dataset-select-title")
+    var datasetSelectTitle = d3.select(".legendholder").append("div")
+        .attr("class", "dataset-select-title");
+    datasetSelectTitle.append("div")
+        .attr("class", "dataset-select-title-text")
         .text("Datasets:");
+    datasetSelectTitle.append("div")
+        .attr("class", "dataset-select-title-open-paren")
+        .text("(");
+    datasetSelectTitle.append("div")
+        .attr("class", "dataset-select-title-enable-all")
+        .text("enable all")
+        .on('click', function() { enableAllDatasets(); });
+    datasetSelectTitle.append("div")
+        .attr("class", "dataset-select-title-bar")
+        .text("|");
+    datasetSelectTitle.append("div")
+        .attr("class", "dataset-select-title-disable-all")
+        .text("disable all")
+        .on('click', function() { disableAllDatasets(); });
+    datasetSelectTitle.append("div")
+        .attr("class", "dataset-select-title-close-paren")
+        .text(")");
 
     // Add another legend for the datasets.
     var datasetDivs = d3.select(".legendholder").selectAll(".dataset-select-div")
@@ -460,6 +554,38 @@ svg text {
     buildRuntimeComparisonChart();
   }
 
+  function enableAllLibraries()
+  {
+    for (v in active_libraries) { active_libraries[v] = true; }
+
+    clearChart();
+    buildRuntimeComparisonChart();
+  }
+
+  function disableAllLibraries()
+  {
+    for (v in active_libraries) { active_libraries[v] = false; }
+
+    clearChart();
+    buildRuntimeComparisonChart();
+  }
+
+  function enableAllDatasets()
+  {
+    for (v in active_datasets) { active_datasets[v] = true; }
+
+    clearChart();
+    buildRuntimeComparisonChart();
+  }
+
+  function disableAllDatasets()
+  {
+    for (v in active_datasets) { active_datasets[v] = false; }
+
+    clearChart();
+    buildRuntimeComparisonChart();
+  }
+
   // Query for the list of libraries, and create a mapping from library names to
   // colors for use by the graphs.
   function createColorMapping()
@@ -468,6 +594,11 @@ svg text {
 
     libraries = librarylist[0].values.map(function(d) { return d[0]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
     color.domain(libraries);
+  }
+
+  function chartTypeSelect()
+  {
+    
   }
 
   xhr.onload = function(e) {
