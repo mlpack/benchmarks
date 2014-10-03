@@ -785,7 +785,7 @@ def Main(configfile):
   template = pageTemplate % reportValues
 
   # Write the new index.html file.
-  with open("reports/index.html", 'wb') as fid:
+  with open("reports/index-old.html", 'wb') as fid:
     fid.write(template.encode('UTF-8'))
 
 if __name__ == '__main__':
