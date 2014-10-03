@@ -619,6 +619,7 @@ function buildHistoricalRuntimeChart()
     {
       lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
     }
+    else { lineResults.push([]); }
   }
 
   for(i = 0; i < lineResults.length; i++)
