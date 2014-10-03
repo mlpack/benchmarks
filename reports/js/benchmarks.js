@@ -1,7 +1,6 @@
 // Load benchmark.db.  Later, we will do something cool with it, once I figure
 // out how.  If this is file:///, suggest that the user start a server since
 // XMLHttpRequests may not work.
-console.log(window.location.protocol);
 if(window.location.protocol == "file:")
 {
   var holder = document.getElementById("selectholder");
@@ -614,7 +613,6 @@ function buildHistoricalRuntimeChart()
   var lineResults = [];
   for (var l in libraries)
   {
-    console.log(l);
     if (active_libraries[libraries[l]] == true)
     {
       lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
@@ -691,7 +689,6 @@ function buildHistoricalRuntimeChart()
     .style('background', color)
     .attr('class', 'library-select-color');
 
-  console.log(JSON.stringify(active_libraries));
   libraryDivs.append("input")
     .property("checked", function(d) { return active_libraries[d]; })
     .attr("type", "checkbox")
