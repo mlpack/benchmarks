@@ -97,7 +97,8 @@ svg text {
   text-align: left;
 }
 
-.dataset-select-label {
+.dataset-select-label,
+.library-select-label {
   font-size: 60%;
   color: #fff;
 }
