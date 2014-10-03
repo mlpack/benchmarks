@@ -43,6 +43,17 @@ var margin = { top: 20, right: 20, bottom: 120, left: 40 };
 // Static bindings of library names to colors.
 var color = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
+/**
+ * Utility function to map runtime results, which are in seconds or ">9000" or
+ * "failure", to seconds.  ">9000" maps to max, and "failure" maps to 0.
+ */
+function mapRuntime(runtime, max)
+{
+  if (runtime == ">9000") { return max; }
+  else if (runtime == "failure") { return 0; }
+  else { return runtime; }
+}
+
 function listMethods()
 {
   var methods = db.exec("SELECT DISTINCT name FROM methods ORDER BY name;");
@@ -171,7 +182,7 @@ function buildRuntimeComparisonChart()
   var library_scale = d3.scale.ordinal()
     .domain(libraries.map(function(d) { return d; }).reduce(function(p, c) { if(active_libraries[c] == true) { p.push(c); } return p; }, []))
     .rangeRoundBands([0, group_scale.rangeBand()]);
-  var max_runtime = d3.max(results[0].values, function(d) { if(active_datasets[d[4]] == false || active_libraries[d[3]] == false) { return 0; } else if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
+  var max_runtime = d3.max(results[0].values, function(d) { if(active_datasets[d[4]] == false || active_libraries[d[3]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
 
   var runtime_scale = d3.scale.linear()
     .domain([0, max_runtime])
@@ -241,8 +252,8 @@ function buildRuntimeComparisonChart()
   .enter().append("rect")
     .attr("width", library_scale.rangeBand())
     .attr("x", function(d) { return library_scale(d[3]); })
-    .attr("y", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
-    .attr("height", function(d) { var subh; if(d[0] == ">9000") { subh = runtime_scale(max_runtime); } else if(d[0] == "failure") { subh = runtime_scale(0); } else { subh = runtime_scale(d[0]); } return height - subh; })
+    .attr("y", function(d) { return runtime_scale(mapRuntime(d[0]), max_runtime); })
+    .attr("height", function(d) { return height - runtime_scale(mapRuntime(d[0])); })
     .style("fill", function(d) { return color(d[3]); })
     .on('mouseover', tip.show)
     .on('mouseout', tip.hide);
@@ -547,7 +558,7 @@ function buildHistoricalRuntimeChart()
   var build_scale = d3.scale.linear().domain([min_build, max_build]).range([0, width]);
 
   // Set up y axis scale.
-  var max_runtime = d3.max(results[0].values, function(d) { if(active_libraries[d[4]] == false) { return 0; } if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
+  var max_runtime = d3.max(results[0].values, function(d) { if(active_libraries[d[4]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
   var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
 
   // Set up axes.
@@ -596,7 +607,7 @@ function buildHistoricalRuntimeChart()
   // Add all of the data points.
   var lineFunc = d3.svg.line()
     .x(function(d) { return build_scale(d[2]); })
-    .y(function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+    .y(function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
     .interpolate("step-after");
 
   var lineResults = [];
@@ -623,21 +634,21 @@ function buildHistoricalRuntimeChart()
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 6)
         .attr("cx", function(d) { return build_scale(d[2]); })
-        .attr("cy", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
         .attr('fill', '#222222')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 4)
         .attr("cx", function(d) { return build_scale(d[2]); })
-        .attr("cy", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
         .attr('fill', '#ffffff')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 3)
         .attr("cx", function(d) { return build_scale(d[2]); })
-        .attr("cy", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
         .attr('fill', function(d) { return color(d[4]) })
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
