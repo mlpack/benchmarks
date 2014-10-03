@@ -493,7 +493,7 @@ function paramSelectHistorical()
 
   // Given a method name and parameters, query the SQLite database for all of
   // the runs.
-  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +~
+  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
     "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
     "AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.id == results.libary_id " +
     "GROUP BY datasets.id, libraries.id;";
