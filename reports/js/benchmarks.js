@@ -1,9 +1,28 @@
 // Load benchmark.db.  Later, we will do something cool with it, once I figure
-// out how.
-var xhr = new XMLHttpRequest();
-xhr.open('GET', 'benchmark.db', true);
-xhr.responseType = 'arraybuffer';
-var db = new SQL.Database();
+// out how.  If this is file:///, suggest that the user start a server since
+// XMLHttpRequests may not work.
+console.log(window.location.protocol);
+if(window.location.protocol == "file:")
+{
+  var holder = document.getElementById("selectholder");
+  holder.innerHTML = "The protocol you are using is file:///.  This means that Javascript XMLHttpRequests may not work.  You should use http://.  If you are working from a local machine, consider starting a Python SimpleHTTPServer in the reports/ directory, with <pre>python -m SimpleHTTPServer</pre> and then access the site via http://.";
+}
+else
+{
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'benchmark.db', true);
+  xhr.responseType = 'arraybuffer';
+  var db = new SQL.Database();
+
+  xhr.onload = function(e) {
+    var uInt8Array = new Uint8Array(this.response);
+    db = new SQL.Database(uInt8Array);
+
+    createColorMapping();
+  };
+
+  xhr.send(); // Load the dataset.
+}
 
 // "Global" variables.
 var libraries; // Full list of libraries for this method and parameters.
@@ -640,12 +659,3 @@ function buildHistoricalRuntimeChart()
     .attr('class', 'library-select-label')
     .text(function(d) { return d; });
 }
-
-xhr.onload = function(e) {
-  var uInt8Array = new Uint8Array(this.response);
-  db = new SQL.Database(uInt8Array);
-
-  createColorMapping();
-};
-
-xhr.send(); // Load the dataset.
