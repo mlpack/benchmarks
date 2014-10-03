@@ -160,7 +160,7 @@ function paramSelect()
   }
 
   clearChart();
-  buildRuntimeComparisonChart();
+  buildChart();
 }
 
 function clearChart()
@@ -357,19 +357,19 @@ function buildRuntimeComparisonChart()
     .text(function(d) { return d; });
 
 }
+
+function buildChart()
+{
+  if (chartType == "algorithm-parameter-comparison") { buildRuntimeComparisonChart(); }
+  else if (chartType == "historical-comparison") { buildHistoricalRuntimeChart(); }
+}
+
 function toggleLibrary(library)
 {
   active_libraries[library] = !active_libraries[library];
 
   clearChart();
-  if (chartType == "algorithm-parameter-comparison")
-  {
-    buildRuntimeComparisonChart();
-  }
-  else if (chartType == "historical-comparison")
-  {
-    buildHistoricalRuntimeChart();
-  }
+  buildChart();
 }
 
 function toggleDataset(dataset)
@@ -377,7 +377,7 @@ function toggleDataset(dataset)
   active_datasets[dataset] = !active_datasets[dataset];
 
   clearChart();
-  buildRuntimeComparisonChart();
+  buildChart();
 }
 
 function enableAllLibraries()
@@ -385,7 +385,7 @@ function enableAllLibraries()
   for (v in active_libraries) { active_libraries[v] = true; }
 
   clearChart();
-  buildRuntimeComparisonChart();
+  buildChart();
 }
 
 function disableAllLibraries()
@@ -393,7 +393,7 @@ function disableAllLibraries()
   for (v in active_libraries) { active_libraries[v] = false; }
 
   clearChart();
-  buildRuntimeComparisonChart();
+  buildChart();
 }
 
 function enableAllDatasets()
@@ -401,7 +401,7 @@ function enableAllDatasets()
   for (v in active_datasets) { active_datasets[v] = true; }
 
   clearChart();
-  buildRuntimeComparisonChart();
+  buildChart();
 }
 
 function disableAllDatasets()
@@ -409,7 +409,7 @@ function disableAllDatasets()
   for (v in active_datasets) { active_datasets[v] = false; }
 
   clearChart();
-  buildRuntimeComparisonChart();
+  buildChart();
 }
 
 // Query for the list of libraries, and create a mapping from library names to
@@ -547,7 +547,7 @@ function datasetSelect()
   }
 
   clearChart();
-  buildHistoricalRuntimeChart();
+  buildChart();
 }
 
 function buildHistoricalRuntimeChart()
