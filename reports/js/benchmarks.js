@@ -552,16 +552,21 @@ function datasetSelect()
 function buildHistoricalRuntimeChart()
 {
   // Set up x axis scale.
-  var min_build = d3.min(results[0].values, function(d) { return d[2]; });
-  var max_build = d3.max(results[0].values, function(d) { return d[2]; });
-  var build_scale = d3.scale.linear().domain([min_build, max_build]).range([0, width]);
+  var minDate = results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c < p) { return c; } else { return p; } }, new Date("2099-01-01"));
+  var maxDate = results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c > p) { return c; } else { return p; } }, new Date("1900-01-01"));
+  console.log(minDate);
+  console.log(maxDate);
+  var build_scale = d3.time.scale().domain([minDate, maxDate]).range([0, width]);
 
   // Set up y axis scale.
   var max_runtime = d3.max(results[0].values, function(d) { if(active_libraries[d[4]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
   var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
 
+
   // Set up axes.
-  var xAxis = d3.svg.axis().scale(build_scale).orient("bottom");
+  var dateFormat = d3.time.format("%b %Y");
+  var xAxis = d3.svg.axis().scale(build_scale).orient("bottom")
+      .tickFormat(function(d) { return dateFormat(d); });
   var yAxis = d3.svg.axis().scale(runtime_scale).orient("left").tickFormat(d3.format(".2s"));
 
   // Create svg object.
@@ -601,12 +606,13 @@ function buildHistoricalRuntimeChart()
         var runtime = d[0];
         if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
         var date = new Date(d[3]);
-        return "<strong>" + d[4] + ", " + date.toLocaleDateString() + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; });
+        var dFormat = d3.time.format("%b %d, %Y");
+        return "<strong>" + d[4] + "; " + dFormat(date) + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; });
   svg.call(tip);
 
   // Add all of the data points.
   var lineFunc = d3.svg.line()
-    .x(function(d) { return build_scale(d[2]); })
+    .x(function(d) { return build_scale(new Date(d[3])); })
     .y(function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
     .interpolate("step-after");
 
@@ -633,21 +639,21 @@ function buildHistoricalRuntimeChart()
     // Colored circle enclosed in white circle enclosed in background color circle; looks kind of nice.
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 6)
-        .attr("cx", function(d) { return build_scale(d[2]); })
+        .attr("cx", function(d) { return build_scale(new Date(d[3])); })
         .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
         .attr('fill', '#222222')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 4)
-        .attr("cx", function(d) { return build_scale(d[2]); })
+        .attr("cx", function(d) { return build_scale(new Date(d[3])); })
         .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
         .attr('fill', '#ffffff')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 3)
-        .attr("cx", function(d) { return build_scale(d[2]); })
+        .attr("cx", function(d) { return build_scale(new Date(d[3])); })
         .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
         .attr('fill', function(d) { return color(d[4]) })
         .on('mouseover', tip.show)
