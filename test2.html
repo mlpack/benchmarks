@@ -158,14 +158,14 @@ svg text {
   padding: 10px;
 }
 
-.method-select-label, .param-select-label, .dataset-select-label {
+.method-select-label, .param-select-label, .main-dataset-select-label {
   float: left;
   font-size: 75%;
   color: #ffffff;
   margin-right: 8px;
 }
 
-#method_select, #param_select, #dataset_select {
+#method_select, #param_select, #main_dataset_select {
   float: left;
   margin-right: 20px;
 }
@@ -228,6 +228,7 @@ for an algorithm/parameter/dataset combination</label>
   var param_name; // Name of currently active parameters.
   var dataset_name; // Name of currently active dataset (for historical runtime view).
   var results; // Results for current method and parameters.
+  var chartType;
 
   // Basic chart parameters.
   var width = 800; // This should be parameterizable...
@@ -549,7 +550,14 @@ for an algorithm/parameter/dataset combination</label>
     active_libraries[library] = !active_libraries[library];
 
     clearChart();
-    buildRuntimeComparisonChart();
+    if (chartType == "algorithm-parameter-comparison")
+    {
+      buildRuntimeComparisonChart();
+    }
+    else if (chartType == "historical-comparison")
+    {
+      buildHistoricalRuntimeChart();
+    }
   }
 
   function toggleDataset(dataset)
@@ -605,8 +613,6 @@ for an algorithm/parameter/dataset combination</label>
   function chartTypeSelect()
   {
     var radios = document.getElementsByName('chart-type');
-    var chartType = "";
-
     for (i = 0; i < radios.length; i++)
     {
       if (radios[i].checked)
@@ -660,11 +666,11 @@ for an algorithm/parameter/dataset combination</label>
           .attr("onchange", "paramSelectHistorical()");
       selectHolder.append("br");
       selectHolder.append("label")
-          .attr("for", "dataset_select")
-          .attr("class", "dataset-select-label")
+          .attr("for", "main_dataset_select")
+          .attr("class", "main-dataset-select-label")
           .text("Select dataset:");
       selectHolder.append("select")
-          .attr("id", "dataset_select")
+          .attr("id", "main_dataset_select")
           .attr("onchange", "datasetSelect()");
 
       listMethods();
@@ -697,7 +703,7 @@ for an algorithm/parameter/dataset combination</label>
     // Obtain unique list of libraries.
     libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
-    var dataset_select_box = document.getElementById("dataset_select");
+    var dataset_select_box = document.getElementById("main_dataset_select");
 
     // Remove old things.
     for(i = dataset_select_box.options.length - 1; i >= 0; i--)
@@ -717,12 +723,18 @@ for an algorithm/parameter/dataset combination</label>
   function datasetSelect()
   {
     // The user has selected a method, parameters, and a dataset.  Now we need to generate a chart.  We have method_name and param_name.
-    var dataset_select_box = document.getElementById("dataset_select");
+    var dataset_select_box = document.getElementById("main_dataset_select");
     dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
 
     // Okay, now get the results of the query for that method, parameters, and dataset.
-    var sqlstr = "SELECT results.time, results.var, results.build_id, builds.build, libraries.name from results, methods, libraries, builds, datasets WHERE methods.id == results.method_id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND results.libary_id == libraries.id AND builds.id == results.build_id AND datasets.id == results.dataset_id AND datasets.name == '" + dataset_name + "';";
+    var sqlstr = "SELECT results.time, results.var, results.build_id, builds.build, libraries.name from results, methods, libraries, builds, datasets WHERE methods.id == results.method_id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND results.libary_id == libraries.id AND builds.id == results.build_id AND datasets.id == results.dataset_id AND datasets.name == '" + dataset_name + "' GROUP BY results.build_id;";
     results = db.exec(sqlstr);
+
+    active_libraries = {};
+    for(i = 0; i < libraries.length; i++)
+    {
+      active_libraries[libraries[i]] = true;
+    }
 
     clearChart();
     buildHistoricalRuntimeChart();
@@ -736,7 +748,7 @@ for an algorithm/parameter/dataset combination</label>
     var build_scale = d3.scale.linear().domain([min_build, max_build]).range([0, width]);
 
     // Set up y axis scale.
-    var max_runtime = d3.max(results[0].values, function(d) { if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
+    var max_runtime = d3.max(results[0].values, function(d) { if(active_libraries[d[4]] == false) { return 0; } if(d[0] == ">9000") { return 0; } else if(d[0] == "failure") { return 0; } else { return d[0]; } });
     var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
 
     // Set up axes.
@@ -776,7 +788,7 @@ for an algorithm/parameter/dataset combination</label>
     var lineFunc = d3.svg.line()
         .x(function(d) { return build_scale(d[2]); })
         .y(function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
-        .interpolate("linear");
+        .interpolate("step-before");
 
     console.log(JSON.stringify(results[0].values));
 
@@ -784,7 +796,10 @@ for an algorithm/parameter/dataset combination</label>
     for (var l in libraries)
     {
       console.log(l);
-      lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
+      if (active_libraries[libraries[l]] == true)
+      {
+        lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
+      }
     }
     console.log(JSON.stringify(lineResults));
     for(i = 0; i < lineResults.length; i++)
@@ -795,6 +810,55 @@ for an algorithm/parameter/dataset combination</label>
           .attr('stroke-width', 2)
           .attr('fill', 'none');
     }
+
+    // Create the library selector.
+    var librarySelectTitle = d3.select(".legendholder").append("div")
+        .attr("class", "library-select-title");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-text")
+        .text("Libraries:");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-open-paren")
+        .text("(");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-enable-all")
+        .text("enable all")
+        .on('click', function() { enableAllLibraries(); });
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-bar")
+        .text("|");
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-disable-all")
+        .text("disable all")
+        .on('click', function() { disableAllLibraries(); });
+    librarySelectTitle.append("div")
+        .attr("class", "library-select-title-close-paren")
+        .text(")");
+
+    var libraryDivs = d3.select(".legendholder").selectAll("input")
+        .data(libraries)
+        .enter()
+        .append("div")
+        .attr("class", "library-select-div")
+        .attr("id", function(d) { return d + '-library-checkbox-div'; });
+
+    libraryDivs.append("label")
+        .attr('for', function(d) { return d + '-library-checkbox'; })
+        .style('background', color)
+        .attr('class', 'library-select-color');
+
+    console.log(JSON.stringify(active_libraries));
+    libraryDivs.append("input")
+        .property("checked", function(d) { return active_libraries[d]; })
+        .attr("type", "checkbox")
+        .attr("id", function(d) { return d + '-library-checkbox'; })
+        .attr('class', 'library-select-box')
+        .attr("onClick", function(d, i) { return "toggleLibrary(\"" + d + "\");"; });
+
+    libraryDivs.append("label")
+        .attr('for', function(d) { return d + '-library-checkbox'; })
+        .attr('class', 'library-select-label')
+        .text(function(d) { return d; });
   }
 
   xhr.onload = function(e) {
