@@ -601,7 +601,8 @@ function buildHistoricalRuntimeChart()
     .html(function(d) {
         var runtime = d[0];
         if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
-        return "<strong>" + d[4] + ", " + d[2] + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; });
+        var date = new Date(d[3]);
+        return "<strong>" + d[4] + ", " + date.toLocaleDateString() + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; });
   svg.call(tip);
 
   // Add all of the data points.
