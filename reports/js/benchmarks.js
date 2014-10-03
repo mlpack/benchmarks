@@ -236,7 +236,6 @@ function buildRuntimeComparisonChart()
         {
         if(results[0].values[i][4] == d && active_libraries[results[0].values[i][3]] == true) { ret.push(results[0].values[i]); }
         }
-        console.log(JSON.stringify(ret));
         return ret;
         })
   .enter().append("rect")
@@ -584,13 +583,21 @@ function buildHistoricalRuntimeChart()
     .style("text-anchor", "end")
     .text("Runtime (s)");
 
+  // Create tooltips.
+  var tip = d3.tip()
+    .attr("class", "d3-tip")
+    .offset([-10, 0])
+    .html(function(d) {
+        var runtime = d[0];
+        if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
+        return "<strong>" + d[4] + ", " + d[2] + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; });
+  svg.call(tip);
+
   // Add all of the data points.
   var lineFunc = d3.svg.line()
     .x(function(d) { return build_scale(d[2]); })
     .y(function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
-    .interpolate("step-before");
-
-  console.log(JSON.stringify(results[0].values));
+    .interpolate("step-after");
 
   var lineResults = [];
   for (var l in libraries)
@@ -601,7 +608,7 @@ function buildHistoricalRuntimeChart()
       lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
     }
   }
-  console.log(JSON.stringify(lineResults));
+
   for(i = 0; i < lineResults.length; i++)
   {
     svg.append('svg:path')
@@ -609,6 +616,31 @@ function buildHistoricalRuntimeChart()
       .attr('stroke', color(libraries[i]))
       .attr('stroke-width', 2)
       .attr('fill', 'none');
+  }
+  for(i = 0; i < lineResults.length; i++)
+  {
+    // Colored circle enclosed in white circle enclosed in background color circle; looks kind of nice.
+    svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
+        .attr("r", 6)
+        .attr("cx", function(d) { return build_scale(d[2]); })
+        .attr("cy", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .attr('fill', '#222222')
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
+    svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
+        .attr("r", 4)
+        .attr("cx", function(d) { return build_scale(d[2]); })
+        .attr("cy", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .attr('fill', '#ffffff')
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
+    svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
+        .attr("r", 3)
+        .attr("cx", function(d) { return build_scale(d[2]); })
+        .attr("cy", function(d) { if(d[0] == ">9000") { return runtime_scale(max_runtime); } else if(d[0] == "failure") { return runtime_scale(0); } else { return runtime_scale(d[0]); } })
+        .attr('fill', function(d) { return color(d[4]) })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
   }
   // Create the library selector.
   var librarySelectTitle = d3.select(".legendholder").append("div")
