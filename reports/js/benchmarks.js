@@ -184,7 +184,7 @@ function clearMethodControl()
 function buildChart()
 {
   if (chartType == "algorithm-parameter-comparison") { rc.buildChart(); }
-  else if (chartType == "historical-comparison") { buildHistoricalRuntimeChart(); }
+  else if (chartType == "historical-comparison") { hc.buildChart(); }
   else if (chartType == "dataset-comparison") { /*buildDatasetComparisonChart();*/ }
 }
 
