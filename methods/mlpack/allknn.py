@@ -154,10 +154,13 @@ class ALLKNN(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-              .*?loading_data: (?P<loading_data>.*?)s.*?
-              .*?saving_data: (?P<saving_data>.*?)s.*?
               .*?total_time: (?P<total_time>.*?)s.*?
               """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+#    pattern = re.compile(br"""
+#              .*?loading_data: (?P<loading_data>.*?)s.*?
+#              .*?saving_data: (?P<saving_data>.*?)s.*?
+#              .*?total_time: (?P<total_time>.*?)s.*?
+#              """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
     match = pattern.match(data)
 
@@ -169,8 +172,7 @@ class ALLKNN(object):
       timer = collections.namedtuple("timer", ["loading_data", "saving_data", 
           "total_time"])
       
-      return timer(float(match.group("loading_data")),
-          float(match.group("saving_data")), float(match.group("total_time")))
+      return timer(0, 0, float(match.group("total_time")))
 
   '''
   Return the elapsed time in seconds.

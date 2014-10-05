@@ -92,8 +92,8 @@ class PCA(object):
     Log.Info("Perform PCA Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "pca -i " + self.dataset + 
-        " -o output.csv -v " + options)
+    cmd = shlex.split(self.debug + "pca --input_file " + self.dataset + 
+        " --output_file output.csv -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
     
@@ -109,8 +109,8 @@ class PCA(object):
     Log.Info("Perform PCA.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "pca -i " + self.dataset + 
-        " -o output.csv -v " + options)
+    cmd = shlex.split(self.path + "pca --input_file " + self.dataset + 
+        " --output_file output.csv -v " + options)
   
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -145,10 +145,13 @@ class PCA(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?loading_data: (?P<loading_time>.*?)s.*?
-        .*?saving_data: (?P<saving_time>.*?)s.*?
-        .*?total_time: (?P<total_time>.*?)s.*?
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+         .*?total_time: (?P<total_time>.*?)s.*?
+         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+#    pattern = re.compile(br"""
+#        .*?loading_data: (?P<loading_time>.*?)s.*?
+#        .*?saving_data: (?P<saving_time>.*?)s.*?
+#        .*?total_time: (?P<total_time>.*?)s.*?
+#        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
     match = pattern.match(data)
     if not match:
@@ -159,9 +162,11 @@ class PCA(object):
       timer = collections.namedtuple("timer", ["loading_time", "saving_time", 
           "total_time"])
       
-      return timer(float(match.group("loading_time")), 
-          float(match.group("saving_time")), 
+      return timer(0, 0,
           float(match.group("total_time")))
+#      return timer(float(match.group("loading_time")), 
+#          float(match.group("saving_time")), 
+#          float(match.group("total_time")))
 
   '''
   Return the elapsed time in seconds.

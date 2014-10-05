@@ -1,5 +1,5 @@
 # Locate the python bin.
-PYTHON_BIN := $(shell which python3.3)
+PYTHON_BIN := $(shell which python3.4)
 ifndef PYTHON_BIN
   PYTHON_BIN := $(shell which python3)
   ifndef PYTHON_BIN
@@ -39,7 +39,7 @@ endif
 endif
 
 # Specify the benchmark settings.
-CONFIG := config.yaml
+CONFIG := small_config.yaml
 BENCHMARKDDIR := benchmark
 LOG := False
 BLOCK := ""
@@ -59,11 +59,11 @@ UPDATE := False
 
 # Set the environment variable for the mlpack executables.
 
-ifdef $(shell which allknn)
-	export MLPACK_BIN=$(shell dirname $(firstword $(shell which allknn)))/
-else
-	export MLPACK_BIN=""
-endif
+#ifdef $(shell which allknn)
+export MLPACK_BIN="/home/ryan/src/mlpack/tags/mlpack-1.0.10/build/bin/"
+#else
+#	export MLPACK_BIN=""
+#endif
 
 # Set the environment variable for the mlpack executables.
 export MLPACK_BIN_DEBUG=$(MLPACK_BIN)
