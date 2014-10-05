@@ -198,12 +198,9 @@ class LinearRegression(object):
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
-#    pattern = re.compile(br"""
-#        .*?loading_data: (?P<loading_data>.*?)s.*?
-#        .*?saving_data: (?P<saving_data>.*?)s.*?
-#        .*?total_time: (?P<total_time>.*?)s.*?
-#        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     pattern = re.compile(br"""
+        .*?loading_data: (?P<loading_data>.*?)s.*?
+        .*?saving_data: (?P<saving_data>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
@@ -214,8 +211,8 @@ class LinearRegression(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"]) 
-      return timer(0,
-          float(match.group("total_time")), 0)
+      return timer(float(match.group("loading_data")), 
+          float(match.group("total_time")), float(match.group("saving_data")))
 
   '''
   Return the elapsed time in seconds.

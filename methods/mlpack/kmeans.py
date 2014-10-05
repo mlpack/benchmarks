@@ -153,7 +153,7 @@ class KMEANS(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?[INFO ]   total_time: (?P<clustering>.*?)s.*?
+        .*?[INFO ]   clustering: (?P<clustering>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
     
     match = pattern.match(data)
