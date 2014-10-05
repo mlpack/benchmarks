@@ -8,11 +8,17 @@
 
 <body>
   <div class="mainbox">
+
+
     <input class="chart-type-radio" type="radio" name="chart-type" value="algorithm-parameter-comparison" id="chart-type-radio-0" onclick="chartTypeSelect()" />
     <label for="chart-type-radio-0" class="chart-type-radio-label">Compare library runtimes for an algorithm/parameter combination</label> 
 
+
     <input class="chart-type-radio" type="radio" name="chart-type" value="historical-comparison" id="chart-type-radio-1" onclick="chartTypeSelect()">
     <label for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots for an algorithm/parameter/dataset combination</label>
+
+    <input class="chart-type-radio" type="radio" name="chart-type" value="metric-comparison" id="chart-type-radio-2" onclick="chartTypeSelect()">
+    <label for="chart-type-radio-2" class="chart-type-radio-label">Metric plots for an algorithm/parameter/dataset combination</label>
 
     <div class="selectholder"></div>
     <div class="clear"></div>
@@ -24,6 +30,7 @@
   </div>
 
   <script src='js/sql.js'></script>
+  <script src='js/jquery.min.js'></script>
   <script src='js/d3.v3.min.js'></script>
   <script src='js/d3.tip.min.js'></script>
   <script src='js/benchmarks.js'></script>
