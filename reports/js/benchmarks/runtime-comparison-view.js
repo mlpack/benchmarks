@@ -78,7 +78,7 @@ rc.methodSelect = function()
 }
 
 // Called when a set of parameters is selected.  Now we are ready to draw the chart.
-rc.paramSelect() = function()
+rc.paramSelect = function()
 {
   // The user has selected a library and parameters.  Now we need to generate
   // a chart for all applicable datasets.

@@ -3,8 +3,8 @@ var hc = hc = hc || {};
 
 hc.method_name = "";
 hc.param_name = "";
-var hc.active_datasets;
-var hc.active_libraries;
+hc.active_datasets = [];
+hc.active_libraries = [];
 
 hc.onTypeSelect = function()
 {
