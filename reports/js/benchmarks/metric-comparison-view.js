@@ -93,7 +93,6 @@ mc.buildChart = function()
         for(i = 0; i < results[0].values.length; i++)
         {
           var json = jQuery.parseJSON(results[0].values[i][0]);
-          console.log(results[0].values[i])
           $.each(json, function (k, data) {
             if((k == d) && active_libraries[results[0].values[i][3]] == true) { ret.push([data, results[0].values[i][3], k]); }
           })
