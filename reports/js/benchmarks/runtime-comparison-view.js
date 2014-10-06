@@ -1,6 +1,129 @@
 // Define namespace: rc = runtime-comparison.
 var rc = rc = rc || {};
 
+rc.method_name = "" // Name of currently selected method.
+rc.param_name = "" // Name of currently selected parameters.
+
+// This chart type has been selected.  What do we do now?
+rc.onTypeSelect = function()
+{
+  // The user needs to be able to select a method, then parameters.
+  selectHolder.append("label")
+      .attr("for", "method_select")
+      .attr("class", "method-select-label")
+      .text("Select method:");
+    selectHolder.append("select")
+      .attr("id", "method_select")
+      .attr("onchange", "rc.methodSelect()");
+    selectHolder.append("label")
+      .attr("for", "param_select")
+      .attr("class", "param-select-label")
+      .text("Select parameters:");
+    selectHolder.append("select")
+      .attr("id", "param_select")
+      .attr("onchange", "rc.paramSelect()");
+
+  listMethods();
+}
+
+// List methods.
+rc.listMethods = function()
+{
+  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, results WHERE methods.id == results.method_id ORDER BY name;");
+  var method_select_box = document.getElementById("method_select");
+
+  // Remove old things.
+  clearSelectBox(method_select_box);
+
+  // Add new things.
+  for (i = 0; i < methods[0].values.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = methods[0].values[i];
+    method_select_box.add(new_option);
+  }
+  method_select_box.selectedIndex = -1;
+
+  // Clear parameters box.
+  clearSelectBox(document.getElementById("param_select"));
+}
+
+// Called when the user selects a method.
+rc.methodSelect = function()
+{
+  // Extract the name of the method we selected.
+  var method_select_box = document.getElementById("method_select");
+  method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
+
+  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
+  var params = db.exec(sqlstr);
+
+  // Loop through results and fill the second list box.
+  var param_select_box = document.getElementById("param_select");
+  clearSelectBox(param_select_box);
+  for (i = 0; i < params[0].values.length; i++)
+  {
+    var new_option = document.createElement("option");
+    if (params[0].values[i][0])
+    {
+      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][1] + " libraries)";
+    }
+    else
+    {
+      new_option.text = "[no parameters] (" + params[0].values[i][1] + " libraries)";
+    }
+    param_select_box.add(new_option);
+  }
+  param_select_box.selectedIndex = -1;
+}
+
+// Called when a set of parameters is selected.  Now we are ready to draw the chart.
+rc.paramSelect() = function()
+{
+  // The user has selected a library and parameters.  Now we need to generate
+  // a chart for all applicable datasets.
+  var method_select_box = document.getElementById("method_select");
+  var method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  var param_select_box = document.getElementById("param_select");
+  var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
+
+  // Parse out actual parameters.
+  param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  if (param_name == "[no parameters]")
+  {
+    param_name = "";
+  }
+
+  // Given a method name and parameters, query the SQLite database for all of
+  // the runs.
+  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
+    "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
+    "AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.id == results.libary_id " +
+    "GROUP BY datasets.id, libraries.id;";
+  results = db.exec(sqlstr);
+
+  // Obtain unique list of datasets.
+  datasets = results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  // Obtain unique list of libraries.
+  libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+
+  // By default, everything is active.
+  active_datasets = {};
+  for(i = 0; i < datasets.length; i++)
+  {
+    active_datasets[datasets[i]] = true;
+  }
+
+  active_libraries = {};
+  for(i = 0; i < libraries.length; i++)
+  {
+    active_libraries[libraries[i]] = true;
+  }
+
+  clearChart();
+  buildChart();
+}
+
 // Remove everything on the page that belongs to us.
 rc.clear = function()
 {

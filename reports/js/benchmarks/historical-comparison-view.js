@@ -1,6 +1,126 @@
 // namespace hc = historical comparison
 var hc = hc = hc || {};
 
+hc.method_name = "";
+hc.param_name = "";
+var hc.active_datasets;
+var hc.active_libraries;
+
+hc.onTypeSelect = function()
+{
+  selectHolder.append("label")
+      .attr("for", "method_select")
+      .attr("class", "method-select-label")
+      .text("Select method:");
+  selectHolder.append("select")
+      .attr("id", "method_select")
+      .attr("onchange", "hc.methodSelect()");
+  selectHolder.append("label")
+      .attr("for", "param_select")
+      .attr("class", "param-select-label")
+      .text("Select parameters:");
+  selectHolder.append("select")
+      .attr("id", "param_select")
+      .attr("onchange", "hc.paramSelect()");
+  selectHolder.append("br");
+  selectHolder.append("label")
+      .attr("for", "main_dataset_select")
+      .attr("class", "main-dataset-select-label")
+      .text("Select dataset:");
+  selectHolder.append("select")
+      .attr("id", "main_dataset_select")
+      .attr("onchange", "hc.datasetSelect()");
+
+  listMethods();
+}
+
+// List the available methods.
+hc.listMethods = function()
+{
+  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, results WHERE methods.id=results.method_id ORDER BY name;");
+
+  var method_select_box = document.getElementById("method_select");
+
+  // Put new things in the list box.
+  clearSelectBox(method_select_box);
+  for(i = 0; i < methods[0].values.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = methods[0].values[i];
+    method_select_box.add(new_option);
+  }
+  method_select_box.selectedIndex = -1;
+
+  // Clear parameters box.
+  clearSelectBox(document.getElementById("param_select"));
+}
+
+// The user has selected a method.
+hc.methodSelect = function()
+{
+  // Extract the name of the method we selected.
+  var method_select_box = document.getElementById("method_select");
+  method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
+
+  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
+
+  var params = db.exec(sqlstr);
+  
+  // Loop through results and fill the second list box.
+  var param_select_box = document.getElementById("param_select");
+  
+  // Put in the new options.
+  clearSelectBox(param_select_box);
+  for (i = 0; i < params[0].values.length; i++)
+  {
+    var new_option = document.createElement("option");
+    if (params[0].values[i][0])
+    { 
+      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][1] + " libraries)";
+    }
+    else
+    { 
+      new_option.text = "[no parameters] (" + params[0].values[i][1] + " libraries)";
+    }
+    param_select_box.add(new_option);
+  }
+  param_select_box.selectedIndex = -1;
+}
+
+// The user has selected parameters.
+hc.paramSelect = function()
+{
+  var method_select_box = document.getElementById("method_select");
+  var method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  var param_select_box = document.getElementById("param_select");
+  var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
+  // Parse out actual parameters.
+  param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  if (param_name == "[no parameters]") { param_name = ""; }
+
+  // Given a method name and parameters, query the SQLite database for all of
+  // the runs.
+  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +  "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +     "AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.id == results.libary_id " + "GROUP BY datasets.id, libraries.id;";
+  results = db.exec(sqlstr);
+
+  // Obtain unique list of datasets.
+  datasets = results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  // Obtain unique list of libraries.
+  libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+
+  var dataset_select_box = document.getElementById("main_dataset_select");
+
+  // Remove old things.
+  clearSelectBox(dataset_select_box);
+  for (i = 0; i < datasets.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = datasets[i];
+    dataset_select_box.add(new_option);
+  }
+  dataset_select_box.selectedIndex = -1;
+}
+
 // Remove everything on the page that belongs to us.
 hc.clear = function()
 {

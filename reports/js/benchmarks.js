@@ -56,6 +56,11 @@ function mapRuntime(runtime, max)
   else { return runtime; }
 }
 
+function clearSelectBox(box)
+{
+  for(i = 0; i < box.options.length - 1; i >= 0; i--) { box.options[i] = null; }
+}
+
 function listMethods(chartType)
 {
   // Given a chartType get all of the possible method names.
