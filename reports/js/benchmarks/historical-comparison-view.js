@@ -153,7 +153,6 @@ hc.buildChart = function()
   var max_runtime = d3.max(results[0].values, function(d) { if(active_libraries[d[4]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
   var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
 
-
   // Set up axes.
   var dateFormat = d3.time.format("%b %Y");
   var xAxis = d3.svg.axis().scale(build_scale).orient("bottom")
@@ -267,14 +266,14 @@ max_runtime)); })
   librarySelectTitle.append("div")
     .attr("class", "library-select-title-enable-all")
     .text("enable all")
-    .on('click', function() { enableAllLibraries(); });
+    .on('click', function() { hc.enableAllLibraries(); });
   librarySelectTitle.append("div")
     .attr("class", "library-select-title-bar")
     .text("|");
   librarySelectTitle.append("div")
     .attr("class", "library-select-title-disable-all")
     .text("disable all")
-    .on('click', function() { disableAllLibraries(); });
+    .on('click', function() { hc.disableAllLibraries(); });
   librarySelectTitle.append("div")
     .attr("class", "library-select-title-close-paren")
     .text(")");
@@ -296,7 +295,7 @@ max_runtime)); })
     .attr("type", "checkbox")
     .attr("id", function(d) { return d + '-library-checkbox'; })
     .attr('class', 'library-select-box')
-    .attr("onClick", function(d, i) { return "toggleLibrary(\"" + d + "\");"; });
+    .attr("onClick", function(d, i) { return "rc.toggleLibrary(\"" + d + "\");"; });
 
   libraryDivs.append("label")
     .attr('for', function(d) { return d + '-library-checkbox'; })
