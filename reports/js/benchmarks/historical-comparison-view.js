@@ -3,11 +3,16 @@ var hc = hc = hc || {};
 
 hc.method_name = "";
 hc.param_name = "";
+hc.dataset_name = "";
+hc.libraries = []
+hc.datasets = []
 hc.active_datasets = [];
 hc.active_libraries = [];
+hc.results = []
 
 hc.onTypeSelect = function()
 {
+  var selectHolder = d3.select(".selectholder");
   selectHolder.append("label")
       .attr("for", "method_select")
       .attr("class", "method-select-label")
@@ -31,7 +36,7 @@ hc.onTypeSelect = function()
       .attr("id", "main_dataset_select")
       .attr("onchange", "hc.datasetSelect()");
 
-  listMethods();
+  hc.listMethods();
 }
 
 // List the available methods.
@@ -60,9 +65,9 @@ hc.methodSelect = function()
 {
   // Extract the name of the method we selected.
   var method_select_box = document.getElementById("method_select");
-  method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
+  hc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
+  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + hc.method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
 
   var params = db.exec(sqlstr);
   
@@ -91,41 +96,63 @@ hc.methodSelect = function()
 hc.paramSelect = function()
 {
   var method_select_box = document.getElementById("method_select");
-  var method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  hc.method_name = method_select_box.options[method_select_box.selectedIndex].text;
   var param_select_box = document.getElementById("param_select");
   var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
   // Parse out actual parameters.
-  param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
-  if (param_name == "[no parameters]") { param_name = ""; }
+  hc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  if (hc.param_name == "[no parameters]") { hc.param_name = ""; }
 
   // Given a method name and parameters, query the SQLite database for all of
   // the runs.
-  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +  "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +     "AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.id == results.libary_id " + "GROUP BY datasets.id, libraries.id;";
-  results = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +  "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +     "AND methods.name == '" + hc.method_name + "' AND methods.parameters == '" + hc.param_name + "' AND libraries.id == results.libary_id " + "GROUP BY datasets.id, libraries.id;";
+  hc.results = db.exec(sqlstr);
 
   // Obtain unique list of datasets.
-  datasets = results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  hc.datasets = hc.results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
-  libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  hc.libraries = hc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
   var dataset_select_box = document.getElementById("main_dataset_select");
 
   // Remove old things.
   clearSelectBox(dataset_select_box);
-  for (i = 0; i < datasets.length; i++)
+  for (i = 0; i < hc.datasets.length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = datasets[i];
+    new_option.text = hc.datasets[i];
     dataset_select_box.add(new_option);
   }
   dataset_select_box.selectedIndex = -1;
+}
+
+hc.datasetSelect = function()
+{
+  // The user has selected a method, parameters, and a dataset.  Now we need to
+  // generate a chart.  We have method_name and param_name.
+  var dataset_select_box = document.getElementById("main_dataset_select");
+  hc.dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
+
+  // Okay, now get the results of the query for that method, parameters, and
+  // dataset.
+  var sqlstr = "SELECT results.time, results.var, results.build_id, builds.build, libraries.name from results, methods, libraries, builds, datasets WHERE methods.id == results.method_id AND methods.name == '" + hc.method_name + "' AND methods.parameters == '" + hc.param_name + "' AND results.libary_id == libraries.id AND builds.id == results.build_id AND datasets.id == results.dataset_id AND datasets.name == '" + hc.dataset_name + "' GROUP BY results.build_id;";
+  hc.results = db.exec(sqlstr);
+
+  hc.active_libraries = {};
+  for(i = 0; i < hc.libraries.length; i++)
+  {
+    hc.active_libraries[hc.libraries[i]] = true;
+  }
+
+  hc.clearChart();
+  hc.buildChart();
 }
 
 // Remove everything on the page that belongs to us.
 hc.clear = function()
 {
   // Only things that belong to us are in the chart.
-  clearChart();
+  hc.clearChart();
 }
 
 // Remove everything we have in the chart.
@@ -143,14 +170,12 @@ hc.clearChart = function()
 hc.buildChart = function()
 {
     // Set up x axis scale.
-  var minDate = results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c < p) { return c; } else { return p; } }, new Date("2099-01-01"));
-  var maxDate = results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c > p) { return c; } else { return p; } }, new Date("1900-01-01"));
-  console.log(minDate);
-  console.log(maxDate);
+  var minDate = hc.results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c < p) { return c; } else { return p; } }, new Date("2099-01-01"));
+  var maxDate = hc.results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c > p) { return c; } else { return p; } }, new Date("1900-01-01"));
   var build_scale = d3.time.scale().domain([minDate, maxDate]).range([0, width]);
 
   // Set up y axis scale.
-  var max_runtime = d3.max(results[0].values, function(d) { if(active_libraries[d[4]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
+  var max_runtime = d3.max(hc.results[0].values, function(d) { if(hc.active_libraries[d[4]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
   var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
 
   // Set up axes.
@@ -208,11 +233,11 @@ hc.buildChart = function()
       .interpolate("step-after");
 
   var lineResults = [];
-  for (var l in libraries)
+  for (var l in hc.libraries)
   {
-    if (active_libraries[libraries[l]] == true)
+    if (hc.active_libraries[hc.libraries[l]] == true)
     {
-      lineResults.push(results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == libraries[l]) { p.push(c); } return p; }, []));
+      lineResults.push(hc.results[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[4] == hc.libraries[l]) { p.push(c); } return p; }, []));
     }
     else { lineResults.push([]); }
   }
@@ -221,7 +246,7 @@ hc.buildChart = function()
   {
     svg.append('svg:path')
         .attr('d', lineFunc(lineResults[i]))
-        .attr('stroke', color(libraries[i]))
+        .attr('stroke', color(hc.libraries[i]))
         .attr('stroke-width', 2)
         .attr('fill', 'none');
   }
@@ -279,7 +304,7 @@ max_runtime)); })
     .text(")");
 
   var libraryDivs = d3.select(".legendholder").selectAll("input")
-    .data(libraries)
+    .data(hc.libraries)
     .enter()
     .append("div")
     .attr("class", "library-select-div")
@@ -291,7 +316,7 @@ max_runtime)); })
     .attr('class', 'library-select-color');
 
   libraryDivs.append("input")
-    .property("checked", function(d) { return active_libraries[d]; })
+    .property("checked", function(d) { return hc.active_libraries[d]; })
     .attr("type", "checkbox")
     .attr("id", function(d) { return d + '-library-checkbox'; })
     .attr('class', 'library-select-box')
@@ -306,7 +331,7 @@ max_runtime)); })
 // Toggle a library to on or off.
 hc.toggleLibrary = function(library)
 {
-  active_libraries[library] = !active_libraries[library];
+  hc.active_libraries[library] = !hc.active_libraries[library];
 
   clearChart();
   buildChart();
@@ -315,7 +340,7 @@ hc.toggleLibrary = function(library)
 // Toggle a dataset to on or off.
 hc.toggleDataset = function(dataset)
 {
-  active_datasets[dataset] = !active_datasets[dataset];
+  hc.active_datasets[dataset] = !hc.active_datasets[dataset];
 
   clearChart();
   buildChart();
@@ -324,7 +349,7 @@ hc.toggleDataset = function(dataset)
 // Set all libraries on.
 hc.enableAllLibraries = function()
 {
-  for (v in active_libraries) { active_libraries[v] = true; }
+  for (v in hc.active_libraries) { hc.active_libraries[v] = true; }
 
   clearChart();
   buildChart();
@@ -333,7 +358,7 @@ hc.enableAllLibraries = function()
 // Set all libraries off.
 hc.disableAllLibraries = function()
 {
-  for (v in active_libraries) { active_libraries[v] = false; }
+  for (v in hc.active_libraries) { hc.active_libraries[v] = false; }
 
   clearChart();
   buildChart();
@@ -342,7 +367,7 @@ hc.disableAllLibraries = function()
 // Set all datasets on.
 hc.enableAllDatasets = function()
 {
-  for (v in active_datasets) { active_datasets[v] = true; }
+  for (v in hc.active_datasets) { hc.active_datasets[v] = true; }
 
   clearChart();
   buildChart();
@@ -351,7 +376,7 @@ hc.enableAllDatasets = function()
 // Set all datasets off.
 hc.disableAllDatasets = function()
 {
-  for (v in active_datasets) { active_datasets[v] = false; }
+  for (v in hc.active_datasets) { hc.active_datasets[v] = false; }
 
   clearChart();
   buildChart();

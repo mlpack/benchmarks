@@ -1,11 +1,182 @@
 // Define namespace: mc = metric-comparison.
 var mc = mc = mc || {};
 
+mc.method_name = "";
+mc.param_name = "";
+mc.dataset_name = "";
+mc.libraries = [];
+mc.datasets = []
+mc.active_metrics = [];
+mc.active_libraries = [];
+mc.metric_names = [];
+mc.results = [];
+
+// This chart type has been selected.  What do we do now?
+mc.onTypeSelect = function()
+{
+  var selectHolder = d3.select(".selectholder");
+  selectHolder.append("label")
+      .attr("for", "method_select")
+      .attr("class", "method-select-label")
+      .text("Select method:");
+  selectHolder.append("select")
+      .attr("id", "method_select")
+      .attr("onchange", "mc.methodSelect()");
+  selectHolder.append("label")
+      .attr("for", "param_select")
+      .attr("class", "param-select-label")
+      .text("Select parameters:");
+  selectHolder.append("select")
+      .attr("id", "param_select")
+      .attr("onchange", "mc.paramSelect()");
+  selectHolder.append("br");
+  selectHolder.append("label")
+      .attr("for", "main_dataset_select")
+      .attr("class", "main-dataset-select-label")
+      .text("Select dataset:");
+  selectHolder.append("select")
+      .attr("id", "main_dataset_select")
+      .attr("onchange", "mc.datasetSelect()");
+
+  mc.listMethods();
+}
+
+mc.listMethods = function()
+{
+  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, metrics WHERE methods.id=metrics.method_id AND metrics.metric<>'{}' ORDER BY name;");
+
+  var method_select_box = document.getElementById("method_select");
+  clearSelectBox(method_select_box);
+  // Put new things in the list box.
+  for(i = 0; i < methods[0].values.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = methods[0].values[i];
+    method_select_box.add(new_option);
+  }
+  method_select_box.selectedIndex = -1;
+
+  // Clear parameters box.
+  clearSelectBox(document.getElementById("param_select"));
+}
+
+// The user has selected a method.
+mc.methodSelect = function()
+{
+  // Extract the name of the method we selected.
+  var method_select_box = document.getElementById("method_select");
+  mc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
+
+  var sqlstr = "SELECT methods.parameters, metrics.libary_id FROM methods, metrics WHERE methods.name == '" + mc.method_name + "' AND methods.id == metrics.method_id GROUP BY methods.parameters;";
+
+  var params = db.exec(sqlstr);
+
+  // Loop through results and fill the second list box.
+  var param_select_box = document.getElementById("param_select");
+  clearSelectBox(param_select_box);
+
+  // Put in the new options.
+  for (i = 0; i < params[0].values.length; i++)
+  {
+    var new_option = document.createElement("option");
+    if (params[0].values[i][0])
+    {
+      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][1] + " libraries)";
+    }
+    else
+    {
+      new_option.text = "[no parameters] (" + params[0].values[i][1] + " libraries)";
+    }
+    param_select_box.add(new_option);
+  }
+  param_select_box.selectedIndex = -1;
+}
+
+// The user has selected parameters.
+mc.paramSelect = function()
+{
+  // The user has selected a library and parameters.  Now we need to
+  // generate
+  // a chart for all applicable datasets.
+  var method_select_box = document.getElementById("method_select");
+  mc.method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  var param_select_box = document.getElementById("param_select");
+  var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
+  // Parse out actual parameters.
+  mc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  if (mc.param_name == "[no parameters]") { mc.param_name = ""; }
+
+  // Given a method name and parameters, query the SQLite database for all of
+  // the runs.
+  var sqlstr = "SELECT DISTINCT metrics.metric, libraries.id, libraries.name, datasets.name, datasets.id " +
+    "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id " +
+    "AND methods.name == '" + mc.method_name + "' AND methods.parameters == '" + mc.param_name + "' AND libraries.id == metrics.libary_id " +
+    "AND metrics.metric<>'{}' GROUP BY datasets.id, libraries.id;";
+  mc.results = db.exec(sqlstr);
+
+  // Obtain unique list of datasets.
+  mc.datasets = mc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  // Obtain unique list of libraries.
+  mc.libraries = mc.results[0].values.map(function(d) { return d[2]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+
+  var dataset_select_box = document.getElementById("main_dataset_select");
+
+  // Remove old things.
+  for (i = dataset_select_box.options.length - 1; i >= 0; i--)
+  {
+    dataset_select_box.options[i] = null;
+  }
+
+  for (i = 0; i < mc.datasets.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = mc.datasets[i];
+    dataset_select_box.add(new_option);
+  }
+}
+
+mc.datasetSelect = function()
+{
+  // The user has selected a method, parameters, and a dataset.  Now we need to generate a chart.  We have method_name and param_name.
+  var dataset_select_box = document.getElementById("main_dataset_select");
+  mc.dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
+
+  // Okay, now get the results of the query for that method, parameters, and dataset.
+  var sqlstr = "SELECT metrics.metric, metrics.build_id, builds.build, libraries.name from metrics, methods, libraries, builds, datasets WHERE methods.id == metrics.method_id AND methods.name == '" + mc.method_name + "' AND methods.parameters == '" + mc.param_name + "' AND metrics.libary_id == libraries.id AND builds.id == metrics.build_id AND datasets.id == metrics.dataset_id AND datasets.name == '" + mc.dataset_name + "' GROUP BY metrics.build_id;";
+  mc.results = db.exec(sqlstr);
+
+  // Obtain unique list of metric names.
+  mc.metric_names = []
+  for(i = 0; i < mc.results[0].values.length; i++)
+  {
+    var json = jQuery.parseJSON(mc.results[0].values[i][0]);
+    $.each(json, function (k, d) {
+      if(mc.metric_names.indexOf(k) < 0) mc.metric_names.push(k);
+    })
+  }
+
+  // By default, everything is active.
+  mc.active_metrics = {};
+  for(i = 0; i < mc.metric_names.length; i++)
+  {
+    mc.active_metrics[mc.metric_names[i]] = true;
+  }
+
+  mc.active_libraries = {};
+  for(i = 0; i < mc.libraries.length; i++)
+  {
+    mc.active_libraries[mc.libraries[i]] = true;
+  }
+
+  clearChart();
+  buildChart();
+}
+
 // Remove everything on the page that belongs to us.
 mc.clear = function()
 {
   // Only things that belong to us are in the chart.
-  clearChart();
+  mc.clearChart();
 }
 
 // Remove everything we have in the chart.
@@ -24,10 +195,10 @@ mc.buildChart = function()
 {
   // Set up scales.
   var group_scale = d3.scale.ordinal()
-    .domain(metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(active_metrics[c] == true) { p.push(c); } return p; }, []))
+    .domain(mc.metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_metrics[c] == true) { p.push(c); } return p; }, []))
     .rangeRoundBands([0, width], .1);
   var library_scale = d3.scale.ordinal()
-    .domain(libraries.map(function(d) { return d; }).reduce(function(p, c) { if(active_libraries[c] == true) { p.push(c); } return p; }, []))
+    .domain(mc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_libraries[c] == true) { p.push(c); } return p; }, []))
     .rangeRoundBands([0, group_scale.rangeBand()]);
   var max_score = 3
 
@@ -70,7 +241,7 @@ mc.buildChart = function()
 
   // Create groups.
   var group = svg.selectAll(".group")
-    .data(metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(active_metrics[c] == true) { p.push(c); } return p; }, []))
+    .data(mc.metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_metrics[c] == true) { p.push(c); } return p; }, []))
     .enter().append("g")
     .attr("class", "g")
     .attr("transform", function(d) { return "translate(" + group_scale(d) + ", 0)"; });
@@ -90,11 +261,11 @@ mc.buildChart = function()
     .data(function(d) // For a given dataset d, collect all of the data points for that dataset.
         {
         var ret = [];
-        for(i = 0; i < results[0].values.length; i++)
+        for(i = 0; i < mc.results[0].values.length; i++)
         {
-          var json = jQuery.parseJSON(results[0].values[i][0]);
+          var json = jQuery.parseJSON(mc.results[0].values[i][0]);
           $.each(json, function (k, data) {
-            if((k == d) && active_libraries[results[0].values[i][3]] == true) { ret.push([data, results[0].values[i][3], k]); }
+            if((k == d) && mc.active_libraries[mc.results[0].values[i][3]] == true) { ret.push([data, mc.results[0].values[i][3], k]); }
           })
         }
         return ret;
@@ -133,7 +304,7 @@ mc.buildChart = function()
     .text(")");
 
   var libraryDivs = d3.select(".legendholder").selectAll("input")
-    .data(libraries)
+    .data(mc.libraries)
     .enter()
     .append("div")
     .attr("class", "library-select-div")
@@ -144,7 +315,7 @@ mc.buildChart = function()
     .style('background', color)
     .attr('class', 'library-select-color');
   libraryDivs.append("input")
-    .property("checked", function(d) { return active_libraries[d]; })
+    .property("checked", function(d) { return mc.active_libraries[d]; })
     .attr("type", "checkbox")
     .attr("id", function(d) { return d + '-library-checkbox'; })
     .attr('class', 'library-select-box')
@@ -183,7 +354,7 @@ mc.buildChart = function()
 
   // Add another legend for the datasets.
   var metricDivs = d3.select(".legendholder").selectAll(".dataset-select-div")
-    .data(metric_names)
+    .data(mc.metric_names)
     .enter()
     .append("div")
     .attr("class", "dataset-select-div")
@@ -195,7 +366,7 @@ mc.buildChart = function()
     .attr('class', 'dataset-select-color');
 
   metricDivs.append("input")
-    .property("checked", function(d) { return active_metrics[d]; })
+    .property("checked", function(d) { return mc.active_metrics[d]; })
     .attr("type", "checkbox")
     .attr("id", function(d) { return d + "-dataset-checkbox"; })
     .attr("class", "dataset-select-box")
@@ -210,7 +381,7 @@ mc.buildChart = function()
 // Toggle a library to on or off.
 mc.toggleLibrary = function(library)
 {
-  active_libraries[library] = !active_libraries[library];
+  mc.active_libraries[library] = !mc.active_libraries[library];
 
   clearChart();
   buildChart();
@@ -219,7 +390,7 @@ mc.toggleLibrary = function(library)
 // Toggle a metric to on or off.
 mc.toggleMetric = function(metric)
 {
-  active_metrics[metric] = !active_metrics[metric];
+  mc.active_metrics[metric] = !mc.active_metrics[metric];
 
   clearChart();
   buildChart();
@@ -228,7 +399,7 @@ mc.toggleMetric = function(metric)
 // Set all libraries on.
 mc.enableAllLibraries = function()
 {
-  for (v in active_libraries) { active_libraries[v] = true; }
+  for (v in mc.active_libraries) { mc.active_libraries[v] = true; }
 
   clearChart();
   buildChart();
@@ -237,7 +408,7 @@ mc.enableAllLibraries = function()
 // Set all libraries off.
 mc.disableAllLibraries = function()
 {
-  for (v in active_libraries) { active_libraries[v] = false; }
+  for (v in mc.active_libraries) { mc.active_libraries[v] = false; }
 
   clearChart();
   buildChart();
@@ -246,7 +417,7 @@ mc.disableAllLibraries = function()
 // Set all metrics on.
 mc.enableAllMetrics = function()
 {
-  for (v in active_metrics) { active_metrics[v] = true; }
+  for (v in mc.active_metrics) { mc.active_metrics[v] = true; }
 
   clearChart();
   buildChart();
@@ -255,7 +426,7 @@ mc.enableAllMetrics = function()
 // Set all metrics off.
 mc.disableAllMetrics = function()
 {
-  for (v in active_metrics) { active_metrics[v] = false; }
+  for (v in mc.active_metrics) { mc.active_metrics[v] = false; }
 
   clearChart();
   buildChart();

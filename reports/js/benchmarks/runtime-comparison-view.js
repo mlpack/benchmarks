@@ -1,13 +1,19 @@
 // Define namespace: rc = runtime-comparison.
 var rc = rc = rc || {};
 
-rc.method_name = "" // Name of currently selected method.
-rc.param_name = "" // Name of currently selected parameters.
+rc.method_name = ""; // Name of currently selected method.
+rc.param_name = ""; // Name of currently selected parameters.
+rc.datasets = [];
+rc.libraries = [];
+rc.active_datasets = [];
+rc.active_libraries = [];
+rc.results = [];
 
 // This chart type has been selected.  What do we do now?
 rc.onTypeSelect = function()
 {
   // The user needs to be able to select a method, then parameters.
+  var selectHolder = d3.select(".selectholder");
   selectHolder.append("label")
       .attr("for", "method_select")
       .attr("class", "method-select-label")
@@ -23,7 +29,7 @@ rc.onTypeSelect = function()
       .attr("id", "param_select")
       .attr("onchange", "rc.paramSelect()");
 
-  listMethods();
+  rc.listMethods();
 }
 
 // List methods.
@@ -53,9 +59,9 @@ rc.methodSelect = function()
 {
   // Extract the name of the method we selected.
   var method_select_box = document.getElementById("method_select");
-  method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
+  rc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
+  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + rc.method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
   var params = db.exec(sqlstr);
 
   // Loop through results and fill the second list box.
@@ -83,41 +89,41 @@ rc.paramSelect = function()
   // The user has selected a library and parameters.  Now we need to generate
   // a chart for all applicable datasets.
   var method_select_box = document.getElementById("method_select");
-  var method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  rc.method_name = method_select_box.options[method_select_box.selectedIndex].text;
   var param_select_box = document.getElementById("param_select");
   var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
 
   // Parse out actual parameters.
-  param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
-  if (param_name == "[no parameters]")
+  rc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  if (rc.param_name == "[no parameters]")
   {
-    param_name = "";
+    rc.param_name = "";
   }
 
   // Given a method name and parameters, query the SQLite database for all of
   // the runs.
   var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
     "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
-    "AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.id == results.libary_id " +
+    "AND methods.name == '" + rc.method_name + "' AND methods.parameters == '" + rc.param_name + "' AND libraries.id == results.libary_id " +
     "GROUP BY datasets.id, libraries.id;";
-  results = db.exec(sqlstr);
+  rc.results = db.exec(sqlstr);
 
   // Obtain unique list of datasets.
-  datasets = results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  rc.datasets = rc.results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
-  libraries = results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  rc.libraries = rc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
   // By default, everything is active.
-  active_datasets = {};
-  for(i = 0; i < datasets.length; i++)
+  rc.active_datasets = {};
+  for (i = 0; i < rc.datasets.length; i++)
   {
-    active_datasets[datasets[i]] = true;
+    rc.active_datasets[rc.datasets[i]] = true;
   }
 
-  active_libraries = {};
-  for(i = 0; i < libraries.length; i++)
+  rc.active_libraries = {};
+  for (i = 0; i < rc.libraries.length; i++)
   {
-    active_libraries[libraries[i]] = true;
+    rc.active_libraries[rc.libraries[i]] = true;
   }
 
   clearChart();
@@ -128,7 +134,7 @@ rc.paramSelect = function()
 rc.clear = function()
 {
   // Only things that belong to us are in the chart.
-  clearChart();
+  rc.clearChart();
 }
 
 // Remove everything we have in the chart.
@@ -147,14 +153,14 @@ rc.buildChart = function()
 {
    // Set up scales.
   var group_scale = d3.scale.ordinal()
-      .domain(datasets.map(function(d) { return d; }).reduce(function(p, c) { if(active_datasets[c] == true) { p.push(c); } return p; }, []))
+      .domain(rc.datasets.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_datasets[c] == true) { p.push(c); } return p; }, []))
       .rangeRoundBands([0, width], .1);
 
   var library_scale = d3.scale.ordinal()
-      .domain(libraries.map(function(d) { return d; }).reduce(function(p, c) { if(active_libraries[c] == true) { p.push(c); } return p; }, []))
+      .domain(rc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_libraries[c] == true) { p.push(c); } return p; }, []))
       .rangeRoundBands([0, group_scale.rangeBand()]);
 
-  var max_runtime = d3.max(results[0].values, function(d) { if(active_datasets[d[4]] == false || active_libraries[d[3]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
+  var max_runtime = d3.max(rc.results[0].values, function(d) { if(rc.active_datasets[d[4]] == false || rc.active_libraries[d[3]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
 
   var runtime_scale = d3.scale.linear()
       .domain([0, max_runtime])
@@ -195,7 +201,7 @@ rc.buildChart = function()
 
   // Create groups.
   var group = svg.selectAll(".group")
-      .data(datasets.map(function(d) { return d; }).reduce(function(p, c) { if(active_datasets[c] == true) { p.push(c); } return p; }, []))
+      .data(rc.datasets.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_datasets[c] == true) { p.push(c); } return p; }, []))
       .enter().append("g")
       .attr("class", "g")
       .attr("transform", function(d) { return "translate(" + group_scale(d) + ", 0)"; });
@@ -217,11 +223,11 @@ rc.buildChart = function()
     .data(function(d) // For a given dataset d, collect all of the data points for that dataset.
         {
           var ret = [];
-          for(i = 0; i < results[0].values.length; i++)
+          for(i = 0; i < rc.results[0].values.length; i++)
           {
-            if(results[0].values[i][4] == d && active_libraries[results[0].values[i][3]] == true)
+            if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true)
             {
-              ret.push(results[0].values[i]);
+              ret.push(rc.results[0].values[i]);
             }
           }
           return ret;
@@ -260,7 +266,7 @@ rc.buildChart = function()
       .text(")");
 
   var libraryDivs = d3.select(".legendholder").selectAll("input")
-      .data(libraries)
+      .data(rc.libraries)
       .enter()
       .append("div")
       .attr("class", "library-select-div")
@@ -271,7 +277,7 @@ rc.buildChart = function()
       .style('background', color)
       .attr('class', 'library-select-color');
   libraryDivs.append("input")
-      .property("checked", function(d) { return active_libraries[d]; })
+      .property("checked", function(d) { return rc.active_libraries[d]; })
       .attr("type", "checkbox")
       .attr("id", function(d) { return d + '-library-checkbox'; })
       .attr('class', 'library-select-box')
@@ -310,7 +316,7 @@ rc.buildChart = function()
 
   // Add another legend for the datasets.
   var datasetDivs = d3.select(".legendholder").selectAll(".dataset-select-div")
-      .data(datasets)
+      .data(rc.datasets)
       .enter()
       .append("div")
       .attr("class", "dataset-select-div")
@@ -322,7 +328,7 @@ rc.buildChart = function()
       .attr('class', 'dataset-select-color');
 
   datasetDivs.append("input")
-      .property("checked", function(d) { return active_datasets[d]; })
+      .property("checked", function(d) { return rc.active_datasets[d]; })
       .attr("type", "checkbox")
       .attr("id", function(d) { return d + "-dataset-checkbox"; })
       .attr("class", "dataset-select-box")
@@ -337,7 +343,7 @@ rc.buildChart = function()
 // Toggle a library to on or off.
 rc.toggleLibrary = function(library)
 {
-  active_libraries[library] = !active_libraries[library];
+  rc.active_libraries[library] = !rc.active_libraries[library];
 
   clearChart();
   buildChart();
@@ -346,7 +352,7 @@ rc.toggleLibrary = function(library)
 // Toggle a dataset to on or off.
 rc.toggleDataset = function(dataset)
 {
-  active_datasets[dataset] = !active_datasets[dataset];
+  rc.active_datasets[dataset] = !rc.active_datasets[dataset];
 
   clearChart();
   buildChart();
@@ -355,7 +361,7 @@ rc.toggleDataset = function(dataset)
 // Set all libraries on.
 rc.enableAllLibraries = function()
 {
-  for (v in active_libraries) { active_libraries[v] = true; }
+  for (v in rc.active_libraries) { rc.active_libraries[v] = true; }
 
   clearChart();
   buildChart();
@@ -364,7 +370,7 @@ rc.enableAllLibraries = function()
 // Set all libraries off.
 rc.disableAllLibraries = function()
 {
-  for (v in active_libraries) { active_libraries[v] = false; }
+  for (v in rc.active_libraries) { rc.active_libraries[v] = false; }
 
   clearChart();
   buildChart();
@@ -373,7 +379,7 @@ rc.disableAllLibraries = function()
 // Set all datasets on.
 rc.enableAllDatasets = function()
 {
-  for (v in active_datasets) { active_datasets[v] = true; }
+  for (v in rc.active_datasets) { rc.active_datasets[v] = true; }
 
   clearChart();
   buildChart();
@@ -382,7 +388,7 @@ rc.enableAllDatasets = function()
 // Set all datasets off.
 rc.disableAllDatasets = function()
 {
-  for (v in active_datasets) { active_datasets[v] = false; }
+  for (v in rc.active_datasets) { rc.active_datasets[v] = false; }
 
   clearChart();
   buildChart();
