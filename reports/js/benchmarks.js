@@ -58,7 +58,7 @@ function mapRuntime(runtime, max)
 
 function clearSelectBox(box)
 {
-  for(i = 0; i < box.options.length - 1; i >= 0; i--) { box.options[i] = null; }
+  for(i = box.options.length - 1; i >= 0; i--) { box.options[i] = null; }
 }
 
 function listMethods(chartType)
