@@ -152,7 +152,7 @@ rc.buildChart = function()
       .attr("type", "checkbox")
       .attr("id", function(d) { return d + '-library-checkbox'; })
       .attr('class', 'library-select-box')
-      .attr("onClick", function(d, i) { return "toggleLibrary(\"" + d + "\");"; });
+      .attr("onClick", function(d, i) { return "rc.toggleLibrary(\"" + d + "\");"; });
 
   libraryDivs.append("label")
       .attr('for', function(d) { return d + '-library-checkbox'; })
@@ -203,7 +203,7 @@ rc.buildChart = function()
       .attr("type", "checkbox")
       .attr("id", function(d) { return d + "-dataset-checkbox"; })
       .attr("class", "dataset-select-box")
-      .attr("onClick", function(d) { return "toggleDataset(\"" + d + "\");"; });
+      .attr("onClick", function(d) { return "rc.toggleDataset(\"" + d + "\");"; });
 
   datasetDivs.append("label")
       .attr('for', function(d) { return d + '-dataset-checkbox'; })
