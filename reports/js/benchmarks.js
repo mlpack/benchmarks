@@ -25,7 +25,6 @@ else
 
 // "Global" variables.
 var chartType;
-var control_list_length = 0;
 
 var activeChartType = null;
 
@@ -59,14 +58,6 @@ function clearChart()
   {
     activeChartType.clearChart();
   }
-}
-
-function clearMethodControl()
-{
-  d3.selectAll(".methodcontrol").remove();
-  d3.selectAll(".add_method_button").remove();
-  d3.selectAll(".clear_methods_button").remove();
-  d3.selectAll(".redraw_methods_button").remove();
 }
 
 function buildChart()

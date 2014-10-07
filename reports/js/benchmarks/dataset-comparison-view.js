@@ -3,6 +3,7 @@ var dc = dc = dc || {};
 
 dc.dataset_name = "";
 dc.control_list_length = 0;
+dc.results = [];
 dc.methods = [];
 
 // The chart type has been selected.
@@ -44,9 +45,10 @@ dc.datasetSelect = function()
   dc.dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
 
   // Create an empty chart.
-  clearChart();
-  clearMethodControl();
-  buildChart();
+  dc.clear();
+//  dc.clearChart();
+//  dc.clearMethodControl();
+//  dc.buildChart();
 
   // Now create the legend at the bottom that will allow us to add/remove
   // methods.
@@ -71,7 +73,7 @@ dc.datasetSelect = function()
   dc.control_list_length = 0;
 
   // Collect the results for lists of methods.
-  var sqlstr = "SELECT DISTINCT methods.name, methods.parameters FROM methods, results, datasets WHERE results.dataset_id == datasets.id AND results.method_id == methods.id AND datasets.name == '" + dc.dataset_name + "' ORDER BY methods.name;";
+  var sqlstr = "SELECT DISTINCT methods.name, methods.parameters, libraries.name FROM methods, results, datasets, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id AND datasets.name == '" + dc.dataset_name + "' AND libraries.id == results.libary_id ORDER BY methods.name;";
   dc.methods = db.exec(sqlstr);
 }
 
@@ -86,13 +88,20 @@ dc.clickAddButton = function()
       .text("Method:");
   newmethodcontrol.append("select")
       .attr("id", "method_select_" + String(dc.control_list_length))
-      .attr("onchange", "dc.methodControlListSelect('method_select_" + String(dc.control_list_length) + "')");
+      .attr("onchange", "dc.methodControlListSelect('" + String(dc.control_list_length) + "')");
   newmethodcontrol.append("label")
       .attr("for", "param_select_" + String(dc.control_list_length))
       .attr("class", "param-select-label")
       .text("Parameters:");
   newmethodcontrol.append("select")
-      .attr("id", "param_select_" + String(dc.control_list_length));
+      .attr("id", "param_select_" + String(dc.control_list_length))
+      .attr("onchange", "dc.paramControlListSelect('" + String(dc.control_list_length) + "')");
+  newmethodcontrol.append("label")
+      .attr("for", "library_select_" + String(dc.control_list_length))
+      .attr("class", "library-select-label")
+      .text("Library:");
+  newmethodcontrol.append("select")
+      .attr("id", "library_select_" + String(dc.control_list_length));
 
   dc.control_list_length++;
 
@@ -109,14 +118,44 @@ dc.clickAddButton = function()
   newbox.selectedIndex = -1;
 }
 
-dc.methodControlListSelect = function(selectbox_id)
+dc.methodControlListSelect = function(id)
 {
-  var selectbox = document.getElementById(selectbox_id);
+  var selectbox = document.getElementById("method_select_" + id);
   var method_name = selectbox.options[selectbox.selectedIndex].text;
 
   // Now we need to add parameters.
-  distinct_parameters = dc.methods[0].values.map(function(d) { return d;
-}).reduce(function(p, c) { if
+  distinct_parameters = dc.methods[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[0] != method_name) { return p; } else if(p.indexOf(c[1]) < 0) { p.push(c[1]); } return p; }, []);
+  var parambox = document.getElementById("param_select_" + id);
+  clearSelectBox(parambox);
+  for (i = 0; i < distinct_parameters.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = distinct_parameters[i];
+    if (new_option.text == "") { new_option.text == "[no parameters]"; }
+    parambox.add(new_option);
+  }
+  parambox.selectedIndex = -1;
+}
+
+dc.paramControlListSelect = function(id)
+{
+  var method_select_box = document.getElementById("method_select_" + id);
+  var method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  var param_select_box = document.getElementById("param_select_" + id);
+  var param_name = param_select_box.options[param_select_box.selectedIndex].text;
+  if (param_name == "[no parameters]") { param_name = ""; }
+
+  distinct_libraries = dc.methods[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[0] != method_name || c[1] != param_name) { return p; } else if(p.indexOf(c[2]) < 0) { p.push(c[2]); } return p; }, []);
+
+  var library_select_box = document.getElementById("library_select_" + id);
+  clearSelectBox(library_select_box);
+  for(i = 0; i < distinct_libraries.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = distinct_libraries[i];
+    library_select_box.add(new_option);
+  }
+  library_select_box.selectedIndex = -1;
 }
 
 dc.clickClearMethods = function()
@@ -125,14 +164,117 @@ dc.clickClearMethods = function()
   dc.control_list_length = 0;
 }
 
+// The user wants a plot of everything we have.
+dc.clickRedrawMethods = function()
+{
+  // We need to generate a big SQL query.
+  var sqlstr = "";
+  for (i = 0; i < dc.control_list_length; i++)
+  {
+    var methodbox = document.getElementById("method_select_" + String(i));
+    var method_name = methodbox.options[methodbox.selectedIndex].text;
+    var parambox = document.getElementById("param_select_" + String(i));
+    var param_name = parambox.options[parambox.selectedIndex].text;
+    if (param_name == "[no parameters]") { param_name = ""; }
+    var librarybox = document.getElementById("library_select_" + String(i));
+    var library_name = librarybox.options[librarybox.selectedIndex].text;
+
+    sqlstr = sqlstr + "SELECT DISTINCT results.time, results.var, methods.name, methods.parameters, libraries.name FROM results, methods, libraries, datasets WHERE results.libary_id == libraries.id AND libraries.name == '" + library_name + "' AND results.dataset_id == datasets.id AND datasets.name == '" + dc.dataset_name + "' AND results.method_id == methods.id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' GROUP BY libraries.name";
+
+    if (i < dc.control_list_length - 1)
+    {
+      sqlstr = sqlstr + " UNION ";
+    }
+  }
+  dc.results = db.exec(sqlstr);
+
+  dc.clearChart();
+  dc.buildChart();
+}
+
 // Remove everything on the page that belongs to us.
+dc.clear = function()
+{
+  d3.selectAll(".methodcontrol").remove();
+  d3.selectAll(".add_method_button").remove();
+  d3.selectAll(".clear_methods_button").remove();
+  d3.selectAll(".redraw_methods_button").remove();
+
+  dc.clearChart();
+}
+
+// Clear the chart.
 dc.clearChart = function()
 {
-
+  d3.select("svg").remove();
+  d3.selectAll(".d3-tip").remove();
 }
 
 // Build the chart and display it on screen.
 dc.buildChart = function()
 {
+  var input_range = [];
+  for (i = 0; i < dc.control_list_length; i++) { input_range.push(i); }
 
+  var bar_width = width / dc.control_list_length;
+
+  var max_runtime = d3.max(dc.results[0].values, function(d) { return mapRuntime(d[0], 0); });
+
+  var y_scale = d3.scale.linear()
+      .domain([0, max_runtime])
+      .range([height, 0]);
+
+  // Set up axes.
+//  var xAxis = d3.svg.axis().scale(x_scale).orient("bottom");
+  var yAxis = d3.svg.axis().scale(y_scale).orient("left").tickFormat(d3.format(".2s"));
+
+  // Create svg object.
+  var svg = d3.select(".svgholder").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Add y axis.
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Runtime (s)");
+
+  // Create tooltips.
+  var tip = d3.tip()
+      .attr("class", "d3-tip")
+      .offset([-10, 0])
+      .html(function(d) {
+        var runtime = d[0];
+        if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
+        return "<b>" + d[4] + "</b> implementation of<br><b>" + d[2] + "</b> with parameters<br><b>" + d[3] + "</b>: " + runtime + "s";
+      });
+
+  // Add all of the data points.
+  var bar = svg.selectAll("rect")
+      .data(dc.results[0].values)
+      .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(" + i * bar_width + ",0)"; });
+
+  bar.append("rect")
+      .attr("y", function(d) { return y_scale(mapRuntime(d[0], max_runtime)); })
+      .attr("height", function(d) { return height - y_scale(mapRuntime(d[0], max_runtime)); })
+      .attr("width", bar_width - 1)
+      .attr("fill", "steelblue")
+      .on("mouseover", tip.show)
+      .on("mouseout", tip.hide);
+
+  bar.append("text")
+      .attr("x", bar_width / 2)
+      .attr("y", function(d) { return height + 4; })
+      .attr("dy", ".75em")
+      .text(function(d, i) { return i; });
+
+  svg.call(tip);
 }
