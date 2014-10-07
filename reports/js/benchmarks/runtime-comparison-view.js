@@ -280,23 +280,25 @@ rc.buildChart = function()
       })
     .enter();
 
-  failureData.append("rect")
-        .attr("width", library_scale.rangeBand())
-        .attr("x", function(d) { return library_scale(d[3]); })
-        .attr("y", runtime_scale(max_runtime))
-        .attr("height", height - runtime_scale(max_runtime))
-        .style("fill", function(d) { return color(d[3]); })
-        .attr("stroke-width", "1")
-        .attr("stroke", function(d) { return "#ff0000"; })
-        .on('mouseover', tip.show)
-        .on('mouseout', tip.hide);
+//  failureData.append("rect")
+//        .attr("width", library_scale.rangeBand())
+//        .attr("x", function(d) { return library_scale(d[3]); })
+//        .attr("y", runtime_scale(max_runtime))
+//        .attr("height", height - runtime_scale(max_runtime))
+//        .style("fill", function(d) { return color(d[3]); })
+//        .attr("stroke-width", "1")
+//        .attr("stroke", function(d) { return "#ff0000"; })
+//        .on('mouseover', tip.show)
+//        .on('mouseout', tip.hide);
 
   failureData.append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", function(d) { return library_scale(d[3]) + library_scale.rangeBand() / 2 })
         .attr("dy", "0.25em")
-        .attr("x", -height / 2)
-        .text("failure");
+        .attr("x", -height + 2)
+        .text("failure")
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
   var timeoutData = gs.data(function(d)
       {
