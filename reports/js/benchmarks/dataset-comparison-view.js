@@ -83,22 +83,25 @@ dc.clickAddButton = function()
   var newmethodcontrol = d3.selectAll(".methodcontrol").append("div").attr("class", "methodcontroldiv");
 
   newmethodcontrol.append("label")
+      .attr("class", "dc-index-label")
+      .text(String(dc.control_list_length));
+  newmethodcontrol.append("label")
       .attr("for", "method_select_" + String(dc.control_list_length))
-      .attr("class", "method-select-label")
+      .attr("class", "dc-method-select-label")
       .text("Method:");
   newmethodcontrol.append("select")
       .attr("id", "method_select_" + String(dc.control_list_length))
       .attr("onchange", "dc.methodControlListSelect('" + String(dc.control_list_length) + "')");
   newmethodcontrol.append("label")
       .attr("for", "param_select_" + String(dc.control_list_length))
-      .attr("class", "param-select-label")
+      .attr("class", "dc-param-select-label")
       .text("Parameters:");
   newmethodcontrol.append("select")
       .attr("id", "param_select_" + String(dc.control_list_length))
       .attr("onchange", "dc.paramControlListSelect('" + String(dc.control_list_length) + "')");
   newmethodcontrol.append("label")
       .attr("for", "library_select_" + String(dc.control_list_length))
-      .attr("class", "library-select-label")
+      .attr("class", "dc-library-select-label")
       .text("Library:");
   newmethodcontrol.append("select")
       .attr("id", "library_select_" + String(dc.control_list_length));
@@ -162,6 +165,7 @@ dc.clickClearMethods = function()
 {
   d3.selectAll(".methodcontroldiv").remove();
   dc.control_list_length = 0;
+  clearChart(); // Remove the chart too.
 }
 
 // The user wants a plot of everything we have.
@@ -179,14 +183,16 @@ dc.clickRedrawMethods = function()
     var librarybox = document.getElementById("library_select_" + String(i));
     var library_name = librarybox.options[librarybox.selectedIndex].text;
 
-    sqlstr = sqlstr + "SELECT DISTINCT results.time, results.var, methods.name, methods.parameters, libraries.name FROM results, methods, libraries, datasets WHERE results.libary_id == libraries.id AND libraries.name == '" + library_name + "' AND results.dataset_id == datasets.id AND datasets.name == '" + dc.dataset_name + "' AND results.method_id == methods.id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' GROUP BY libraries.name";
+    sqlstr = sqlstr + "SELECT DISTINCT results.time, results.var, methods.name, methods.parameters, libraries.name, " + String(i) + " AS sort FROM results, methods, libraries, datasets WHERE results.libary_id == libraries.id AND libraries.name == '" + library_name + "' AND results.dataset_id == datasets.id AND datasets.name == '" + dc.dataset_name + "' AND results.method_id == methods.id AND methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' GROUP BY libraries.name";
 
     if (i < dc.control_list_length - 1)
     {
       sqlstr = sqlstr + " UNION ";
     }
   }
+  sqlstr = sqlstr + " ORDER BY sort ASC;";
   dc.results = db.exec(sqlstr);
+  console.log(JSON.stringify(dc.results));
 
   dc.clearChart();
   dc.buildChart();
@@ -219,6 +225,7 @@ dc.buildChart = function()
   var bar_width = width / dc.control_list_length;
 
   var max_runtime = d3.max(dc.results[0].values, function(d) { return mapRuntime(d[0], 0); });
+  if (max_runtime == 0) { max_runtime = 0.01; }
 
   var y_scale = d3.scale.linear()
       .domain([0, max_runtime])
@@ -263,10 +270,10 @@ dc.buildChart = function()
       .attr("transform", function(d, i) { return "translate(" + i * bar_width + ",0)"; });
 
   bar.append("rect")
-      .attr("y", function(d) { return y_scale(mapRuntime(d[0], max_runtime)); })
-      .attr("height", function(d) { return height - y_scale(mapRuntime(d[0], max_runtime)); })
+      .attr("y", function(d) { if (d[0] == "failure") { return y_scale(max_runtime); } else { return y_scale(mapRuntime(d[0], max_runtime)); } })
+      .attr("height", function(d) { if (d[0] == "failure") { return height - y_scale(max_runtime); } else { return Math.max(height - y_scale(mapRuntime(d[0], max_runtime)), 1); } })
       .attr("width", bar_width - 1)
-      .attr("fill", "steelblue")
+      .attr("fill", function(d) { if (d[0] == "failure") { return "firebrick"; } else { return "steelblue"; } })
       .on("mouseover", tip.show)
       .on("mouseout", tip.hide);
 
@@ -275,6 +282,6 @@ dc.buildChart = function()
       .attr("y", function(d) { return height + 4; })
       .attr("dy", ".75em")
       .text(function(d, i) { return i; });
-
+ 
   svg.call(tip);
 }
