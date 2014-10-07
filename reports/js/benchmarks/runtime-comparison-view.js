@@ -161,6 +161,8 @@ rc.buildChart = function()
       .rangeRoundBands([0, group_scale.rangeBand()]);
 
   var max_runtime = d3.max(rc.results[0].values, function(d) { if(rc.active_datasets[d[4]] == false || rc.active_libraries[d[3]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
+  // Increase max_runtime so we have 16 spare pixels at the top.
+  max_runtime = max_runtime * ((height + 16) / height);
 
   var runtime_scale = d3.scale.linear()
       .domain([0, max_runtime])
@@ -219,13 +221,36 @@ rc.buildChart = function()
   svg.call(tip);
 
   // Add all of the data points.
-  group.selectAll("rect")
-    .data(function(d) // For a given dataset d, collect all of the data points for that dataset.
+  var gs = group.selectAll("rect");
+
+  // Bounding rectangles for tooltips' sake.
+  gs.data(function(d) // For a given dataset d, collect all of the data points for that dataset.
         {
           var ret = [];
           for(i = 0; i < rc.results[0].values.length; i++)
           {
             if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true)
+            {
+              ret.push(rc.results[0].values[i]);
+            }
+          }
+          return ret;
+        })
+    .enter().append("rect") // This rectangle is so tooltips work everywhere.
+        .attr("width", library_scale.rangeBand())
+        .attr("x", function(d) { return library_scale(d[3]); })
+        .attr("y", function(d) { return runtime_scale(max_runtime); })
+        .attr("height", function(d) { return height - runtime_scale(max_runtime); })
+        .attr("fill", "rgba(0, 0, 0, 0.0)") // Complete transparency.
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
+
+  gs.data(function(d) // For a given dataset d, collect all of the data points for that dataset.
+        {
+          var ret = [];
+          for(i = 0; i < rc.results[0].values.length; i++)
+          {
+            if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true && rc.results[0].values[i][0] != "failure" && rc.results[0].values[i][0] != ">9000")
             {
               ret.push(rc.results[0].values[i]);
             }
@@ -240,6 +265,80 @@ rc.buildChart = function()
         .style("fill", function(d) { return color(d[3]); })
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
+
+  var failureData = gs.data(function(d)
+      {
+        var ret = [];
+        for(i = 0; i < rc.results[0].values.length; i++)
+        {
+          if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true && rc.results[0].values[i][0] == "failure")
+          {
+            ret.push(rc.results[0].values[i]);
+          }
+        }
+        return ret;
+      })
+    .enter();
+
+  failureData.append("rect")
+        .attr("width", library_scale.rangeBand())
+        .attr("x", function(d) { return library_scale(d[3]); })
+        .attr("y", runtime_scale(max_runtime))
+        .attr("height", height - runtime_scale(max_runtime))
+        .style("fill", function(d) { return color(d[3]); })
+        .attr("stroke-width", "1")
+        .attr("stroke", function(d) { return "#ff0000"; })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
+
+  failureData.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", function(d) { return library_scale(d[3]) + library_scale.rangeBand() / 2 })
+        .attr("dy", "0.25em")
+        .attr("x", -height / 2)
+        .text("failure");
+
+  var timeoutData = gs.data(function(d)
+      {
+        var ret = [];
+        for(i = 0; i < rc.results[0].values.length; i++)
+        {
+          if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true && rc.results[0].values[i][0] == ">9000")
+          {
+            ret.push(rc.results[0].values[i]);
+          }
+        }
+        return ret;
+      })
+    .enter();
+
+  // Make a rectangle that's almost full-height.
+  timeoutData.append("rect")
+      .attr("width", library_scale.rangeBand())
+      .attr("x", function(d) { return library_scale(d[3]); })
+      .attr("y", runtime_scale(max_runtime) + 16)
+      .attr("height", height - (runtime_scale(max_runtime) + 16))
+      .style("fill", function(d) { return color(d[3]); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+  // Now make a little rectangle that's the bottom of the arrow.
+  timeoutData.append("rect")
+      .attr("width", library_scale.rangeBand() / 2)
+      .attr("x", function(d) { return library_scale(d[3]) + library_scale.rangeBand() / 4; })
+      .attr("y", 8)
+      .attr("height", 8)
+      .style("fill", function(d) { return color(d[3]); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+  // Now create the triangle that points upwards.
+  timeoutData.append("polygon")
+      .attr("points", function(d)
+        {
+          var x = library_scale(d[3]);
+          var width = library_scale.rangeBand();
+          return String(x) + ",8 " + String(x + width) + ",8 " + String(x + (width / 2)) + ",0";
+        })
+      .attr("fill", function(d) { return color(d[3]); });
 
   // Add a horizontal legend at the bottom.
   var librarySelectTitle = d3.select(".legendholder").append("div")
