@@ -105,6 +105,7 @@ function chartTypeSelect()
   else if (chartType == "historical-comparison") { activeChartType = hc; }
   else if (chartType == "metric-comparison") { activeChartType = mc; }
   else if (chartType == "dataset-comparison") { activeChartType = dc; }
+  else if (chartType == "datasize-comparison") { activeChartType = dsc; }
 
   activeChartType.onTypeSelect();
 }
