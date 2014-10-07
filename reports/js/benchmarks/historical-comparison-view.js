@@ -182,7 +182,7 @@ hc.buildChart = function()
   var dateFormat = d3.time.format("%b %Y");
   var xAxis = d3.svg.axis().scale(build_scale).orient("bottom")
       .tickFormat(function(d) { return dateFormat(d); });
-  var yAxis = d3.svg.axis().scale(runtime_scale).orient("left").tickFormat(d3.format(".2s"));
+  var yAxis = d3.svg.axis().scale(runtime_scale).orient("left").tickFormat(d3.format(".2f"));
 
   // Create svg object.
   var svg = d3.select(".svgholder").append("svg")
@@ -320,7 +320,7 @@ max_runtime)); })
     .attr("type", "checkbox")
     .attr("id", function(d) { return d + '-library-checkbox'; })
     .attr('class', 'library-select-box')
-    .attr("onClick", function(d, i) { return "rc.toggleLibrary(\"" + d + "\");"; });
+    .attr("onClick", function(d, i) { return "hc.toggleLibrary(\"" + d + "\");"; });
 
   libraryDivs.append("label")
     .attr('for', function(d) { return d + '-library-checkbox'; })
