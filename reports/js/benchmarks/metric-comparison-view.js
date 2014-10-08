@@ -253,7 +253,7 @@ mc.buildChart = function()
     .html(function(d) {
         var score = d[0];
         if (d[0] != "") { score = d[0].toFixed(3); }
-        return "<strong>Score for " + d[1] + ":</strong> <span style='color:yellow'>" + score + "s</span>"; });
+        return "<strong>Score for " + d[1] + ":</strong> <span style='color:yellow'>" + score + "</span>"; });
 
   svg.call(tip);
   // Add all of the data points.
