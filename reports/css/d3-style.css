@@ -198,3 +198,29 @@ svg text {
 .methodcontrol {
   margin-bottom: 1em;
 }
+
+.runtime-table {
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #888888;
+  border-collapse: collapse;
+}
+
+.runtime-table td {
+  border-top: 1px solid #888888;
+  border-right: 1px solid #888888;
+}
+.runtime-table td.dataset-name {
+  color: #ffffff;
+  font-weight: normal;
+  padding-left: 2px;
+  padding-right: 4px;
+}
+
+.runtime-table th {
+  color: #ffffff;
+}
+
+.runtime-table td.timing-cell {
+  font-family: 'Cousine', fixed;
+}

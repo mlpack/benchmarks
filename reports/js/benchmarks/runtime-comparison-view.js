@@ -146,18 +146,23 @@ rc.clearChart = function()
   d3.selectAll(".library-select-div").remove();
   d3.selectAll(".dataset-select-title").remove();
   d3.selectAll(".dataset-select-div").remove();
+  d3.selectAll(".runtime-table").remove();
 }
 
 // Build the chart and display it on screen.
 rc.buildChart = function()
 {
-   // Set up scales.
+  // Get lists of active libraries and active datasets.
+  var active_library_list = rc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_libraries[c] == true) { p.push(c); } return p; }, []);
+  var active_dataset_list = rc.datasets.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_datasets[c] == true) { p.push(c); } return p; }, []);
+
+  // Set up scales.
   var group_scale = d3.scale.ordinal()
-      .domain(rc.datasets.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_datasets[c] == true) { p.push(c); } return p; }, []))
+      .domain(active_dataset_list)
       .rangeRoundBands([0, width], .1);
 
   var library_scale = d3.scale.ordinal()
-      .domain(rc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_libraries[c] == true) { p.push(c); } return p; }, []))
+      .domain(active_library_list)
       .rangeRoundBands([0, group_scale.rangeBand()]);
 
   var max_runtime = d3.max(rc.results[0].values, function(d) { if(rc.active_datasets[d[4]] == false || rc.active_libraries[d[3]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
@@ -439,6 +444,48 @@ rc.buildChart = function()
       .attr('for', function(d) { return d + '-dataset-checkbox'; })
       .attr('class', 'dataset-select-label')
       .text(function(d) { return d; });
+
+  // Now add a table of runtimes at the bottom.
+  var table = d3.select(".svgholder").append("table")
+      .attr("class", "runtime-table");
+  var thead = table.append("thead");
+  var tbody = table.append("tbody");
+
+  active_library_list.unshift("dataset");
+  var hrow = thead.append("tr").selectAll("th")
+//  hrow.append("th").attr("class", "table-dataset-th").text("dataset")
+      .data(active_library_list)
+      .enter()
+      .append("th")
+      .text(function(d) { return d; });
+
+  var rows = tbody.selectAll("tr")
+      .data(active_dataset_list)
+      .enter()
+      .append("tr");
+
+  var resultFormat = d3.format(" >4.2f");
+  rows.selectAll("td")
+      .data(function(d) {
+          var ret = [d];
+          for(i = 1; i < active_library_list.length; i++) // Skip "dataset".
+          {
+            ret.push(['---']);
+          }
+
+          for(i = 0; i < rc.results[0].values.length; i++)
+          {
+            var library = rc.results[0].values[i][3];
+            if(rc.results[0].values[i][4] == d && rc.active_libraries[library] == true)
+            {
+              ret[active_library_list.indexOf(library)] = rc.results[0].values[i];
+            }
+          }
+          return ret;
+      }).enter()
+      .append("td")
+      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { return String(resultFormat(d[0])) + "s"; } } else { return d[0]; } })
+      .attr("class", function(d) { if (typeof d == "string") { return "dataset-name"; } else { return "timing-cell"; } });
 }
 
 // Toggle a library to on or off.
