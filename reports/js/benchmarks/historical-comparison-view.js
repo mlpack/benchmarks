@@ -169,9 +169,12 @@ hc.clearChart = function()
 // Build the chart and display it on the screen.
 hc.buildChart = function()
 {
-    // Set up x axis scale.
-  var minDate = hc.results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c < p) { return c; } else { return p; } }, new Date("2099-01-01"));
-  var maxDate = hc.results[0].values.map(function(d) { return new Date(d[3]); }).reduce(function(p, c) { if(c > p) { return c; } else { return p; } }, new Date("1900-01-01"));
+  // For Firefox/Chrome compatibility.
+  var dateFormat = d3.time.format("%Y-%m-%d %H:%M:%S");
+
+  // Set up x axis scale.
+  var minDate = hc.results[0].values.map(function(d) { return dateFormat.parse(d[3].substring(0, d[3].indexOf('.'))); }).reduce(function(p, c) { if(c < p) { return c; } else { return p; } }, new Date("2099-01-01"));
+  var maxDate = hc.results[0].values.map(function(d) { return dateFormat.parse(d[3].substring(0, d[3].indexOf('.'))); }).reduce(function(p, c) { if(c > p) { return c; } else { return p; } }, new Date("1900-01-01"));
   var build_scale = d3.time.scale().domain([minDate, maxDate]).range([0, width]);
 
   // Set up y axis scale.
@@ -179,9 +182,9 @@ hc.buildChart = function()
   var runtime_scale = d3.scale.linear().domain([0, max_runtime]).range([height, 0]);
 
   // Set up axes.
-  var dateFormat = d3.time.format("%b %Y");
+  var tickDateFormat = d3.time.format("%b %Y");
   var xAxis = d3.svg.axis().scale(build_scale).orient("bottom")
-      .tickFormat(function(d) { return dateFormat(d); });
+      .tickFormat(function(d) { return tickDateFormat(d); });
   var yAxis = d3.svg.axis().scale(runtime_scale).orient("left").tickFormat(d3.format(".2f"));
 
   // Create svg object.
@@ -220,7 +223,7 @@ hc.buildChart = function()
       .html(function(d) {
           var runtime = d[0];
           if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
-          var date = new Date(d[3]);
+          var date = dateFormat.parse(d[3].substring(0, d[3].indexOf('.')));
           var dFormat = d3.time.format("%b %d, %Y");
           return "<strong>" + d[4] + "; " + dFormat(date) + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; }
       );
@@ -228,7 +231,7 @@ hc.buildChart = function()
 
   // Add all of the data points.
   var lineFunc = d3.svg.line()
-      .x(function(d) { return build_scale(new Date(d[3])); })
+      .x(function(d) { return build_scale(dateFormat.parse(d[3].substring(0, d[3].indexOf('.')))); })
       .y(function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
       .interpolate("step-after");
 
@@ -244,19 +247,25 @@ hc.buildChart = function()
 
   for(i = 0; i < lineResults.length; i++)
   {
-    svg.append('svg:path')
-        .attr('d', lineFunc(lineResults[i]))
-        .attr('stroke', color(hc.libraries[i]))
-        .attr('stroke-width', 2)
-        .attr('fill', 'none');
+    if (lineFunc(lineResults[i]) != null)
+    {
+      svg.append('svg:path')
+          .attr('d', lineFunc(lineResults[i]))
+          .attr('stroke', color(hc.libraries[i]))
+          .attr('stroke-width', 2)
+          .attr('fill', 'none');
+    }
   }
   for(i = 0; i < lineResults.length; i++)
   {
+    if (lineFunc(lineResults[i]) == null)
+      continue;
+
     // Colored circle enclosed in white circle enclosed in background color
     // circle; looks kind of nice.
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 6)
-        .attr("cx", function(d) { return build_scale(new Date(d[3])); })
+        .attr("cx", function(d) { return build_scale(dateFormat.parse(d[3].substring(0, d[3].indexOf('.')))); })
         .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0],
 max_runtime)); })
         .attr('fill', '#222222')
@@ -264,7 +273,7 @@ max_runtime)); })
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 4)
-        .attr("cx", function(d) { return build_scale(new Date(d[3])); })
+        .attr("cx", function(d) { return build_scale(dateFormat.parse(d[3].substring(0, d[3].indexOf('.')))); })
         .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0],
 max_runtime)); })
         .attr('fill', '#ffffff')
@@ -272,7 +281,7 @@ max_runtime)); })
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 3)
-        .attr("cx", function(d) { return build_scale(new Date(d[3])); })
+        .attr("cx", function(d) { return build_scale(dateFormat.parse(d[3].substring(0, d[3].indexOf('.')))); })
         .attr("cy", function(d) { return runtime_scale(mapRuntime(d[0],
 max_runtime)); })
         .attr('fill', function(d) { return color(d[4]) })
