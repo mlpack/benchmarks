@@ -464,7 +464,7 @@ rc.buildChart = function()
       .enter()
       .append("tr");
 
-  var resultFormat = d3.format(" >4.2f");
+  var resultFormat = d3.format("x>7.2f");
   rows.selectAll("td")
       .data(function(d) {
           var ret = [d];
@@ -484,8 +484,8 @@ rc.buildChart = function()
           return ret;
       }).enter()
       .append("td")
-      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { if (d[0] == ">9000") { return ">9000s"; } else { return String(resultFormat(d[0])) + "s"; } } } else { return d[0]; } })
-      .attr("class", function(d) { if (typeof d == "string") { return "dataset-name"; } else { return "timing-cell"; } });
+      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { if (d[0] == ">9000") { return ">9000s"; } else { return "&nbsp;" + String(resultFormat(d[0])).replace(/x/g, '&nbsp;') + "s&nbsp;"; } } } else { return d[0]; } })
+      .attr("class", function(d) { if (typeof d == "string") { return "dataset-name"; } else if (d[0] == "---") { return "timing-not-run-cell"; } else if (d[0] == ">9000" || d[0] == "failure") { return "timing-text-cell"; } else { return "timing-cell"; } });
 }
 
 // Toggle a library to on or off.

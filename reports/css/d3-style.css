@@ -1,5 +1,5 @@
 .chart rect {
-  fill: steelblue;
+fill: steelblue;
 };
 
 .chart text {
@@ -223,4 +223,16 @@ svg text {
 
 .runtime-table td.timing-cell {
   font-family: 'Cousine', fixed;
+}
+
+.runtime-table td.timing-text-cell {
+  font-family: 'Cousine', fixed;
+  text-align: center;
+  color: #bb2222;
+}
+
+.runtime-table td.timing-not-run-cell {
+  font-family: 'Cousine', fixed;
+  text-align: center;
+  color: #606060;
 }
