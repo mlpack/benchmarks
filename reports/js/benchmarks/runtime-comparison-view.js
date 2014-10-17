@@ -484,7 +484,7 @@ rc.buildChart = function()
           return ret;
       }).enter()
       .append("td")
-      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { return String(resultFormat(d[0])) + "s"; } } else { return d[0]; } })
+      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { if (d[0] == ">9000") { return ">9000s"; } else { return String(resultFormat(d[0])) + "s"; } } } else { return d[0]; } })
       .attr("class", function(d) { if (typeof d == "string") { return "dataset-name"; } else { return "timing-cell"; } });
 }
 
