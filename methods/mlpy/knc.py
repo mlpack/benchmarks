@@ -82,9 +82,6 @@ class KNC(object):
 
       # Get all the parameters.
       n = re.search("-n (\d+)", options)
-      a = re.search("-a (\s+)", options)
-      l = re.search("-l (\d+)", options)
-      m = re.search("-m (\s+)", options)
 
       self.n_neighbors = 5 if not n else int(n.group(1))
 
