@@ -149,7 +149,6 @@ class ADABOOST(object):
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      print(metrics)
       return metrics
 
     else:

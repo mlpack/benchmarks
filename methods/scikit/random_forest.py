@@ -1,8 +1,8 @@
 '''
-  @file dtc.py
+  @file random_forest.py
   @author Marcus Edel
 
-  Decision Tree Classifier with scikit.
+  Random Forest Classifier with scikit.
 '''
 
 import os
@@ -28,17 +28,17 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 '''
-This class implements the Decision Tree Classifier benchmark.
+This class implements the Random Forest Classifier benchmark.
 '''
-class DTC(object):
+class RANDOMFOREST(object):
 
   ''' 
-  Create the Decision Tree Classifier benchmark instance.
+  Create the Random Forest Classifier benchmark instance.
   
-  @param dataset - Input dataset to perform DTC on.
+  @param dataset - Input dataset to perform ADABOOST on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -47,12 +47,13 @@ class DTC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.n_estimators = 10
     self.criterion = 'gini'
     self.max_depth = None
     self.seed = 0
 
   '''
-  Build the model for the Decision Tree Classifier.
+  Build the model for the Random Forest Classifier.
 
   @param data - The train data.
   @param labels - The labels for the train set.
@@ -60,21 +61,22 @@ class DTC(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    dtc = DecisionTreeClassifier(criterion=self.criterion,
-                                 max_depth=self.max_depth,
-                                 random_state=self.seed)
-    dtc.fit(data, labels)
-    return dtc
+    randomforest = RandomForestClassifier(n_estimators=self.n_estimators,
+                                          max_depth=self.max_depth,
+                                          criterion=self.criterion,
+                                          random_state=self.seed)
+    randomforest.fit(data, labels)
+    return randomforest
 
   '''
-  Use the scikit libary to implement the Decision Tree Classifier.
+  Use the scikit libary to implement the Random Forest Classifier.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def DTCScikit(self, options):
-    def RunDTCScikit(q):
+  def RANDOMFORESTScikit(self, options):
+    def RunRANDOMFORESTScikit(q):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
@@ -82,10 +84,12 @@ class DTC(object):
       testData = LoadDataset(self.dataset[1])
 
       # Get all the parameters.
+      e = re.search("-e (\d+)", options)
       c = re.search("-c (\s+)", options)
       d = re.search("-d (\s+)", options)
       s = re.search("-s (\d+)", options)
-      
+
+      self.n_estimators = 50 if not e else int(e.group(1))
       self.criterion = 'gini' if not c else str(c.group(1))
       self.max_depth = None if not d else int(d.group(1))
       self.seed = 0 if not s else int(s.group(1))
@@ -93,7 +97,7 @@ class DTC(object):
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
-          # Run Decision Tree Classifier on the test dataset.
+          # Run Random Forest Classifier on the test dataset.
           self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
@@ -105,10 +109,10 @@ class DTC(object):
 
       return time
 
-    return timeout(RunDTCScikit, self.timeout)
+    return timeout(RunRANDOMFORESTScikit, self.timeout)
 
   '''
-  Perform the Decision Tree Classifier. If the method has been 
+  Perform the Random Forest Classifier. If the method has been 
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -116,10 +120,10 @@ class DTC(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform DTC.", self.verbose)
+    Log.Info("Perform Random Forest Classifier.", self.verbose)
 
     if len(self.dataset) >= 2:
-      return self.DTCScikit(options)
+      return self.RANDOMFORESTScikit(options)
     else:
       Log.Fatal("This method requires two datasets.")      
 
