@@ -1,8 +1,8 @@
 '''
-  @file lda.py
+  @file qda.py
   @author Marcus Edel
 
-  Linear Discriminant Analysis with scikit.
+  Quadratic Discriminant Analysis with scikit.
 '''
 
 import os
@@ -28,17 +28,17 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from sklearn.lda import LDA as SLDA
+from sklearn.qda import QDA as SQDA
 
 '''
-This class implements the Linear Discriminant Analysis benchmark.
+This class implements the Quadratic Discriminant Analysis benchmark.
 '''
-class LDA(object):
+class QDA(object):
 
   ''' 
-  Create the Linear Discriminant Analysis benchmark instance.
+  Create the Quadratic Discriminant Analysis benchmark instance.
   
-  @param dataset - Input dataset to perform LDA on.
+  @param dataset - Input dataset to perform QDA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -49,7 +49,7 @@ class LDA(object):
     self.model = None
 
   '''
-  Build the model for the Linear Discriminant Analysis.
+  Build the model for the Quadratic Discriminant Analysis.
 
   @param data - The train data.
   @param labels - The labels for the train set.
@@ -57,19 +57,19 @@ class LDA(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    lda = SLDA()
-    lda.fit(data, labels)
-    return lda
+    qda = SQDA()
+    qda.fit(data, labels)
+    return qda
 
   '''
-  Use the scikit libary to implement the Linear Discriminant Analysis.
+  Use the scikit libary to implement the Quadratic Discriminant Analysis.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def LDAScikit(self, options):
-    def RunLDAScikit(q):
+  def QDAScikit(self, options):
+    def RunQDAScikit(q):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
@@ -79,7 +79,7 @@ class LDA(object):
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
-          # Run Linear Discriminant Analysis on the test dataset.
+          # Run Quadratic Discriminant Analysis on the test dataset.
           self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
@@ -91,10 +91,10 @@ class LDA(object):
 
       return time
 
-    return timeout(RunLDAScikit, self.timeout)
+    return timeout(RunQDAScikit, self.timeout)
 
   '''
-  Perform the Linear Discriminant Analysis. If the method has been 
+  Perform the Quadratic Discriminant Analysis. If the method has been 
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -102,10 +102,10 @@ class LDA(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform LDA.", self.verbose)
+    Log.Info("Perform QDA.", self.verbose)
 
     if len(self.dataset) >= 2:
-      return self.LDAScikit(options)
+      return self.QDAScikit(options)
     else:
       Log.Fatal("This method requires two datasets.")      
 
