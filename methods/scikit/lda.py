@@ -1,8 +1,8 @@
 '''
-  @file random_forest.py
+  @file lda.py
   @author Marcus Edel
 
-  Random Forest Classifier with scikit.
+  Linear Discriminant Analysis with scikit.
 '''
 
 import os
@@ -31,14 +31,14 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
 '''
-This class implements the Random Forest Classifier benchmark.
+This class implements the Linear Discriminant Analysis benchmark.
 '''
-class RANDOMFOREST(object):
+class LDA(object):
 
   ''' 
-  Create the Random Forest Classifier benchmark instance.
+  Create the Linear Discriminant Analysis benchmark instance.
   
-  @param dataset - Input dataset to perform RANDOMFOREST on.
+  @param dataset - Input dataset to perform LDA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -53,7 +53,7 @@ class RANDOMFOREST(object):
     self.seed = 0
 
   '''
-  Build the model for the Random Forest Classifier.
+  Build the model for the Linear Discriminant Analysis.
 
   @param data - The train data.
   @param labels - The labels for the train set.
@@ -69,14 +69,14 @@ class RANDOMFOREST(object):
     return randomforest
 
   '''
-  Use the scikit libary to implement the Random Forest Classifier.
+  Use the scikit libary to implement the Linear Discriminant Analysis.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RANDOMFORESTScikit(self, options):
-    def RunRANDOMFORESTScikit(q):
+  def LDAScikit(self, options):
+    def RunLDAScikit(q):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
@@ -109,10 +109,10 @@ class RANDOMFOREST(object):
 
       return time
 
-    return timeout(RunRANDOMFORESTScikit, self.timeout)
+    return timeout(RunLDAScikit, self.timeout)
 
   '''
-  Perform the Random Forest Classifier. If the method has been 
+  Perform the Linear Discriminant Analysis. If the method has been 
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -120,10 +120,10 @@ class RANDOMFOREST(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform Random Forest Classifier.", self.verbose)
+    Log.Info("Perform LDA.", self.verbose)
 
     if len(self.dataset) >= 2:
-      return self.RANDOMFORESTScikit(options)
+      return self.LDAScikit(options)
     else:
       Log.Fatal("This method requires two datasets.")      
 
