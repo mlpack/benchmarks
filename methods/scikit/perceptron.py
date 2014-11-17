@@ -92,7 +92,8 @@ class PERCEPTRON(object):
         with totalTimer:
           # Perform perceptron classification.
           self.model = self.BuildModel(X, y)
-          predictedlabels = self.model.predict(testSet)
+          if len(self.dataset) >= 2:
+            predictedlabels = self.model.predict(testSet)
       except Exception as e:
         q.put(-1)
         return -1
