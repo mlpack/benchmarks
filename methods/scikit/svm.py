@@ -1,8 +1,8 @@
 '''
-  @file elastic_net.py
+  @file svm.py
   @author Marcus Edel
 
-  Elastic Net Classifier with scikit.
+  Support vector machines with scikit.
 '''
 
 import os
@@ -28,17 +28,17 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from sklearn.linear_model import ElasticNet as SElasticNet
+from sklearn import svm as ssvm
 
 '''
-This class implements the Elastic Net Classifier benchmark.
+This class implements the Support vector machines benchmark.
 '''
-class ElasticNet(object):
+class SVM(object):
 
   ''' 
-  Create the Elastic Net Classifier benchmark instance.
+  Create the Support vector machines benchmark instance.
   
-  @param dataset - Input dataset to perform ElasticNet on.
+  @param dataset - Input dataset to perform SVM on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
@@ -47,11 +47,12 @@ class ElasticNet(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.rho = 0.5
-    self.alpha = 0.5
+    self.kernel = 'rbf'
+    self.C = 1.0
+    self.gamma = 0.0
 
   '''
-  Build the model for the Elastic Net Classifier.
+  Build the model for the Support vector machines.
 
   @param data - The train data.
   @param labels - The labels for the train set.
@@ -59,36 +60,39 @@ class ElasticNet(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    elasticNet = SElasticNet(alpha=self.rho,
-                             l1_ratio=self.alpha)
-    elasticNet.fit(data, labels)
-    return elasticNet
+    svm = ssvm.SVC(kernel=self.kernel,
+                   C=self.C,
+                   gamma = self.gamma)
+    svm.fit(data, labels)
+    return svm
 
   '''
-  Use the scikit libary to implement the Elastic Net Classifier.
+  Use the scikit libary to implement the Support vector machines.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def ElasticNetScikit(self, options):
-    def RunElasticNetScikit(q):
+  def SVMScikit(self, options):
+    def RunSVMScikit(q):
       totalTimer = Timer()
       
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
-      r = re.search("-r (\d+)", options)
-      a = re.search("-a (\d+)", options)
+      k = re.search("-k (\s+)", options)
+      c = re.search("-c (\d+)", options)
+      g = re.search("-g (\d+)", options)
 
-      self.rho = 0.5 if not r else int(r.group(1))
-      self.alpha = 0.5 if not r else int(a.group(1))
+      self.kernel = 'rbf' if not k else str(k.group(1))
+      self.C = 1.0 if not c else float(c.group(1))
+      self.gamma = 0.0 if not g else float(g.group(1))
 
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
-          # Run Elastic Net Classifier on the test dataset.
+          # Run Support vector machines on the test dataset.
           self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
@@ -100,10 +104,10 @@ class ElasticNet(object):
 
       return time
 
-    return timeout(RunElasticNetScikit, self.timeout)
+    return timeout(RunSVMScikit, self.timeout)
 
   '''
-  Perform the Elastic Net Classifier. If the method has been 
+  Perform the Support vector machines. If the method has been 
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -111,10 +115,10 @@ class ElasticNet(object):
   successful.
   '''
   def RunTiming(self, options):
-    Log.Info("Perform Elastic Net.", self.verbose)
+    Log.Info("Perform SVM.", self.verbose)
 
     if len(self.dataset) >= 2:
-      return self.ElasticNetScikit(options)
+      return self.SVMScikit(options)
     else:
       Log.Fatal("This method requires two datasets.")      
 
