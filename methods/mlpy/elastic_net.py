@@ -79,6 +79,12 @@ class ElasticNet(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
+      r = re.search("-r (\d+)", options)
+      a = re.search("-a (\d+)", options)
+
+      self.rho = 0.5 if not r else int(r.group(1))
+      self.alpha = 0.5 if not r else int(a.group(1))
+
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
