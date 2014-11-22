@@ -911,7 +911,7 @@ methods:
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
     QDA:
-            run: ['timing', 'metric']
+            run: []
             script: methods/scikit/qda.py
             format: [csv, txt, arff]
             datasets:
