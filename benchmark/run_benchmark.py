@@ -295,7 +295,12 @@ def Main(configfile, blocks, log, methodBlocks, update):
 
                 
                 if 'metric' in tasks:
-                  metrics = instance.RunMetrics(options)
+                  try:
+                    metrics = instance.RunMetrics(options)
+                  except Exception as e:
+                    Log.Fatal("Exception: " + str(e))
+                    metrics = None
+
                   if metrics:
                     if log:
                       buildID, libraryID = build[name]
