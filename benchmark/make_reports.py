@@ -123,25 +123,26 @@ def CreateDatasetTable(resultList):
   for results in resultList:
     results = results[0]
     for result in results:
-      result = result["timing"]
-      for data in result:
-        datasetName = data[8]
-        if datasetName not in datasets:
-         datasets.append(datasetName)
+      if 'timing' in result:
+        result = result["timing"]
+        for data in result:
+          datasetName = data[8]
+          if datasetName not in datasets:
+           datasets.append(datasetName)
 
-         # Dataset name.
-         datasetTable += "<tr><td>" + datasetName + "</td>"
-         # Dataset disksize.
-         datasetTable += "<td>" + "{0:.5f}".format(data[9]) + " MB</td>"
-         # Number of instances.
-         datasetTable += "<td>" + str(data[10]) + "</td>"
-         # Number of attributes.
-         datasetTable += "<td>" + str(data[11]) + "</td>"
-         # Number of instances * number of attributes.
-         datasetTable += "<td>" + str(data[10] * data[11]) + "</td>"
-         # Attribute type.
-         datasetTable += "<td>" + str(data[12]) + "</td>"
-         datasetTable += "</tr>"
+           # Dataset name.
+           datasetTable += "<tr><td>" + datasetName + "</td>"
+           # Dataset disksize.
+           datasetTable += "<td>" + "{0:.5f}".format(data[9]) + " MB</td>"
+           # Number of instances.
+           datasetTable += "<td>" + str(data[10]) + "</td>"
+           # Number of attributes.
+           datasetTable += "<td>" + str(data[11]) + "</td>"
+           # Number of instances * number of attributes.
+           datasetTable += "<td>" + str(data[10] * data[11]) + "</td>"
+           # Attribute type.
+           datasetTable += "<td>" + str(data[12]) + "</td>"
+           datasetTable += "</tr>"
 
   return datasetTable
 
@@ -345,7 +346,8 @@ def MethodReports(db, bootstrapCount):
       # Generate a list of timing results.
       methodResultsTiming = []
       for resTiming in result[0]:
-        methodResultsTiming.append(resTiming["timing"])
+        if 'timing' in resTiming:
+          methodResultsTiming.append(resTiming["timing"])
 
       # Generate a list of metric results.
       methodResultsMetric = []
