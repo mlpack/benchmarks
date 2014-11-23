@@ -855,7 +855,6 @@ methods:
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
-
     ElasticNet:
             run: ['timing', 'metric']
             script: methods/scikit/elastic_net.py
@@ -1136,7 +1135,41 @@ methods:
         script: methods/mlpy/pca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris.csv', 'datasets/wine.csv']
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2'
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/arcene_X.csv','datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv',
+                      'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
+              options: '-d 2 -s'
+
     KMEANS:
         run: []
         iteration: 3
@@ -1169,6 +1202,117 @@ methods:
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
+
+    ElasticNet:
+            run: ['timing', 'metric']
+            script: methods/mlpy/elastic_net.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
+    KNC:
+            run: ['timing', 'metric']
+            script: methods/mlpy/knc.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
+    LDA:
+            run: ['timing', 'metric']
+            script: methods/mlpy/lda.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
+    PERCEPTRON:
+            run: ['timing', 'metric']
+            script: methods/mlpy/perceptron.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
+    SVM:
+            run: ['timing', 'metric']
+            script: methods/mlpy/svm.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
+
+
+    Golub:
+            run: ['timing', 'metric']
+            script: methods/mlpy/golub.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
     KPCA:
         run: []
         iteration: 3
