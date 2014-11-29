@@ -188,17 +188,22 @@ mc.clearChart = function()
   d3.selectAll(".library-select-div").remove();
   d3.selectAll(".dataset-select-title").remove();
   d3.selectAll(".dataset-select-div").remove();
+  d3.selectAll(".runtime-table").remove();
 }
 
 // Build the chart and display it on screen.
 mc.buildChart = function()
 {
+  // Get lists of active libraries and active datasets.
+  var active_library_list = mc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_libraries[c] == true) { p.push(c); } return p; }, []);
+  var active_dataset_list = mc.metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_metrics[c] == true) { p.push(c); } return p; }, []);
+
   // Set up scales.
   var group_scale = d3.scale.ordinal()
-    .domain(mc.metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_metrics[c] == true) { p.push(c); } return p; }, []))
+    .domain(active_dataset_list)
     .rangeRoundBands([0, width], .1);
   var library_scale = d3.scale.ordinal()
-    .domain(mc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(mc.active_libraries[c] == true) { p.push(c); } return p; }, []))
+    .domain(active_library_list)
     .rangeRoundBands([0, group_scale.rangeBand()]);
   var max_score = 3
 
@@ -376,6 +381,51 @@ mc.buildChart = function()
     .attr('for', function(d) { return d + '-dataset-checkbox'; })
     .attr('class', 'dataset-select-label')
     .text(function(d) { return d; });
+
+  // Now add a table of runtimes at the bottom.
+  var table = d3.select(".svgholder").append("table")
+      .attr("class", "runtime-table");
+  var thead = table.append("thead");
+  var tbody = table.append("tbody");
+
+  active_library_list.unshift("metric");
+  var hrow = thead.append("tr").selectAll("th")
+      .data(active_library_list)
+      .enter()
+      .append("th")
+      .text(function(d) { return d; });
+
+  var rows = tbody.selectAll("tr")
+      .data(active_dataset_list)
+      .enter()
+      .append("tr");
+
+  var resultFormat = d3.format("x>7.2f");
+  rows.selectAll("td")
+      .data(function(d) {
+          var ret = [d];
+
+          var ret = [d];
+          for(i = 1; i < active_library_list.length; i++) // Skip "dataset".
+          {
+            ret.push(['---']);
+          }
+
+          for(i = 0; i < mc.results[0].values.length; i++)
+          {
+            var library = mc.results[0].values[i][3];
+            var json = jQuery.parseJSON(mc.results[0].values[i][0]);
+            $.each(json, function (k, data) {
+              if((k == d) && mc.active_libraries[library] == true) {
+                ret[active_library_list.indexOf(library)] = ([data, mc.results[0].values[i][3], k]);
+              }
+            })
+          }
+          return ret;
+      }).enter()
+      .append("td")
+      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { if (d[0] == ">9000") { return ">9000s"; } else { return "&nbsp;" + String(resultFormat(d[0])).replace(/x/g, '&nbsp;') + "s&nbsp;"; } } } else { return d[0]; } })
+      .attr("class", function(d) { if (typeof d == "string") { return "dataset-name"; } else if (d[0] == "---") { return "timing-not-run-cell"; } else if (d[0] == ">9000" || d[0] == "failure") { return "timing-text-cell"; } else { return "timing-cell"; } });
 }
 
 // Toggle a library to on or off.
