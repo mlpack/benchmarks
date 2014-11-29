@@ -156,7 +156,9 @@ def Main(configfile, blocks, log, methodBlocks, update):
 
         if log:
           methodId = db.GetMethod(method, options)
-          methodId = methodId[0][0] if methodId else db.NewMethod(method, options)
+          methodId = methodId[0][0] if methodId else db.NewMethod(method,
+                                                                  options,
+                                                                  alias)
 
         # Create the result table.
         table = []
@@ -183,6 +185,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
           script = library[3]
           format = library[4]
           tasks = library[5]
+          alias = library[6]
 
           header.append(name)
           

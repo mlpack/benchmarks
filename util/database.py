@@ -74,7 +74,8 @@ class Database:
         CREATE TABLE IF NOT EXISTS methods (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,
-          parameters TEXT NOT NULL
+          parameters TEXT NOT NULL,
+          alias TEXT NOT NULL
         );
         """)
 
@@ -393,12 +394,13 @@ class Database:
 
   @param name - The name of the method.
   @param parameters - The parameters of the method.
+  @param alias - The alias of the method parameter combination.
   @return The record id.
   '''
-  def NewMethod(self, name, parameters):
+  def NewMethod(self, name, parameters, alias):
     with self.con:
-      self.cur.execute("INSERT INTO methods VALUES (NULL,?, ?)", 
-          (name,parameters))
+      self.cur.execute("INSERT INTO methods VALUES (NULL,?, ?,?)",
+          (name, parameters, alias))
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
 

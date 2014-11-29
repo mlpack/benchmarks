@@ -42,6 +42,7 @@ class Parser(object):
     self.RUN = []
     self.ITERATION = 3
     self.OPTIONS = ''
+    self.ALIAS = 'None'
 
     try:
       Log.Info("Load config file: " + config, verbose)
@@ -146,8 +147,12 @@ class Parser(object):
       datasets = attributes['datasets']
       for dataset in datasets:
         Log.Info("Dataset: " + str(dataset["files"]), self.verbose)
+
         if not "options" in dataset:
           dataset["options"] = self.OPTIONS
+
+        if not "alias" in dataset:
+          dataset["alias"] = self.ALIAS
     else:
       return self.KeyErrorMsg("datasets")
 
@@ -321,6 +326,10 @@ class Parser(object):
 
                     if not "options" in dataset:
                       self.KeyWarnMsg("options", streamNum)
+
+                    if not "alias" in dataset:
+                      self.KeyWarnMsg("alias", streamNum)
+
               else:
                 return self.KeyErrorMsg("datasets", streamNum)
 
@@ -399,7 +408,7 @@ class Parser(object):
                   # option.
                   t = (libraryMapping.libraryName, dataset["files"], 
                     methodMapping.iteration, methodMapping.script, 
-                    methodMapping.format, methodMapping.run)  
+                    methodMapping.format, methodMapping.run, dataset["alias"])
                   tempDict[dataset["options"]].append(t)
 
                 # This is are new options for the specified method name. So we
@@ -409,7 +418,7 @@ class Parser(object):
                   # option values as key.
                   t = (libraryMapping.libraryName, dataset["files"], 
                     methodMapping.iteration, methodMapping.script, 
-                    methodMapping.format, methodMapping.run)
+                    methodMapping.format, methodMapping.run, dataset["alias"])
                   tempDict[dataset["options"]] = [t]
 
               # Create the second dictionary if it doesn't exist.
@@ -418,7 +427,7 @@ class Parser(object):
                 # Store the settings for the given method in a tuple.
                 t = (libraryMapping.libraryName, dataset["files"], 
                   methodMapping.iteration, methodMapping.script, 
-                  methodMapping.format, methodMapping.run)
+                  methodMapping.format, methodMapping.run, dataset["alias"])
 
                 # To access the method options we can use the options key.
                 d[dataset["options"]] = [t]
