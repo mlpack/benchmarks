@@ -8,6 +8,7 @@ rc.libraries = [];
 rc.active_datasets = [];
 rc.active_libraries = [];
 rc.results = [];
+rc.groupBy = "datasets.instances"
 
 // This chart type has been selected.  What do we do now?
 rc.onTypeSelect = function()
@@ -28,8 +29,39 @@ rc.onTypeSelect = function()
     selectHolder.append("select")
       .attr("id", "param_select")
       .attr("onchange", "rc.paramSelect()");
+    selectHolder.append("br");
+    selectHolder.append("label")
+        .attr("for", "main_dataset_select")
+        .attr("class", "main-dataset-select-label")
+        .text("Sort results by:");
+    selectHolder.append("select")
+        .attr("id", "main_dataset_select")
+        .attr("onchange", "rc.orderSelect()");
 
   rc.listMethods();
+  rc.listOrder();
+}
+
+// List order.
+rc.listOrder = function()
+{
+  var order_select_box = document.getElementById("main_dataset_select");
+
+  // Remove old things.
+  clearSelectBox(order_select_box);
+
+  var options = ["instances", "attributes", "size", ]
+  // // Add new things.
+  for (i = 0; i < options.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = options[i];
+    order_select_box.add(new_option);
+  }
+  order_select_box.selectedIndex = 0;
+
+  // Clear parameters box.
+  clearSelectBox(document.getElementById("param_select"));
 }
 
 // List methods.
@@ -105,7 +137,7 @@ rc.paramSelect = function()
   var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
     "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
     "AND methods.name == '" + rc.method_name + "' AND methods.parameters == '" + rc.param_name + "' AND libraries.id == results.libary_id " +
-    "GROUP BY datasets.id, libraries.id;";
+    "GROUP BY datasets.id, libraries.id, " + rc.groupBy + ";";
   rc.results = db.exec(sqlstr);
 
   // Obtain unique list of datasets.
@@ -128,6 +160,40 @@ rc.paramSelect = function()
 
   clearChart();
   buildChart();
+}
+
+rc.orderSelect = function()
+{
+  // Extract the name of the method we selected.
+  var order_select_box = document.getElementById("main_dataset_select");
+  rc.groupBy = "datasets." + order_select_box.options[order_select_box.selectedIndex].text; // At higher scope.
+
+  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
+    "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
+    "AND methods.name == '" + rc.method_name + "' AND methods.parameters == '" + rc.param_name + "' AND libraries.id == results.libary_id " +
+    "GROUP BY libraries.id, " + rc.groupBy + ";";
+  rc.results = db.exec(sqlstr);
+
+   // Obtain unique list of datasets.
+  rc.datasets = rc.results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  // Obtain unique list of libraries.
+  rc.libraries = rc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+
+  // By default, everything is active.
+  rc.active_datasets = {};
+  for (i = 0; i < rc.datasets.length; i++)
+  {
+    rc.active_datasets[rc.datasets[i]] = true;
+  }
+
+  rc.active_libraries = {};
+  for (i = 0; i < rc.libraries.length; i++)
+  {
+    rc.active_libraries[rc.libraries[i]] = true;
+  }
+
+  rc.clearChart();
+  rc.buildChart();
 }
 
 // Remove everything on the page that belongs to us.
