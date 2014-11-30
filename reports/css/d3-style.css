@@ -64,6 +64,9 @@ svg text {
   margin-right: auto;
 }   
 
+.mainbox div {
+  margin: 2px;
+}
 
 .library-select-div {
   min-width: 140px;

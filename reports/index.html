@@ -9,15 +9,25 @@
 <body>
   <div class="mainbox">
 
+    <div>
+      <input align="left" class="chart-type-radio" type="radio" name="chart-type" value="algorithm-parameter-comparison" id="chart-type-radio-0" onclick="chartTypeSelect()" />
+      <label align="left" for="chart-type-radio-0" class="chart-type-radio-label">Compare library runtimes for an algorithm/parameter combination</label>
+    </div>
 
-    <input class="chart-type-radio" type="radio" name="chart-type" value="algorithm-parameter-comparison" id="chart-type-radio-0" onclick="chartTypeSelect()" />
-    <label for="chart-type-radio-0" class="chart-type-radio-label">Compare library runtimes for an algorithm/parameter combination</label> 
-    <input class="chart-type-radio" type="radio" name="chart-type" value="historical-comparison" id="chart-type-radio-1" onclick="chartTypeSelect()">
-    <label for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots for an algorithm/parameter/dataset combination</label>
-    <input class="chart-type-radio" type="radio" name="chart-type" value="dataset-comparison" id="chart-type-radio-2" onclick="chartTypeSelect()">
-    <label for="chart-type-radio-2" class="chart-type-radio-label">Dataset runtime performance comparison for any algorithm/parameter combination</label>
-    <input class="chart-type-radio" type="radio" name="chart-type" value="metric-comparison" id="chart-type-radio-3" onclick="chartTypeSelect()">
-    <label for="chart-type-radio-3" class="chart-type-radio-label">Metric plots for an algorithm/parameter/dataset combination</label>
+    <div>
+      <input align="left" class="chart-type-radio" type="radio" name="chart-type" value="historical-comparison" id="chart-type-radio-1" onclick="chartTypeSelect()">
+      <label align="left" for="chart-type-radio-1" class="chart-type-radio-label">Historical runtime plots for an algorithm/parameter/dataset combination</label>
+    </div>
+
+    <div>
+      <input align="left" class="chart-type-radio" type="radio" name="chart-type" value="dataset-comparison" id="chart-type-radio-2" onclick="chartTypeSelect()">
+      <label align="left" for="chart-type-radio-2" class="chart-type-radio-label">Dataset runtime performance comparison for any algorithm/parameter combination</label>
+    </div>
+
+    <div>
+      <input class="chart-type-radio" type="radio" name="chart-type" value="metric-comparison" id="chart-type-radio-3" onclick="chartTypeSelect()">
+      <label align="left" for="chart-type-radio-3" class="chart-type-radio-label">Metric plots for an algorithm/parameter/dataset combination</label>
+    </div>
 
     <div class="selectholder" id="selectholder"></div>
     <div class="clear"></div>
