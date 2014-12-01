@@ -67,11 +67,12 @@ mc.listMethods = function()
 // The user has selected a method.
 mc.methodSelect = function()
 {
+  console.log("butt balls");
   // Extract the name of the method we selected.
   var method_select_box = document.getElementById("method_select");
   mc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT methods.parameters, metrics.libary_id FROM methods, metrics WHERE methods.name == '" + mc.method_name + "' AND methods.id == metrics.method_id GROUP BY methods.parameters;";
+  var sqlstr = "SELECT DISTINCT methods.parameters, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) FROM methods, metrics WHERE methods.name == '" + mc.method_name + "' AND methods.id == metrics.method_id GROUP BY methods.parameters;";
 
   var params = db.exec(sqlstr);
 
@@ -85,11 +86,11 @@ mc.methodSelect = function()
     var new_option = document.createElement("option");
     if (params[0].values[i][0])
     {
-      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][1] + " libraries)";
+      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][2] + " libraries)";
     }
     else
     {
-      new_option.text = "[no parameters] (" + params[0].values[i][1] + " libraries)";
+      new_option.text = "[no parameters] (" + params[0].values[i][2] + " libraries)";
     }
     param_select_box.add(new_option);
   }

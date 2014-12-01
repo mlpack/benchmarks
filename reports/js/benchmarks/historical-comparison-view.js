@@ -67,7 +67,7 @@ hc.methodSelect = function()
   var method_select_box = document.getElementById("method_select");
   hc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT methods.parameters, results.libary_id FROM methods, results WHERE methods.name == '" + hc.method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
+  var sqlstr = "SELECT DISTINCT methods.parameters, results.libary_id, COUNT(DISTINCT results.libary_id) FROM methods, results WHERE methods.name == '" + hc.method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
 
   var params = db.exec(sqlstr);
   
@@ -81,11 +81,11 @@ hc.methodSelect = function()
     var new_option = document.createElement("option");
     if (params[0].values[i][0])
     { 
-      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][1] + " libraries)";
+      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][2] + " libraries)";
     }
     else
     { 
-      new_option.text = "[no parameters] (" + params[0].values[i][1] + " libraries)";
+      new_option.text = "[no parameters] (" + params[0].values[i][2] + " libraries)";
     }
     param_select_box.add(new_option);
   }
