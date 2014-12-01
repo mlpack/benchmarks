@@ -25,8 +25,13 @@
     </div>
 
     <div>
-      <input class="chart-type-radio" type="radio" name="chart-type" value="metric-comparison" id="chart-type-radio-3" onclick="chartTypeSelect()">
+      <input class="chart-type-radio" type="radio" name="chart-type" value="metric-parameter-comparison" id="chart-type-radio-3" onclick="chartTypeSelect()">
       <label for="chart-type-radio-3" class="chart-type-radio-label">Metric plots for an algorithm/parameter/dataset combination</label>
+    </div>
+
+    <div>
+      <input class="chart-type-radio" type="radio" name="chart-type" value="metric-comparison" id="chart-type-radio-4" onclick="chartTypeSelect()">
+      <label for="chart-type-radio-4" class="chart-type-radio-label">Dataset metric plots for any algorithm/parameter combination</label>
     </div>
 
     <div class="selectholder" id="selectholder"></div>
@@ -45,7 +50,8 @@
   <script src='js/benchmarks.js'></script>
   <script src='js/benchmarks/runtime-comparison-view.js'></script>
   <script src='js/benchmarks/historical-comparison-view.js'></script>
-  <script src='js/benchmarks/metric-comparison-view.js'></script>
+  <script src='js/benchmarks/metric-parameter-comparison-view.js'></script>
   <script src='js/benchmarks/dataset-comparison-view.js'></script>
+  <script src='js/benchmarks/metric-comparison-view.js'></script>
 </body>
 </html>

@@ -110,7 +110,6 @@ dc.clickAddButton = function()
 
   // Add list of methods.
   var newbox = document.getElementById("method_select_" + String(dc.control_list_length - 1));
-  console.log(JSON.stringify(dc.methods));
   distinct_methods = dc.methods[0].values.map(function(d) { return d[0]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   for (i = 0; i < distinct_methods.length; i++)
   {
@@ -192,7 +191,6 @@ dc.clickRedrawMethods = function()
   }
   sqlstr = sqlstr + " ORDER BY sort ASC;";
   dc.results = db.exec(sqlstr);
-  console.log(JSON.stringify(dc.results));
 
   dc.clearChart();
   dc.buildChart();
