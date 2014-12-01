@@ -67,7 +67,6 @@ mc.listMethods = function()
 // The user has selected a method.
 mc.methodSelect = function()
 {
-  console.log("butt balls");
   // Extract the name of the method we selected.
   var method_select_box = document.getElementById("method_select");
   mc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
