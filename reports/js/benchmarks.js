@@ -106,6 +106,7 @@ function chartTypeSelect()
   else if (chartType == "metric-parameter-comparison") { activeChartType = mpc; }
   else if (chartType == "dataset-comparison") { activeChartType = dc; }
   else if (chartType == "metric-comparison") { activeChartType = mc; }
+  else if (chartType == "highest-metric-comparison") { activeChartType = hmc; }
 
   activeChartType.onTypeSelect();
 }

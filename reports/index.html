@@ -34,6 +34,11 @@
       <label for="chart-type-radio-4" class="chart-type-radio-label">Dataset metric plots for any algorithm/parameter combination</label>
     </div>
 
+    <div>
+      <input class="chart-type-radio" type="radio" name="chart-type" value="highest-metric-comparison" id="chart-type-radio-5" onclick="chartTypeSelect()">
+      <label for="chart-type-radio-5" class="chart-type-radio-label">Sorted dataset metric score for any algorithm/parameter combination</label>
+    </div>
+
     <div class="selectholder" id="selectholder"></div>
     <div class="clear"></div>
     <div class="mainbox-content">
@@ -53,5 +58,6 @@
   <script src='js/benchmarks/metric-parameter-comparison-view.js'></script>
   <script src='js/benchmarks/dataset-comparison-view.js'></script>
   <script src='js/benchmarks/metric-comparison-view.js'></script>
+  <script src='js/benchmarks/highest_metric-comparison-view.js'></script>
 </body>
 </html>
