@@ -404,6 +404,9 @@ class Database:
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
 
+  def UpdateMethod(self, methodId, alias):
+    self.cur.execute("UPDATE methods SET alias=\'" + alias + "\' WHERE id=" + str(methodId))
+
   '''
   Get the sum of the time column of all build of the given name.
 

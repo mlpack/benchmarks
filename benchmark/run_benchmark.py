@@ -158,7 +158,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
           methodId = db.GetMethod(method, options)
           methodId = methodId[0][0] if methodId else db.NewMethod(method,
                                                                   options,
-                                                                  alias)
+                                                                  "None")
 
         # Create the result table.
         table = []
@@ -186,6 +186,9 @@ def Main(configfile, blocks, log, methodBlocks, update):
           format = library[4]
           tasks = library[5]
           alias = library[6]
+
+          if log:
+            db.UpdateMethod(methodId, alias)
 
           header.append(name)
           
