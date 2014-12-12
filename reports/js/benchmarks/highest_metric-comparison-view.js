@@ -87,7 +87,20 @@ hmc.datasetSelect = function()
   // Create an empty chart.
   hmc.clear();
 
-  var sqlstr = "SELECT DISTINCT methods.name, methods.parameters, libraries.name, metrics.metric FROM methods, metrics, datasets, libraries WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id AND datasets.name == '" + hmc.dataset_name + "' AND libraries.id == metrics.libary_id ORDER BY methods.name;";
+
+
+  var sqlstr = "SELECT DISTINCT libary_id from builds"
+  var params = db.exec(sqlstr);
+  sqlstr = "SELECT DISTINCT methods.name, methods.parameters, libraries.name, metrics.metric FROM methods, metrics, datasets, libraries, builds WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id AND datasets.name == '" + hmc.dataset_name + "' AND libraries.id == metrics.libary_id AND ("
+  for(i = 0; i < params[0].values.length; i++)
+  {
+    var libsqlstr = "SELECT id FROM builds WHERE libary_id = " + params[0].values[i] + " ORDER BY id DESC LIMIT 1;"
+    var libid = db.exec(libsqlstr)
+
+    sqlstr += " metrics.build_id = "  + libid[0].values[0] + " OR "
+  }
+  sqlstr += " metrics.build_id = 0) ORDER BY methods.name;";
+
   hmc.results = db.exec(sqlstr)[0].values;
 
   // Obtain unique list of metric names.
