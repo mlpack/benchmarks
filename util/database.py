@@ -78,6 +78,13 @@ class Database:
           alias TEXT NOT NULL
         );
         """)
+    # Update methods table schema.
+    try:
+      self.cur.execute("SELECT alias FROM methods")
+      self.cur.fetchall()
+    except sqlite3.OperationalError as e:
+      self.cur.execute("ALTER TABLE methods ADD COLUMN alias TEXT");
+      self.cur.fetchall()
 
   '''
   Create a new results table.
@@ -405,7 +412,8 @@ class Database:
       return self.cur.fetchall()[0][0]
 
   def UpdateMethod(self, methodId, alias):
-    self.cur.execute("UPDATE methods SET alias=\'" + alias + "\' WHERE id=" + str(methodId))
+    self.cur.execute("UPDATE methods SET alias=\'" + alias + "\' WHERE id="
+        + str(methodId))
 
   '''
   Get the sum of the time column of all build of the given name.
