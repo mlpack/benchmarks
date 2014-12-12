@@ -87,7 +87,7 @@ class ALLKNN(object):
   @return Returns False if the method was not successful, if the method was 
   successful save the report file in the specified file.
   '''
-  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
+  def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform ALLKNN Profiling.", self.verbose)
 
     # If the dataset contains two files then the second file is the query file. 

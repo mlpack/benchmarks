@@ -53,10 +53,10 @@ class RANGESEARCH_MLPACK_TEST(unittest.TestCase):
     self.assertTrue(result > 0)
 
   '''
-  Test the 'RunMemoryProfiling' function.
+  Test the 'RunMemory' function.
   '''
-  def test_RunMemoryProfiling(self):
-    result = self.instance.RunMemoryProfiling("-M 0.02", "test.mout")
+  def test_RunMemory(self):
+    result = self.instance.RunMemory("-M 0.02", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
   

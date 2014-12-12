@@ -51,10 +51,10 @@ class NBC_MLPACK_TEST(unittest.TestCase):
     self.assertTrue(result > 0)
 
   '''
-  Test the 'RunMemoryProfiling' function.
+  Test the 'RunMemory' function.
   '''
-  def test_RunMemoryProfiling(self):
-    result = self.instance.RunMemoryProfiling("", "test.mout")
+  def test_RunMemory(self):
+    result = self.instance.RunMemory("", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
   

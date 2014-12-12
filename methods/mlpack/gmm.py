@@ -87,7 +87,7 @@ class GMM(object):
   @return Returns False if the method was not successful, if the method was 
   successful save the report file in the specified file.
   '''
-  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
+  def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform GMM Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.

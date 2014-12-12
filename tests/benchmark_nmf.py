@@ -53,10 +53,10 @@ class NMF_MLPACK_TEST(unittest.TestCase):
     self.assertTrue(result > 0)
 
   '''
-  Test the 'RunMemoryProfiling' function.
+  Test the 'RunMemory' function.
   '''
-  def test_RunMemoryProfiling(self):
-    result = self.instance.RunMemoryProfiling("-r 6 -u multdist", "test.mout")
+  def test_RunMemory(self):
+    result = self.instance.RunMemory("-r 6 -u multdist", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
   

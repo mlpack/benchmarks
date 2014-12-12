@@ -175,7 +175,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 outputName = "reports/etc/" + str(hash(datetime.datetime.now())) + ".mout"
 
                 try:
-                  err = instance.RunMemoryProfiling(options, outputName);
+                  err = instance.RunMemory(options, outputName);
                 except Exception as e:
                   Log.Fatal("Exception: " + str(e))
                   

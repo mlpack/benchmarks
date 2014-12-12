@@ -95,7 +95,7 @@ class PERCEPTRON(object):
   @return Returns False if the method was not successful, if the method was 
   successful save the report file in the specified file.
   '''
-  def RunMemoryProfiling(self, options, fileName, massifOptions="--depth=2"):
+  def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform Perceptron Memory Profiling.", self.verbose)
 
     # If the dataset contains two files then the second file is the test file.
@@ -169,13 +169,10 @@ class PERCEPTRON(object):
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      # metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      # metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       return metrics
     else:
       Log.Warn("This method requires three datasets.")

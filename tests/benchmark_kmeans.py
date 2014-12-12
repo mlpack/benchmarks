@@ -51,10 +51,10 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
     self.assertTrue(result > 0)
 
   '''
-  Test the 'RunMemoryProfiling' function.
+  Test the 'RunMemory' function.
   '''
-  def test_RunMemoryProfiling(self):
-    result = self.instance.RunMemoryProfiling("-c 2", "test.mout")
+  def test_RunMemory(self):
+    result = self.instance.RunMemory("-c 2", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
   

@@ -53,10 +53,10 @@ class KPCA_MLPACK_TEST(unittest.TestCase):
     self.assertTrue(result > 0)
 
   '''
-  Test the 'RunMemoryProfiling' function.
+  Test the 'RunMemory' function.
   '''
-  def test_RunMemoryProfiling(self):
-    result = self.instance.RunMemoryProfiling("-k linear", "test.mout")
+  def test_RunMemory(self):
+    result = self.instance.RunMemory("-k linear", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
   
