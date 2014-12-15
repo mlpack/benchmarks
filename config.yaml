@@ -14,7 +14,7 @@ settings:
 library: mlpack
 methods:
     PCA:
-        run: []
+        run: ['timing']
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -41,7 +41,7 @@ methods:
               options: '-i 10000'
 
     DecisionStump:
-        run: []
+        run: ['timing']
         script: methods/mlpack/decision_stump.py
         format: [csv, txt]
         datasets:
@@ -53,7 +53,7 @@ methods:
                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
 
     NMF:
-        run: []
+        run: ['timing']
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
@@ -78,7 +78,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -s 42 -u als'
     NBC:
-        run: []
+        run: ['timing']
         script: methods/mlpack/nbc.py
         format: [csv, txt]
         datasets:
@@ -91,7 +91,7 @@ methods:
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
               options: '-I'
     KPCA:
-        run: []
+        run: ['timing']
         script: methods/mlpack/kernel_pca.py
         format: [csv, txt]
         datasets:
@@ -191,7 +191,7 @@ methods:
                       'datasets/covtype.csv']
               options: '-k cosine --nystroem_method -s random'
     LARS:
-          run: []
+          run: ['timing']
           script: methods/mlpack/lars.py
           format: [csv, txt]
           datasets:
@@ -208,7 +208,7 @@ methods:
                 options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
 
     LSH:
-        run: []
+        run: ['timing']
         script: methods/mlpack/lsh.py
         format: [csv, txt]
         datasets:
@@ -220,7 +220,7 @@ methods:
            options: '-k 3 -s 42'
 
     KMEANS:
-        run: []
+        run: ['timing']
         script: methods/mlpack/kmeans.py
         format: [csv, txt, arff]
         datasets:
@@ -251,7 +251,7 @@ methods:
             - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     ALLKNN:
-        run: []
+        run: ['timing']
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
@@ -290,7 +290,7 @@ methods:
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -N'
     ALLKFN:
-        run: []
+        run: ['timing']
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
@@ -315,7 +315,7 @@ methods:
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -N'
     ALLKRANN:
-        run: []
+        run: ['timing']
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         datasets:
@@ -354,7 +354,7 @@ methods:
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -t 10 -X'
     RANGESEARCH:
-        run: []
+        run: ['timing']
         script: methods/mlpack/range_search.py
         format: [csv, txt]
         datasets:
@@ -379,7 +379,7 @@ methods:
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
               options: '-M 0.02 -s'
     GMM:
-        run: []
+        run: ['timing']
         script: methods/mlpack/gmm.py
         format: [csv, txt]
         datasets:
@@ -397,7 +397,7 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-P -s 42'
     DET:
-        run: []
+        run: ['timing']
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
@@ -409,7 +409,7 @@ methods:
                      ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
               options: '-f 20'
     EMST:
-        run: []
+        run: ['timing']
         script: methods/mlpack/emst.py
         format: [csv, txt]
         datasets:
@@ -422,7 +422,7 @@ methods:
               options: '-n'
 
     LinearRegression:
-        run: []
+        run: ['timing']
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
         datasets:
@@ -432,7 +432,7 @@ methods:
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LocalCoordinateCoding:
-        run: []
+        run: ['timing']
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
         datasets:
@@ -442,7 +442,7 @@ methods:
              - files: ['datasets/pendigits.csv']
                options: '-k 12 -s 42 -N'
     SparseCoding:
-        run: []
+        run: ['timing']
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
         datasets:
@@ -455,7 +455,7 @@ methods:
             - files: ['datasets/pendigits.csv']
               options: '-k 12 -s 42 -N'
     FastMKS:
-        run: []
+        run: ['timing']
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
@@ -486,7 +486,7 @@ methods:
             - files: ['datasets/optdigits.csv']
               options: '-k 10 -K triangular'
     NCA:
-        run: []
+        run: ['timing']
         script: methods/mlpack/nca.py
         format: [csv, txt]
         datasets:
@@ -550,7 +550,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-n 2000 -N -s 42'
     HMMTRAIN:
-        run: []
+        run: ['timing']
         script: methods/mlpack/hmm_train.py
         format: [csv, txt]
         datasets:
@@ -560,21 +560,21 @@ methods:
             - files: ['datasets/artificial_1DSignal.csv']
               options: '-t discrete -n 20 -s 42'
     HMMGENERATE:
-        run: []
+        run: ['timing']
         script: methods/mlpack/hmm_generate.py
         format: [csv, txt, xml]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml', 'datasets/artificial_1DSignal_hmm.xml']
               options: '-l 10000'
     HMMLOGLIK:
-       run: []
+       run: ['timing']
        script: methods/mlpack/hmm_loglik.py
        format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'],
                       ['datasets/artificial_1DSignal.csv', 'datasets/artificial_1DSignal_hmm.xml'] ]
     HMMVITERBI:
-       run: []
+       run: ['timing']
        script: methods/mlpack/hmm_viterbi.py
        format: [csv, txt, xml]
        datasets:
@@ -586,7 +586,7 @@ methods:
 library: matlab
 methods:
     PCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/pca.py
         format: [csv, txt]
@@ -646,7 +646,7 @@ methods:
               options: '-i 10000'
 
     NMF:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/nmf.py
         format: [csv, txt]
@@ -658,7 +658,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -s 42 -u multdist'
     KMEANS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/kmeans.py
         format: [csv, txt, arff]
@@ -690,7 +690,7 @@ methods:
             - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     NBC:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/nbc.py
         format: [csv, txt]
@@ -699,7 +699,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
     ALLKNN:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/allknn.py
         format: [csv, txt]
@@ -718,7 +718,7 @@ methods:
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -N'
     RANGESEARCH:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/range_search.py
         format: [csv, txt]
@@ -741,7 +741,7 @@ methods:
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     HMMGENERATE:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/matlab/hmm_generate.py
         format: [csv, txt, xml]
@@ -749,7 +749,7 @@ methods:
             - files: ['datasets/artificial_2DSignal_hmm.xml']
               options: '-l 10000'
     HMMVITERBI:
-       run: []
+       run: ['timing']
        iteration: 3
        script: methods/matlab/hmm_viterbi.py
        format: [csv, txt, xml]
@@ -760,7 +760,7 @@ methods:
 library: scikit
 methods:
     PCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/pca.py
         format: [csv, txt]
@@ -910,7 +910,7 @@ methods:
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
     QDA:
-            run: []
+            run: ['timing']
             script: methods/scikit/qda.py
             format: [csv, txt, arff]
             datasets:
@@ -983,7 +983,7 @@ methods:
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
     NMF:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/nmf.py
         format: [csv, txt]
@@ -995,7 +995,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-r 6 -u alspgrad'
     KMEANS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/kmeans.py
         format: [csv, txt, arff]
@@ -1027,7 +1027,7 @@ methods:
             - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     NBC:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/nbc.py
         format: [csv, txt]
@@ -1036,7 +1036,7 @@ methods:
                      ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                      ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
     KPCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/kernel_pca.py
         format: [csv, txt]
@@ -1065,7 +1065,7 @@ methods:
                       'datasets/covtype.csv']
               options: '-k hyptan'
     LARS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/lars.py
         format: [csv, txt]
@@ -1076,7 +1076,7 @@ methods:
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
               options: '-l 0.01'
     ALLKNN:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/allknn.py
         format: [csv, txt]
@@ -1088,7 +1088,7 @@ methods:
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42'
     GMM:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/gmm.py
         format: [csv, txt]
@@ -1100,7 +1100,7 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
               options: '-s 42'
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/linear_regression.py
         format: [csv, txt, arff]
@@ -1111,7 +1111,7 @@ methods:
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     SparseCoding:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/scikit/sparse_coding.py
         format: [csv, txt]
@@ -1171,7 +1171,7 @@ methods:
               options: '-d 2 -s'
 
     KMEANS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/mlpy/kmeans.py
         format: [csv, txt, arff]
@@ -1314,7 +1314,7 @@ methods:
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
     KPCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/mlpy/kernel_pca.py
         format: [csv, txt]
@@ -1343,7 +1343,7 @@ methods:
                       'datasets/covtype.csv']
               options: '-k hyptan'
     LARS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/mlpy/lars.py
         format: [csv, txt]
@@ -1354,7 +1354,7 @@ methods:
                          ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
                 options: '-l 0.01'
     ALLKNN:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/mlpy/allknn.py
         format: [csv, txt]
@@ -1367,7 +1367,7 @@ methods:
               options: '-k 3 -s 42'
 
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/mlpy/linear_regression.py
         format: [csv, txt]
@@ -1382,7 +1382,7 @@ methods:
 library: shogun
 methods:
     PCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/pca.py
         format: [csv, txt]
@@ -1434,7 +1434,7 @@ methods:
               options: '-i 10000'
 
     KMEANS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/kmeans.py
         format: [arff, csv, txt]
@@ -1466,7 +1466,7 @@ methods:
             - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     KPCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/kernel_pca.py
         format: [csv, txt]
@@ -1503,7 +1503,7 @@ methods:
                       'datasets/covtype.csv']
               options: '-k hyptan'
     NBC:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/nbc.py
         format: [csv, txt]
@@ -1512,7 +1512,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
     ALLKNN:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/allknn.py
         format: [csv, txt]
@@ -1525,7 +1525,7 @@ methods:
               options: '-k 3 -s 42'
 
     GMM:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/gmm.py
         format: [csv, txt]
@@ -1538,7 +1538,7 @@ methods:
               options: '-s 42'
 
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/shogun/linear_regression.py
         format: [csv, txt]
@@ -1553,7 +1553,7 @@ methods:
 library: weka
 methods:
     PCA:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/weka/pca.py
         format: [arff]
@@ -1593,7 +1593,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options: '-d 2 -s'
     NBC:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/weka/nbc.py
         format: [arff]
@@ -1602,7 +1602,7 @@ methods:
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
     KMEANS:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/weka/kmeans.py
         format: [arff]
@@ -1631,7 +1631,7 @@ methods:
             - files: ['datasets/1000000-10-randu.csv']
               options: '-c 75'
     ALLKNN:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/weka/allknn.py
         format: [arff]
@@ -1644,7 +1644,7 @@ methods:
               options: '-k 3 -s 42'
 
     LinearRegression:
-        run: []
+        run: ['timing']
         iteration: 3
         script: methods/weka/linear_regression.py
         format: [arff]
@@ -1660,7 +1660,7 @@ methods:
 library: ann
 methods:
     ALLKNN:
-          run: []
+          run: ['timing']
           script: methods/ann/allknn.py
           format: [csv, txt]
           datasets:
@@ -1676,7 +1676,7 @@ methods:
 library: flann
 methods:
     ALLKNN:
-          run: []
+          run: ['timing']
           script: methods/flann/allknn.py
           format: [csv, txt]
           datasets:
