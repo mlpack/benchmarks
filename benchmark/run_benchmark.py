@@ -16,7 +16,7 @@ if cmd_subfolder not in sys.path:
 
 from log import *
 from system import *
-from loader import * 
+from loader import *
 from parser import *
 from convert import *
 from misc import *
@@ -31,7 +31,7 @@ import simplejson
 Show system informations. Are there no data available, the value is 'N/A'.
 '''
 def SystemInformation():
-  
+
   Log.Info("CPU Model: " + SystemInfo.GetCPUModel())
   Log.Info("Distribution: " + SystemInfo.GetDistribution())
   Log.Info("Platform: " + SystemInfo.GetPlatform())
@@ -51,7 +51,7 @@ def GetDataset(dataset, format):
     datasetList = []
     modifiedList = []
 
-    for data in dataset:  
+    for data in dataset:
       mdata = CheckFileExtension(data, format)
 
       # Check if the dataset is available.
@@ -96,7 +96,7 @@ def CountLibrariesDatasets(libraries):
   return len(datasetList)
 
 '''
-Start the main benchmark routine. The method shows some DEBUG information and 
+Start the main benchmark routine. The method shows some DEBUG information and
 prints a runtime information table.
 
 @param configfile - Start the benchmark with the given configuration file.
@@ -118,7 +118,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
   #Create the bootstrapped method dictionary which will contain the
   #normalized values of all metrics for all methods
   bootstrapped_method_dict = {}
-  
+
   # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
@@ -169,10 +169,10 @@ def Main(configfile, blocks, log, methodBlocks, update):
         datasetCount = CountLibrariesDatasets(libraries)
 
         # Create the matrix which contains the time and dataset informations.
-        dataMatrix = [['-' for x in range(len(libraries) + 1)] for x in 
-            range(datasetCount)] 
-        
-        #Dictionary which will contain key as the library name and value as 
+        dataMatrix = [['-' for x in range(len(libraries) + 1)] for x in
+            range(datasetCount)]
+
+        #Dictionary which will contain key as the library name and value as
         #a dictionary of metrics for the current method
         method_dict = {}
 
@@ -191,7 +191,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
             db.UpdateMethod(methodId, alias)
 
           header.append(name)
-          
+
           if not blocks or name in blocks:
             run += 1
             Log.Info("Library: " + name)
@@ -235,7 +235,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 modifiedDataset = GetDataset(dataset, format)
 
                 try:
-                  instance = methodCall(modifiedDataset[0], timeout=timeout, 
+                  instance = methodCall(modifiedDataset[0], timeout=timeout,
                     verbose=False)
                 except Exception as e:
                   Log.Fatal("Could not call the constructor: " + script)
@@ -245,7 +245,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 # Logging: Add method information record.
                 if log:
                   try:
-                    # Some script define a method description, if 
+                    # Some script define a method description, if
                     # the description is set, save this in the database.
                     methodDescription = instance.description
                   except AttributeError:
@@ -291,15 +291,15 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     buildId, libraryId = build[name]
                     if update:
                       try:
-                        db.UpdateResult(buildId, libraryId, dataMatrix[row][col], 
+                        db.UpdateResult(buildId, libraryId, dataMatrix[row][col],
                           var, datasetId, methodId)
                       except Exception:
                         pass
                     else:
-                      db.NewResult(buildId, libraryId, dataMatrix[row][col], var, 
+                      db.NewResult(buildId, libraryId, dataMatrix[row][col], var,
                           datasetId, methodId)
 
-                
+
                 if 'metric' in tasks:
                   try:
                     metrics = instance.RunMetrics(options)
@@ -312,7 +312,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                       buildID, libraryID = build[name]
                       if update:
                         try:
-                          db.UpdateMetricResult(buildID, libraryID, 
+                          db.UpdateMetricResult(buildID, libraryID,
                               simplejson.dumps(metrics), datasetId, methodId)
                         except Exception:
                           pass
@@ -373,15 +373,15 @@ def Main(configfile, blocks, log, methodBlocks, update):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
       given config.""")
-  parser.add_argument('-c','--config', help='Configuration file name.', 
+  parser.add_argument('-c','--config', help='Configuration file name.',
       required=True)
-  parser.add_argument('-b','--blocks', help='Run only the specified blocks.', 
+  parser.add_argument('-b','--blocks', help='Run only the specified blocks.',
       required=False)
-  parser.add_argument('-l','--log', help='Save the results in the logfile.', 
+  parser.add_argument('-l','--log', help='Save the results in the logfile.',
       required=False)
-  parser.add_argument('-u','--update', help="""Update the results in the 
+  parser.add_argument('-u','--update', help="""Update the results in the
       database.""", required=False)
-  parser.add_argument('-m','--methodBlocks', help="""Run only the specified 
+  parser.add_argument('-m','--methodBlocks', help="""Run only the specified
       method blocks.""", required=False)
 
   args = parser.parse_args()

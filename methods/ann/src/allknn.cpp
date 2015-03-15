@@ -98,8 +98,8 @@ int main(int argc, char **argv)
     queryPoint = queryData.col(i);
     kdTree->annkSearch(queryPoint.memptr(), k, nnIdx,  dists, 0);
 
-    for (int j = 0; j < k; j++) 
-    {     
+    for (int j = 0; j < k; j++)
+    {
       dists[j] = sqrt(dists[j]);
     }
   }

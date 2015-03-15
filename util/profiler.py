@@ -24,25 +24,25 @@ This class implements functions the get profiling informations.
 class Profiler(object):
 
   '''
-  Use valgrind massif to get memory profiling information and save the ouput in 
+  Use valgrind massif to get memory profiling information and save the ouput in
   the specified file.
 
   @param command - Method command line to profile.
   @param output - Save the report at the output path with the specified name.
   @param options - Specified massif options.
   @param valgrind - Path to the valgrind binary.
-  @ return Returns -1 if the method was not successful, if the method was 
-  successful save the report file in the specified file. 
+  @ return Returns -1 if the method was not successful, if the method was
+  successful save the report file in the specified file.
   '''
   @staticmethod
-  def MassifMemoryUsage(command, output, timeout, options, 
+  def MassifMemoryUsage(command, output, timeout, options,
       valgrind=os.environ["VALGRIND_BIN"]):
     import shlex, subprocess
 
-    cmd = shlex.split(("%s --tool=massif --massif-out-file=%s %s ") % 
+    cmd = shlex.split(("%s --tool=massif --massif-out-file=%s %s ") %
         (valgrind, output, options)) + command
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=timeout)
     except Exception:
       Log.Fatal("Could not execute command: " + str(cmd))
@@ -68,7 +68,7 @@ class Profiler(object):
       return -1
 
   '''
-  Returns the memory used by a process and his children. We don't know when the 
+  Returns the memory used by a process and his children. We don't know when the
   process is done so we have to poll to get the memory. To avoid memory overflow
   we use a ringbuffer to limit the size of the memory values.
 
@@ -93,9 +93,9 @@ class Profiler(object):
           memoryTable.append(int(p.get_memory_info()[0]))
       # Sometimes a subprocess has terminated in the time between we measure the
       # memory. In this case, we continue.
-      except psutil.NoSuchProcess: 
-        continue        
-      except psutil.AccessDenied: 
+      except psutil.NoSuchProcess:
+        continue
+      except psutil.AccessDenied:
         continue
 
       time.sleep(0.01)

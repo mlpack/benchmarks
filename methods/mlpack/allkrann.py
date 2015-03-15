@@ -29,16 +29,16 @@ This class implements the All K-Rank-Approximate-Nearest-Neighbors benchmark.
 '''
 class ALLKRANN(object):
 
-  ''' 
-  Create the All K-Rank-Approximate-Nearest-Neighbors benchmark instance, show 
+  '''
+  Create the All K-Rank-Approximate-Nearest-Neighbors benchmark instance, show
   some informations and return the instance.
-  
+
   @param dataset - Input dataset to perform ALLKRANN on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"],
       verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
@@ -54,16 +54,16 @@ class ALLKRANN(object):
       Log.Fatal("Could not execute command: " + str(cmd))
     else:
       # Use regular expression pattern to get the description.
-      pattern = re.compile(br"""(.*?)Required.*?options:""", 
+      pattern = re.compile(br"""(.*?)Required.*?options:""",
           re.VERBOSE|re.MULTILINE|re.DOTALL)
-      
+
       match = pattern.match(s)
       if not match:
         Log.Warn("Can't parse description", self.verbose)
         description = ""
       else:
         description = match.group(1)
-      
+
       self.description = description
 
   '''
@@ -78,13 +78,13 @@ class ALLKRANN(object):
 
   '''
   Run valgrind massif profiler on the All K-Rank-Approximate-Nearest-Neighbors
-  method. If the method has been successfully completed the report is saved in 
+  method. If the method has been successfully completed the report is saved in
   the specified file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.
   @param massifOptions - Extra massif options.
-  @return Returns False if the method was not successful, if the method was 
+  @return Returns False if the method was not successful, if the method was
   successful save the report file in the specified file.
   '''
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
@@ -93,20 +93,20 @@ class ALLKRANN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "allkrann -r " + self.dataset[0] + " -q " + 
+      cmd = shlex.split(self.debug + "allkrann -r " + self.dataset[0] + " -q " +
           self.dataset[1] + " -v -n neighbors.csv -d distances.csv " + options)
     else:
-      cmd = shlex.split(self.debug + "allkrann -r " + self.dataset + 
+      cmd = shlex.split(self.debug + "allkrann -r " + self.dataset +
           " -v -n neighbors.csv -d distances.csv " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Perform All K-Rank-Approximate-Nearest-Neighbors. If the method has been 
+  Perform All K-Rank-Approximate-Nearest-Neighbors. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -115,17 +115,17 @@ class ALLKRANN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "allkrann -r " + self.dataset[0] + " -q " + 
+      cmd = shlex.split(self.path + "allkrann -r " + self.dataset[0] + " -q " +
           self.dataset[1] + " -v -n neighbors.csv -d distances.csv " + options)
     else:
-      cmd = shlex.split(self.path + "allkrann -r " + self.dataset + 
-          " -v -n neighbors.csv -d distances.csv " + options)   
+      cmd = shlex.split(self.path + "allkrann -r " + self.dataset +
+          " -v -n neighbors.csv -d distances.csv " + options)
 
-    # Run command with the nessecary arguments and return its output as a byte 
+    # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
-          timeout=self.timeout) 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
+          timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -158,7 +158,7 @@ class ALLKRANN(object):
         .*?saving_data: (?P<saving_data>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data)
 
     if not match:
@@ -166,9 +166,9 @@ class ALLKRANN(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["loading_data", "saving_data", 
+      timer = collections.namedtuple("timer", ["loading_data", "saving_data",
           "total_time"])
-      
+
       return timer(float(match.group("loading_data")),
           float(match.group("saving_data")),
           float(match.group("total_time")))

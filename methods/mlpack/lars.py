@@ -29,16 +29,16 @@ This class implements the Least Angle Regression benchmark.
 '''
 class LARS(object):
 
-  ''' 
-  Create the Least Angle Regression benchmark instance, show some informations 
+  '''
+  Create the Least Angle Regression benchmark instance, show some informations
   and return the instance.
-  
+
   @param dataset - Input dataset to perform Least Angle Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"],
     verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
@@ -49,21 +49,21 @@ class LARS(object):
     # Get description from executable.
     cmd = shlex.split(self.path + "lars -h")
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
     else:
       # Use regular expression pattern to get the description.
-      pattern = re.compile(br"""(.*?)Required.*?options:""", 
+      pattern = re.compile(br"""(.*?)Required.*?options:""",
           re.VERBOSE|re.MULTILINE|re.DOTALL)
-      
+
       match = pattern.match(s)
       if not match:
         Log.Warn("Can't parse description", self.verbose)
         description = ""
       else:
         description = match.group(1)
-      
+
       self.description = description
 
   '''
@@ -77,14 +77,14 @@ class LARS(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Least Angle Regression method. If the 
+  Run valgrind massif profiler on the Least Angle Regression method. If the
   method has been successfully completed the report is saved in the specified
   file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.
   @param massifOptions - Extra massif options.
-  @return Returns False if the method was not successful, if the method was 
+  @return Returns False if the method was not successful, if the method was
   successful save the report file in the specified file.
   '''
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
@@ -95,7 +95,7 @@ class LARS(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "lars -i " + self.dataset[0] + " -r " + 
+    cmd = shlex.split(self.debug + "lars -i " + self.dataset[0] + " -r " +
         self.dataset[1] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -105,7 +105,7 @@ class LARS(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -116,13 +116,13 @@ class LARS(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "lars -i " + self.dataset[0] + " -r " + 
+    cmd = shlex.split(self.path + "lars -i " + self.dataset[0] + " -r " +
         self.dataset[1] + " -v " + options)
 
-    # Run command with the nessecary arguments and return its output as a byte 
+    # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
@@ -154,7 +154,7 @@ class LARS(object):
     pattern = re.compile(br"""
         .*?lars_regression: (?P<lars_regression>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -162,5 +162,5 @@ class LARS(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["lars_regression"])
-      
-      return timer(float(match.group("lars_regression"))) 
+
+      return timer(float(match.group("lars_regression")))

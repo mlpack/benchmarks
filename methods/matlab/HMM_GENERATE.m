@@ -4,7 +4,7 @@
 % Hidden Markov Model (HMM) Sequence Generator with matlab.
 
 function hmm_generate(cmd)
-% This utility takes an already-trained HMM and generates a random 
+% This utility takes an already-trained HMM and generates a random
 % observation sequence and hidden state sequence based on its parameters.
 %
 % Required options:

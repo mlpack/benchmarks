@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the Perceptron benchmark.
 '''
 class PERCEPTRON(object):
 
-  ''' 
+  '''
   Create the Perceptron benchmark instance.
-  
+
   @param dataset - Input dataset to perform Perceptron classification on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -66,7 +66,7 @@ class PERCEPTRON(object):
   Use the scikit libary to implement Perceptron.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def PerceptronScikit(self, options):
@@ -84,8 +84,8 @@ class PERCEPTRON(object):
       # Gather all parameters.
       s = re.search('-i (\d+)', options)
       self.iterations = 1000 if not s else int(s.group(1))
-      
-      # Use the last row of the training set as the responses.  
+
+      # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
 
       try:
@@ -105,18 +105,18 @@ class PERCEPTRON(object):
     return timeout(RunPerceptronScikit, self.timeout)
 
   '''
-  Perform Perceptron Classification. If the method has been successfully completed 
+  Perform Perceptron Classification. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
     Log.Info("Perform Perceptron Classification.", self.verbose)
 
     return self.PerceptronScikit(options)
-  
+
   '''
   Run all the metrics for Perceptron classification.
   '''

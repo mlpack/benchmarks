@@ -29,16 +29,16 @@ This class implements the Hidden Markov Model Sequence Generator benchmark.
 '''
 class HMMGENERATE(object):
 
-  ''' 
+  '''
   Create the Markov Model Sequence Generator benchmark instance, show some
   informations and return the instance.
-  
+
   @param dataset - Input dataset to perform HMM Sequence Generator on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"],
       verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
@@ -49,21 +49,21 @@ class HMMGENERATE(object):
     # Get description from executable.
     cmd = shlex.split(self.path + "hmm_generate -h")
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
     else:
       # Use regular expression pattern to get the description.
-      pattern = re.compile(br"""(.*?)Required.*?options:""", 
+      pattern = re.compile(br"""(.*?)Required.*?options:""",
           re.VERBOSE|re.MULTILINE|re.DOTALL)
-      
+
       match = pattern.match(s)
       if not match:
         Log.Warn("Can't parse description", self.verbose)
         description = ""
       else:
         description = match.group(1)
-      
+
       self.description = description
 
   '''
@@ -77,42 +77,42 @@ class HMMGENERATE(object):
         os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Hidden Markov Model Sequence Generator 
-  method. If the method has been successfully completed the report is saved in 
+  Run valgrind massif profiler on the Hidden Markov Model Sequence Generator
+  method. If the method has been successfully completed the report is saved in
   the specified file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.
   @param massifOptions - Extra massif options.
-  @return Returns False if the method was not successful, if the method was 
+  @return Returns False if the method was not successful, if the method was
   successful save the report file in the specified file.
   '''
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform HMM Generate Memory Profiling.", self.verbose)
 
-    cmd = shlex.split(self.debug + "hmm_generate -m " + self.dataset + " -v  " + 
+    cmd = shlex.split(self.debug + "hmm_generate -m " + self.dataset + " -v  " +
         options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Perform Hidden Markov Model Sequence Generator. If the method the has been 
+  Perform Hidden Markov Model Sequence Generator. If the method the has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
     Log.Info("Perform HMM Generate.", self.verbose)
 
-    cmd = shlex.split(self.path + "hmm_generate -m " + self.dataset + " -v  " + 
+    cmd = shlex.split(self.path + "hmm_generate -m " + self.dataset + " -v  " +
         options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
@@ -145,7 +145,7 @@ class HMMGENERATE(object):
         .*?saving_data: (?P<saving_data>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -153,7 +153,7 @@ class HMMGENERATE(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["saving_data", "total_time"])
-      
+
       return timer(float(match.group("saving_data")),
           float(match.group("total_time")))
 

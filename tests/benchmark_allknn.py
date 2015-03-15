@@ -51,7 +51,7 @@ class ALLKNN_MLPACK_TEST(unittest.TestCase):
   def test_RunTiming(self):
     result = self.instance.RunTiming("-k 3")
     self.assertTrue(result > 0)
-  
+
   '''
   Test the 'RunMemory' function.
   '''

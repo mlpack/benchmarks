@@ -37,7 +37,7 @@ class Log(object):
   @staticmethod
   def Debug(line, verbose=True):
     if verbose:
-      print(Log.BASH_CYAN + '[DEBUG] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+      print(Log.BASH_CYAN + '[DEBUG] ' + Log.BASH_CLEAR + Log.WrapLine(line),
           file=sys.stdout)
 
   '''
@@ -49,7 +49,7 @@ class Log(object):
   @staticmethod
   def Metric(line, verbose=True):
     if verbose:
-      print(Log.BASH_GREEN + '[METRICS] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+      print(Log.BASH_GREEN + '[METRICS] ' + Log.BASH_CLEAR + Log.WrapLine(line),
           file=sys.stdout)
 
   '''
@@ -61,7 +61,7 @@ class Log(object):
   @staticmethod
   def Info(line, verbose=True):
     if verbose:
-      print(Log.BASH_GREEN + '[INFO ] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+      print(Log.BASH_GREEN + '[INFO ] ' + Log.BASH_CLEAR + Log.WrapLine(line),
           file=sys.stdout)
 
   '''
@@ -73,7 +73,7 @@ class Log(object):
   @staticmethod
   def Warn(line, verbose=True):
     if verbose:
-      print(Log.BASH_YELLOW + '[WARN ] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+      print(Log.BASH_YELLOW + '[WARN ] ' + Log.BASH_CLEAR + Log.WrapLine(line),
           file=sys.stdout)
 
   '''
@@ -85,7 +85,7 @@ class Log(object):
   @staticmethod
   def Fatal(line, verbose=True):
     if verbose:
-      print(Log.BASH_RED + '[FATAL] ' + Log.BASH_CLEAR + Log.WrapLine(line), 
+      print(Log.BASH_RED + '[FATAL] ' + Log.BASH_CLEAR + Log.WrapLine(line),
           file=sys.stdout)
 
   '''
@@ -107,7 +107,7 @@ class Log(object):
   '''
   @staticmethod
   def WrapLine(line):
-    return '\n'.join(line.strip() for line in re.findall(r'.{1,80}(?:\s+|$)', 
+    return '\n'.join(line.strip() for line in re.findall(r'.{1,80}(?:\s+|$)',
         line))
 
   '''
@@ -184,11 +184,11 @@ class Log(object):
         body += str(sub_dictionary[sub_k])
       print(body)
     print("Bootstrapping for method ",method_name," done.")
-    
 
 
 
 
 
-    
-    
+
+
+

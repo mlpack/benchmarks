@@ -10,7 +10,7 @@ import sys
 import inspect
 import numpy as np
 
-# Import the util path, this method even works if the path contains symlinks to 
+# Import the util path, this method even works if the path contains symlinks to
 # modules.
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../util")))
@@ -21,7 +21,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from profiler import *
@@ -37,16 +37,16 @@ This class implements the Perceptron Prediction benchmark.
 '''
 class PERCEPTRON(object):
 
-  ''' 
+  '''
   Create the Perceptron Prediction benchmark instance, show some
   informations and return the instance.
-  
+
   @param dataset - Input dataset to perform Perceptron Prediction on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"],
       verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
@@ -57,42 +57,42 @@ class PERCEPTRON(object):
     # Get description from executable.
     cmd = shlex.split(self.path + "perceptron -h")
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
     else:
       # Use regular expression pattern to get the description.
-      pattern = re.compile(br"""(.*?)Required.*?options:""", 
+      pattern = re.compile(br"""(.*?)Required.*?options:""",
           re.VERBOSE|re.MULTILINE|re.DOTALL)
-      
+
       match = pattern.match(s)
       if not match:
         Log.Warn("Can't parse description", self.verbose)
         description = ""
       else:
         description = match.group(1)
-      
+
       self.description = description
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  def __del__(self):    
+  def __del__(self):
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-  
+
   '''
-  Run valgrind massif profiler on the Perceptron Prediction 
-  method. If the method has been successfully completed the report is saved in 
+  Run valgrind massif profiler on the Perceptron Prediction
+  method. If the method has been successfully completed the report is saved in
   the specified file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.
   @param massifOptions - Extra massif options.
-  @return Returns False if the method was not successful, if the method was 
+  @return Returns False if the method was not successful, if the method was
   successful save the report file in the specified file.
   '''
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
@@ -101,7 +101,7 @@ class PERCEPTRON(object):
     # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] + 
+      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] +
           " -T " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("This method requires atleast two datasets.")
@@ -109,11 +109,11 @@ class PERCEPTRON(object):
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Perform Perceptron Prediction. If the method has been 
+  Perform Perceptron Prediction. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -122,15 +122,15 @@ class PERCEPTRON(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "perceptron -t " + self.dataset[0] + 
+      cmd = shlex.split(self.path + "perceptron -t " + self.dataset[0] +
           " -T " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("This method requires atleast two datasets.")
 
-    # Run command with the nessecary arguments and return its output as a byte 
+    # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
         timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
@@ -192,7 +192,7 @@ class PERCEPTRON(object):
         .*?saving_data: (?P<saving_data>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -212,4 +212,4 @@ class PERCEPTRON(object):
   def GetTime(self, timer):
     time = timer.total_time - timer.loading_data - timer.saving_data
     return time
-    
+

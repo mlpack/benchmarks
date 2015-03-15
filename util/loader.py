@@ -26,12 +26,12 @@ class Loader(object):
       realPath = os.path.realpath(os.getcwdu())
     else:
       realPath = os.path.realpath(os.path.curdir)
-      
+
     destinationPath = os.path.dirname(path)
 
     if destinationPath == "":
       destinationPath = '.'
-      
+
     # Remove the .py suffix.
     scriptName = os.path.basename(path)
 
@@ -39,7 +39,7 @@ class Loader(object):
       modName = scriptName[:-3]
     else:
       modName = scriptName
-      
+
     os.chdir(destinationPath)
     fileHandle = None
     try:

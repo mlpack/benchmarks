@@ -4,9 +4,9 @@
 % All K-Nearest-Neighbors with matlab.
 
 function allknn(cmd)
-% This program will calculate the all k-nearest-neighbors of a set of 
+% This program will calculate the all k-nearest-neighbors of a set of
 % points using kd-trees. You may specify a separate set of reference points
-% and query points, or just a reference set which will be used as both the 
+% and query points, or just a reference set which will be used as both the
 % reference and query set.
 %
 % Required options:
@@ -16,7 +16,7 @@ function allknn(cmd)
 % Options:
 %     (-l) [int]       Leaf size for tree building. Default value 20.
 %     (-N)             If true, O(n^2) naive mode is used for computation.
-%     (-q) [string]    File containing query points (optional). 
+%     (-q) [string]    File containing query points (optional).
 %                      Default value ''.
 
 % Load input dataset.
@@ -53,13 +53,13 @@ if k > size(referenceData, 2)
 end
 
 if isempty(leafSize)
-  leafSize = 20;  
+  leafSize = 20;
 end
 
 if strfind(cmd, '-N') > 0
   if isempty(queryFile)
     [IDX, D] = knnsearch(referenceData, referenceData, 'K', k, ...
-      'distance', 'euclidean', 'NSMethod', 'exhaustive');    
+      'distance', 'euclidean', 'NSMethod', 'exhaustive');
   else
     [IDX, D] = knnsearch(referenceData, queryData, 'K', k, ...
       'distance', 'euclidean', 'NSMethod', 'exhaustive');
@@ -72,7 +72,7 @@ else
   else
     [IDX, D] = knnsearch(referenceData, queryData, 'K', k, ...
         'distance', 'euclidean', 'NSMethod', 'kdtree', 'BucketSize', ...
-        leafSize); 
+        leafSize);
     end
 end
 

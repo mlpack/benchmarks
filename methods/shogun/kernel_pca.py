@@ -28,9 +28,9 @@ This class implements the Kernel Principal Components Analysis benchmark.
 '''
 class KPCA(object):
 
-  ''' 
+  '''
   Create the Kernel Principal Components Analysis benchmark instance.
-  
+
   @param dataset - Input dataset to perform KPCA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -44,7 +44,7 @@ class KPCA(object):
   Use the shogun libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def KPCAShogun(self, options):
@@ -56,31 +56,31 @@ class KPCA(object):
         Log.Info("Loading dataset", self.verbose)
         data = np.genfromtxt(self.dataset, delimiter=',')
         dataFeat = RealFeatures(data.T)
-      
+
         with totalTimer:
           # Get the new dimensionality, if it is necessary.
           dimension = re.search('-d (\d+)', options)
           if not dimension:
             d = data.shape[1]
           else:
-            d = int(dimension.group(1))      
+            d = int(dimension.group(1))
             if (d > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
               q.put(-1)
-              return -1    
+              return -1
 
           # Get the kernel type and make sure it is valid.
           kernel = re.search("-k ([^\s]+)", options)
           if not kernel:
-              Log.Fatal("Choose kernel type, valid choices are 'linear'," + 
+              Log.Fatal("Choose kernel type, valid choices are 'linear'," +
                     " 'hyptan', 'polynomial' and 'gaussian'.")
               q.put(-1)
               return -1
           elif kernel.group(1) == "polynomial":
             degree = re.search('-D (\d+)', options)
             degree = 1 if not degree else int(degree.group(1))
-            
+
             kernel = PolyKernel(dataFeat, dataFeat, degree, True)
           elif kernel.group(1) == "gaussian":
             kernel = GaussianKernel(dataFeat, dataFeat, 2.0)
@@ -107,14 +107,14 @@ class KPCA(object):
       q.put(time)
       return time
 
-    return timeout(RunKPCAShogun, self.timeout)   
+    return timeout(RunKPCAShogun, self.timeout)
 
   '''
-  Perform Kernel Principal Components Analysis. If the method has been 
+  Perform Kernel Principal Components Analysis. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

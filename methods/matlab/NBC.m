@@ -4,9 +4,9 @@
 % Naive Bayes Classifier with matlab.
 
 function nbc(cmd)
-% This program trains the Naive Bayes classifier on the given labeled 
+% This program trains the Naive Bayes classifier on the given labeled
 % training set and then uses the trained classifier to classify the points
-% in the given test set. Labels are expected to be the last row of the 
+% in the given test set. Labels are expected to be the last row of the
 % training set.
 %
 % Required options:

@@ -56,7 +56,7 @@ class GMM_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''

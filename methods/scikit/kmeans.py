@@ -27,9 +27,9 @@ This class implements the K-Means Clustering benchmark.
 '''
 class KMEANS(object):
 
-  ''' 
+  '''
   Create the K-Means Clustering benchmark instance.
-  
+
   @param dataset - Input dataset to perform K-Means on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class KMEANS(object):
   Use the scikit libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def KMeansScikit(self, options):
@@ -51,7 +51,7 @@ class KMEANS(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the centroids 
+      # If the dataset contains two files then the second file is the centroids
       # file.
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) == 2:
@@ -82,13 +82,13 @@ class KMEANS(object):
         # Create the KMeans object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)), init=centroids, 
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), init=centroids,
                 n_init=1, max_iter=m)
           elif seed:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random', 
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random',
                 n_init=1, max_iter=m, random_state=int(seed.group(1)))
           else:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)      
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)
 
           kmeans.fit(data)
           labels = kmeans.labels_
@@ -104,11 +104,11 @@ class KMEANS(object):
     return timeout(RunKMeansScikit, self.timeout)
 
   '''
-  Perform K-Means Clustering. If the method has been successfully completed 
+  Perform K-Means Clustering. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

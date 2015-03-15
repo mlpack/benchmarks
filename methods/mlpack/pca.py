@@ -29,17 +29,17 @@ This class implements the Principal Components Analysis benchmark.
 '''
 class PCA(object):
 
-  ''' 
-  Create the Principal Components Analysis benchmark instance, show some 
+  '''
+  Create the Principal Components Analysis benchmark instance, show some
   informations and return the instance.
-  
+
   @param dataset - Input dataset to perform PCA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"], 
-      verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]): 
+  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"],
+      verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
@@ -49,77 +49,77 @@ class PCA(object):
     # Get description from executable.
     cmd = shlex.split(self.path + "pca -h")
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False) 
-      
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
+
     except Exception:
-      Log.Fatal("Could not execute command: " + str(cmd))   
+      Log.Fatal("Could not execute command: " + str(cmd))
     else:
       # Use regular expression pattern to get the description.
-      pattern = re.compile(br"""(.*?)Required.*?options:""", 
+      pattern = re.compile(br"""(.*?)Required.*?options:""",
           re.VERBOSE|re.MULTILINE|re.DOTALL)
-      
+
       match = pattern.match(s)
       if not match:
         Log.Warn("Can't parse description", self.verbose)
         description = ""
       else:
         description = match.group(1)
-      
+
       self.description = description
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
-  def __del__(self):    
+  def __del__(self):
     Log.Info("Clean up.", self.verbose)
     filelist = ["gmon.out", "output.csv"]
     for f in filelist:
       if os.path.isfile(f):
-        os.remove(f)    
+        os.remove(f)
 
   '''
-  Run valgrind massif profiler on the Principal Components Analysis method. If 
-  the method has been successfully completed the report is saved in the 
+  Run valgrind massif profiler on the Principal Components Analysis method. If
+  the method has been successfully completed the report is saved in the
   specified file.
 
   @param options - Extra options for the method.
   @param fileName - The name of the massif output file.
   @param massifOptions - Extra massif options.
-  @return Returns False if the method was not successful, if the method was 
+  @return Returns False if the method was not successful, if the method was
   successful save the report file in the specified file.
   '''
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform PCA Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "pca -i " + self.dataset + 
+    cmd = shlex.split(self.debug + "pca -i " + self.dataset +
         " -o output.csv -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
-    
+
   '''
-  Perform Principal Components Analysis. If the method has been successfully 
+  Perform Principal Components Analysis. If the method has been successfully
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "pca -i " + self.dataset + 
+    cmd = shlex.split(self.path + "pca -i " + self.dataset +
         " -o output.csv -v " + options)
-  
+
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
-      return -2  
+      return -2
     except Exception:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
@@ -149,18 +149,18 @@ class PCA(object):
         .*?saving_data: (?P<saving_time>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["loading_time", "saving_time", 
+      timer = collections.namedtuple("timer", ["loading_time", "saving_time",
           "total_time"])
-      
-      return timer(float(match.group("loading_time")), 
-          float(match.group("saving_time")), 
+
+      return timer(float(match.group("loading_time")),
+          float(match.group("saving_time")),
           float(match.group("total_time")))
 
   '''

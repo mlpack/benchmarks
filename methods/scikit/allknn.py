@@ -27,9 +27,9 @@ This class implements the All K-Nearest-Neighbors benchmark.
 '''
 class ALLKNN(object):
 
-  ''' 
+  '''
   Create the All K-Nearest-Neighbors benchmark instance.
-  
+
   @param dataset - Input dataset to perform All K-Nearest-Neighbors on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class ALLKNN(object):
   Use the scikit libary to implement All K-Nearest-Neighbors.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def AllKnnScikit(self, options):
@@ -51,7 +51,7 @@ class ALLKNN(object):
       totalTimer = Timer()
 
       # Load input dataset.
-      # If the dataset contains two files then the second file is the query file 
+      # If the dataset contains two files then the second file is the query file
       # In this case we add this to the command line.
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) == 2:
@@ -86,7 +86,7 @@ class ALLKNN(object):
           return -1
         else:
           l = int(leafSize.group(1))
-  
+
         try:
           # Perform All K-Nearest-Neighbors.
           model = NearestNeighbors(n_neighbors=k, algorithm='kd_tree', leaf_size=l)
@@ -110,11 +110,11 @@ class ALLKNN(object):
     return timeout(RunAllKnnScikit, self.timeout)
 
   '''
-  Perform All K-Nearest-Neighbors. If the method has been successfully completed 
+  Perform All K-Nearest-Neighbors. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

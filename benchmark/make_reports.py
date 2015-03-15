@@ -45,7 +45,7 @@ def CreateTimingTable(data, libraries, type):
     timingTable += "<tr><td>" + dataset + "</td>"
     for time in timings:
 
-      # Distinguish between the metric and the timing type. 
+      # Distinguish between the metric and the timing type.
       c = minData(timings) if type == 'timing' else maxData(timings)
 
       # Highlight the data with the best timing.
@@ -307,7 +307,7 @@ def MethodReports(db, bootstrapCount):
       if method[1] in methodGroup:
         methodGroup[method[1]].append(t)
       else:
-        methodGroup[method[1]] = [t]  
+        methodGroup[method[1]] = [t]
 
   methodGroup = collections.OrderedDict(sorted(methodGroup.items()))
   collapseGroup = 0
@@ -501,7 +501,7 @@ def MethodReports(db, bootstrapCount):
         barChartNameMetric = "img/bar_" + chartHash + "_metric_" + dataSetName + ".png"
 
         # Generate the metrics bar chart.
-        ChartInfoMetric = GenerateBarChartMetric(methodResultsMetric, 
+        ChartInfoMetric = GenerateBarChartMetric(methodResultsMetric,
                                                  methodLibarariesMetric, "reports/" +
                                                  barChartNameMetric, dataSetName)
 
@@ -591,7 +591,7 @@ def MethodReports(db, bootstrapCount):
       reportValues["resultsPanelBootstrap"] += '<div class="panel-body">' + bootstrapContent + '</div></div></div>'
     else:
       reportValues["resultsPanelBootstrap"] = ""
-    
+
     reportValues["methods"] = len(results)
     reportValues["groupOne"] = collapseGroup
     reportValues["groupTwo"] = collapseGroup + 1
@@ -776,7 +776,7 @@ def Main(configfile):
   for i, libary in enumerate(libraries):
     information = {}
     information["name"] = libary
-    information["version"] = version[i]    
+    information["version"] = version[i]
     reportValues["LibraryInformation"] += LibraryInformation % information
 
   reportValues["container"] = chartInfoTop[1]

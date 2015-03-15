@@ -99,7 +99,7 @@ def FindRightRow(dataMatrix, datasetName, datasetCount):
 Collect informations for the given dataset.
 
 @param path - Path to the dataset.
-@return Tuple that contains the informations about the given dataset 
+@return Tuple that contains the informations about the given dataset
 (name, size, attributes, instances, type).
 '''
 def DatasetInfo(path):

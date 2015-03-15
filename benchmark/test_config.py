@@ -22,9 +22,9 @@ import argparse
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Test the configuration file.
-      Check for correct syntax and then try to open files referred in the 
+      Check for correct syntax and then try to open files referred in the
       configuration.""")
-  parser.add_argument('-c','--config', help='Configuration file name.', 
+  parser.add_argument('-c','--config', help='Configuration file name.',
       required=True)
 
   args = parser.parse_args()

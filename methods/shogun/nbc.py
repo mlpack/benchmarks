@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -34,9 +34,9 @@ This class implements the Naive Bayes Classifier benchmark.
 '''
 class NBC(object):
 
-  ''' 
+  '''
   Create the Naive Bayes Classifier benchmark instance.
-  
+
   @param dataset - Input dataset to perform NBC on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -50,13 +50,13 @@ class NBC(object):
   Use the shogun libary to implement Naive Bayes Classifier.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def NBCShogun(self, options):
     def RunNBCShogun(q):
       totalTimer = Timer()
-      
+
       Log.Info("Loading dataset", self.verbose)
       try:
         # Load train and test dataset.
@@ -74,7 +74,7 @@ class NBC(object):
           # Create and train the classifier.
           nbc = GaussianNaiveBayes(trainFeat, labels)
           nbc.train()
-          
+
           # Run Naive Bayes Classifier on the test dataset.
           nbc.apply(testFeat).get_labels()
       except Exception as e:
@@ -86,18 +86,18 @@ class NBC(object):
       return time
 
     return timeout(RunNBCShogun, self.timeout)
-  
+
   '''
   NBC for metrics
   '''
   def RunMetrics(self, options):
     if len(self.dataset) == 3:
     # Check if the files to calculate the different metric are available.
-      cmd = shlex.split("methods/shogun/nbc " + self.dataset[0] 
+      cmd = shlex.split("methods/shogun/nbc " + self.dataset[0]
            + " " + self.dataset[1])
       if not CheckFileAvailable("shogun_labels.csv") or not CheckFileAvailable("shogun_probs.csv"):
         try:
-          s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+          s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
               timeout=self.timeout)
         except subprocess.TimeoutExpired as e:
           Log.Warn(str(e))
@@ -105,7 +105,7 @@ class NBC(object):
         except Exception as e:
           Log.Fatal("Could not execute command: " + str(cmd))
           return -1
-        
+
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
@@ -137,11 +137,11 @@ class NBC(object):
         Log.Fatal("This method requires three datasets!")
 
   '''
-  Perform Naive Bayes Classifier. If the method has been successfully completed 
+  Perform Naive Bayes Classifier. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

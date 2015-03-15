@@ -205,7 +205,7 @@ def GenerateBarChart(results, libraries, fileName, bestlib="mlpack"):
   with open('reports/' + fileName + '.csv', 'wb+') as fid:
     # Write header line to file.
     fid.write(header.encode('UTF-8'))
-  
+
     for i in range(len(libraries)):
       c = libraries[i] + ','
       for dataset, timings in timingData.items():
@@ -362,7 +362,7 @@ def CreateTopLineChart(db):
     with open('reports/' + fileName + '.csv', 'wb+') as fid:
       # Write header line to file.
       fid.write(header.encode('UTF-8'))
-      
+
       # Normalize data and fill existing gaps.
       lenSum = [len(x) for x in sums]
       for i, sum in enumerate(sums):

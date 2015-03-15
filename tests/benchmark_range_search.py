@@ -34,7 +34,7 @@ class RANGESEARCH_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/range_search.py")
     obj = getattr(module, "RANGESEARCH")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class RANGESEARCH_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("-M 0.02", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''
@@ -90,7 +90,7 @@ class RANGESEARCH_MATLAB_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/matlab/range_search.py")
     obj = getattr(module, "RANGESEARCH")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''

@@ -34,7 +34,7 @@ class KPCA_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/kernel_pca.py")
     obj = getattr(module, "KPCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class KPCA_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("-k linear", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''
@@ -90,7 +90,7 @@ class KPCA_SCIKIT_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/scikit/kernel_pca.py")
     obj = getattr(module, "KPCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -122,7 +122,7 @@ class KPCA_MLPY_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpy/kernel_pca.py")
     obj = getattr(module, "KPCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -154,7 +154,7 @@ class KPCA_SHOGUN_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/shogun/kernel_pca.py")
     obj = getattr(module, "KPCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''

@@ -8,7 +8,7 @@
 import java.util.HashMap;
 
 /**
- * The timer class provides a way for methods to be timed. The three methods 
+ * The timer class provides a way for methods to be timed. The three methods
  * contained in this class allow a named timer to be started and stopped, and
  * its value to be obtained.
  */

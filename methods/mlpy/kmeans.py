@@ -27,9 +27,9 @@ This class implements the K-Means Clustering benchmark.
 '''
 class KMEANS(object):
 
-  ''' 
+  '''
   Create the K-Means Clustering benchmark instance.
-  
+
   @param dataset - Input dataset to perform K-Means on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class KMEANS(object):
   Use the mlpy libary to implement K-Means Clustering.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def KMeansMlpy(self, options):
@@ -87,11 +87,11 @@ class KMEANS(object):
     return timeout(RunKMeansMlpy, self.timeout)
 
   '''
-  Perform K-Means Clustering. If the method has been successfully completed 
+  Perform K-Means Clustering. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

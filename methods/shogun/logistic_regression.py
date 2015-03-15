@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the Logistic Regression benchmark.
 '''
 class LogisticRegression(object):
 
-  ''' 
+  '''
   Create the Logistic Regression benchmark instance.
-  
+
   @param dataset - Input dataset to perform Logistic Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -58,7 +58,7 @@ class LogisticRegression(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    model = MulticlassLogisticRegression(self.z, RealFeatures(data.T), 
+    model = MulticlassLogisticRegression(self.z, RealFeatures(data.T),
         MulticlassLabels(responses))
     model.train()
     return model
@@ -67,7 +67,7 @@ class LogisticRegression(object):
   Use the shogun libary to implement Logistic Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def LogisticRegressionShogun(self, options):
@@ -80,7 +80,7 @@ class LogisticRegression(object):
         if len(self.dataset) > 1:
           testSet = LoadDataset(self.dataset[1])
 
-        # Use the last row of the training set as the responses.  
+        # Use the last row of the training set as the responses.
         X, y = SplitTrainData(self.dataset[0])
 
         # Get the regularization value.
@@ -91,7 +91,7 @@ class LogisticRegression(object):
           # Perform logistic regression.
           self.model = BuildModel(x, y)
           self.model.train()
-          
+
           if len(self.dataset) == 2:
             pred = classifier.apply(RealFeatures(testSet.T))
             self.predictions = pred.get_labels()
@@ -107,11 +107,11 @@ class LogisticRegression(object):
     return timeout(RunLogisticRegressionShogun, self.timeout)
 
   '''
-  Perform Logistic Regression. If the method has been successfully completed 
+  Perform Logistic Regression. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -154,6 +154,6 @@ class LogisticRegression(object):
       return metrics_dict
     else:
       Log.Fatal("This method requires three datasets!")
-  
+
     # now the predictions are in self.predictions
 

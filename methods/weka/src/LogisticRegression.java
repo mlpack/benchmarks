@@ -30,7 +30,7 @@ public class LogisticRegression {
           + "Options:\n\n"
           + "-t [string]   Optional file containing containing\n"
           + "              test dataset");
-  
+
   public static HashMap<Integer, Double> createClassMap(Instances Data) {
    HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
    int index = 0;
@@ -57,7 +57,7 @@ public class LogisticRegression {
     }
     return index;
   }
-  
+
   public static void main(String args[]) {
     Timers timer = new Timers();
     try {
@@ -66,12 +66,12 @@ public class LogisticRegression {
       if (regressorsFile.length() == 0)
         throw new IllegalArgumentException("Required option: File containing" +
             " the regressors.");
-      
+
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
       Instances data = source.getDataSet();
 
-      // Transform numeric class to nominal class because the 
+      // Transform numeric class to nominal class because the
       // classifier cannot handle numeric classes.
       NumericToNominal nm = new NumericToNominal();
       String[] options = new String[2];
@@ -80,7 +80,7 @@ public class LogisticRegression {
       nm.setOptions(options);
       nm.setInputFormat(data);
       data = Filter.useFilter(data, nm);
-      
+
       // Did the user pass a test file?
       String testFile = Utils.getOption('t', args);
       Instances testData = null;
@@ -90,8 +90,8 @@ public class LogisticRegression {
         testData = source.getDataSet();
 
         // Weka makes the assumption that the structure of the training and test
-        // sets are exactly the same. This means that we need the exact same 
-        // number of attributes. So we need to add a new attribute to the test 
+        // sets are exactly the same. This means that we need the exact same
+        // number of attributes. So we need to add a new attribute to the test
         // set if this differs from the trainig set.
         if (data.numAttributes() > testData.numAttributes())
         {
@@ -101,19 +101,19 @@ public class LogisticRegression {
           Instances myInstances = new Instances("dummy", attributes, testData.numInstances());
 
           // Add some dummy data to the new attribute.
-          for (int i = 0; i < testData.numInstances(); i++) 
+          for (int i = 0; i < testData.numInstances(); i++)
             myInstances.add(new Instance(1.0,  new double[1]));
 
           // Merge the new dummy attribute with the testdata set.
           testData = Instances.mergeInstances(testData, myInstances);
         }
 
-        // Set the class index for the testdata set. This isn't used in the 
+        // Set the class index for the testdata set. This isn't used in the
         // evaluation process.
         if (testData.classIndex() == -1)
           testData.setClassIndex((testData.numAttributes() - 1));
-      }      
-      
+      }
+
       // Set the class fro the trainings set. The class is in the last row.
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
@@ -128,7 +128,7 @@ public class LogisticRegression {
       if (testFile.length() != 0)
       {
         ArrayList<double[]> probabilityList = new ArrayList<double[]>();
-        for (int i = 0; i < testData.numInstances(); i++) 
+        for (int i = 0; i < testData.numInstances(); i++)
         {
             probabilityList.add(model.distributionForInstance(testData.instance(i)));
         }
@@ -139,14 +139,14 @@ public class LogisticRegression {
             probabs.createNewFile();
           }
           FileWriter writer = new FileWriter(probabs.getName(), false);
-          
+
           File predictions = new File("weka_lr_predictions.csv");
           if(!predictions.exists()) {
             predictions.createNewFile();
           }
           FileWriter writer_predict = new FileWriter(predictions.getName(), false);
 
-          for (int i = 0; i < testData.numInstances(); i++) 
+          for (int i = 0; i < testData.numInstances(); i++)
           {
             double[] probabilities = probabilityList.get(i);
             String fdata = "";
@@ -168,14 +168,14 @@ public class LogisticRegression {
           e.printStackTrace();
         }
       }
-      
+
       timer.StopTimer("total_time");
       timer.PrintTimer("total_time");
-      
+
     } catch (IOException e) {
       System.err.println(USAGE);
     } catch (Exception e) {
       e.printStackTrace();
-    }   
+    }
   }
 }

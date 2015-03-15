@@ -34,7 +34,7 @@ class HMMTRAIN_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/hmm_train.py")
     obj = getattr(module, "HMMTRAIN")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class HMMTRAIN_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("-t gaussian -n 2", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''

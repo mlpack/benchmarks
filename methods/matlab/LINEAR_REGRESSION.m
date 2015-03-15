@@ -11,9 +11,9 @@ function linear_regression(cmd)
 %
 % Options:
 %     (-r) [string]    File containing y (responses). If not given, the
-%                      responses are assumed to be the last row of the 
+%                      responses are assumed to be the last row of the
 %                      input file.
-%     (-t) [string]    File containing the test instnces. 
+%     (-t) [string]    File containing the test instnces.
 
 % Load input dataset.
 regressorsFile = regexp(cmd, '.*?-i ([^\s]+)', 'tokens', 'once');

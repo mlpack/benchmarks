@@ -29,27 +29,27 @@ This class implements the All K-Nearest-Neighbors benchmark.
 '''
 class ALLKNN(object):
 
-  ''' 
+  '''
   Create the All K-Nearest-Neighbors benchmark instance.
-  
+
   @param dataset - Input dataset to perform ALLKNN on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MATLAB_BIN"], 
-      verbose=True): 
+  def __init__(self, dataset, timeout=0, path=os.environ["MATLAB_BIN"],
+      verbose=True):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
-    
+
   '''
-  All K-Nearest-Neighbors. If the method has been successfully completed return 
+  All K-Nearest-Neighbors. If the method has been successfully completed return
   the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or negative value if the method was not 
+  @return - Elapsed time in seconds or negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -61,15 +61,15 @@ class ALLKNN(object):
       inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + options
     else:
       inputCmd = "-r " + self.dataset + " " + options
-    
+
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
         "ALLKNN('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
-    
+
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
@@ -101,7 +101,7 @@ class ALLKNN(object):
     pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -109,7 +109,7 @@ class ALLKNN(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["total_time"])
-      
+
       return timer(float(match.group("total_time")))
 
   '''

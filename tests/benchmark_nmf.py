@@ -34,7 +34,7 @@ class NMF_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/nmf.py")
     obj = getattr(module, "NMF")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class NMF_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("-r 6 -u multdist", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''
@@ -90,7 +90,7 @@ class NMF_SCIKIT_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/scikit/nmf.py")
     obj = getattr(module, "NMF")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -122,7 +122,7 @@ class NMF_MATLAB_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/matlab/nmf.py")
     obj = getattr(module, "NMF")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''

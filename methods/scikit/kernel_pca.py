@@ -27,9 +27,9 @@ This class implements the Kernel Principal Components Analysis benchmark.
 '''
 class KPCA(object):
 
-  ''' 
+  '''
   Create the Kernel Principal Components Analysis benchmark instance.
-  
+
   @param dataset - Input dataset to perform KPCA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class KPCA(object):
   Use the scikit libary to implement Kernel Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def KPCAScikit(self, options):
@@ -60,7 +60,7 @@ class KPCA(object):
         if not dimension:
           d = data.shape[1]
         else:
-          d = int(dimension.group(1))      
+          d = int(dimension.group(1))
           if (d > data.shape[1]):
             Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
               + "than existing dimensionality (" + str(data.shape[1]) + ")!")
@@ -69,9 +69,9 @@ class KPCA(object):
 
         # Get the kernel type and make sure it is valid.
         kernel = re.search("-k ([^\s]+)", options)
-        try:        
+        try:
           if not kernel:
-            Log.Fatal("Choose kernel type, valid choices are 'linear'," + 
+            Log.Fatal("Choose kernel type, valid choices are 'linear'," +
                   " 'hyptan' and 'polynomial'.")
             q.put(-1)
             return -1
@@ -89,7 +89,7 @@ class KPCA(object):
                 "choices are 'linear', 'hyptan' and 'polynomial'.")
             q.put(-1)
             return -1
-            
+
           out = model.fit_transform(data)
         except Exception as e:
           q.put(-1)
@@ -102,11 +102,11 @@ class KPCA(object):
     return timeout(RunKPCAScikit, self.timeout)
 
   '''
-  Perform Kernel Principal Components Analysis. If the method has been 
+  Perform Kernel Principal Components Analysis. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

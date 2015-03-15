@@ -34,7 +34,7 @@ class FASTMKS_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/fastmks.py")
     obj = getattr(module, "FastMKS")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class FASTMKS_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("-k 1", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''

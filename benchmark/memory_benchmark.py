@@ -15,7 +15,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from log import *
-from loader import * 
+from loader import *
 from parser import *
 from convert import *
 from misc import *
@@ -37,7 +37,7 @@ def GetDataset(dataset, format):
     datasetList = []
     modifiedList = []
 
-    for data in dataset:  
+    for data in dataset:
       mdata = CheckFileExtension(data, format)
 
       # Check if the dataset is available.
@@ -124,7 +124,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
           datsets = libary[1]
           script = libary[3]
           format = libary[4]
-          
+
           if not blocks or name in blocks:
             Log.Info("Libary: " + name)
 
@@ -164,7 +164,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                 modifiedDataset = GetDataset(dataset, format)
 
                 try:
-                  instance = methodCall(modifiedDataset[0], timeout=timeout, 
+                  instance = methodCall(modifiedDataset[0], timeout=timeout,
                     verbose=False)
                 except Exception as e:
                   Log.Fatal("Could not call the constructor: " + script)
@@ -178,7 +178,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   err = instance.RunMemory(options, outputName);
                 except Exception as e:
                   Log.Fatal("Exception: " + str(e))
-                  
+
                   # Remove temporary datasets.
                   RemoveDataset(modifiedDataset[1])
                   continue
@@ -188,10 +188,10 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   buildId, libaryId = build[name]
 
                   if update:
-                    db.UpdateMemory(buildId, libaryId, methodId, datasetId, 
+                    db.UpdateMemory(buildId, libaryId, methodId, datasetId,
                         outputName)
                   else:
-                    db.NewMemory(buildId, libaryId, methodId, datasetId, 
+                    db.NewMemory(buildId, libaryId, methodId, datasetId,
                         outputName)
 
                 # Remove temporary datasets.
@@ -200,15 +200,15 @@ def Main(configfile, blocks, log, methodBlocks, update):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
       given config.""")
-  parser.add_argument('-c','--config', help='Configuration file name.', 
+  parser.add_argument('-c','--config', help='Configuration file name.',
       required=True)
-  parser.add_argument('-b','--blocks', help='Run only the specified blocks.', 
+  parser.add_argument('-b','--blocks', help='Run only the specified blocks.',
       required=False)
-  parser.add_argument('-l','--log', help='Save the results in the logfile.', 
+  parser.add_argument('-l','--log', help='Save the results in the logfile.',
       required=False)
-  parser.add_argument('-u','--update', help="""Update the latest results in the 
+  parser.add_argument('-u','--update', help="""Update the latest results in the
       database.""", required=False)
-  parser.add_argument('-m','--methodBlocks', help="""Run only the specified 
+  parser.add_argument('-m','--methodBlocks', help="""Run only the specified
       method blocks.""", required=False)
 
   args = parser.parse_args()

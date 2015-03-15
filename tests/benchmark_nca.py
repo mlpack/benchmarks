@@ -34,7 +34,7 @@ class NCA_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/nca.py")
     obj = getattr(module, "NCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -57,7 +57,7 @@ class NCA_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''

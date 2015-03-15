@@ -27,9 +27,9 @@ This class implements the Gaussian Mixture Model benchmark.
 '''
 class GMM(object):
 
-  ''' 
+  '''
   Create the Gaussian Mixture Model benchmark instance.
-  
+
   @param dataset - Input dataset to perform Gaussian Mixture Model on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class GMM(object):
   Use the scikit libary to implement Gaussian Mixture Model.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def GMMScikit(self, options):
@@ -65,7 +65,7 @@ class GMM(object):
       try:
         # Create the Gaussian Mixture Model
 	# Some params changed to match mlpack defaults.
-        model = mixture.GMM(n_components=g, covariance_type='full', 
+        model = mixture.GMM(n_components=g, covariance_type='full',
             random_state=s, n_iter=n, n_init=10, thresh=1e-10)
         with totalTimer:
           model.fit(dataPoints)
@@ -80,11 +80,11 @@ class GMM(object):
     return timeout(RunGMMScikit, self.timeout)
 
   '''
-  Perform Gaussian Mixture Model. If the method has been successfully completed 
+  Perform Gaussian Mixture Model. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

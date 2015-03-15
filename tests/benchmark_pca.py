@@ -34,7 +34,7 @@ class PCA_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/pca.py")
     obj = getattr(module, "PCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class PCA_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''
@@ -90,7 +90,7 @@ class PCA_MLPACK_TEST(unittest.TestCase):
 #     module = Loader.ImportModuleFromPath("methods/weka/pca.py")
 #     obj = getattr(module, "PCA")
 #     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
 #   '''
 #   Test the constructor.
 #   '''
@@ -122,7 +122,7 @@ class PCA_SHOGUN_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/shogun/pca.py")
     obj = getattr(module, "PCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -154,7 +154,7 @@ class PCA_SCIKIT_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/scikit/pca.py")
     obj = getattr(module, "PCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -186,7 +186,7 @@ class PCA_MLPY_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpy/pca.py")
     obj = getattr(module, "PCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -218,7 +218,7 @@ class PCA_MATLAB_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/matlab/pca.py")
     obj = getattr(module, "PCA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''

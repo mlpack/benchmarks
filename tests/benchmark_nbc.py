@@ -34,7 +34,7 @@ class NBC_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/nbc.py")
     obj = getattr(module, "NBC")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -57,7 +57,7 @@ class NBC_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''
@@ -88,7 +88,7 @@ class NBC_MLPACK_TEST(unittest.TestCase):
 #     module = Loader.ImportModuleFromPath("methods/weka/nbc.py")
 #     obj = getattr(module, "NBC")
 #     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
 #   '''
 #   Test the constructor.
 #   '''
@@ -120,7 +120,7 @@ class NBC_SHOGUN_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/shogun/nbc.py")
     obj = getattr(module, "NBC")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -152,7 +152,7 @@ class NBC_MATLAB_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/matlab/nbc.py")
     obj = getattr(module, "NBC")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''

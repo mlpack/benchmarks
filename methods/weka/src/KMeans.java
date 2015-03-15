@@ -32,14 +32,14 @@ public class KMeans {
       String inputFile = Utils.getOption('i', args);
       if (inputFile.length() == 0)
         throw new IllegalArgumentException();
-      
+
       // Load input dataset.
       DataSource source = new DataSource(inputFile);
       Instances data = source.getDataSet();
-      
+
       // Create the KMeans object.
       SimpleKMeans kmeans = new SimpleKMeans();
-      
+
       // Gather parameters and validation of options.
       String maxIteration = Utils.getOption('m', args);
       int m = 1000;
@@ -48,16 +48,16 @@ public class KMeans {
         m = Integer.parseInt(maxIteration);
         if (m < 0)
         {
-          System.out.println("[Fatal] Invalid value for maximum iterations(" + 
+          System.out.println("[Fatal] Invalid value for maximum iterations(" +
               maxIteration + ")! Must be greater than or equal to 0..");
-          System.exit(-1);          
+          System.exit(-1);
         }
         else if(m == 0)
         {
           m = Integer.MAX_VALUE;
         }
       }
-      
+
       String clusters = Utils.getOption('c', args);
       if (clusters.length() == 0)
       {
@@ -68,30 +68,30 @@ public class KMeans {
         int c = Integer.parseInt(clusters);
         if (c < 1)
         {
-          System.out.println("[Fatal] Invalid number of clusters requested (" + 
+          System.out.println("[Fatal] Invalid number of clusters requested (" +
               clusters + ")! Must be greater than or equal to 1.");
           System.exit(-1);
         }
-        
+
         kmeans.setNumClusters(c);
-      }     
-      
+      }
+
       String seed = Utils.getOption('s', args);
       if (seed.length() != 0)
         kmeans.setSeed(Integer.parseInt(seed));
-            
-      kmeans.setMaxIterations(m);     
-      kmeans.setPreserveInstancesOrder(true);   
-      
+
+      kmeans.setMaxIterations(m);
+      kmeans.setPreserveInstancesOrder(true);
+
       // Perform K-Means clustering.
       timer.StartTimer("total_time");
-      
+
       kmeans.buildClusterer(data);
       int[] assignments = kmeans.getAssignments();
-      
+
       timer.StopTimer("total_time");
       timer.PrintTimer("total_time");
-      
+
     } catch (IllegalArgumentException e) {
       System.err.println(USAGE);
     } catch (Exception e) {

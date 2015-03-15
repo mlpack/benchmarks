@@ -37,10 +37,10 @@ class Metrics_Test(unittest.TestCase):
   '''
   def test_AverageAcccuracy(self):
     result=Metrics.AverageAccuracy(self.CM)
-    self.assertTrue(result > 52.0 and result < 52.6)	
+    self.assertTrue(result > 52.0 and result < 52.6)
 
   '''
-  Test for the AveragePrecision metric ((0.52 + 0.55 + 0.5)/3 = 0.5233) 
+  Test for the AveragePrecision metric ((0.52 + 0.55 + 0.5)/3 = 0.5233)
   '''
   def test_AveragePrecision(self):
     result=Metrics.AvgPrecision(self.CM)
@@ -76,7 +76,7 @@ class Metrics_Test(unittest.TestCase):
 
   '''
   Test for the MatthewsCorrelationCoefficientClass metric (0.43)
-  '''	
+  '''
   def test_MatthewsCoefficient(self):
     result=Metrics.MatthewsCorrelationCoefficientClass(1,self.CM)
     self.assertTrue(result > 0.4 and result < 0.5)
@@ -90,20 +90,20 @@ class Metrics_Test(unittest.TestCase):
 
   '''
   Test for the MeanSquaredError metric (0.5191)
-  '''	
+  '''
   def test_MeanSquaredError(self):
     result=Metrics.MeanSquaredError("tests/true_labels.csv","tests/probabilities.csv",self.CM)
     self.assertTrue(result > 0.5 and result < 0.52)
 
   '''
   Test for the SimpleMeanSquaredError metric (1.34667)
-  '''	
+  '''
   def test_SimpleMeanSquaredError(self):
     true_labels = np.genfromtxt("tests/true_labels.csv",delimiter=',')
     predicted_labels = np.genfromtxt("tests/predicted_labels.csv",delimiter=',')
     result=Metrics.SimpleMeanSquaredError(true_labels,predicted_labels)
     self.assertTrue(result > 1.33 and result < 1.35)
-  
+
   '''
   Test for MeanPredictiveInformationClass(...) metric (-1.709)
   '''

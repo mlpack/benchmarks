@@ -29,16 +29,16 @@ This class implements the All K-Nearest-Neighbor Search benchmark.
 '''
 class ALLKNN(object):
 
-  ''' 
-  Create the All K-Nearest-Neighbors benchmark instance, show some informations 
+  '''
+  Create the All K-Nearest-Neighbors benchmark instance, show some informations
   and return the instance.
-  
+
   @param dataset - Input dataset to perform All K-Nearest-Neighbors on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the flann executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["FLANN_PATH"], 
+  def __init__(self, dataset, timeout=0, path=os.environ["FLANN_PATH"],
         verbose = True):
     self.verbose = verbose
     self.dataset = dataset
@@ -50,26 +50,26 @@ class ALLKNN(object):
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
-    # If the dataset contains two files then the second file is the query file. 
+    # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "allknn -r " + self.dataset[0] + " -q " + 
+      cmd = shlex.split(self.path + "allknn -r " + self.dataset[0] + " -q " +
           self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "allknn -r " + self.dataset + 
-          " -v " + options)   
+      cmd = shlex.split(self.path + "allknn -r " + self.dataset +
+          " -v " + options)
 
-    # Run command with the nessecary arguments and return its output as a byte 
+    # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
-          timeout=self.timeout) 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
+          timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -100,7 +100,7 @@ class ALLKNN(object):
     pattern = re.compile(r"""
         .*?knn_time: (?P<knn_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data.decode())
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -108,7 +108,7 @@ class ALLKNN(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["knn_time"])
-      
+
       if match.group("knn_time").count(".") == 1:
         return timer(float(match.group("knn_time")))
       else:

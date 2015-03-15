@@ -10,24 +10,24 @@ import numpy as np
 import math
 
 class Metrics(object):
-  
+
   '''
-  @param labels - File containing true labels 
-  @param prediction - File containing predicted labels 
+  @param labels - File containing true labels
+  @param prediction - File containing predicted labels
   Create the confusion matrix from the two arrays containing the true labels and
   the predicted labels. The confusion matrix contains all information about the
-  number of true and false positives and negatives for all the classes in 
+  number of true and false positives and negatives for all the classes in
   consideration.
   '''
-  @staticmethod 
+  @staticmethod
   def ConfusionMatrix(labels, prediction):
     from sklearn.metrics import confusion_matrix
     return confusion_matrix(labels, prediction)
- 
+
   '''
   @param CM - The confusion matrix
   This function is a great and simple one that can be used as a debugging tool
-  for metrics involving true/false positives/negatives. Uncomment the call to 
+  for metrics involving true/false positives/negatives. Uncomment the call to
   this function in RunMetrics(..) to see the Confusion Matrix visually!
   '''
   @staticmethod
@@ -82,7 +82,7 @@ class Metrics(object):
     else:
       #The class is not relevant (no predictions in this class)
       #All instances predicted as negative, no spurious cases
-      precision = 1 
+      precision = 1
     return precision
 
   '''
@@ -107,9 +107,9 @@ class Metrics(object):
   '''
   @param CM - The confusion matrix
   AvgPrecision(AvgRecall) represents the average of precisions(recall) obtained from each
-  classifier. Since precision and recall are defined for binary classifiers, we 
+  classifier. Since precision and recall are defined for binary classifiers, we
   can only calculate these measures for all the classes individually. AvgPrecision
-  (AvgRecall) can be thought of as a new measure of performance for a multi-class 
+  (AvgRecall) can be thought of as a new measure of performance for a multi-class
   classifier (One vs All approach).
   '''
   @staticmethod
@@ -120,7 +120,7 @@ class Metrics(object):
         avgPrecision+=Metrics.PrecisionForAClass(i,CM)
     avgPrecision = avgPrecision/l
     return avgPrecision
-  
+
   @staticmethod
   def AvgRecall(CM):
     l=len(CM)
@@ -147,7 +147,7 @@ class Metrics(object):
       falsePositives = 0
       for j in range(l):
         falsePositives+=CM[j][class_i]
-      falsePositives-=truePositives 
+      falsePositives-=truePositives
       falseNegatives=0
       for j in range(l):
         falseNegatives+=CM[class_i][j]
@@ -165,7 +165,7 @@ class Metrics(object):
 
   '''
   @param CM - The confusion matrix
-  AvgFMeasure represents the average of FMeasures of all the classes in 
+  AvgFMeasure represents the average of FMeasures of all the classes in
   consideration.
   '''
   @staticmethod
@@ -176,12 +176,12 @@ class Metrics(object):
         avgF+=Metrics.FMeasureClass(i,CM)
     avgF = avgF/l
     return avgF
-   
+
   '''
   @param class_i - Index of the class in the confusion matrix
   @param CM - The confusion matrix
-  Lift represents the ratio of the (%positives > threshold) to 
-  the (%total > threshold). Positive class decides the threshold. 
+  Lift represents the ratio of the (%positives > threshold) to
+  the (%total > threshold). Positive class decides the threshold.
   '''
   @staticmethod
   def LiftForAClass(class_i,CM):
@@ -201,12 +201,12 @@ class Metrics(object):
         total = total + CM[i][j]
     tgt = tgt/total
     lift = pgt/tgt
-    return lift	   
-   
-  
+    return lift
+
+
   '''
   @param CM - The confusion matrix
-  Lift represents the ratio of the (%positives > threshold) to 
+  Lift represents the ratio of the (%positives > threshold) to
   the (%total > threshold). Positive class decides the threshold.
   To convert this binary class measure into multi-class measure, we
   have used the LiftForAClass method to obtain Lifts for each class
@@ -226,18 +226,18 @@ class Metrics(object):
   @param class_i - Index of the class in the confusion matrix
   @param CM - The confusion matrix
   MCC is a balanced measure which returns values between +1 and -1.
-  A coefficient of +1 represents a perfect prediction, 0 no better 
-  than random prediction and −1 indicates total disagreement between 
-  prediction and observation. 
+  A coefficient of +1 represents a perfect prediction, 0 no better
+  than random prediction and −1 indicates total disagreement between
+  prediction and observation.
   '''
-  @staticmethod 		
+  @staticmethod
   def MatthewsCorrelationCoefficientClass(class_i, CM):
     l=len(CM)
     truePositives = CM[class_i][class_i]
     falsePositives = 0
     for j in range(l):
       falsePositives+=CM[j][class_i]
-    falsePositives-=truePositives 
+    falsePositives-=truePositives
     falseNegatives=0
     for j in range(l):
       falseNegatives+=CM[class_i][j]
@@ -261,13 +261,13 @@ class Metrics(object):
       #The limiting case.
       MCC = 0
     return MCC
-	   	
+
 
   '''
   @param CM - The confusion matrix
   MCC is a balanced measure which returns values between +1 and -1.
-  A coefficient of +1 represents a perfect prediction, 0 no better 
-  than random prediction and −1 indicates total disagreement between 
+  A coefficient of +1 represents a perfect prediction, 0 no better
+  than random prediction and −1 indicates total disagreement between
   prediction and observation. We use the MCC for a single class as
   obtained by applying the One vs All approach in the above method
   below.
@@ -287,10 +287,10 @@ class Metrics(object):
   @param probabilities - Name of the file which contains the probabilities
   for that instance to be in a particular class (CSV)
   @param CM - The confusion matrix
-  Mean squared error for classifiers which return probabilities can be 
+  Mean squared error for classifiers which return probabilities can be
   implemented in terms of the Quadratic Loss function as defined below.
   '''
-  @staticmethod 		
+  @staticmethod
   def MeanSquaredError(truelabelFile, probabilities, CM):
     #l : Number of classes
     l=len(CM)
@@ -323,7 +323,7 @@ class Metrics(object):
         quadraticLoss.append(squaredloss)
     quadraticLoss=np.array(quadraticLoss)
     print("quad loss : ",quadraticLoss)
-	#Divide the total squared loss for each instance by the number of classes     
+	#Divide the total squared loss for each instance by the number of classes
     quadraticLoss = quadraticLoss/l
     totalLoss=0
     for i in range(len(quadraticLoss)):
@@ -331,7 +331,7 @@ class Metrics(object):
     totalLoss = totalLoss/instances
     print("tot loss : ",totalLoss)
     return totalLoss
-  
+
 
   '''
   @param truelabels - Name of the file which contains the true label
@@ -340,9 +340,9 @@ class Metrics(object):
   labels for the instance
   Mean predictive information is a metric closely related to cross
   entropy and conveniently gives easily interpretable results.
-  The below implementation is only for binary classifiers. 
+  The below implementation is only for binary classifiers.
   '''
-  @staticmethod 		
+  @staticmethod
   def MeanPredictiveInformationClass(class_i, truelabels, predictedlabels):
     predicted=np.genfromtxt(predictedlabels, delimiter=',')
     actual=np.genfromtxt(truelabels, delimiter=',')
@@ -356,7 +356,7 @@ class Metrics(object):
         predictiveSum+=((actual[i] * math.log(predicted[i],2))+
 						  ((1-actual[i]) * math.log(1-predicted[i],2)))
         We take actual[i] to be 0. Hence, the formula :
-        We take 0.05 instead of absolute 0 and 0.95 instead of absolute 1 
+        We take 0.05 instead of absolute 0 and 0.95 instead of absolute 1
         to guarantee that an absolute 0 value doesn't become an argument
         to logarithm.
         '''
@@ -364,15 +364,15 @@ class Metrics(object):
         actual_val=0.05
         if predicted[i] != actual[i]:
           predicted_val = 0.95
-          
+
         predictiveSum+=((actual_val*math.log(predicted_val,2)) + (predicted_val*math.log(1 - predicted_val,2)))
-        
+
     if count != 0:
       predictiveSum/=count
     predictiveSum+=1
-    return predictiveSum	 
-  
-  @staticmethod 		
+    return predictiveSum
+
+  @staticmethod
   def MPIArrayClass(class_i, truelabels, predictedlabels):
     instances=len(truelabels)
     predictiveSum=0
@@ -384,7 +384,7 @@ class Metrics(object):
         predictiveSum+=((actual[i] * math.log(predicted[i],2))+
 						  ((1-actual[i]) * math.log(1-predicted[i],2)))
         We take actual[i] to be 0. Hence, the formula :
-        We take 0.05 instead of absolute 0 and 0.95 instead of absolute 1 
+        We take 0.05 instead of absolute 0 and 0.95 instead of absolute 1
         to guarantee that an absolute 0 value doesn't become an argument
         to logarithm.
         '''
@@ -392,13 +392,13 @@ class Metrics(object):
         actual_val=0.05
         if predictedlabels[i] != truelabels[i]:
           predicted_val = 0.95
-          
+
         predictiveSum+=((actual_val*math.log(predicted_val,2)) + (predicted_val*math.log(1 - predicted_val,2)))
-        
+
     if count != 0:
       predictiveSum/=count
     predictiveSum+=1
-    return predictiveSum	 
+    return predictiveSum
 
   '''
   This method extracts all the labels from the truelabels file in a list
@@ -414,7 +414,7 @@ class Metrics(object):
         labels.append(truelabels[i])
     return labels
 
-    	
+
   '''
   @param CM - The confusion matrix
   @param truelabels - File with true labels for each instance
@@ -432,7 +432,7 @@ class Metrics(object):
       mpi+=Metrics.MeanPredictiveInformationClass(all_labels[i], truelabels, predictedlabels)
     mpi/=len(CM)
     return mpi
-  
+
   '''
   @param CM - The confusion matrix
   @param truelabels - Array with true labels for each instance
@@ -448,12 +448,12 @@ class Metrics(object):
       mpi+=Metrics.MPIArrayClass(all_labels[i], truelabels, predictedlabels)
     mpi/=len(CM)
     return mpi
-  
+
   '''
   @param truelabels - Array containing the true labels for the test data
   @param predictedlabels - Array containing the predicted labels for test data
   This method computes the Mean Squared Error based on the true labels and
-  predicted labels from a classifier. We use this method when we donot get the 
+  predicted labels from a classifier. We use this method when we donot get the
   required probabilities to compute quadratic loss function.
   '''
   @staticmethod

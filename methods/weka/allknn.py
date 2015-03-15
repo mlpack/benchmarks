@@ -29,27 +29,27 @@ This class implements the All K-Nearest-Neighbors benchmark.
 '''
 class ALLKNN(object):
 
-  ''' 
+  '''
   Create the All K-Nearest-Neighbors benchmark instance.
-  
+
   @param dataset - Input dataset to perform ALLKNN on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"], 
+  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"],
       verbose = True):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
-    
+
   '''
-  All K-Nearest-Neighbors. If the method has been successfully completed return 
+  All K-Nearest-Neighbors. If the method has been successfully completed return
   the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -61,15 +61,15 @@ class ALLKNN(object):
       inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + options
     else:
       inputCmd = "-r " + self.dataset + " " + options
-    
+
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
+    cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
       " AllKnn " + inputCmd + " " + options)
-    
+
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
@@ -77,7 +77,7 @@ class ALLKNN(object):
     except Exception:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
-      
+
     # Return the elapsed time.
     timer = self.parseTimer(s)
     if not timer:
@@ -104,7 +104,7 @@ class ALLKNN(object):
     pattern = re.compile(r"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data.decode())
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -112,7 +112,7 @@ class ALLKNN(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["total_time"])
-      
+
       if match.group("total_time").count(".") == 1:
         return timer(float(match.group("total_time")))
       else:

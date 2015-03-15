@@ -34,7 +34,7 @@ class HMMLOGLIK_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/hmm_loglik.py")
     obj = getattr(module, "HMMLOGLIK")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class HMMLOGLIK_MLPACK_TEST(unittest.TestCase):
     result = self.instance.RunMemory("", "test.mout")
     self.assertEqual(result, None)
     os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''

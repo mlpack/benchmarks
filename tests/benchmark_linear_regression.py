@@ -34,7 +34,7 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/linear_regression.py")
     obj = getattr(module, "LinearRegression")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -59,7 +59,7 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
   #   result = self.instance.RunMemory("", "test.mout")
   #   self.assertEqual(result, None)
   #   os.remove("test.mout")
-  
+
   '''
   Test the destructor.
   '''
@@ -90,7 +90,7 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
 #     module = Loader.ImportModuleFromPath("methods/weka/linear_regression.py")
 #     obj = getattr(module, "LinearRegression")
 #     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
 #   '''
 #   Test the constructor.
 #   '''
@@ -115,7 +115,7 @@ class LinearRegression_SHOGUN_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/shogun/linear_regression.py")
     obj = getattr(module, "LinearRegression")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -147,7 +147,7 @@ class LinearRegression_SCIKIT_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/scikit/linear_regression.py")
     obj = getattr(module, "LinearRegression")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -179,7 +179,7 @@ class LinearRegression_MLPY_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpy/linear_regression.py")
     obj = getattr(module, "LinearRegression")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
   '''
   Test the constructor.
   '''
@@ -211,7 +211,7 @@ class LinearRegression_MLPY_TEST(unittest.TestCase):
 #     module = Loader.ImportModuleFromPath("methods/matlab/linear_regression.py")
 #     obj = getattr(module, "LinearRegression")
 #     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-  
+
 #   '''
 #   Test the constructor.
 #   '''

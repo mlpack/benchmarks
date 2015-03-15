@@ -27,9 +27,9 @@ This class implements the Principal Components Analysis benchmark.
 '''
 class PCA(object):
 
-  ''' 
+  '''
   Create the Principal Components Analysis benchmark instance.
-  
+
   @param dataset - Input dataset to perform PCA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class PCA(object):
   Use the scikit libary to implement Principal Components Analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def PCAScikit(self, options):
@@ -62,7 +62,7 @@ class PCA(object):
           if not match:
             k = data.shape[1]
           else:
-            k = int(match.group(1))      
+            k = int(match.group(1))
             if (k > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
                   + "than existing dimensionality (" + str(data.shape[1]) + ")!")
@@ -87,11 +87,11 @@ class PCA(object):
     return timeout(RunPCAScikit, self.timeout)
 
   '''
-  Perform Principal Components Analysis. If the method has been successfully 
+  Perform Principal Components Analysis. If the method has been successfully
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

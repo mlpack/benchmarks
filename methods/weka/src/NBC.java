@@ -22,7 +22,7 @@ import java.io.BufferedWriter;
  * This class use the weka libary to implement Naive Bayes Classifier.
  */
 public class NBC {
-  
+
   private static final String USAGE = String
       .format("This program trains the Naive Bayes classifier on the given\n"
       + "labeled training set and then uses the trained classifier to classify\n"
@@ -50,29 +50,29 @@ public class NBC {
             data = data.concat(",");
           }
           writer.write(data);
-          writer.write("\n");          
-          
+          writer.write("\n");
+
         }
         writer.close();
       }catch(Exception e) {
         e.printStackTrace();
       }
   }
-  
+
   public static void main(String args[]) {
-  Timers timer = new Timers();    
+  Timers timer = new Timers();
     try {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
       String testFile = Utils.getOption('T', args);
       if (trainFile.length() == 0 || testFile.length() == 0)
         throw new IllegalArgumentException();
-        
-      // Load train and test dataset. 
+
+      // Load train and test dataset.
       DataSource source = new DataSource(trainFile);
       Instances trainData = source.getDataSet();
-      
-      // Transform numeric class to nominal class because the 
+
+      // Transform numeric class to nominal class because the
       // classifier cannot handle numeric classes.
       NumericToNominal nm = new NumericToNominal();
       String[] options = new String[2];
@@ -81,17 +81,17 @@ public class NBC {
       nm.setOptions(options);
       nm.setInputFormat(trainData);
       trainData = Filter.useFilter(trainData, nm);
-      
+
       // Use the last row of the training data as the labels.
-      trainData.setClassIndex((trainData.numAttributes() - 1));      
-      
+      trainData.setClassIndex((trainData.numAttributes() - 1));
+
       source = new DataSource(testFile);
-      Instances testData = source.getDataSet(); 
+      Instances testData = source.getDataSet();
       // Use the last row of the training data as the labels.
       testData.setClassIndex((testData.numAttributes() - 1));
-      
+
       timer.StartTimer("total_time");
-      // Create and train the classifier.   
+      // Create and train the classifier.
       Classifier cModel = (Classifier)new NaiveBayes();
       cModel.buildClassifier(trainData);
 
@@ -99,7 +99,7 @@ public class NBC {
       getProbabilities(cModel,testData);
 
       // Run Naive Bayes Classifier on the test dataset.
-      // Write predicted class values for each intance to 
+      // Write predicted class values for each intance to
       // benchmarks/weka_predicted.csv.
       double prediction = 0;
       try{
@@ -117,18 +117,18 @@ public class NBC {
           writer.write(pred);
           writer.write("\n");
         }
-        
+
         writer.close();
       } catch(Exception e) {
         e.printStackTrace();
       }
       timer.StopTimer("total_time");
       timer.PrintTimer("total_time");
-      
+
     } catch (IllegalArgumentException e) {
           System.err.println(USAGE);
       } catch (Exception e) {
         e.printStackTrace();
-      } 
+      }
   }
 }

@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the Random Forest Classifier benchmark.
 '''
 class RANDOMFOREST(object):
 
-  ''' 
+  '''
   Create the Random Forest Classifier benchmark instance.
-  
+
   @param dataset - Input dataset to perform RANDOMFOREST on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -72,13 +72,13 @@ class RANDOMFOREST(object):
   Use the scikit libary to implement the Random Forest Classifier.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RANDOMFORESTScikit(self, options):
     def RunRANDOMFORESTScikit(q):
       totalTimer = Timer()
-      
+
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
@@ -112,11 +112,11 @@ class RANDOMFOREST(object):
     return timeout(RunRANDOMFORESTScikit, self.timeout)
 
   '''
-  Perform the Random Forest Classifier. If the method has been 
+  Perform the Random Forest Classifier. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -125,7 +125,7 @@ class RANDOMFOREST(object):
     if len(self.dataset) >= 2:
       return self.RANDOMFORESTScikit(options)
     else:
-      Log.Fatal("This method requires two datasets.")      
+      Log.Fatal("This method requires two datasets.")
 
   def RunMetrics(self, options):
     if len(self.dataset) >= 3:
@@ -137,7 +137,7 @@ class RANDOMFOREST(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      
+
       predictedlabels = self.model.predict(testData)
 
       # Datastructure to store the results.

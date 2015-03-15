@@ -4,8 +4,8 @@
 % Hidden Markov Model (HMM) Sequence Log-Likelihood with matlab.
 
 function hmm_viterbi(cmd)
-% This utility takes an already-trained HMM and evaluates the 
-% log-likelihood of a given sequence of observations. 
+% This utility takes an already-trained HMM and evaluates the
+% log-likelihood of a given sequence of observations.
 %
 % Required options:
 %     (-i) [string]    File containing observations,

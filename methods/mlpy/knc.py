@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the k-nearest neighbors Classifier benchmark.
 '''
 class KNC(object):
 
-  ''' 
+  '''
   Create the k-nearest neighbors Classifier benchmark instance.
-  
+
   @param dataset - Input dataset to perform KNC on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -69,13 +69,13 @@ class KNC(object):
   Use the mlpy libary to implement the k-nearest neighbors Classifier.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def KNCMlpy(self, options):
     def RunKNCMlpy(q):
       totalTimer = Timer()
-      
+
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
@@ -103,11 +103,11 @@ class KNC(object):
     return timeout(RunKNCMlpy, self.timeout)
 
   '''
-  Perform the k-nearest neighbors Classifier. If the method has been 
+  Perform the k-nearest neighbors Classifier. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -116,7 +116,7 @@ class KNC(object):
     if len(self.dataset) >= 2:
       return self.KNCMlpy(options)
     else:
-      Log.Fatal("This method requires two datasets.")      
+      Log.Fatal("This method requires two datasets.")
 
   def RunMetrics(self, options):
     if len(self.dataset) >= 3:
@@ -128,7 +128,7 @@ class KNC(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      
+
       predictedlabels = self.model.pred(testData)
 
       # Datastructure to store the results.

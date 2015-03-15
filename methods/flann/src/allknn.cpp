@@ -75,12 +75,12 @@ int main(int argc, char** argv)
     flann::Matrix<double> query;
     if (queryFile != "")
     {
-        query = flann::Matrix<double>(queryData.memptr(), queryData.n_cols, 
+        query = flann::Matrix<double>(queryData.memptr(), queryData.n_cols,
             queryData.n_rows);
     }
     else
     {
-        query = flann::Matrix<double>(referenceData.memptr(), 
+        query = flann::Matrix<double>(referenceData.memptr(),
             referenceData.n_cols, referenceData.n_rows);
     }
 
@@ -88,14 +88,14 @@ int main(int argc, char** argv)
     Matrix<double> dists(new double[query.rows*k], query.rows, k);
 
     Timer::Start("knn_time");
-    
+
     // Perform All K-Nearest-Neighbors.
     Index<L2<double> > index(dataset, flann::KDTreeSingleIndexParams(leafSize));
-    index.buildIndex();                                                                                               
+    index.buildIndex();
 
     index.knnSearch(query, indices, dists, k, flann::SearchParams(0));
 
-    Timer::Stop("knn_time");   
+    Timer::Stop("knn_time");
 
     delete[] indices.ptr();
     delete[] dists.ptr();

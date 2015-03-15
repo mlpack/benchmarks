@@ -11,10 +11,10 @@ function logistic_regression(cmd)
 %
 % Options:
 %     (-r) [string]    File containing y (responses). If not given, the
-%                      responses are assumed to be the last row of the 
+%                      responses are assumed to be the last row of the
 %                      input file.
 %     (-t) [string]    File containing test dataset.
-%     (-o) [string]    This file is where the predicted responses will be 
+%     (-o) [string]    This file is where the predicted responses will be
 %                      saved
 
 % Load input dataset.

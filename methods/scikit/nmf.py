@@ -27,9 +27,9 @@ This class implements the Non-negative Matrix Factorization benchmark.
 '''
 class NMF(object):
 
-  ''' 
+  '''
   Create the Non-negative Matrix Factorization benchmark instance.
-  
+
   @param dataset - Input dataset to perform NMF on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class NMF(object):
   Use the scikit libary to implement Non-negative Matrix Factorization.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def NMFScikit(self, options):
@@ -55,7 +55,7 @@ class NMF(object):
       data = np.genfromtxt(self.dataset, delimiter=',')
 
       try:
-        with totalTimer:      
+        with totalTimer:
           # Gather parameters.
           seed = re.search("-s (\d+)", options)
           maxIterations = re.search("-m (\d+)", options)
@@ -98,11 +98,11 @@ class NMF(object):
     return timeout(RunNMFScikit, self.timeout)
 
   '''
-  Perform Non-negative Matrix Factorization. If the method has been successfully 
+  Perform Non-negative Matrix Factorization. If the method has been successfully
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

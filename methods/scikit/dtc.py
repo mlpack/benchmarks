@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the Decision Tree Classifier benchmark.
 '''
 class DTC(object):
 
-  ''' 
+  '''
   Create the Decision Tree Classifier benchmark instance.
-  
+
   @param dataset - Input dataset to perform DTC on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -70,13 +70,13 @@ class DTC(object):
   Use the scikit libary to implement the Decision Tree Classifier.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def DTCScikit(self, options):
     def RunDTCScikit(q):
       totalTimer = Timer()
-      
+
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
@@ -85,7 +85,7 @@ class DTC(object):
       c = re.search("-c (\s+)", options)
       d = re.search("-d (\s+)", options)
       s = re.search("-s (\d+)", options)
-      
+
       self.criterion = 'gini' if not c else str(c.group(1))
       self.max_depth = None if not d else int(d.group(1))
       self.seed = 0 if not s else int(s.group(1))
@@ -108,11 +108,11 @@ class DTC(object):
     return timeout(RunDTCScikit, self.timeout)
 
   '''
-  Perform the Decision Tree Classifier. If the method has been 
+  Perform the Decision Tree Classifier. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -121,7 +121,7 @@ class DTC(object):
     if len(self.dataset) >= 2:
       return self.DTCScikit(options)
     else:
-      Log.Fatal("This method requires two datasets.")      
+      Log.Fatal("This method requires two datasets.")
 
   def RunMetrics(self, options):
     if len(self.dataset) >= 3:
@@ -133,7 +133,7 @@ class DTC(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      
+
       predictedlabels = self.model.predict(testData)
 
       # Datastructure to store the results.

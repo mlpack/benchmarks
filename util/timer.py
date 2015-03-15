@@ -10,7 +10,7 @@ import os
 import sys
 import inspect
 
-# Import the util path, this method even works if the path contains symlinks to 
+# Import the util path, this method even works if the path contains symlinks to
 # modules.
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "util")))
@@ -26,7 +26,7 @@ from multiprocessing import Process, Queue
 This class implements three functions to measure the time.
 '''
 class Timer(object):
-  
+
   '''
   Start the timer.
   '''
@@ -38,7 +38,7 @@ class Timer(object):
   '''
   def __exit__(self, type, value, traceback):
     self.__finish = time.time()
-  
+
   '''
   Return the elapsed time of the timer.
   '''

@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the Logistic Regression benchmark.
 '''
 class LogisticRegression(object):
 
-  ''' 
+  '''
   Create the Logistic Regression benchmark instance.
-  
+
   @param dataset - Input dataset to perform Logistic Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -65,7 +65,7 @@ class LogisticRegression(object):
   Use the scikit libary to implement Logistic Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def LogisticRegressionScikit(self, options):
@@ -77,8 +77,8 @@ class LogisticRegression(object):
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) > 1:
         testSet = LoadDataset(self.dataset[1])
-      
-      # Use the last row of the training set as the responses.  
+
+      # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
 
       try:
@@ -97,18 +97,18 @@ class LogisticRegression(object):
     return timeout(RunLogisticRegressionScikit, self.timeout)
 
   '''
-  Perform Logistic Regression. If the method has been successfully completed 
+  Perform Logistic Regression. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
     return self.LogisticRegressionScikit(options)
-  
+
   '''
   Run all the metrics for Logistic Regression.
   '''

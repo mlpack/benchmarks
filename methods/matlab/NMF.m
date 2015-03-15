@@ -4,21 +4,21 @@
 % Non-negative Matrix Factorization with matlab.
 
 function nmf(cmd)
-% This program performs non-negative matrix factorization on the given 
+% This program performs non-negative matrix factorization on the given
 % dataset. For an input dataset V, NMF decomposes V into two matrices W and H
 % such that
-%  
+%
 %  V = W * H
-%  
+%
 %  where all elements in W and H are non-negative.
 %
 % Required options:
 %     (-i) [string]    Input dataset to perform NMF on.
 %     (-r) [int]       Rank of the factorization.
 % Options:
-%     (-m) [int]       Number of iterations before NMF terminates (0) runs 
+%     (-m) [int]       Number of iterations before NMF terminates (0) runs
 %                      until convergence. Default value 10000.
-%     (-e) [double]    The minimum root mean square residue allowed for 
+%     (-e) [double]    The minimum root mean square residue allowed for
 %                      each iteration, below which the program terminates.
 %                      Default value 1e-05.
 %     (-s) [int]       Random seed.
@@ -53,7 +53,7 @@ end
 if isempty(minResidue)
   e = 1e-05;
 else
-  e = minResidue; 
+  e = minResidue;
 end
 
 if ~isempty(seed)

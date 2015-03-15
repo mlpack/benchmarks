@@ -4,10 +4,10 @@
 % Range Search with matlab.
 
 function rangesearch(cmd)
-% This program implements range search with a Euclidean distance metric. 
-% For a given query point, a given range, and a given set of reference 
+% This program implements range search with a Euclidean distance metric.
+% For a given query point, a given range, and a given set of reference
 % points, the program will return all of the reference points with distance
-% to the query point in the given range.  
+% to the query point in the given range.
 %
 % Required options:
 %     (-M) [double]    Upper bound in range.
@@ -16,7 +16,7 @@ function rangesearch(cmd)
 % Options:
 %     (-l) [int]       Leaf size for tree building. Default value 20.
 %     (-N)             If true, O(n^2) naive mode is used for computation.
-%     (-q) [string]    File containing query points (optional). 
+%     (-q) [string]    File containing query points (optional).
 %                      Default value ''.
 
 % Load input dataset.
@@ -43,7 +43,7 @@ end
 total_time = tic;
 
 if isempty(leafSize)
-  leafSize = 20;  
+  leafSize = 20;
 end
 
 % Perform range search.
@@ -58,11 +58,11 @@ if strfind(cmd, '-N') > 0
 else
   if isempty(queryFile)
     [idx, dist] = rangesearch(referenceData, referenceData, max,...
-      'Distance', 'euclidean', 'NSMethod', 'kdtree', 'BucketSize', leafSize);    
+      'Distance', 'euclidean', 'NSMethod', 'kdtree', 'BucketSize', leafSize);
   else
     [idx, dist] = rangesearch(referenceData, queryData, max, 'Distance',...
       'euclidean', 'NSMethod', 'kdtree', 'BucketSize', leafSize);
-  end  
+  end
 end
 
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))

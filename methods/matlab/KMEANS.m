@@ -8,11 +8,11 @@ function KMEANS(cmd)
 %
 % Required options:
 %     (-i) [string]    Input dataset to perform clustering on.
-%     (-I) [string]    Start with the specified initial centroids. 
+%     (-I) [string]    Start with the specified initial centroids.
 %                      Default value ''.
 % Options:
 %     (-c) [int]    Number of clusters to find.
-%     (-m) [int]    Maximum number of iterations before K-Means terminates. 
+%     (-m) [int]    Maximum number of iterations before K-Means terminates.
 %                   Default value 1000.
 %     (-s) [int]    Random seed.
 

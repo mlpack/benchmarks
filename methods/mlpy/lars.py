@@ -27,9 +27,9 @@ This class implements the Least Angle Regression benchmark.
 '''
 class LARS(object):
 
-  ''' 
+  '''
   Create the Least Angle Regression benchmark instance.
-  
+
   @param dataset - Input dataset to perform Least Angle Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class LARS(object):
   Use the mlpy libary to implement Least Angle Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def LARSMlpy(self, options):
@@ -72,11 +72,11 @@ class LARS(object):
     return timeout(RunLARSMlpy, self.timeout)
 
   '''
-  Perform Least Angle Regression. If the method has been successfully completed 
+  Perform Least Angle Regression. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

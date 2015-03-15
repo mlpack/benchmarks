@@ -45,13 +45,13 @@ class SystemInfo(object):
 
     elif sys.platform.startswith('darwin'):
       cmd = shlex.split("sysctl -n hw.memsize")
-      mem = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
+      mem = subprocess.check_output(cmd, stderr=subprocess.STDOUT,
           shell=False).strip()
 
       return str(float(mem) / 1024 / 1024 / 1000.0) + ' GB'
 
     else:
-      return 'N/A'      
+      return 'N/A'
 
   '''
   Get the CPU model name of this machine.
@@ -62,20 +62,20 @@ class SystemInfo(object):
   def GetCPUModel():
     if sys.platform.startswith('posix') or sys.platform.startswith('linux'):
       cmd = 'cat /proc/cpuinfo'
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT,
           shell=True).strip()
       for line in s.decode().split("\n"):
         if "model name" in line:
           modelName = re.sub( ".*model name.*:", "", line, 1)
-          return modelName  
+          return modelName
         elif "Processor" in line:
           modelName = re.sub( ".*Processor.*:", "", line, 1)
-          return modelName  
+          return modelName
       return 'N/A'
 
     elif sys.platform.startswith('darwin'):
       cmd = shlex.split("sysctl -n machdep.cpu.brand_string")
-      modelName = subprocess.check_output(cmd, stderr=subprocess.STDOUT, 
+      modelName = subprocess.check_output(cmd, stderr=subprocess.STDOUT,
           shell=False).strip()
       return modelName.decode()
 
@@ -155,7 +155,7 @@ class SystemInfo(object):
     else:
       Log.Fatal('Could not specify the OS name')
       return 'N/A'
-      
+
   '''
   Get the plattform of this machine (e.g. x86_64).
 

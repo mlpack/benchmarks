@@ -27,9 +27,9 @@ This class implements the independent component analysis benchmark.
 '''
 class ICA(object):
 
-  ''' 
+  '''
   Create the independent component analysis benchmark instance.
-  
+
   @param dataset - Input dataset to perform independent component analysis on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -43,7 +43,7 @@ class ICA(object):
   Use the scikit libary to implement independent component analysis.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def ICAScikit(self, options):
@@ -73,11 +73,11 @@ class ICA(object):
     return timeout(RunICAScikit, self.timeout)
 
   '''
-  Perform independent component analysis. If the method has been successfully 
+  Perform independent component analysis. If the method has been successfully
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

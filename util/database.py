@@ -203,7 +203,7 @@ class Database:
   '''
   def NewBuild(self, libaryId):
     with self.con:
-      self.cur.execute("INSERT INTO builds VALUES (NULL,?, ?)", 
+      self.cur.execute("INSERT INTO builds VALUES (NULL,?, ?)",
           (datetime.datetime.now(), libaryId))
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
@@ -240,7 +240,7 @@ class Database:
       if self.GetMetricResult(buildId, libaryId, datasetId, methodId):
         self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
             + " WHERE build_id=" + str(buildId) + " AND libary_id="
-            + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+            + str(libaryId) + " AND dataset_id=" + str(datasetId)
             + " AND method_id=" + str(methodId))
       else:
         self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId)
@@ -249,23 +249,23 @@ class Database:
     with self.con:
       if self.GetBootstrapResult(buildId, libaryId, datasetId, methodId):
         self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
-            + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
-            + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+            + " WHERE build_id=" + str(buildId) + " AND libary_id="
+            + str(libaryId) + " AND dataset_id=" + str(datasetId)
             + " AND method_id=" + str(methodId))
       else:
         self.NewBootstrapResult(buildId, libaryId, metric, datasetId, methodId)
 
   def GetMetricResult(self, buildId, libaryId, datasetId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId) 
-          + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
+      self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
+          + " AND libary_id=" + str(libaryId) + " AND dataset_id="
           + str(datasetId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
 
   def GetBootstrapResult(self, buildId, libaryId, datasetId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId) 
-          + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
+      self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
+          + " AND libary_id=" + str(libaryId) + " AND dataset_id="
           + str(datasetId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
 
@@ -281,7 +281,7 @@ class Database:
   '''
   def NewDataset(self, name, size, attributes, instances, datasetType="real"):
     with self.con:
-      self.cur.execute("INSERT INTO datasets VALUES (NULL,?,?,?,?,?)", 
+      self.cur.execute("INSERT INTO datasets VALUES (NULL,?,?,?,?,?)",
           (name, size, attributes, instances, datasetType))
       self.cur.execute("SELECT last_insert_rowid()")
       return self.cur.fetchall()[0][0]
@@ -343,7 +343,7 @@ class Database:
   '''
   def NewResult(self, buildId, libaryId, time, var, datasetId, methodId):
     with self.con:
-      self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)", 
+      self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)",
         (buildId, libaryId, time, var, datasetId, methodId))
 
   '''
@@ -357,8 +357,8 @@ class Database:
   '''
   def GetResult(self, buildId, libaryId, datasetId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId) 
-          + " AND libary_id=" + str(libaryId) + " AND dataset_id=" 
+      self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId)
+          + " AND libary_id=" + str(libaryId) + " AND dataset_id="
           + str(datasetId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
 
@@ -376,9 +376,9 @@ class Database:
   def UpdateResult(self, buildId, libaryId, time, var, datasetId, methodId):
     with self.con:
       if self.GetResult(buildId, libaryId, datasetId, methodId):
-        self.cur.execute("UPDATE results SET time=" + str(time) + ",var=" 
-            + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id=" 
-            + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+        self.cur.execute("UPDATE results SET time=" + str(time) + ",var="
+            + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id="
+            + str(libaryId) + " AND dataset_id=" + str(datasetId)
             + " AND method_id=" + str(methodId))
       else:
         self.NewResult(buildId, libaryId, time, var, datasetId, methodId)
@@ -392,7 +392,7 @@ class Database:
   '''
   def GetMethod(self, name, parameters):
      with self.con:
-      self.cur.execute("SELECT id FROM methods WHERE name='" + name + 
+      self.cur.execute("SELECT id FROM methods WHERE name='" + name +
           "' AND parameters='" + parameters + "'")
       return self.cur.fetchall()
 
@@ -429,12 +429,12 @@ class Database:
       return None
 
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
+      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
           + " ORDER BY build ASC")
       timeSummed = []
       res = self.cur.fetchall()
       for buildId in res:
-        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
+        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" +
            str(buildId[0]))
         timeSummed.append(self.cur.fetchall()[0][0])
     if res:
@@ -460,7 +460,7 @@ class Database:
   '''
   def GetLatestBuildFromLibary(self, libaryId):
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
+      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
           + " ORDER BY build DESC LIMIT 1")
       res = self.cur.fetchall()
       if res:
@@ -487,11 +487,11 @@ class Database:
   '''
   def GetMethodResultsForLibary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM results JOIN datasets ON" + 
-          " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+      self.cur.execute("SELECT * FROM results JOIN datasets ON" +
+          " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) +
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
-  
+
   '''
   Get the metrics results for the specified method and build id.
 
@@ -501,8 +501,8 @@ class Database:
   '''
   def GetMethodMetricResultsForLibrary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM metrics JOIN datasets ON" + 
-          " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+      self.cur.execute("SELECT * FROM metrics JOIN datasets ON" +
+          " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) +
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
 
@@ -515,11 +515,11 @@ class Database:
   '''
   def GetMethodBootstrapResultsForLibrary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM bootstrap JOIN datasets ON" + 
-          " bootstrap.dataset_id = datasets.id WHERE build_id=" + str(buildId) + 
+      self.cur.execute("SELECT * FROM bootstrap JOIN datasets ON" +
+          " bootstrap.dataset_id = datasets.id WHERE build_id=" + str(buildId) +
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
-  
+
   '''
   Get the sum of the time column of all build of the given method.
 
@@ -530,12 +530,12 @@ class Database:
   def GetResultsMethodSum(self, name, methodId):
     libaryId = self.GetLibrary(name)[0][0]
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId) 
+      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
           + " ORDER BY build ASC")
       timeSummed = []
       res = self.cur.fetchall()
       for buildId in res:
-        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" + 
+        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" +
            str(buildId[0]) + " AND method_id=" + str(methodId))
         timeSummed.append(self.cur.fetchall()[0][0])
     if res:
@@ -554,7 +554,7 @@ class Database:
   '''
   def NewMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
      with self.con:
-      self.cur.execute("INSERT INTO memory VALUES (NULL,?,?,?,?,?)", 
+      self.cur.execute("INSERT INTO memory VALUES (NULL,?,?,?,?,?)",
           (buildId, libaryId, methodId, datasetId, memoryInfo))
 
   '''
@@ -572,8 +572,8 @@ class Database:
 
       if self.GetMemoryResults(buildId, libaryId, methodId):
         self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
-          + "\' WHERE build_id=" + str(buildId) + " AND libary_id=" 
-          + str(libaryId) + " AND dataset_id=" + str(datasetId) 
+          + "\' WHERE build_id=" + str(buildId) + " AND libary_id="
+          + str(libaryId) + " AND dataset_id=" + str(datasetId)
           + " AND method_id=" + str(methodId))
       else:
         self.NewMemory(buildId, libaryId, methodId, datasetId, memoryInfo)
@@ -588,8 +588,8 @@ class Database:
   '''
   def GetMemoryResults(self, buildId, libaryId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM memory JOIN datasets ON " + 
-        "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) + 
+      self.cur.execute("SELECT * FROM memory JOIN datasets ON " +
+        "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) +
         " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
 
@@ -601,7 +601,7 @@ class Database:
   '''
   def GetMethodInfo(self, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM method_info WHERE method_id=" + 
+      self.cur.execute("SELECT * FROM method_info WHERE method_id=" +
           str(methodId))
       return self.cur.fetchall()
 
@@ -613,7 +613,7 @@ class Database:
   '''
   def NewMethodInfo(self, methodId, info):
     with self.con:
-      self.cur.execute("INSERT INTO method_info VALUES (NULL,?,?)", 
+      self.cur.execute("INSERT INTO method_info VALUES (NULL,?,?)",
         (methodId, info))
 
   '''
@@ -624,6 +624,6 @@ class Database:
   '''
   def GetMethodParameters(self, methodId):
     with self.con:
-      self.cur.execute("SELECT parameters FROM methods WHERE id=" + 
+      self.cur.execute("SELECT parameters FROM methods WHERE id=" +
           str(methodId))
       return self.cur.fetchall()

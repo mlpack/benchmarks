@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -28,16 +28,16 @@ from definitions import *
 from misc import *
 
 import numpy as np
-import mlpy 
+import mlpy
 
 '''
 This class implements the Golub Classifier benchmark.
 '''
 class Golub(object):
 
-  ''' 
+  '''
   Create the Golub Classifier instance.
-  
+
   @param dataset - Input dataset to perform Golub on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -65,13 +65,13 @@ class Golub(object):
   Use the mlpy libary to implement the Golub Classifier.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def GolubMlpy(self, options):
     def RunGolubMlpy(q):
       totalTimer = Timer()
-      
+
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
@@ -94,11 +94,11 @@ class Golub(object):
     return timeout(RunGolubMlpy, self.timeout)
 
   '''
-  Perform the Golub Classifier. If the method has been 
+  Perform the Golub Classifier. If the method has been
   successfully completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
@@ -107,7 +107,7 @@ class Golub(object):
     if len(self.dataset) >= 2:
       return self.GolubMlpy(options)
     else:
-      Log.Fatal("This method requires two datasets.")      
+      Log.Fatal("This method requires two datasets.")
 
   def RunMetrics(self, options):
     if len(self.dataset) >= 3:
@@ -119,7 +119,7 @@ class Golub(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      
+
       predictedlabels = self.model.pred(testData)
 
       # Datastructure to store the results.

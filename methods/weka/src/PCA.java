@@ -58,9 +58,9 @@ public class PCA {
         // Validate the parameter.
         if (k > data.numAttributes()) {
           System.out.printf("[Fatal] New dimensionality (%d) cannot be greater"
-              + "than existing dimensionality (%d)!'\n", k, 
+              + "than existing dimensionality (%d)!'\n", k,
               data.numAttributes());
-          
+
           System.exit(-1);
         }
       }
@@ -68,10 +68,10 @@ public class PCA {
       // Performs a principal components analysis.
       PrincipalComponents pcaEvaluator = new PrincipalComponents();
 
-      // Sets the amount of variance to account for when retaining principal 
+      // Sets the amount of variance to account for when retaining principal
       // components.
       pcaEvaluator.setVarianceCovered(1.0);
-      // Sets maximum number of attributes to include in transformed attribute 
+      // Sets maximum number of attributes to include in transformed attribute
       // names.
       pcaEvaluator.setMaximumAttributeNames(-1);
 

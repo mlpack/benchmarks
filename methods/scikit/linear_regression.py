@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
   os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
 if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)  
+  sys.path.insert(0, metrics_folder)
 
 from log import *
 from timer import *
@@ -35,9 +35,9 @@ This class implements the Linear Regression benchmark.
 '''
 class LinearRegression(object):
 
-  ''' 
+  '''
   Create the Linear Regression benchmark instance.
-  
+
   @param dataset - Input dataset to perform Linear Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -65,7 +65,7 @@ class LinearRegression(object):
   Use the scikit libary to implement Linear Regression.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def LinearRegressionScikit(self, options):
@@ -78,7 +78,7 @@ class LinearRegression(object):
       if len(self.dataset) >= 2:
         testSet = LoadDataset(self.dataset[1])
 
-      # Use the last row of the training set as the responses.  
+      # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
 
       try:
@@ -88,7 +88,7 @@ class LinearRegression(object):
           b = self.model.coef_
 
           if len(self.dataset) >= 2:
-            self.model.predict(testSet)          
+            self.model.predict(testSet)
       except Exception as e:
         q.put(-1)
         return -1
@@ -100,11 +100,11 @@ class LinearRegression(object):
     return timeout(RunLinearRegressionScikit, self.timeout)
 
   '''
-  Perform Linear Regression. If the method has been successfully completed 
+  Perform Linear Regression. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):

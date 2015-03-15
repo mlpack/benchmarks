@@ -28,14 +28,14 @@ This class implements the Gaussian Mixture Model benchmark.
 '''
 class GMM(object):
 
-  ''' 
+  '''
   Create the Gaussian Mixture Model benchmark instance.
-  
+
   @param dataset - Input dataset to perform Gaussian Mixture Model on.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, verbose=True): 
+  def __init__(self, dataset, timeout=0, verbose=True):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
@@ -44,14 +44,14 @@ class GMM(object):
   Use the shogun libary to implement Gaussian Mixture Model.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def GMMShogun(self, options):
     def RunGMMShogun(q):
       totalTimer = Timer()
 
-      
+
       try:
         # Load input dataset.
         Log.Info("Loading dataset", self.verbose)
@@ -65,7 +65,7 @@ class GMM(object):
 
         g = 1 if not g else int(g.group(1))
         n = 250 if not n else int(n.group(1))
-      
+
         # Create the Gaussian Mixture Model.
         model = SGMM(g)
         model.set_features(dataFeat)
@@ -82,11 +82,11 @@ class GMM(object):
     return timeout(RunGMMShogun, self.timeout)
 
   '''
-  Perform Gaussian Mixture Model. If the method has been successfully 
+  Perform Gaussian Mixture Model. If the method has been successfully
   completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not 
+  @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunTiming(self, options):
