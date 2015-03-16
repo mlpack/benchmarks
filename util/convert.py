@@ -27,7 +27,7 @@ class Convert(object):
   Convert the dataset to a file with the given extension.
 
   @param dataset - Convert the specified dataset.
-  @param extension - Convert the dataset to a new file with the specified 
+  @param extension - Convert the dataset to a new file with the specified
   extension.
   '''
   def __init__(self, dataset, extension):
@@ -40,7 +40,7 @@ class Convert(object):
   Decide which method we have to call to modify the dataset.
 
   @param dataset - Convert the specified dataset.
-  @param extension - Convert the dataset to a new file with the specified 
+  @param extension - Convert the dataset to a new file with the specified
   extension.
   '''
   def ModifyDataset(self, dataset, extension):
@@ -49,7 +49,7 @@ class Convert(object):
 
     # Currently the following conversions are implemented:
     # csv -> arff
-    # txt -> arff 
+    # txt -> arff
     if extension == "arff" and (dataExtension == "csv" or dataExtension == "txt"):
       self.AddArffHeader(dataset, newDataset)
     else:
@@ -70,7 +70,7 @@ class Convert(object):
     fid = open(data)
     head = [next(fid) for x in range(1)]
     fid.close()
-    
+
     # We can convert files with ' ' and ',' as seperator.
     count = max(head[0].count(","), head[0].count(" ")) + 1
 

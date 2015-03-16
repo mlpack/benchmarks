@@ -45,6 +45,7 @@ LOG := False
 BLOCK := ""
 METHODBLOCK := ""
 UPDATE := False
+FILES := ""
 
 ################################################################################################
 # How to use:                                                                                  #
@@ -209,7 +210,7 @@ endif
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 .run:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK) --f $(FILES)
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)

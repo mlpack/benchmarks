@@ -43,6 +43,7 @@ class Parser(object):
     self.ITERATION = 3
     self.OPTIONS = ''
     self.ALIAS = 'None'
+    self.WATCH = ['None']
 
     try:
       Log.Info("Load config file: " + config, verbose)
@@ -172,12 +173,19 @@ class Parser(object):
       self.KeyWarnMsg("iteration")
       iteration = self.ITERATION
 
+    if "watch" in attributes:
+      watch = attributes["watch"]
+      Log.Info("Watch: " + str(watch), self.verbose)
+    else:
+      self.KeyWarnMsg("watch")
+      watch = self.WATCH
+
     # Generate a namedtuple with named fields (methodName, script, format, ...).
     attr = collections.namedtuple("attributes", ["methodName", "script",
-        "format", "datasets", "run", "iteration"])
+        "format", "datasets", "run", "iteration", "watch"])
 
     # Store all values in the namedtuple.
-    return attr(methodName, script, format, datasets, run, iteration)
+    return attr(methodName, script, format, datasets, run, iteration, watch)
 
   '''
   Show emtpy value error message.
@@ -315,6 +323,9 @@ class Parser(object):
               if not "iteration" in value:
                 self.KeyWarnMsg("iteration", streamNum)
 
+              if not "watch" in value:
+                self.KeyWarnMsg("watch", streamNum)
+
               if "datasets" in value:
                 if not value["datasets"]:
                   return self.EmptyErrorMsg("datasets", streamNum)
@@ -408,7 +419,8 @@ class Parser(object):
                   # option.
                   t = (libraryMapping.libraryName, dataset["files"],
                     methodMapping.iteration, methodMapping.script,
-                    methodMapping.format, methodMapping.run, dataset["alias"])
+                    methodMapping.format, methodMapping.run, dataset["alias"],
+                    methodMapping.watch)
                   tempDict[dataset["options"]].append(t)
 
                 # This is are new options for the specified method name. So we
@@ -418,7 +430,8 @@ class Parser(object):
                   # option values as key.
                   t = (libraryMapping.libraryName, dataset["files"],
                     methodMapping.iteration, methodMapping.script,
-                    methodMapping.format, methodMapping.run, dataset["alias"])
+                    methodMapping.format, methodMapping.run, dataset["alias"],
+                    methodMapping.watch)
                   tempDict[dataset["options"]] = [t]
 
               # Create the second dictionary if it doesn't exist.
@@ -427,7 +440,8 @@ class Parser(object):
                 # Store the settings for the given method in a tuple.
                 t = (libraryMapping.libraryName, dataset["files"],
                   methodMapping.iteration, methodMapping.script,
-                  methodMapping.format, methodMapping.run, dataset["alias"])
+                  methodMapping.format, methodMapping.run, dataset["alias"],
+                  methodMapping.watch)
 
                 # To access the method options we can use the options key.
                 d[dataset["options"]] = [t]

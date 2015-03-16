@@ -22,10 +22,18 @@ from convert import *
 from misc import *
 from database import *
 
+try:
+  from irc_bot import *
+  irc_available = True
+except ImportError:
+  irc_available = False
+
 import random
 import argparse
 import datetime
 import simplejson
+
+
 
 '''
 Show system informations. Are there no data available, the value is 'N/A'.
@@ -105,12 +113,14 @@ prints a runtime information table.
 @param methodBlocks - Run only the specified methods.
 @param update - Update the records in the database.
 '''
-def Main(configfile, blocks, log, methodBlocks, update):
+def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
   # Benchmark settings.
   timeout = 23000
   database = "reports/benchmark.db"
 
   bootstrapCount = 10
+
+  watchFiles = watchFiles.split()
 
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img", "reports/etc"])
@@ -132,11 +142,17 @@ def Main(configfile, blocks, log, methodBlocks, update):
         database = value
       if key == "bootstrap":
         bootstrapCount = value
+      if key == "irc":
+        ircData = value
 
   # Create database connection if the user asked for to save the reports.
   if log:
     db = Database(database)
     db.CreateTables()
+
+  if irc_available:
+    ircBOT = IRCBot(ircData[0], ircData[1], ircData[2])
+    watchMessages = []
 
   # Transform the blocks string to a list.
   if blocks:
@@ -172,6 +188,10 @@ def Main(configfile, blocks, log, methodBlocks, update):
         dataMatrix = [['-' for x in range(len(libraries) + 1)] for x in
             range(datasetCount)]
 
+        # Create the matrix which contains the time from the previous run.
+        dataMatrixPrevious = [['-' for x in range(len(libraries) + 1)] for x in
+            range(datasetCount)]
+
         #Dictionary which will contain key as the library name and value as
         #a dictionary of metrics for the current method
         method_dict = {}
@@ -186,6 +206,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
           format = library[4]
           tasks = library[5]
           alias = library[6]
+          files = library[7]
 
           if log:
             db.UpdateMethod(methodId, alias)
@@ -203,12 +224,18 @@ def Main(configfile, blocks, log, methodBlocks, update):
 
               if update:
                 buildId = db.GetLatestBuildFromLibary(libraryId)
+                buildIdPrevious = buildId
                 if buildId >= 0:
                   build[name] = (buildId, libraryId)
                 else:
                   Log.Warn("Nothing to update.")
                   continue
               else:
+                if db.GetLatestBuildFromLibary(libraryId) <= 0:
+                  buildIdPrevious = 1
+                else:
+                  buildIdPrevious = db.GetLatestBuildFromLibary(libraryId)
+
                 build[name] = (db.NewBuild(libraryId), libraryId)
 
             # Load the script.
@@ -230,6 +257,8 @@ def Main(configfile, blocks, log, methodBlocks, update):
                   datasetId = datasetId[0][0] if datasetId else db.NewDataset(*DatasetInfo(dataset))
 
                 dataMatrix[row][0] = datasetName
+                dataMatrixPrevious[row][0] = datasetName
+
                 Log.Info("Dataset: " + dataMatrix[row][0])
 
                 modifiedDataset = GetDataset(dataset, format)
@@ -255,6 +284,19 @@ def Main(configfile, blocks, log, methodBlocks, update):
                     # a description.
                     if methodDescription and not db.GetMethodInfo(methodId):
                       db.NewMethodInfo(methodId, methodDescription)
+
+                if 'watch' in tasks and log:
+                  watchCheck = False
+                  checkFiles = [method, method.lower()] + files
+
+                  for checkFile in checkFiles:
+                    for watchFile in watchFiles:
+                      if checkFile in watchFile:
+                        watchCheck = True
+                        break;
+
+                  if not watchCheck:
+                    continue
 
                 if 'timing' in tasks:
                   time = []
@@ -299,6 +341,11 @@ def Main(configfile, blocks, log, methodBlocks, update):
                       db.NewResult(buildId, libraryId, dataMatrix[row][col], var,
                           datasetId, methodId)
 
+                  if 'watch' in tasks and log:
+                    resultsPrevious = db.GetResult(buildIdPrevious, libraryId,
+                        datasetId, methodId)
+                    if resultsPrevious:
+                      dataMatrixPrevious[row][col] = str(resultsPrevious[0][3])
 
                 if 'metric' in tasks:
                   try:
@@ -370,6 +417,30 @@ def Main(configfile, blocks, log, methodBlocks, update):
           Log.Notice("\n\n")
           run = 0
 
+        if 'watch' in tasks and log:
+          Log.Notice("\n\n")
+          Log.PrintTable(AddMatrixToTable(dataMatrix, table))
+
+          resultsMessage = method
+          if options:
+            resultsMessage += " (" + options + ")"
+
+          resultsMessage += " | "
+          for result in zip(dataMatrixPrevious, dataMatrix):
+            resultsMessage += result[0][0] + " " + result[0][1]
+            resultsMessage += " <=> " + result[1][1] + " | "
+
+          if irc_available:
+            watchMessages.append(resultsMessage)
+          else:
+            Log.Info(resultsMessage)
+
+          Log.Notice("\n\n")
+
+  if irc_available and len(watchMessages) > 0:
+    ircBOT.send_messages(watchMessages)
+
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description="""Perform the benchmark with the
       given config.""")
@@ -383,6 +454,8 @@ if __name__ == '__main__':
       database.""", required=False)
   parser.add_argument('-m','--methodBlocks', help="""Run only the specified
       method blocks.""", required=False)
+  parser.add_argument('-f','--files', help="""Run only blocks for the
+      specified files.""", required=False)
 
   args = parser.parse_args()
 
@@ -390,4 +463,5 @@ if __name__ == '__main__':
     SystemInformation()
     log = True if args.log == "True" else False
     update = True if args.update == "True" else False
-    Main(args.config, args.blocks, log, args.methodBlocks, update)
+    args.files = "" if args.files == None else args.files
+    Main(args.config, args.blocks, log, args.methodBlocks, update, args.files)
