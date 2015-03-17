@@ -427,13 +427,15 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
 
           resultsMessage += " | "
           for result in zip(dataMatrixPrevious, dataMatrix):
-            resultsMessage += result[0][0] + " " + result[0][1]
-            resultsMessage += " <=> " + result[1][1] + " | "
+            if result[0][1] != '-' and result[1][1] != '-':
+              resultsMessage += result[0][0] + " " + result[0][1]
+              resultsMessage += " <=> " + result[1][1] + " | "
 
-          if irc_available:
-            watchMessages.append(resultsMessage)
-          else:
-            Log.Info(resultsMessage)
+          if '=' in resultsMessage:
+            if irc_available:
+              watchMessages.append(resultsMessage)
+            else:
+              Log.Info(resultsMessage)
 
           Log.Notice("\n\n")
 
