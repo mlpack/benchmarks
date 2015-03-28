@@ -132,6 +132,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
   # Read the config.
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
+  ircData = None
 
   # Read the general block and set the attributes.
   if "general" in streamData:
@@ -150,7 +151,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
     db = Database(database)
     db.CreateTables()
 
-  if irc_available:
+  if irc_available and ircData:
     ircBOT = IRCBot(ircData[0], ircData[1], ircData[2])
     watchMessages = []
 
@@ -432,14 +433,14 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
               resultsMessage += " <=> " + result[1][1] + " | "
 
           if '=' in resultsMessage:
-            if irc_available:
+            if irc_available and ircData:
               watchMessages.append(resultsMessage)
             else:
               Log.Info(resultsMessage)
 
           Log.Notice("\n\n")
 
-  if irc_available and len(watchMessages) > 0:
+  if irc_available and ircData and len(watchMessages) > 0:
     ircBOT.send_messages(watchMessages)
 
 
