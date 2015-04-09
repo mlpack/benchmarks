@@ -225,15 +225,15 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
 
               if update:
                 buildId = db.GetLatestBuildFromLibary(libraryId)
-                buildIdPrevious = buildId
+                buildIdPrevious = [(buildId,)]
                 if buildId >= 0:
                   build[name] = (buildId, libraryId)
                 else:
                   Log.Warn("Nothing to update.")
                   continue
               else:
-                if db.GetLatestBuildFromLibary(libraryId) <= 0:
-                  buildIdPrevious = 1
+                if db.GetLatestBuildFromLibary(libraryId)[0][0] <= 0:
+                  buildIdPrevious = [(1,)]
                 else:
                   buildIdPrevious = db.GetLatestBuildFromLibary(libraryId)
 
@@ -343,8 +343,12 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
                           datasetId, methodId)
 
                   if 'watch' in tasks and log:
-                    resultsPrevious = db.GetResult(buildIdPrevious, libraryId,
-                        datasetId, methodId)
+                    for prevbuildID in buildIdPrevious:
+                      resultsPrevious = db.GetResult(prevbuildID[0], libraryId,
+                          datasetId, methodId)
+                      if (resultsPrevious and resultsPrevious[0][3] != '-'):
+                        break
+
                     if resultsPrevious:
                       dataMatrixPrevious[row][col] = str(resultsPrevious[0][3])
 

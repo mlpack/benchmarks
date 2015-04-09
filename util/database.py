@@ -461,12 +461,12 @@ class Database:
   def GetLatestBuildFromLibary(self, libaryId):
     with self.con:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
-          + " ORDER BY build DESC LIMIT 1")
+          + " ORDER BY build DESC")
       res = self.cur.fetchall()
       if res:
-        return res[0][0]
+        return res
       else:
-        return -1
+        return [(-1,)]
 
   '''
   Get a list of all methods.
