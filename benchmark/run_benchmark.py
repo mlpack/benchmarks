@@ -113,7 +113,7 @@ prints a runtime information table.
 @param methodBlocks - Run only the specified methods.
 @param update - Update the records in the database.
 '''
-def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
+def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
   # Benchmark settings.
   timeout = 23000
   database = "reports/benchmark.db"
@@ -224,9 +224,16 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles):
               libraryId = libraryId[0][0] if libraryId else db.NewLibrary(name)
 
               if update:
+                if new:
+                  buildId = db.GetLatestBuildFromLibary(libraryId)[0][0]
+                  if buildId:
+                    newBuildId = db.NewBuild(libraryId)
+                    db.CopyLatestBuildFromLibary(buildId, newBuildId)
+
                 buildId = db.GetLatestBuildFromLibary(libraryId)
                 buildIdPrevious = [(buildId,)]
-                if buildId >= 0:
+
+                if buildId:
                   build[name] = (buildId, libraryId)
                 else:
                   Log.Warn("Nothing to update.")
@@ -463,6 +470,8 @@ if __name__ == '__main__':
       method blocks.""", required=False)
   parser.add_argument('-f','--files', help="""Run only blocks for the
       specified files.""", required=False)
+  parser.add_argument('-n','--new', help="""Copy the database before
+      performing the benchmark.""", required=False)
 
   args = parser.parse_args()
 
@@ -471,4 +480,6 @@ if __name__ == '__main__':
     log = True if args.log == "True" else False
     update = True if args.update == "True" else False
     args.files = "" if args.files == None else args.files
-    Main(args.config, args.blocks, log, args.methodBlocks, update, args.files)
+    new = True if args.new == "True" else False
+    Main(args.config, args.blocks, log, args.methodBlocks, update, args.files,
+        new)

@@ -468,6 +468,14 @@ class Database:
       else:
         return [(-1,)]
 
+  def CopyLatestBuildFromLibary(self, buildId, newBuildId):
+    self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId))
+    results = self.cur.fetchall()
+    with self.con:
+      for res in results:
+        self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)",
+            (newBuildId, res[2], res[3], res[4], res[5], res[6]))
+
   '''
   Get a list of all methods.
 

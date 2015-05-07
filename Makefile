@@ -46,6 +46,7 @@ BLOCK := ""
 METHODBLOCK := ""
 UPDATE := False
 FILES := ""
+COPY := False
 
 ################################################################################################
 # How to use:                                                                                  #
@@ -83,7 +84,7 @@ export MATLABPATH=methods/matlab/
 # Export the WEKA_CLASSPATH environment variable.
 # You can use the following command to search the 'weka.jar' file everytime:
 # export WEKA_CLASSPATH=".:$(shell find / -name weka.jar  -print 2>/dev/null -quit)"
-export WEKA_CLASSPATH=""
+export WEKA_CLASSPATH=".:/Users/marcus/Downloads/weka-3-6-11/weka.jar"
 
 # Export the SHOGUN_PATH environment variable.
 export SHOGUN_PATH=""
@@ -210,7 +211,7 @@ endif
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 .run:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK) --f $(FILES)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK) --f $(FILES) --n $(COPY)
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
