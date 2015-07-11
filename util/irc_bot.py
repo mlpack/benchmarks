@@ -10,6 +10,7 @@ import irc.strings
 from irc.client import ip_numstr_to_quad, ip_quad_to_numstr
 import irc.client
 import jaraco.logging
+import time
 
 class IRCBot(object):
   def __init__(self, channel, nickname, server, port=6667):
