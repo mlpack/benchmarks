@@ -52,6 +52,7 @@ class IRCBot(object):
   def main_loop(self, connection):
     for message in self.messages:
       connection.notice(self.channel, str(message))
+      time.sleep(1) # Pause for a second to prevent flooding.
     connection.quit("Using irc.client.py")
 
   def on_disconnect(self, connection, event):
