@@ -55,7 +55,7 @@ class DecisionStump(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "decision_stump -h")
+    cmd = shlex.split(self.path + "mlpack_decision_stump -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -101,8 +101,8 @@ class DecisionStump(object):
     # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "decision_stump -t " + self.dataset[0] +
-          " -T " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_decision_stump -t " +
+          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("This method requires atleast two datasets.")
 
@@ -122,8 +122,8 @@ class DecisionStump(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "decision_stump -t " + self.dataset[0] +
-          " -T " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_decision_stump -t " +
+          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("This method requires atleast two datasets.")
 

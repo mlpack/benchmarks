@@ -47,7 +47,7 @@ class LocalCoordinateCoding(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "local_coordinate_coding -h")
+    cmd = shlex.split(self.path + "mlpack_local_coordinate_coding -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -91,8 +91,8 @@ class LocalCoordinateCoding(object):
     Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "local_coordinate_coding -i " + self.dataset +
-        " -v " + options)
+    cmd = shlex.split(self.debug + "mlpack_local_coordinate_coding -i " +
+        self.dataset + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -107,8 +107,8 @@ class LocalCoordinateCoding(object):
   def RunTiming(self, options):
     Log.Info("Perform Local Coordinate Coding.", self.verbose)
 
-    cmd = shlex.split(self.path + "local_coordinate_coding -i " + self.dataset +
-        " -v " + options)
+    cmd = shlex.split(self.path + "mlpack_local_coordinate_coding -i " +
+        self.dataset + " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

@@ -47,7 +47,7 @@ class SparseCoding(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "sparse_coding -h")
+    cmd = shlex.split(self.path + "mlpack_sparse_coding -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -92,11 +92,11 @@ class SparseCoding(object):
     # If the dataset contains two files then the second file is the initial
     # dictionary. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "sparse_coding -i " + self.dataset[0] +
-          " -D " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_sparse_coding -i " +
+          self.dataset[0] + " -D " + self.dataset[1] + " -v " + options)
     else:
-        cmd = shlex.split(self.debug + "sparse_coding -i " + self.dataset +
-            " -v " + options)
+        cmd = shlex.split(self.debug + "mlpack_sparse_coding -i " + self.dataset
+            + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -114,11 +114,11 @@ class SparseCoding(object):
     # If the dataset contains two files then the second file is the initial
     # dictionary. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "sparse_coding -i " + self.dataset[0] +
-          " -D " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_sparse_coding -i " + self.dataset[0]
+          + " -D " + self.dataset[1] + " -v " + options)
     else:
-        cmd = shlex.split(self.path + "sparse_coding -i " + self.dataset +
-            " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_sparse_coding -i " + self.dataset +
+          " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

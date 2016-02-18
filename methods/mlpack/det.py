@@ -49,7 +49,7 @@ class DET(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "det -h")
+    cmd = shlex.split(self.path + "mlpack_det -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -94,10 +94,11 @@ class DET(object):
     # If the dataset contains two files then the second file is the labelsfile.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "det -t " + self.dataset[0] + " -l " +
-          self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_det -t " + self.dataset[0] +
+          " -l " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "det -t " + self.dataset + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_det -t " + self.dataset + " -v " +
+          options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -115,10 +116,11 @@ class DET(object):
     # If the dataset contains two files then the second file is the labelsfile.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "det -t " + self.dataset[0] + " -l " +
-          self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_det -t " + self.dataset[0] +
+          " -l " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "det -t " + self.dataset + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_det -t " + self.dataset + " -v " +
+          options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

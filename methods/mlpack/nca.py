@@ -47,7 +47,7 @@ class NCA(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "nca -h")
+    cmd = shlex.split(self.path + "mlpack_nca -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -93,10 +93,10 @@ class NCA(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "nca -i " + self.dataset[0] + " -l " +
-          self.dataset[1] + " -v -o distance.csv " + options)
+      cmd = shlex.split(self.debug + "mlpack_nca -i " + self.dataset[0] + " -l "
+          + self.dataset[1] + " -v -o distance.csv " + options)
     else:
-      cmd = shlex.split(self.debug + "nca -i " + self.dataset +
+      cmd = shlex.split(self.debug + "mlpack_nca -i " + self.dataset +
           " -v -o distance.csv " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -115,10 +115,10 @@ class NCA(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "nca -i " + self.dataset[0] + " -l " +
-          self.dataset[1] + " -v -o distance.csv " + options)
+      cmd = shlex.split(self.path + "mlpack_nca -i " + self.dataset[0] + " -l "
+          + self.dataset[1] + " -v -o distance.csv " + options)
     else:
-      cmd = shlex.split(self.path + "nca -i " + self.dataset +
+      cmd = shlex.split(self.path + "mlpack_nca -i " + self.dataset +
           " -v -o distance.csv " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

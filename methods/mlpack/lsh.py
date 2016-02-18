@@ -48,7 +48,7 @@ class LSH(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "lsh -h")
+    cmd = shlex.split(self.path + "mlpack_lsh -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -92,7 +92,8 @@ class LSH(object):
     Log.Info("Perform LSH Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "lsh -r " + self.dataset + " -v " + options)
+    cmd = shlex.split(self.debug + "mlpack_lsh -r " + self.dataset + " -v " +
+        options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -108,7 +109,8 @@ class LSH(object):
     Log.Info("Perform LSH.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "lsh -r " + self.dataset + " -v " + options)
+    cmd = shlex.split(self.path + "mlpack_lsh -r " + self.dataset + " -v " +
+        options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

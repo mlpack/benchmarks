@@ -47,7 +47,7 @@ class HMMTRAIN(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "hmm_train -h")
+    cmd = shlex.split(self.path + "mlpack_hmm_train -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -93,10 +93,10 @@ class HMMTRAIN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "hmm_train -i " + self.dataset[0] + "-l " +
-          self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_hmm_train -i " + self.dataset[0] +
+          "-l " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "hmm_train -i " + self.dataset +
+      cmd = shlex.split(self.debug + "mlpack_hmm_train -i " + self.dataset +
           " -v  " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -115,10 +115,10 @@ class HMMTRAIN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "hmm_train -i " + self.dataset[0] + "-l " +
-          self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_hmm_train -i " + self.dataset[0] +
+          "-l " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "hmm_train -i " + self.dataset +
+      cmd = shlex.split(self.path + "mlpack_hmm_train -i " + self.dataset +
           " -v  " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

@@ -47,7 +47,7 @@ class KMEANS(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "kmeans -h")
+    cmd = shlex.split(self.path + "mlpack_kmeans -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -92,10 +92,10 @@ class KMEANS(object):
     # If the dataset contains two files then the second file is the centroids
     # file.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "kmeans -i " + self.dataset[0] + " -I "
-          + self.dataset[1] + " -o output.csv -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_kmeans -i " + self.dataset[0] +
+          " -I " + self.dataset[1] + " -o output.csv -v " + options)
     else:
-      cmd = shlex.split(self.debug + "kmeans -i " + self.dataset[0] +
+      cmd = shlex.split(self.debug + "mlpack_kmeans -i " + self.dataset[0] +
           " -o output.csv -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -114,10 +114,10 @@ class KMEANS(object):
     # If the dataset contains two files then the second file is the centroids
     # file.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "kmeans -i " + self.dataset[0] + " -I "
-          + self.dataset[1] + " -o output.csv -v " + options)
+      cmd = shlex.split(self.path + "mlpack_kmeans -i " + self.dataset[0] +
+          " -I " + self.dataset[1] + " -o output.csv -v " + options)
     else:
-      cmd = shlex.split(self.path + "kmeans -i " + self.dataset[0] +
+      cmd = shlex.split(self.path + "mlpack_kmeans -i " + self.dataset[0] +
           " -o output.csv -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

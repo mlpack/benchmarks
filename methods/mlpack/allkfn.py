@@ -47,7 +47,7 @@ class ALLKFN(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "allkfn -h")
+    cmd = shlex.split(self.path + "mlpack_allkfn -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -94,10 +94,11 @@ class ALLKFN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "allkfn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " -v -n neighbors.csv -d distances.csv " + options)
+      cmd = shlex.split(self.debug + "mlpack_allkfn -r " + self.dataset[0] +
+          " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
+          options)
     else:
-      cmd = shlex.split(self.debug + "allkfn -r " + self.dataset +
+      cmd = shlex.split(self.debug + "mlpack_allkfn -r " + self.dataset +
           " -v -n neighbors.csv -d distances.csv " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -116,10 +117,11 @@ class ALLKFN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "allkfn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " -v -n neighbors.csv -d distances.csv " + options)
+      cmd = shlex.split(self.path + "mlpack_allkfn -r " + self.dataset[0] +
+          " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
+          options)
     else:
-      cmd = shlex.split(self.path + "allkfn -r " + self.dataset +
+      cmd = shlex.split(self.path + "mlpack_allkfn -r " + self.dataset +
           " -v -n neighbors.csv -d distances.csv " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

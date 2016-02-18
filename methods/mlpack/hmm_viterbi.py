@@ -49,7 +49,7 @@ class HMMVITERBI(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "hmm_viterbi -h")
+    cmd = shlex.split(self.path + "mlpack_hmm_viterbi -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -93,8 +93,8 @@ class HMMVITERBI(object):
     Log.Info("Perform HMM Viterbi Memory Profiling.", self.verbose)
 
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "hmm_viterbi -i " + self.dataset[0] + " -m "
-          + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_hmm_viterbi -i " + self.dataset[0]
+          + " -m " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("Not enough input datasets.")
       return -1
@@ -113,8 +113,8 @@ class HMMVITERBI(object):
     Log.Info("Perform HMM Viterbi State Prediction.", self.verbose)
 
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "hmm_viterbi -i " + self.dataset[0] + " -m "
-          + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_hmm_viterbi -i " + self.dataset[0] +
+          " -m " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("Not enough input datasets.")
       return -1

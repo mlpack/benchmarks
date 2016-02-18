@@ -47,7 +47,7 @@ class ICA(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "radical -h")
+    cmd = shlex.split(self.path + "mlpack_radical -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -91,7 +91,7 @@ class ICA(object):
     Log.Info("Perform ICA Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "radical -i " + self.dataset + " -v "
+    cmd = shlex.split(self.debug + "mlpack_radical -i " + self.dataset + " -v "
         + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -108,7 +108,7 @@ class ICA(object):
     Log.Info("Perform ICA.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "radical -i " + self.dataset + " -v "
+    cmd = shlex.split(self.path + "mlpack_radical -i " + self.dataset + " -v "
         + options)
 
     # Run command with the nessecary arguments and return its output as a byte

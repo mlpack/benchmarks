@@ -47,7 +47,7 @@ class EMST(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "emst -h")
+    cmd = shlex.split(self.path + "mlpack_emst -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -90,7 +90,7 @@ class EMST(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform EMST Memory Profiling.", self.verbose)
 
-    cmd = shlex.split(self.debug + "emst -i " + self.dataset + " -v " +
+    cmd = shlex.split(self.debug + "mlpack_emst -i " + self.dataset + " -v " +
       options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -106,7 +106,7 @@ class EMST(object):
   def RunTiming(self, options):
     Log.Info("Perform EMST.", self.verbose)
 
-    cmd = shlex.split(self.path + "emst -i " + self.dataset + " -v " +
+    cmd = shlex.split(self.path + "mlpack_emst -i " + self.dataset + " -v " +
       options)
 
     # Run command with the nessecary arguments and return its output as a byte

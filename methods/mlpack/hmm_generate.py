@@ -47,7 +47,7 @@ class HMMGENERATE(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "hmm_generate -h")
+    cmd = shlex.split(self.path + "mlpack_hmm_generate -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -90,8 +90,8 @@ class HMMGENERATE(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform HMM Generate Memory Profiling.", self.verbose)
 
-    cmd = shlex.split(self.debug + "hmm_generate -m " + self.dataset + " -v  " +
-        options)
+    cmd = shlex.split(self.debug + "mlpack_hmm_generate -m " + self.dataset +
+        " -v  " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -106,8 +106,8 @@ class HMMGENERATE(object):
   def RunTiming(self, options):
     Log.Info("Perform HMM Generate.", self.verbose)
 
-    cmd = shlex.split(self.path + "hmm_generate -m " + self.dataset + " -v  " +
-        options)
+    cmd = shlex.split(self.path + "mlpack_hmm_generate -m " + self.dataset +
+        " -v  " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

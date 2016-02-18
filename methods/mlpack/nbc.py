@@ -55,7 +55,7 @@ class NBC(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "nbc -h")
+    cmd = shlex.split(self.path + "mlpack_nbc -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -103,7 +103,7 @@ class NBC(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "nbc -t " + self.dataset[0] + " -T "
+    cmd = shlex.split(self.debug + "mlpack_nbc -t " + self.dataset[0] + " -T "
         + self.dataset[1] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -151,7 +151,7 @@ class NBC(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "nbc -t " + self.dataset[0] + " -T "
+    cmd = shlex.split(self.path + "mlpack_nbc -t " + self.dataset[0] + " -T "
         + self.dataset[1] + " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

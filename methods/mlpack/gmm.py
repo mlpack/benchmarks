@@ -47,7 +47,7 @@ class GMM(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "gmm -h")
+    cmd = shlex.split(self.path + "mlpack_gmm -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -91,7 +91,8 @@ class GMM(object):
     Log.Info("Perform GMM Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "gmm -i " + self.dataset + " -v " + options)
+    cmd = shlex.split(self.debug + "mlpack_gmm -i " + self.dataset + " -v " +
+        options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -107,7 +108,8 @@ class GMM(object):
     Log.Info("Perform GMM.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "gmm -i " + self.dataset + " -v " + options)
+    cmd = shlex.split(self.path + "mlpack_gmm -i " + self.dataset + " -v " +
+        options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

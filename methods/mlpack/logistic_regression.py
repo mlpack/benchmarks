@@ -55,7 +55,7 @@ class LogisticRegression(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "logistic_regression -h")
+    cmd = shlex.split(self.path + "mlpack_logistic_regression -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -101,11 +101,11 @@ class LogisticRegression(object):
     # If the dataset contains two files then the second file is the test
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset[0] +
-          " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_logistic_regression -i " +
+          self.dataset[0] + " -t " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "logistic_regression -i " + self.dataset[0] +
-          " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_logistic_regression -i " +
+          self.dataset[0] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -123,11 +123,11 @@ class LogisticRegression(object):
     # If the dataset contains two files then the second file is the test
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "logistic_regression -i " + self.dataset[0] +
-          " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_logistic_regression -i " +
+          self.dataset[0] + " -t " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "logistic_regression -i " + self.dataset +
-          " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_logistic_regression -i " +
+          self.dataset + " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

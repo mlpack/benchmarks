@@ -47,7 +47,7 @@ class LARS(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "lars -h")
+    cmd = shlex.split(self.path + "mlpack_lars -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -95,8 +95,8 @@ class LARS(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "lars -i " + self.dataset[0] + " -r " +
-        self.dataset[1] + " -v " + options)
+    cmd = shlex.split(self.debug + "mlpack_lars -i " + self.dataset[0] + " -r "
+        + self.dataset[1] + " -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -116,7 +116,7 @@ class LARS(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "lars -i " + self.dataset[0] + " -r " +
+    cmd = shlex.split(self.path + "mlpack_lars -i " + self.dataset[0] + " -r " +
         self.dataset[1] + " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

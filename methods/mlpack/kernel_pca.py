@@ -47,7 +47,7 @@ class KPCA(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "kernel_pca -h")
+    cmd = shlex.split(self.path + "mlpack_kernel_pca -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -91,7 +91,7 @@ class KPCA(object):
     Log.Info("Perform KPCA Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "kernel_pca -i " + self.dataset +
+    cmd = shlex.split(self.debug + "mlpack_kernel_pca -i " + self.dataset +
         " -v -o output.csv " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -108,7 +108,7 @@ class KPCA(object):
     Log.Info("Perform KPCA.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "kernel_pca -i " + self.dataset +
+    cmd = shlex.split(self.path + "mlpack_kernel_pca -i " + self.dataset +
         " -v -o output.csv " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

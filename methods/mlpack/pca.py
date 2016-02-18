@@ -47,7 +47,7 @@ class PCA(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "pca -h")
+    cmd = shlex.split(self.path + "mlpack_pca -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
 
@@ -92,7 +92,7 @@ class PCA(object):
     Log.Info("Perform PCA Memory Profiling.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "pca -i " + self.dataset +
+    cmd = shlex.split(self.debug + "mlpack_pca -i " + self.dataset +
         " -o output.csv -v " + options)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -109,7 +109,7 @@ class PCA(object):
     Log.Info("Perform PCA.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "pca -i " + self.dataset +
+    cmd = shlex.split(self.path + "mlpack_pca -i " + self.dataset +
         " -o output.csv -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte

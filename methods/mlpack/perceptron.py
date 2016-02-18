@@ -55,7 +55,7 @@ class PERCEPTRON(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "perceptron -h")
+    cmd = shlex.split(self.path + "mlpack_perceptron -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -101,7 +101,7 @@ class PERCEPTRON(object):
     # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "perceptron -t " + self.dataset[0] +
+      cmd = shlex.split(self.debug + "mlpack_perceptron -t " + self.dataset[0] +
           " -T " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("This method requires atleast two datasets.")
@@ -122,7 +122,7 @@ class PERCEPTRON(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "perceptron -t " + self.dataset[0] +
+      cmd = shlex.split(self.path + "mlpack_perceptron -t " + self.dataset[0] +
           " -T " + self.dataset[1] + " -v " + options)
     else:
       Log.Fatal("This method requires atleast two datasets.")
