@@ -1,0 +1,5 @@
+.idea
+*.pyc
+reports/graphs
+reports/index*.html
+reports/benchmark.db
