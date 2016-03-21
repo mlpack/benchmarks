@@ -1075,6 +1075,19 @@ methods:
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
               options: '-l 0.01'
+
+    LASSO:
+        run: ['timing']
+        iteration: 3
+        script: methods/scikit/lasso.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
+              options: '-l 0.01'
+
     ALLKNN:
         run: ['timing']
         iteration: 3
@@ -1511,6 +1524,7 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+
     ALLKNN:
         run: ['timing']
         iteration: 3
@@ -1548,6 +1562,18 @@ methods:
                         ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
+
+    LASSO:
+        run: ['timing']
+        iteration: 3
+        script: methods/shogun/lasso.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv']]
+              options: '-l 0.01'
 ---
 # Weka: Data Mining Software in Java
 library: weka
