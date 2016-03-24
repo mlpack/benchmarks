@@ -1137,6 +1137,21 @@ methods:
 
             - files: ['datasets/pendigits.csv']
               options: '-k 12 -s 42 -N'
+    LinearRidgeRegression:
+        run: ['timing','metric']
+        iteration: 3
+        script: methods/scikit/linear_ridge_regression.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                       ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'] ]
+              options: '-t 1.0'
+            - files: [ ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'],
+                       ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'] ]
+              options: '-t 5.0'
+            - files: [ ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                       ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'] ]
+              options: '-t 50.0'
 ---
 # mlpy is a Python module for Machine Learning built on top of NumPy/SciPy
 # and the GNU Scientific Libraries.
@@ -1574,6 +1589,22 @@ methods:
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv']]
               options: '-l 0.01'
+
+    LinearRidgeRegression:
+        run: ['timing', 'metric']
+        iteration: 3
+        script: methods/shogun/linear_ridge_regression.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                       ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'] ]
+              options: '-t 1.0'
+            - files: [ ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'],
+                       ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'] ]
+              options: '-t 5.0'
+            - files: [ ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                       ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'] ]
+              options: '-t 50.0'
 ---
 # Weka: Data Mining Software in Java
 library: weka

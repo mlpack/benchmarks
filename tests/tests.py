@@ -19,6 +19,7 @@ modules = [
 #'benchmark_kmeans',
 #'benchmark_lars',
 #'benchmark_linear_regression',
+'benchmark_linear_ridge_regression',
 'benchmark_local_coordinate_coding',
 'benchmark_lasso',
 #'benchmark_lsh',
