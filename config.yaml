@@ -1088,6 +1088,17 @@ methods:
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
               options: '-l 0.01'
 
+    SVR:
+        run: ['timing']
+        iteration: 3
+        script: methods/scikit/svr.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes.csv'],
+                       ['datasets/cosExp.csv'],
+                       ['datasets/TomsHardware.csv']]
+              options: '-c 1.0 -e 1.0 -g 0.1'
+
     ALLKNN:
         run: ['timing']
         iteration: 3
@@ -1622,6 +1633,17 @@ methods:
             - files: [ ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'] ]
               options: '-t 50.0'
+
+    SVR:
+        run: ['timing']
+        iteration: 3
+        script: methods/shogun/svr.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes.csv'],
+                       ['datasets/cosExp.csv'],
+                       ['datasets/TomsHardware.csv']]
+              options: '-c 1.0 -e 1.0 -g 0.1'
 ---
 # Weka: Data Mining Software in Java
 library: weka

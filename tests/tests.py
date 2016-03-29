@@ -29,6 +29,7 @@ modules = [
 #'benchmark_pca',
 'benchmark_range_search',
 'benchmark_sparse_coding',
+'benchmark_svr'
 #'metrics_unit_test'
 ]
 
