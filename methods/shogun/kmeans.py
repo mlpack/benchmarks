@@ -93,11 +93,11 @@ class KMEANS(object):
         # Create the K-Means object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
-            model = KMeans(int(clusters.group(1)), distance, RealFeatures(centroids))
+            model = KMeans(int(clusters.group(1)), distance, centroids.T)
           else:
             model = KMeans(int(clusters.group(1)), distance)
 
-          model.set_mbKMeans_iter(m)
+          model.set_max_iter(m)
           model.train()
 
           labels = model.apply().get_labels()
