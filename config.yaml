@@ -251,7 +251,7 @@ methods:
             - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     ALLKNN:
-        run: ['timing']
+        run: ['timing', 'metric']
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
@@ -290,7 +290,7 @@ methods:
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
               options: '-k 3 -s 42 -N'
     ALLKFN:
-        run: ['timing']
+        run: ['timing', 'metric']
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
         datasets:
