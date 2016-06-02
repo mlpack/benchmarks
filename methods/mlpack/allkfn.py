@@ -45,6 +45,7 @@ class ALLKFN(object):
     self.path = path
     self.timeout = timeout
     self.debug = debug
+    self.baseCases = None
 
     # Get description from executable.
     cmd = shlex.split(self.path + "mlpack_allkfn -h")
@@ -136,6 +137,7 @@ class ALLKFN(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
+    self.baseCases = self.parseNumBaseCases(s)
     # Return the elapsed time.
     timer = self.parseTimer(s)
     if not timer:
@@ -146,6 +148,48 @@ class ALLKFN(object):
       Log.Info(("total time: %fs" % (time)), self.verbose)
 
       return time
+
+  '''
+  Run all the metrics.
+
+  @param options - Extra options for the method.
+  @return - dictionary with metrics values or None if the method was
+  not successful.
+  '''
+  def RunMetrics(self, options):
+    if self.baseCases is None:
+        self.RunTiming(options)
+
+    # Datastructure to store the results.
+    metrics = {}
+
+    if self.baseCases is None:
+      Log.Fatal("Can't parse the number of base cases")
+      return None
+    else:
+      metrics['BaseCases'] = self.baseCases
+      return metrics
+
+  '''
+  Parse the number of base cases from a given string.
+
+  @param data - String to parse information from.
+  @return - Int positive number of base cases or None in case of an error.
+  '''
+  def parseNumBaseCases(self, data):
+    # Compile the regular expression pattern into a regular expression object to
+    # parse the verbose output.
+    pattern = re.compile(
+        br""".*[^\d](?P<num_base_cases>\d+) base cases were calculated.*""",
+        re.MULTILINE|re.DOTALL)
+
+    match = pattern.match(data)
+
+    if not match:
+      Log.Fatal("Can't parse the base cases: wrong format")
+      return None
+    else:
+      return int(match.group("num_base_cases"))
 
   '''
   Parse the timer data form a given string.
