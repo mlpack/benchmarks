@@ -439,7 +439,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
 
           resultsMessage += " | "
           for result in zip(dataMatrixPrevious, dataMatrix):
-            if result[0][1] != '-' and result[1][1] != '-' and result[0][1] != '' and result[1][1] != '':
+            if result[0][1] != '-' and result[1][1] != '-' and result[0][1] != '' and result[1][1] != '' and '.' in result[0][1] and '.' in result[1][1]:
               resultsMessage += result[0][0] + " " + result[0][1]
               resultsMessage += " <=> " + result[1][1] + " | "
 
