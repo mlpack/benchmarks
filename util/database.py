@@ -536,6 +536,8 @@ class Database:
   @return The sum of the time column if there are records otherwise None.
   '''
   def GetResultsMethodSum(self, name, methodId):
+    if not self.GetLibrary(name):
+      return None
     libaryId = self.GetLibrary(name)[0][0]
     with self.con:
       self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)

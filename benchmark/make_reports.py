@@ -255,7 +255,7 @@ def MethodReports(db, bootstrapCount):
   libraryIds  = db.GetLibraryIds()
   buildIds = []
   for libraryid in libraryIds:
-    buildIds.append((db.GetLatestBuildFromLibary(libraryid[0]), libraryid[1]))
+    buildIds.append((db.GetLatestBuildFromLibary(libraryid[0])[0][0], libraryid[1]))
 
   methodGroup = {}
   # Iterate throw all methods and create for each method a new container.
@@ -333,6 +333,9 @@ def MethodReports(db, bootstrapCount):
     bestLibCount = 0
     totalTimeCount = 0
     libCount = 0
+    ChartInfoTiming = None
+    datasetNamesMetric = None
+    bootstrapContent = None
 
     # Iterate through all results.
     for result in results:
@@ -549,7 +552,7 @@ def MethodReports(db, bootstrapCount):
     datasetTable = CreateDatasetTable(results)
 
     # Calculate the percent for the progress bar.
-    if ChartInfoTiming[0] != 0:
+    if ChartInfoTiming and ChartInfoTiming[0] != 0:
       negative = (((datasetCount - bestLibCount) / float(datasetCount)) * 100.0)
       reportValues["progressPositive"] = "{0:.2f}".format(100 - negative) + "%"
 
@@ -727,6 +730,7 @@ def Main(configfile):
   database = "reports/benchmark.db"
   keepReports = 3
   bootstrapCount = 10
+  libraries = []
 
   # Create the folder structure.
   CreateDirectoryStructure(["reports/img",
@@ -787,7 +791,7 @@ def Main(configfile):
   template = pageTemplate % reportValues
 
   # Write the new index.html file.
-  with open("reports/index-old.html", 'wb') as fid:
+  with open("reports/index.html", 'wb') as fid:
     fid.write(template.encode('UTF-8'))
 
 if __name__ == '__main__':
