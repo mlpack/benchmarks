@@ -134,7 +134,7 @@ def Main(configfile, blocks, log, methodBlocks, update):
               libaryId = libaryId[0][0] if libaryId else db.NewLibrary(name + "_memory")
 
               if update:
-                buildId = db.GetLatestBuildFromLibary(libaryId)
+                buildId = db.GetLatestBuildFromLibary(libaryId)[0][0]
                 if buildId >= 0:
                   build[name] = (buildId, libaryId)
                 else:
