@@ -24,6 +24,8 @@ PARAM_INT_REQ("k", "Number of nearest neighbors to find.", "k");
 PARAM_STRING("query_file", "File containing query points (optional).", "q", "");
 PARAM_INT("leaf_size", "Leaf size for tree building.", "l", 20);
 PARAM_INT("seed", "Random seed (if 0, std::time(NULL) is used).", "s", 0);
+PARAM_DOUBLE("epsilon", "If specified, will do approximate nearest neighbor "
+    "search with given relative error.", "e", 0);
 
 int main(int argc, char **argv)
 {
@@ -65,6 +67,12 @@ int main(int argc, char **argv)
     Log::Fatal << referenceData.n_cols << ")." << endl;
   }
 
+  // Sanity check on epsilon.
+  const double epsilon = CLI::GetParam<double>("epsilon");
+  if (epsilon < 0)
+    Log::Fatal << "Invalid epsilon: " << epsilon << ".  Must be "
+        "non-negative. " << endl;
+
   // Sanity check on leaf size.
   if (lsInt < 0)
   {
@@ -96,7 +104,7 @@ int main(int argc, char **argv)
   for (int i = 0; i < queryData.n_cols; ++i)
   {
     queryPoint = queryData.col(i);
-    kdTree->annkSearch(queryPoint.memptr(), k, nnIdx,  dists, 0);
+    kdTree->annkSearch(queryPoint.memptr(), k, nnIdx,  dists, epsilon);
 
     for (int j = 0; j < k; j++)
     {
