@@ -169,6 +169,10 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
     if not methodBlocks or method in methodBlocks:
       Log.Info("Method: " + method)
       for options, libraries in sets.items():
+        # Remove newlines tabs and whitespace on the left and right side from
+        # the options parameter string.
+        options = options.strip(' \t\n\r')
+
         Log.Info("Options: " + (options if options != "" else "None"))
 
         if log:
