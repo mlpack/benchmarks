@@ -2,7 +2,7 @@
 
 Develop branch build status:
 
-[![Build Status](http://big.mlpack.org:7780/job/benchmark%20-%20checkout/badge/icon)](http://big.mlpack.org:7780/job/benchmark%20-%20checkout/)
+[![Build Status](http://big.mlpack.org/job/benchmark%20-%20checkout/badge/icon)](http://big.mlpack.org/job/benchmark%20-%20checkout/)
 
 Visit http://www.mlpack.org/benchmark.html to see our latest results.
 
