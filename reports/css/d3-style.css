@@ -163,7 +163,8 @@ svg text {
   margin-right: 8px;
 }
 
-#method_select, #param_select, #main_dataset_select {
+#method_select, #param_select, #main_dataset_select,
+#metric_select, #option_select {
   float: left;
   margin-right: 20px;
 }

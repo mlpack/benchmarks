@@ -103,6 +103,7 @@ function chartTypeSelect()
 
   if (chartType == "algorithm-parameter-comparison") { activeChartType = rc; }
   else if (chartType == "historical-comparison") { activeChartType = hc; }
+  else if (chartType == "metric-multiple-parameter-comparison") { activeChartType = mmpc; }
   else if (chartType == "metric-parameter-comparison") { activeChartType = mpc; }
   else if (chartType == "dataset-comparison") { activeChartType = dc; }
   else if (chartType == "metric-comparison") { activeChartType = mc; }
