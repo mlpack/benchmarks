@@ -362,6 +362,8 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
                 if 'metric' in tasks:
                   try:
                     metrics = instance.RunMetrics(options)
+                    if 'timing' in tasks and metrics is not None:
+                      metrics['Runtime'] = dataMatrix[row][col]
                   except Exception as e:
                     Log.Fatal("Exception: " + str(e))
                     metrics = None
