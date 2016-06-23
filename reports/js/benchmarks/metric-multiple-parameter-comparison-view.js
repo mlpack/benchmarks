@@ -2,12 +2,10 @@
 var mmpc = mmpc = mmpc || {};
 
 mmpc.option = "";
-mmpc.param = "";
 mmpc.method_name = "";
 mmpc.dataset_name = "";
 mmpc.metric_name = "";
-mmpc.libraries = []
-mmpc.active_libraries = [];
+mmpc.control_list_length = 0;
 mmpc.results = []
 
 mmpc.onTypeSelect = function()
@@ -27,6 +25,7 @@ mmpc.onTypeSelect = function()
   selectHolder.append("select")
       .attr("id", "main_dataset_select")
       .attr("onchange", "mmpc.datasetSelect()");
+  selectHolder.append("br");
   selectHolder.append("label")
       .attr("for", "option_select")
       .attr("class", "method-select-label")
@@ -34,14 +33,6 @@ mmpc.onTypeSelect = function()
   selectHolder.append("select")
       .attr("id", "option_select")
       .attr("onchange", "mmpc.optionSelect()");
-  selectHolder.append("br");
-  selectHolder.append("label")
-      .attr("for", "param_select")
-      .attr("class", "param-select-label")
-      .text("Select params:");
-  selectHolder.append("select")
-      .attr("id", "param_select")
-      .attr("onchange", "mmpc.paramSelect()");
   selectHolder.append("label")
       .attr("for", "metric_select")
       .attr("class", "method-select-label")
@@ -52,6 +43,7 @@ mmpc.onTypeSelect = function()
   mmpc.listMethods();
 }
 
+// List the methods.
 mmpc.listMethods = function()
 {
   var methods = db.exec("SELECT DISTINCT methods.name FROM methods, metrics " +
@@ -94,7 +86,7 @@ mmpc.listDatasets = function()
   clearSelectBox(document.getElementById("option_select"));
 }
 
-// List the datasets.
+// List different parameters.
 mmpc.listOptions = function()
 {
   var sqlstr = "SELECT DISTINCT methods.parameters FROM datasets, methods, metrics " +
@@ -104,12 +96,10 @@ mmpc.listOptions = function()
                  "AND datasets.name == '" + mmpc.dataset_name + "';";
   var results = db.exec(sqlstr);
 
-  addOption = function(p, c) {
-    var options = mmpc.parseParams(c.toString());
-    for (var opt in options)
-    {
-      if(p.indexOf(opt) < 0) p.push(opt);
-    }
+  var addOption = function(p, c) {
+    var options = mmpc.getOptionList(c.toString());
+    for (i = 0; i < options.length; i++)
+      if(p.indexOf(options[i]) < 0) p.push(options[i]);
     return p;
   };
   var options = results[0].values.reduce(addOption, []);
@@ -124,45 +114,10 @@ mmpc.listOptions = function()
   }
   option_select_box.selectedIndex = -1;
   // Clear metrics box.
-  clearSelectBox(document.getElementById("param_select"));
-}
-
-// List the datasets.
-mmpc.listParams = function()
-{
-  var sqlstr = "SELECT DISTINCT methods.parameters FROM datasets, methods, metrics " +
-               "WHERE datasets.id == metrics.dataset_id " +
-                 "AND methods.id == metrics.method_id " +
-                 "AND methods.name == '" + mmpc.method_name + "' " +
-                 "AND datasets.name == '" + mmpc.dataset_name + "';";
-  var results = db.exec(sqlstr);
-
-  addParams = function(p, c) {
-    var options = mmpc.parseParams(c.toString());
-    if (mmpc.option in options)
-    {
-      delete options[mmpc.option];
-      str = JSON.stringify(options);
-      if(p.indexOf(str) < 0) p.push(str);
-    }
-    return p;
-  };
-  var params = results[0].values.reduce(addParams, []);
-
-  var param_select_box = document.getElementById("param_select");
-  clearSelectBox(param_select_box);
-  for (i = 0; i < params.length; i++)
-  {
-    var new_param = document.createElement("option");
-    new_param.text = params[i];
-    param_select_box.add(new_param);
-  }
-  param_select_box.selectedIndex = -1;
-  // Clear metrics box.
   clearSelectBox(document.getElementById("metric_select"));
 }
 
-// List the datasets.
+// List the metrics.
 mmpc.listMetrics = function()
 {
   var sqlstr = "SELECT metrics.metric FROM datasets, metrics, methods " +
@@ -219,16 +174,6 @@ mmpc.optionSelect = function()
   var option_select_box = document.getElementById("option_select");
   mmpc.option = option_select_box.options[option_select_box.selectedIndex].text;
 
-  mmpc.listParams();
-}
-
-// The user has selected parameters.
-mmpc.paramSelect = function()
-{
-  // Extract the name of the parameters we selected.
-  var param_select_box = document.getElementById("param_select");
-  mmpc.param = param_select_box.options[param_select_box.selectedIndex].text;
-
   mmpc.listMetrics();
 }
 
@@ -249,42 +194,136 @@ mmpc.metricSelect = function()
                  "AND datasets.name == '" + mmpc.dataset_name + "';";
   mmpc.results = db.exec(sqlstr);
 
-  // Obtain unique list of libraries.
-  mmpc.libraries = mmpc.results[0].values.map(function(d) { return d[2]; })
-      .reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
-
-  mmpc.active_libraries = {};
-  for(i = 0; i < mmpc.libraries.length; i++)
-    mmpc.active_libraries[mmpc.libraries[i]] = true;
-
-  hasOption = function(d) {
+  var filterAndSet = function(p, d) {
     var metrics = jQuery.parseJSON(d[0]);
-    var params = mmpc.parseParams(d[1].toString());
-    if ((mmpc.metric_name in metrics) && (mmpc.option in params))
+    var value = mmpc.getOptionValue(d[1].toString(), mmpc.option);
+    if(value != "" && mmpc.metric_name in metrics)
     {
-      delete params[mmpc.option];
-      str = JSON.stringify(params);
-      return (str === mmpc.param);
+      d[0] = metrics[mmpc.metric_name];
+      d[1] = mmpc.removeOption(d[1].toString(), mmpc.option);
+      d[4] = value;
+      p.push(d);
     }
-    return false;
+    return p;
   };
+  mmpc.results[0].values = mmpc.results[0].values.reduce(filterAndSet,[]);
 
-  setOptionVal = function(d) {
-    d[0] = jQuery.parseJSON(d[0])[mmpc.metric_name];
-    d[1] = parseFloat(mmpc.parseParams(d[1].toString())[mmpc.option]);
-    return d;
+  // Create an empty chart.
+  mmpc.clear();
+
+  // Now create the legend at the bottom that will allow us to add/remove
+  // methods.
+  d3.selectAll(".legendholder").append("div").attr("class", "methodcontrol");
+
+  d3.selectAll(".legendholder").append("input")
+      .attr("type", "button")
+      .attr("class", "add_method_button")
+      .attr("onclick", "mmpc.clickAddButton()")
+      .attr("value", "Add");
+  d3.selectAll(".legendholder").append("input")
+      .attr("type", "button")
+      .attr("class", "clear_methods_button")
+      .attr("onclick", "mmpc.clickClearMethods()")
+      .attr("value", "Remove all");
+  d3.selectAll(".legendholder").append("input")
+      .attr("type", "button")
+      .attr("class", "redraw_methods_button")
+      .attr("onclick", "mmpc.clickRedrawMethods()")
+      .attr("value", "Redraw graph");
+
+  mmpc.control_list_length = 0;
+}
+
+// The user has requested to add a new thing.
+mmpc.clickAddButton = function()
+{
+  var newmethodcontrol = d3.selectAll(".methodcontrol").append("div").attr("class", "methodcontroldiv");
+
+  newmethodcontrol.append("label")
+      .attr("class", "mmpc-index-label")
+      .text(String(mmpc.control_list_length));
+  newmethodcontrol.append("label")
+      .style('background', color(mmpc.control_list_length))
+      .attr('class', 'library-select-color');
+  newmethodcontrol.append("label")
+      .attr("for", "library_select_" + String(mmpc.control_list_length))
+      .attr("class", "mmpc-library-select-label")
+      .text("Library:");
+  newmethodcontrol.append("select")
+      .attr("id", "library_select_" + String(mmpc.control_list_length))
+      .attr("onchange", "mmpc.libraryControlListSelect('" + String(mmpc.control_list_length) + "')");
+  newmethodcontrol.append("label")
+      .attr("for", "param_select_" + String(mmpc.control_list_length))
+      .attr("class", "mmpc-param-select-label")
+      .text("Parameter:");
+  newmethodcontrol.append("select")
+      .attr("id", "param_select_" + String(mmpc.control_list_length));
+
+  mmpc.control_list_length++;
+
+  var addLibrary = function(p, d) {
+    if (p.indexOf(d[2]) < 0)
+        p.push(d[2]);
+    return p;
   };
+  distinct_libraries = mmpc.results[0].values.reduce(addLibrary, []);
 
-  mmpc.results[0].values = mmpc.results[0].values.filter(hasOption).map(setOptionVal);
+  var library_select_box = document.getElementById("library_select_" + String(mmpc.control_list_length - 1));
+  clearSelectBox(library_select_box);
+  for(i = 0; i < distinct_libraries.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = distinct_libraries[i];
+    library_select_box.add(new_option);
+  }
+  library_select_box.selectedIndex = -1;
+}
 
-  clearChart();
-  buildChart();
+mmpc.libraryControlListSelect = function(id)
+{
+  var library_select_box = document.getElementById("library_select_" + id);
+  var library_name = library_select_box.options[library_select_box.selectedIndex].text;
+
+  // Add list of parameters.
+  var addParams = function(p, d) {
+    if (library_name === d[2].toString() && p.indexOf(d[1]) < 0)
+      p.push(d[1]);
+    return p;
+  };
+  var params = mmpc.results[0].values.reduce(addParams, []);
+  var parambox = document.getElementById("param_select_" + id);
+  clearSelectBox(parambox);
+  for (i = 0; i < params.length; i++)
+  {
+    var new_option = document.createElement("option");
+    new_option.text = params[i];
+    parambox.add(new_option);
+  }
+  parambox.selectedIndex = -1;
+}
+
+mmpc.clickClearMethods = function()
+{
+  d3.selectAll(".methodcontroldiv").remove();
+  mmpc.control_list_length = 0;
+  clearChart(); // Remove the chart too.
+}
+
+// The user wants a plot of everything we have.
+mmpc.clickRedrawMethods = function()
+{
+  mmpc.clearChart();
+  mmpc.buildChart();
 }
 
 // Remove everything on the page that belongs to us.
 mmpc.clear = function()
 {
-  // Only things that belong to us are in the chart.
+  d3.selectAll(".methodcontrol").remove();
+  d3.selectAll(".add_method_button").remove();
+  d3.selectAll(".clear_methods_button").remove();
+  d3.selectAll(".redraw_methods_button").remove();
+
   mmpc.clearChart();
 }
 
@@ -293,25 +332,34 @@ mmpc.clearChart = function()
 {
   d3.select("svg").remove();
   d3.selectAll(".d3-tip").remove();
-  d3.selectAll(".library-select-title").remove();
-  d3.selectAll(".library-select-div").remove();
-  d3.selectAll(".dataset-select-title").remove();
-  d3.selectAll(".dataset-select-div").remove();
 }
 
-// Parse a list of parameters into a key-value dict.
-mmpc.parseParams = function(str)
+// Return a param's value from a list of parameters.
+// (Must be a numerical parameter)
+mmpc.getOptionValue = function(str, opt)
+{
+  var list = str.split("-" + opt)
+  if (list.length < 2)
+    return "";
+  list = list[1].split(/[\s=]+/);
+  if (list.length < 2)
+    return "";
+  return parseFloat(list[1]);
+}
+
+// Remove a parameter from the list of parameters.
+mmpc.removeOption = function(str, opt)
+{
+  return str.replace(new RegExp("-+" + opt + "[^-]*"),'').replace(/^\s+|\s+$/g, '');
+}
+
+// Returns a list of parameters.
+mmpc.getOptionList = function(str)
 {
   optList = str.split(/-+/)
-      .map(function (d) {return d.replace(/^\s+|\s+$/g, '').split(/[\s=]+/); })
+      .map(function (d) {return d.replace(/^\s+|\s+$/g, '').split(/[\s=]+/)[0]; });
   optList.shift();
-  return optList.reduce(function (p, c){
-    if (c.length > 1)
-      p[c[0]] = c[1];
-    else
-      p[c[0]] = undefined;
-    return p;
-  }, {});
+  return optList;
 }
 
 // Build the chart and display it on the screen.
@@ -321,11 +369,11 @@ mmpc.buildChart = function()
   var score_list = mmpc.results[0].values.map(function(d) { return d[0]; })
   var maxScore = Math.max.apply(null, score_list);
 
-  var param_list = mmpc.results[0].values.map(function(d) { return d[1]; });
+  var param_list = mmpc.results[0].values.map(function(d) { return d[4]; });
   var minParam = Math.min.apply(null, param_list);
   var maxParam = Math.max.apply(null, param_list);
 
-  var params_scale = d3.scale.linear()//ordinal()
+  var params_scale = d3.scale.linear()
       .domain([minParam, maxParam])
       .range([0, width]);
 
@@ -372,29 +420,37 @@ mmpc.buildChart = function()
       .attr("class", "d3-tip")
       .offset([-10, 0])
       .html(function(d) {
-          var score = d[0];
-          if (d[0] != "") { score = d[0].toFixed(3); }
-          return "<strong> Score for '" + d[1] + "' " + d[2] +
-              ":</strong> <span style='color:yellow'>" + score + "</span>"; }
+          return "<strong> Score for '" + d[4].toString() + "' (" + d[2] +
+              ", '" + d[1] + "'):</strong> <span style='color:yellow'>" + d[0] + "</span>"; }
       );
   svg.call(tip);
 
   // Add all of the data points.
   var lineFunc = d3.svg.line()
-      .x(function(d) { return params_scale(d[1]); })
+      .x(function(d) { return params_scale(d[4]); })
       .y(function(d) { return score_scale(d[0]); });
 
   var lineResults = [];
-  for (var l in mmpc.libraries)
+  for (i = 0; i < mmpc.control_list_length; i++)
   {
-    if (mmpc.active_libraries[mmpc.libraries[l]] == true)
-    {
-      lineResults.push(mmpc.results[0].values
-          .reduce(function(p, c) { if(c[2] == mmpc.libraries[l]) { p.push(c); } return p; }, [])
-          .sort(function (a, b) {return a[1] - b[1];}));
-    }
-    else
-      lineResults.push([]);
+    var parambox = document.getElementById("param_select_" + String(i));
+    var param_name = parambox.options[parambox.selectedIndex].text;
+    var librarybox = document.getElementById("library_select_" + String(i));
+    var library_name = librarybox.options[librarybox.selectedIndex].text;
+    //Filter results that match library and parameters.
+    var hasLibraryAndParams = function(d) {
+      return (param_name == d[1] && library_name == d[2]);
+    };
+    var results = mmpc.results[0].values.filter(hasLibraryAndParams)
+    //Order by asc parameter value, desc build id.
+    results = results.sort(function (a, b) {if (a[4] == b[4]) return b[3] - a[3]; return a[4] - b[4];});
+    //Remove duplicated cases for a given value (The first is chosen, the one with higher build id).
+    distinct_res = [];
+    for (j = 0; j < results.length; j++)
+      if(j == 0 || results[j-1][4] != results[j][4])
+        distinct_res.push(results[j]);
+    //Add list of results.
+    lineResults.push(distinct_res);
   }
 
   for(i = 0; i < lineResults.length; i++)
@@ -403,7 +459,7 @@ mmpc.buildChart = function()
     {
       svg.append('svg:path')
           .attr('d', lineFunc(lineResults[i]))
-          .attr('stroke', color(mmpc.libraries[i]))
+          .attr('stroke', color(i))
           .attr('stroke-width', 2)
           .attr('fill', 'none');
     }
@@ -418,100 +474,25 @@ mmpc.buildChart = function()
     // circle; looks kind of nice.
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 6)
-        .attr("cx", function(d) { return params_scale(d[1]); })
+        .attr("cx", function(d) { return params_scale(d[4]); })
         .attr("cy", function(d) { return score_scale(d[0]); })
         .attr('fill', '#222222')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 4)
-        .attr("cx", function(d) { return params_scale(d[1]); })
+        .attr("cx", function(d) { return params_scale(d[4]); })
         .attr("cy", function(d) { return score_scale(d[0]); })
         .attr('fill', '#ffffff')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 3)
-        .attr("cx", function(d) { return params_scale(d[1]); })
+        .attr("cx", function(d) { return params_scale(d[4]); })
         .attr("cy", function(d) { return score_scale(d[0]); })
-        .attr('fill', function(d) { return color(d[2]) })
+        .attr('fill', function(d) { return color(i); })
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
   }
-
-  // Create the library selector.
-  var librarySelectTitle = d3.select(".legendholder").append("div")
-      .attr("class", "library-select-title");
-  librarySelectTitle.append("div")
-      .attr("class", "library-select-title-text")
-      .text("Libraries:");
-  librarySelectTitle.append("div")
-      .attr("class", "library-select-title-open-paren")
-      .text("(");
-  librarySelectTitle.append("div")
-      .attr("class", "library-select-title-enable-all")
-      .text("enable all")
-      .on('click', function() { mmpc.enableAllLibraries(); });
-  librarySelectTitle.append("div")
-      .attr("class", "library-select-title-bar")
-      .text("|");
-  librarySelectTitle.append("div")
-      .attr("class", "library-select-title-disable-all")
-      .text("disable all")
-      .on('click', function() { mmpc.disableAllLibraries(); });
-  librarySelectTitle.append("div")
-      .attr("class", "library-select-title-close-paren")
-      .text(")");
-
-  var libraryDivs = d3.select(".legendholder").selectAll("input")
-      .data(mmpc.libraries)
-      .enter()
-      .append("div")
-      .attr("class", "library-select-div")
-      .attr("id", function(d) { return d + '-library-checkbox-div'; });
-
-  libraryDivs.append("label")
-      .attr('for', function(d) { return d + '-library-checkbox'; })
-      .style('background', color)
-      .attr('class', 'library-select-color');
-
-  libraryDivs.append("input")
-      .property("checked", function(d) { return mmpc.active_libraries[d]; })
-      .attr("type", "checkbox")
-      .attr("id", function(d) { return d + '-library-checkbox'; })
-      .attr('class', 'library-select-box')
-      .attr("onClick", function(d, i) { return "mmpc.toggleLibrary(\"" + d + "\");"; });
-
-  libraryDivs.append("label")
-      .attr('for', function(d) { return d + '-library-checkbox'; })
-      .attr('class', 'library-select-label')
-      .text(function(d) { return d; });
-}
-
-// Toggle a library to on or off.
-mmpc.toggleLibrary = function(library)
-{
-  mmpc.active_libraries[library] = !mmpc.active_libraries[library];
-
-  clearChart();
-  buildChart();
-}
-
-// Set all libraries on.
-mmpc.enableAllLibraries = function()
-{
-  for (v in mmpc.active_libraries) { mmpc.active_libraries[v] = true; }
-
-  clearChart();
-  buildChart();
-}
-
-// Set all libraries off.
-mmpc.disableAllLibraries = function()
-{
-  for (v in mmpc.active_libraries) { mmpc.active_libraries[v] = false; }
-
-  clearChart();
-  buildChart();
 }
 

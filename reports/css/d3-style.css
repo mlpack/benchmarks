@@ -184,7 +184,7 @@ svg text {
   padding-top: 1em;
 }
 
-.dc-index-label {
+.dc-index-label, .mmpc-index-label {
   float: left;
   font-size: 60%;
   color: #ffffff;
@@ -192,7 +192,8 @@ svg text {
   margin-right: 3em;
 }
 
-.dc-method-select-label, .dc-param-select-label, .dc-library-select-label
+.dc-method-select-label, .dc-param-select-label, .dc-library-select-label,
+.mmpc-param-select-label, .mmpc-library-select-label
 {
   font-size: 75%;
   margin-left: 0.5em;
