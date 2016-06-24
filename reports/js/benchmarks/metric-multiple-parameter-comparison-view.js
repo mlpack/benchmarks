@@ -335,7 +335,6 @@ mmpc.clearChart = function()
 }
 
 // Return a param's value from a list of parameters.
-// (Must be a numerical parameter)
 mmpc.getOptionValue = function(str, opt)
 {
   var list = str.split("-" + opt)
@@ -344,7 +343,7 @@ mmpc.getOptionValue = function(str, opt)
   list = list[1].split(/[\s=]+/);
   if (list.length < 2)
     return "";
-  return parseFloat(list[1]);
+  return list[1];
 }
 
 // Remove a parameter from the list of parameters.
@@ -357,7 +356,9 @@ mmpc.removeOption = function(str, opt)
 mmpc.getOptionList = function(str)
 {
   optList = str.split(/-+/)
-      .map(function (d) {return d.replace(/^\s+|\s+$/g, '').split(/[\s=]+/)[0]; });
+      .map(function (d) {return d.replace(/^\s+|\s+$/g, '').split(/[\s=]+/); })
+      .filter(function (d) {return (d.length > 1);})
+      .map(function (d) {return d[0];});
   optList.shift();
   return optList;
 }
@@ -365,21 +366,67 @@ mmpc.getOptionList = function(str)
 // Build the chart and display it on the screen.
 mmpc.buildChart = function()
 {
+  var numeric_param = ! mmpc.results[0].values
+      .map(function (d) {return isNaN(d[4]);})
+      .reduce(function (p, c) {return (p || c);},false);
+
+
+  if (numeric_param) //Parse numbers.
+    mmpc.results[0].values = mmpc.results[0].values
+        .map(function (d) {d[4] = parseFloat(d[4]); return d;});
+
+  var lineResults = [];
+  for (i = 0; i < mmpc.control_list_length; i++)
+  {
+    var parambox = document.getElementById("param_select_" + String(i));
+    var param_name = parambox.options[parambox.selectedIndex].text;
+    var librarybox = document.getElementById("library_select_" + String(i));
+    var library_name = librarybox.options[librarybox.selectedIndex].text;
+    //Filter results that match library and parameters.
+    var hasLibraryAndParams = function(d) {
+      return (param_name == d[1] && library_name == d[2]);
+    };
+    var results = mmpc.results[0].values.filter(hasLibraryAndParams)
+    //Order by asc parameter value, desc build id.
+    results = results.sort(function (a, b) {
+        if (a[4] == b[4])
+          return b[3] - a[3];
+        if (a[4] < b[4])
+          return -1;
+        return 1
+    });
+    //Remove duplicated cases for a given value (The first is chosen, the one with higher build id).
+    distinct_res = [];
+    for (j = 0; j < results.length; j++)
+      if(j == 0 || results[j-1][4] != results[j][4])
+        distinct_res.push(results[j]);
+    //Add list of results.
+    lineResults.push(distinct_res);
+  }
+
   // Set up scales.
-  var score_list = mmpc.results[0].values.map(function(d) { return d[0]; })
+  var instances = lineResults.reduce(function (p, d) {return p.concat(d);},[]);
+  var score_list = instances.map(function(d) {return d[0];});
   var maxScore = Math.max.apply(null, score_list);
-
-  var param_list = mmpc.results[0].values.map(function(d) { return d[4]; });
-  var minParam = Math.min.apply(null, param_list);
-  var maxParam = Math.max.apply(null, param_list);
-
-  var params_scale = d3.scale.linear()
-      .domain([minParam, maxParam])
-      .range([0, width]);
-
   var score_scale = d3.scale.linear()
       .domain([0, maxScore])
       .range([height, 0]);
+
+  var params_scale;
+  var param_list = instances.map(function(d) {return d[4];})
+      .reduce(function (p, d) {if(p.indexOf(d) < 0) p.push(d); return p;},[]);
+  if (numeric_param)
+  {
+    var minParam = Math.min.apply(null, param_list);
+    var maxParam = Math.max.apply(null, param_list);
+    params_scale = d3.scale.linear()
+        .domain([minParam, maxParam])
+        .range([0, width]);
+  }
+  else
+    params_scale = d3.scale.ordinal()
+        .domain(param_list)
+        .rangePoints([0, width], .1);
 
   // Set up axes.
   var xAxis = d3.svg.axis().scale(params_scale).orient("bottom");
@@ -413,7 +460,7 @@ mmpc.buildChart = function()
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Metric Score");
+      .text(mmpc.metric_name);
 
   // Create tooltips.
   var tip = d3.tip()
@@ -429,29 +476,6 @@ mmpc.buildChart = function()
   var lineFunc = d3.svg.line()
       .x(function(d) { return params_scale(d[4]); })
       .y(function(d) { return score_scale(d[0]); });
-
-  var lineResults = [];
-  for (i = 0; i < mmpc.control_list_length; i++)
-  {
-    var parambox = document.getElementById("param_select_" + String(i));
-    var param_name = parambox.options[parambox.selectedIndex].text;
-    var librarybox = document.getElementById("library_select_" + String(i));
-    var library_name = librarybox.options[librarybox.selectedIndex].text;
-    //Filter results that match library and parameters.
-    var hasLibraryAndParams = function(d) {
-      return (param_name == d[1] && library_name == d[2]);
-    };
-    var results = mmpc.results[0].values.filter(hasLibraryAndParams)
-    //Order by asc parameter value, desc build id.
-    results = results.sort(function (a, b) {if (a[4] == b[4]) return b[3] - a[3]; return a[4] - b[4];});
-    //Remove duplicated cases for a given value (The first is chosen, the one with higher build id).
-    distinct_res = [];
-    for (j = 0; j < results.length; j++)
-      if(j == 0 || results[j-1][4] != results[j][4])
-        distinct_res.push(results[j]);
-    //Add list of results.
-    lineResults.push(distinct_res);
-  }
 
   for(i = 0; i < lineResults.length; i++)
   {
