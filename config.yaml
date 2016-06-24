@@ -1756,7 +1756,7 @@ methods:
 library: ann
 methods:
     ALLKNN:
-          run: ['timing']
+          run: ['timing', 'metric']
           script: methods/ann/allknn.py
           format: [csv, txt]
           datasets:
@@ -1772,7 +1772,7 @@ methods:
 library: flann
 methods:
     ALLKNN:
-          run: ['timing']
+          run: ['timing', 'metric']
           script: methods/flann/allknn.py
           format: [csv, txt]
           datasets:
