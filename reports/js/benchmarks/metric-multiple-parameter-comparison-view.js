@@ -415,7 +415,7 @@ mmpc.buildChart = function()
   var params_scale;
   var param_list = instances.map(function(d) {return d[4];})
       .reduce(function (p, d) {if(p.indexOf(d) < 0) p.push(d); return p;},[]);
-  if (numeric_param)
+  if (numeric_param && param_list.length > 1)
   {
     var minParam = Math.min.apply(null, param_list);
     var maxParam = Math.max.apply(null, param_list);
