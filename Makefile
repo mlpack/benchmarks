@@ -223,8 +223,8 @@ endif
 	# Compile the java files for the weka methods.
 	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
 	# Compile the ann scripts.
-	g++ -O0 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(MLPACK_PATH)/include -L$(MLPACK_PATH)/lib -lANN -lmlpack -lboost_program_options
+	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(MLPACK_PATH)/include -I$(ANN_PATH)/include -L$(MLPACK_PATH)/lib -L$(ANN_PATH)/lib -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
-	g++ -O0 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(MLPACK_PATH)/include -L$(MLPACK_PATH)/lib -lmlpack -lboost_program_options
+	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(MLPACK_PATH)/include -I$(FLANN_PATH)/include -L$(MLPACK_PATH)/lib -L$(FLANN_PATH)/lib -lmlpack -lboost_program_options
 .checks:
 	$(PYTHON_BIN) tests/tests.py

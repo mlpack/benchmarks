@@ -89,6 +89,16 @@ class ALLKNN(object):
       return time
 
   '''
+  Run all the metrics.
+
+  @param options - Extra options for the method.
+  @return - dictionary with metrics values or None if the method was
+  not successful.
+  '''
+  def RunMetrics(self, options):
+    return {}
+
+  '''
   Parse the timer data form a given string.
 
   @param data - String to parse timer data from.

@@ -260,7 +260,42 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42'
+              options: '-k 3 -s 42 -e 0.0'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42 -e 0.05'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42 -e 0.10'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42 -e 0.15'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42 -e 0.20'
+
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                      'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                      'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                      'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+              options: '-k 3 -s 42 -e 0.25'
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
@@ -1756,7 +1791,7 @@ methods:
 library: ann
 methods:
     ALLKNN:
-          run: ['timing']
+          run: ['timing', 'metric']
           script: methods/ann/allknn.py
           format: [csv, txt]
           datasets:
@@ -1765,14 +1800,49 @@ methods:
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42'
+                options: '-k 3 -s 42 -e 0.0'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.05'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.10'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.15'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.20'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.25'
 ---
 #  FLANN:
 #  A Library for Fast Library for Approximate Nearest Neighbors
 library: flann
 methods:
     ALLKNN:
-          run: ['timing']
+          run: ['timing', 'metric']
           script: methods/flann/allknn.py
           format: [csv, txt]
           datasets:
@@ -1781,4 +1851,39 @@ methods:
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42'
+                options: '-k 3 -s 42 -e 0.0'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.05'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.10'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.15'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.20'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42 -e 0.25'

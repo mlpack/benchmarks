@@ -255,7 +255,7 @@ def MethodReports(db, bootstrapCount):
   libraryIds  = db.GetLibraryIds()
   buildIds = []
   for libraryid in libraryIds:
-    buildIds.append((db.GetLatestBuildFromLibary(libraryid[0]), libraryid[1]))
+    buildIds.append((db.GetLatestBuildFromLibary(libraryid[0])[0][0], libraryid[1]))
 
   methodGroup = {}
   # Iterate throw all methods and create for each method a new container.
@@ -324,7 +324,7 @@ def MethodReports(db, bootstrapCount):
     mlpackMemoryId = db.GetLibrary("mlpack_memory")
     mlpackMemoryBuilId = ""
     if mlpackMemoryId:
-        mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])
+        mlpackMemoryBuilId = db.GetLatestBuildFromLibary(mlpackMemoryId[0][0])[0][0]
 
     # Variables to count the status informations.
     failureCount = 0
