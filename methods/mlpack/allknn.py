@@ -162,8 +162,8 @@ class ALLKNN(object):
     # Datastructure to store the results.
     metrics = {}
 
-    if self.baseCases is None:
-      Log.Fatal("Can't parse the number of base cases")
+    if self.baseCases is None or self.baseCases == -1:
+      # Can't parse the number of base cases
       return None
     else:
       metrics['BaseCases'] = self.baseCases
@@ -185,8 +185,8 @@ class ALLKNN(object):
     match = pattern.match(data)
 
     if not match:
-      Log.Fatal("Can't parse the base cases: wrong format")
-      return None
+      # Can't parse the base cases: wrong format
+      return -1
     else:
       return int(match.group("num_base_cases"))
 
