@@ -235,6 +235,14 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
                     db.CopyLatestBuildFromLibary(buildId, newBuildId)
 
                 buildId = db.GetLatestBuildFromLibary(libraryId)
+
+                # Get the right build id from the list.
+                if buildId and type(buildId) is list:
+                  if(type(buildId[0]) is tuple):
+                    buildId = buildId[0][0]
+                  else:
+                    buildId = buildId[0]
+
                 buildIdPrevious = [(buildId,)]
 
                 if buildId:
@@ -371,10 +379,10 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
                   except Exception as e:
                     Log.Fatal("Exception: " + str(e))
                     metrics = None
-
                   if metrics:
                     if log:
                       buildID, libraryID = build[name]
+
                       if update:
                         try:
                           db.UpdateMetricResult(buildID, libraryID,
