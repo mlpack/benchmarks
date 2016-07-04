@@ -256,11 +256,14 @@ class Database:
         self.NewBootstrapResult(buildId, libaryId, metric, datasetId, methodId)
 
   def GetMetricResult(self, buildId, libaryId, datasetId, methodId):
-    with self.con:
-      self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
-          + " AND libary_id=" + str(libaryId) + " AND dataset_id="
-          + str(datasetId) + " AND method_id=" + str(methodId))
-      return self.cur.fetchall()
+    try:
+      with self.con:
+        self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
+            + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+            + str(datasetId) + " AND method_id=" + str(methodId))
+        return self.cur.fetchall()
+    except Exception:
+      return None
 
   def GetBootstrapResult(self, buildId, libaryId, datasetId, methodId):
     with self.con:
