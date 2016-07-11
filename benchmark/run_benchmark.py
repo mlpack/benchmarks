@@ -318,52 +318,79 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
                   if not watchCheck:
                     continue
 
-                if 'timing' in tasks:
-                  time = []
-                  for trial in range(trials + 1):
-                    if trial > 0:
-                      try:
-                        time.append(instance.RunTiming(options))
+                if 'metric' in tasks:
+                  metrics = []
 
-                        # Method unsuccessful.
-                        if sum(time) < 0:
-                          break
-                      except Exception as e:
-                        Log.Fatal("Exception: " + str(e))
+                  for trail in range(trials):
+                    try:
+                      currentMetric = instance.RunMetrics(options)
 
-                  # Set the correct time label.
-                  if sum(time) == -2:
-                    # Timout failure.
-                    dataMatrix[row][col] = ">" + str(timeout)
-                  elif sum(time) < 0:
-                    # Exception.
-                    dataMatrix[row][col] = "failure"
-                  else:
-                    # Measured time.
-                    dataMatrix[row][col] = "{0:.6f}".format(sum(time) / trials)
+                      if type(currentMetric) is not dict and currentMetric == -2:
+                        # Timout failure.
+                        metrics = [{ 'Runtime' :  ">" + str(timeout)}]
+                        break
+                      elif type(currentMetric) is not dict and currentMetric < 0:
+                        # Runtime exception.
+                        metrics = [{ 'Runtime' :  "failure"}]
+                        break
+                      else:
+                        # Append new data.
+                        metrics.append(currentMetric)
+                    except Exception as e:
+                      Log.Fatal("Exception: " + str(e))
 
-                  # Save the results in the databse if the user asked for.
+                  finalMetrics = {}
+                  if len(metrics) > 0:
+                    finalMetrics = metrics[0]
+                    for m in range(1, len(metrics)):
+                      for metricKey in metrics[m]:
+                        value = metrics[m][metricKey]
+
+                        if isFloat(value) or isInt(value):
+                          finalMetrics[metricKey] += value
+
+                  for metricKey in finalMetrics:
+                    value = finalMetrics[metricKey]
+                    if isFloat(value) or isInt(value):
+                      finalMetrics[metricKey] /= len(metrics)
+
+                      # Convert to int if possible.
+                      if (finalMetrics[metricKey] == int(finalMetrics[metricKey])):
+                        finalMetrics[metricKey] = int(finalMetrics[metricKey])
+
+                  # Update the Runtime matrix view.
+                  if 'Runtime' in finalMetrics:
+                    if isFloat(finalMetrics['Runtime']):
+                      dataMatrix[row][col] = "{0:.6f}".format(finalMetrics['Runtime'])
+                    else:
+                      dataMatrix[row][col] = finalMetrics['Runtime']
+
                   if log:
-                    # Get the variance.
-                    var = 0
-                    if len(time) != 0:
-                      avg = sum(time) / len(time)
-                      var = sum((avg - value) ** 2 for value in time) / len(time)
+                    buildID, libraryID = build[name]
 
-                    buildId, libraryId = build[name]
                     if update:
                       try:
-                        db.UpdateResult(buildId, libraryId, dataMatrix[row][col],
-                          var, datasetId, methodId)
+                        # Update metric data.
+                        db.UpdateMetricResult(buildID, libraryID,
+                            simplejson.dumps(finalMetrics), datasetId, methodId)
+
+                        # Update runtime data.
+                        db.NewResult(buildID, libraryID, dataMatrix[row][col],
+                            0, datasetId, methodId)
                       except Exception:
                         pass
                     else:
-                      db.NewResult(buildId, libraryId, dataMatrix[row][col], var,
-                          datasetId, methodId)
+                      # Add new metric results.
+                      db.NewMetricResult(buildID, libraryID,
+                          simplejson.dumps(finalMetrics), datasetId, methodId)
+
+                      # Add new runtime results.
+                      db.NewResult(buildID, libraryID, dataMatrix[row][col],
+                          0, datasetId, methodId)
 
                   if 'watch' in tasks and log:
                     for prevbuildID in buildIdPrevious:
-                      resultsPrevious = db.GetResult(prevbuildID[0], libraryId,
+                      resultsPrevious = db.GetResult(prevbuildID[0], libraryID,
                           datasetId, methodId)
                       if (resultsPrevious and resultsPrevious[0][3] != '-'):
                         break
@@ -371,73 +398,11 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
                     if resultsPrevious:
                       dataMatrixPrevious[row][col] = str(resultsPrevious[0][3])
 
-                if 'metric' in tasks:
-                  try:
-                    metrics = instance.RunMetrics(options)
-                    if 'timing' in tasks and metrics is not None:
-                      metrics['Runtime'] = dataMatrix[row][col]
-                  except Exception as e:
-                    Log.Fatal("Exception: " + str(e))
-                    metrics = None
-                  if metrics:
-                    if log:
-                      buildID, libraryID = build[name]
-
-                      if update:
-                        try:
-                          db.UpdateMetricResult(buildID, libraryID,
-                              simplejson.dumps(metrics), datasetId, methodId)
-                        except Exception:
-                          pass
-                      else:
-                        db.NewMetricResult(buildID, libraryID,
-                            simplejson.dumps(metrics), datasetId, methodId)
-
-                if 'bootstrap' in tasks:
-                  bootstrap_metrics = {}
-
-                  # Start bootstrapping for this method.
-                  bootstrapCounter = 0
-                  for i in range(bootstrapCount):
-                    instance = methodCall(modifiedDataset[0], timeout=timeout,
-                        verbose=False)
-
-                    # Get the metric results for the specified method.
-                    metrics = instance.RunMetrics(options)
-
-                    # Merge the obtained metrics with the existing.
-                    if metrics:
-                      bootstrapCounter += 1
-                      bootstrap_metrics = { m: metrics.get(m, 0) +
-                                            bootstrap_metrics.get(m, 0)
-                                            for m in set(metrics) }
-
-                  # Normalize each obtained metric.
-                  for m in bootstrap_metrics:
-                    bootstrap_metrics[m] = float("{0:.6f}".format
-                                                 (round(bootstrap_metrics[m] /
-                                                  bootstrapCounter, 5)))
-
-                  # Store the results in db if the user asked for it.
-                  if log:
-                    buildID, libraryID = build[name]
-                    if update:
-                      try:
-                        db.UpdateBootstrapResult(buildID, libraryID,
-                            simplejson.dumps(bootstrap_metrics), datasetId,
-                            methodId)
-                      except Exception as e:
-                        pass
-                    else:
-                      db.NewBootstrapResult(buildID, libraryID,
-                          simplejson.dumps(bootstrap_metrics), datasetId,
-                          methodId)
-
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
           col += 1
         # Show the results.
-        if not log and run > 0 and 'timing' in tasks:
+        if not log and run > 0:
           Log.Notice("\n\n")
           Log.PrintTable(AddMatrixToTable(dataMatrix, table))
           Log.Notice("\n\n")
