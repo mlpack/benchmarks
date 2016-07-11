@@ -100,7 +100,11 @@ class PCA(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
-    return self.PCAShogun(options)
+    results = self.PCAShogun(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

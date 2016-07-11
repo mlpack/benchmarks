@@ -95,4 +95,8 @@ class LARS(object):
       Log.Fatal("This method requires two datasets.")
       return -1
 
-    return self.LARSShogun(options)
+    results = self.LARSShogun(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

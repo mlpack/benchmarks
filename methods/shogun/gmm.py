@@ -51,7 +51,6 @@ class GMM(object):
     def RunGMMShogun(q):
       totalTimer = Timer()
 
-
       try:
         # Load input dataset.
         Log.Info("Loading dataset", self.verbose)
@@ -89,7 +88,11 @@ class GMM(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform GMM.", self.verbose)
 
-    return self.GMMShogun(options)
+    results = self.GMMShogun(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

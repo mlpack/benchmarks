@@ -63,7 +63,7 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset[0], delimiter=',')
         centroids = np.genfromtxt(self.dataset[1], delimiter=',')
       else:
-        data = np.genfromtxt(self.dataset[0], delimiter=',')
+        data = np.genfromtxt(self.dataset, delimiter=',')
 
       # Gather parameters.
       clusters = re.search("-c (\d+)", options)
@@ -121,10 +121,14 @@ class KMEANS(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform K-Means.", self.verbose)
 
-    return self.KMeansShogun(options)
+    results = self.KMeansShogun(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}
 
   '''
   Parse the timer data form a given string.

@@ -117,7 +117,11 @@ class KPCA(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform KPCA.", self.verbose)
 
-    return self.KPCAShogun(options)
+    results = self.KPCAShogun(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

@@ -72,7 +72,7 @@ class SVR(object):
 
       data = RealFeatures(X.T)
       labels_train = RegressionLabels(y)
-      self.kernel = GaussianKernel(data, data, self.width)   	
+      self.kernel = GaussianKernel(data, data, self.width)
 
       try:
         with totalTimer:
@@ -100,5 +100,8 @@ class SVR(object):
   def RunTiming(self, options):
     Log.Info("Perform SVR Regression.", self.verbose)
 
-    return self.SVRShogun(options)
+    results = self.SVRShogun(options)
+    if results < 0:
+      return results
 
+    return {'Runtime' : results}

@@ -111,7 +111,11 @@ class ALLKNN(object):
   @return - Elapsed time in seconds or a negativ value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
-    return self.AllKnnShogun(options)
+    results = self.AllKnnShogun(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

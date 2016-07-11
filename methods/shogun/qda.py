@@ -88,35 +88,6 @@ class QDA(object):
     return timeout(RunQDAShogun, self.timeout)
 
   '''
-  QDA for metrics
-  '''
-  def RunMetrics(self, options):
-
-    if len(self.dataset) >= 3:
-     
-      trainData, labels = SplitTrainData(self.dataset)
-      
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-
-      model = modshogun.QDA(modshogun.RealFeatures(trainData.T),modshogun.MulticlassLabels(labels))
-      model.train()
-      predictions = model.apply(modshogun.RealFeatures(testData.T)).get_labels()
-
-      # Datastructure to store the results.
-      metrics = {}
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
-      return metrics
-    else:
-      Log.Fatal("This method requires three datasets!")    
-
-  '''
   Perform QDA Classifier. If the method has been successfully completed
   return the elapsed time in seconds.
 
@@ -124,7 +95,29 @@ class QDA(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform QDA.", self.verbose)
 
-    return self.QDAShogun(options)
+    results = self.QDAShogun(options)
+    if results < 0:
+      return results
+
+    metrics = {'Runtime' : results}
+
+    if len(self.dataset) >= 3:
+      trainData, labels = SplitTrainData(self.dataset)
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+
+      model = modshogun.QDA(modshogun.RealFeatures(trainData.T),modshogun.MulticlassLabels(labels))
+      model.train()
+      predictions = model.apply(modshogun.RealFeatures(testData.T)).get_labels()
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+
+    return metrics

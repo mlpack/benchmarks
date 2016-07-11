@@ -114,19 +114,20 @@ class LogisticRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
-    return self.LogisticRegressionShogun(options)
+    results = self.LogisticRegressionShogun(options)
+    if results < 0:
+      return results
 
-  def RunMetrics(self, options):
+    metrics = {'Runtime' : results}
+
     if len(self.dataset) >= 3:
-
       # Check if we need to create a model.
       if not self.model:
         trainData, responses = SplitTrainData(self.dataset)
         self.model = self.BuildModel(trainData, responses)
-
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
@@ -138,22 +139,18 @@ class LogisticRegression(object):
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
-    else:
-      Log.Fatal("This method requires three datasets!")
 
-    # now the predictions are in self.predictions
+      metrics['Avg Accuracy'] = AvgAcc
+      metrics['MultiClass Precision'] = AvgPrec
+      metrics['MultiClass Recall'] = AvgRec
+      metrics['MultiClass FMeasure'] = AvgF
+      metrics['MultiClass Lift'] = AvgLift
+      metrics['MultiClass MCC'] = AvgMCC
+      metrics['MultiClass Information'] = AvgInformation
+      metrics['Simple MSE'] = SimpleMSE
+
+    return metrics
 

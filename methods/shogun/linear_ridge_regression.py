@@ -56,7 +56,7 @@ class LinearRidgeRegression(object):
   successful.
   '''
   def LinearRidgeRegressionShogun(self, options):
-    def RunLinearRidgeRegressionShogun(q):  
+    def RunLinearRidgeRegressionShogun(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -99,11 +99,15 @@ class LinearRidgeRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
-    Log.Info("Perform Linear Ridge Regression.", self.verbose)
-    return self.LinearRidgeRegressionShogun(options)
-
   def RunMetrics(self, options):
+    Log.Info("Perform Linear Ridge Regression.", self.verbose)
+
+    results = self.LinearRidgeRegressionShogun(options)
+    if results < 0:
+      return results
+
+    metrics = {'Runtime' : results}
+
     if len(self.dataset) >= 3:
 
       X, y = SplitTrainData(self.dataset)
@@ -111,7 +115,7 @@ class LinearRidgeRegression(object):
       tau = 1.0 if not tau else int(tau.group(1))
       model = LRR(tau, RealFeatures(X.T), RegressionLabels(y))
       model.train()
-      
+
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
