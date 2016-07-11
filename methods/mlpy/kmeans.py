@@ -94,7 +94,11 @@ class KMEANS(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform K-Means.", self.verbose)
 
-    return self.KMeansMlpy(options)
+    results = self.KMeansMlpy(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

@@ -79,11 +79,15 @@ class LARS(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform LARS.", self.verbose)
 
     if len(self.dataset) != 2:
       Log.Fatal("This method requires two datasets.")
       return -1
 
-    return self.LARSMlpy(options)
+    results = self.LARSMlpy(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

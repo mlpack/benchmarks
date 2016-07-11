@@ -79,7 +79,7 @@ class LinearRegression(object):
         test_data = np.genfromtxt(self.dataset[1], delimiter=',')
 
       # Use the last row of the training set as the responses.
-      X, y = SplitTrainData(self.dataset[0])
+      X, y = SplitTrainData(self.dataset)
 
       try:
         with totalTimer:
@@ -106,11 +106,24 @@ class LinearRegression(object):
     return timeout(RunLinearRegressionMlpy, self.timeout)
 
   '''
-  Run all the metrics for the classifier.
+  Perform Linear Regression. If the method has been successfully completed
+  return the elapsed time in seconds.
+
+  @param options - Extra options for the method.
+  @return - Elapsed time in seconds or a negative value if the method was not
+  successful.
   '''
   def RunMetrics(self, options):
-    if len(self.dataset) >= 2:
+    Log.Info("Perform Linear regression.", self.verbose)
 
+    results = self.LinearRegressionMlpy(options)
+    if results < 0:
+      return results
+
+    metrics = {'Runtime' : results}
+
+
+    if len(self.dataset) >= 2:
       # Check if we need to build and run the model.
       if not CheckFileAvailable('mlpy_lr_predictions.csv'):
         self.RunTiming(options)
@@ -129,28 +142,14 @@ class LinearRegression(object):
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
-    else:
-      Log.Fatal("This method requires three datasets.")
 
-  '''
-  Perform Linear Regression. If the method has been successfully completed
-  return the elapsed time in seconds.
+      metrics['Avg Accuracy'] = AvgAcc
+      metrics['MultiClass Precision'] = AvgPrec
+      metrics['MultiClass Recall'] = AvgRec
+      metrics['MultiClass FMeasure'] = AvgF
+      metrics['MultiClass Lift'] = AvgLift
+      metrics['MultiClass MCC'] = AvgMCC
+      metrics['MultiClass Information'] = AvgInformation
+      metrics['Simple MSE'] = SimpleMSE
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunTiming(self, options):
-    Log.Info("Perform Linear Regression.", self.verbose)
-
-    return self.LinearRegressionMlpy(options)
+    return metrics
