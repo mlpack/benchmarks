@@ -96,9 +96,13 @@ int main(int argc, char **argv)
     }
   }
 
-  Timer::Start("knn_time");
+  Timer::Start("tree_building");
 
   ANNkd_tree*  kdTree = new ANNkd_tree(dataPts, referenceData.n_cols, referenceData.n_rows, lsInt);
+
+  Timer::Stop("tree_building");
+
+  Timer::Start("computing_neighbors");
 
   arma::vec queryPoint;
   for (int i = 0; i < queryData.n_cols; ++i)
@@ -112,7 +116,7 @@ int main(int argc, char **argv)
     }
   }
 
-  Timer::Stop("knn_time");
+  Timer::Stop("computing_neighbors");
 
   delete [] nnIdx;
   delete [] dists;

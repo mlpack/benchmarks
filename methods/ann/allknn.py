@@ -53,7 +53,7 @@ class ALLKNN(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
     # If the dataset contains two files then the second file is the query file.
@@ -77,26 +77,20 @@ class ALLKNN(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
+    # Datastructure to store the results.
+    metrics = {}
+
+    # Parse data: runtime.
     timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
 
-      return time
+    if timer != -1:
+      metrics['Runtime'] = timer.tree_building + timer.computing_neighbors
+      metrics['TreeBuilding'] = timer.tree_building
+      metrics['ComputingNeighbors'] = timer.computing_neighbors
 
-  '''
-  Run all the metrics.
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
-  @param options - Extra options for the method.
-  @return - dictionary with metrics values or None if the method was
-  not successful.
-  '''
-  def RunMetrics(self, options):
-    return {}
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -108,7 +102,8 @@ class ALLKNN(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(r"""
-        .*?knn_time: (?P<knn_time>.*?)s.*?
+        .*?tree_building: (?P<tree_building>.*?)s.*?
+        .*?computing_neighbors: (?P<computing_neighbors>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data.decode())
@@ -117,18 +112,12 @@ class ALLKNN(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["knn_time"])
+      timer = collections.namedtuple("timer", ["tree_building",
+                                               "computing_neighbors"])
 
-      if match.group("knn_time").count(".") == 1:
-        return timer(float(match.group("knn_time")))
+      if match.group("tree_building").count(".") == 1:
+        return timer(float(match.group("tree_building")),
+                     float(match.group("computing_neighbors")))
       else:
-        return timer(float(match.group("knn_time").replace(",", ".")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    return timer.knn_time
+        return timer(float(match.group("tree_building").replace(",", ".")),
+                     float(match.group("computing_neighbors").replace(",", ".")))
