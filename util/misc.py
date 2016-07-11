@@ -22,6 +22,20 @@ def isFloat(n):
     return True
 
 '''
+This function determinate if the given number is a int.
+
+@param n - Number to test.
+@return If the number is a int return True otherwise return False.
+'''
+def isInt(n):
+  try:
+    int(n)
+  except ValueError as TypeError:
+    return False
+  else:
+    return True
+
+'''
 Function to search the minimum scalar in a list.
 
 @param data - A list that contains the values.
