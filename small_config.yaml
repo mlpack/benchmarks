@@ -11,7 +11,7 @@ settings:
 library: mlpack
 methods:
     PCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/pca.py
         format: [csv, txt]
@@ -19,15 +19,23 @@ methods:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv',
+                      'datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u multdist'
+    DecisionStump:
+        run: ['metric']
+        script: methods/mlpack/decision_stump.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/dexter_train.csv', 'datasets/dexter_test.csv'],
+                       ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv'] ]
     KMEANS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/kmeans.py
         format: [csv, txt]
@@ -35,8 +43,16 @@ methods:
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
+    ICA:
+        run: ['metric']
+        iteration: 1
+        script: methods/mlpack/ica.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris.csv']
+
     NBC:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/nbc.py
         format: [csv, txt]
@@ -44,7 +60,7 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/kernel_pca.py
         format: [csv, txt]
@@ -52,7 +68,7 @@ methods:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
     LARS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/lars.py
         format: [csv, txt]
@@ -61,24 +77,35 @@ methods:
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'] ]
     LSH:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/lsh.py
         format: [csv, txt]
         datasets:
          - files: ['datasets/wine.csv', 'datasets/cloud.csv']
            options: '-k 3 -s 42'
-
+    PERCEPTRON:
+        run: ['metric']
+        script: methods/mlpack/perceptron.py
+        format: [csv, txt, arff]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                       ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                       ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'] ]
+              options: '-n 10000'
     ALLKNN:
-        run: ['timing']
-        iteration: 3
+        run: ['metric', 'watch']
+        watch: ['neighbor_search', 'neighbor_search_impl', 'neighbor_search_rules',
+                'nearest_neighbor_rules_impl', 'ns_traversal_info', 'unmap',
+                'furthest_neighbor_sort', 'nearest_neighbor_sort', 'knn']
+        iteration: 2
         script: methods/mlpack/allknn.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
-              options: '-k 3 -s 42'
+              options: '-k 4 -s 42'
     ALLKFN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/allkfn.py
         format: [csv, txt]
@@ -86,15 +113,15 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3'
     ALLKRANN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/allkrann.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
-              options: '-k 3 -t 10'
+              options: '-k 3 -T 10'
     RANGESEARCH:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/range_search.py
         format: [csv, txt]
@@ -102,32 +129,22 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv']
               options: '-M 20.3'
-    GMM:
-        run: ['timing']
-        iteration: 3
-        script: methods/mlpack/gmm.py
-        format: [csv, txt]
-        datasets:
-            - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
-                      'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv',
-                      'datasets/USCensus1990.csv']
-              options: '-s 42'
     DET:
-        run: ['timing']
-        iteration: 3
+        run: ['metric']
         script: methods/mlpack/det.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris.csv', 'datasets/cloud.csv']
+            - files: ['datasets/iris.csv', 'datasets/cloud.csv',
+                     ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
     EMST:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/emst.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/iris.csv']
     LinearRegression:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/linear_regression.py
         format: [csv, txt]
@@ -136,7 +153,7 @@ methods:
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     LocalCoordinateCoding:
-        run: []
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
@@ -144,7 +161,7 @@ methods:
              - files: ['datasets/wine.csv']
                options: '-k 12 -s 42'
     SparseCoding:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
@@ -152,7 +169,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-k 12 -s 42 -n 100'
     FastMKS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
@@ -160,15 +177,16 @@ methods:
             - files: ['datasets/wine.csv']
               options: '-k 1 -K linear'
     NCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/nca.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
+            - files: ['datasets/iris_train.csv',
+                     ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'] ]
               options: '-n 2000 -O sgd -s 42'
     HMMTRAIN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/hmm_train.py
         format: [csv, txt]
@@ -179,7 +197,7 @@ methods:
             - files: ['datasets/artificial_1DSignal.csv']
               options: '-t discrete -n 20 -s 42'
     HMMGENERATE:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpack/hmm_generate.py
         format: [csv, txt, xml]
@@ -187,14 +205,14 @@ methods:
             - files: ['datasets/artificial_2DSignal_hmm.xml']
               options: '-l 10000'
     HMMLOGLIK:
-       run: ['timing']
+       run: ['metric']
        iteration: 3
        script: methods/mlpack/hmm_loglik.py
        format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
     HMMVITERBI:
-       run: []
+       run: ['metric']
        iteration: 3
        script: methods/mlpack/hmm_viterbi.py
        format: [csv, txt, xml]
@@ -206,7 +224,7 @@ methods:
 library: matlab
 methods:
     PCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/pca.py
         format: [csv, txt]
@@ -214,7 +232,7 @@ methods:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/nmf.py
         format: [csv, txt]
@@ -222,7 +240,7 @@ methods:
             - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-r 6 -s 42 -u multdist'
     KMEANS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/kmeans.py
         format: [csv, txt]
@@ -230,7 +248,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
     NBC:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/nbc.py
         format: [csv, txt]
@@ -238,15 +256,16 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     ALLKNN:
-        run: ['timing']
-        iteration: 3
+        run: ['metric']
+        iteration: 1
         script: methods/matlab/allknn.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/pendigits.csv']
               options: '-k 3 -s 42'
     RANGESEARCH:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/range_search.py
         format: [csv, txt]
@@ -254,8 +273,9 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv']
               options: '-M 20.3'
+
     LinearRegression:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/linear_regression.py
         format: [csv, txt]
@@ -265,8 +285,20 @@ methods:
                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+    LogisticRegression:
+        run: ['metric']
+        iteration: 3
+        script: methods/matlab/logistic_regression.py
+        format: [csv, txt]
+        datasets:
+             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
+                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+
     HMMGENERATE:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/matlab/hmm_generate.py
         format: [csv, txt, xml]
@@ -285,7 +317,7 @@ methods:
 library: scikit
 methods:
     PCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/pca.py
         format: [csv, txt]
@@ -293,23 +325,25 @@ methods:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NMF:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/nmf.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/piano_magnitude_spectogram.csv', 'datasets/wine.csv', 'datasets/pendigits.csv']
+            - files: ['datasets/piano_magnitude_spectogram.csv',
+                      'datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-r 6 -u alspgrad'
     KMEANS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv',
+                      'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
     NBC:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/nbc.py
         format: [csv, txt]
@@ -317,7 +351,7 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KPCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/kernel_pca.py
         format: [csv, txt]
@@ -325,7 +359,7 @@ methods:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
     LARS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/lars.py
         format: [csv, txt]
@@ -333,7 +367,7 @@ methods:
            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     ALLKNN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/allknn.py
         format: [csv, txt]
@@ -341,7 +375,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv', 'datasets/pendigits.csv']
               options: '-k 3 -s 42'
     GMM:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/gmm.py
         format: [csv, txt]
@@ -352,7 +386,7 @@ methods:
               options: '-s 42'
 
     LinearRegression:
-        run: ['timing']
+        run: []
         iteration: 3
         script: methods/scikit/linear_regression.py
         format: [csv, txt]
@@ -363,7 +397,7 @@ methods:
                         ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     SparseCoding:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/sparse_coding.py
         format: [csv, txt]
@@ -371,12 +405,12 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/pendigits.csv']
               options: '-k 12 -s 42 -n 100'
 ---
-# mlpy is a Python module for Machine Learning built on top of NumPy/SciPy 
+# mlpy is a Python module for Machine Learning built on top of NumPy/SciPy
 # and the GNU Scientific Libraries.
 library: mlpy
 methods:
     PCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpy/pca.py
         format: [csv, txt]
@@ -384,15 +418,22 @@ methods:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     KMEANS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpy/kmeans.py
         format: [csv, txt]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
+              options: '-c 2'
+
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options: '-c 3'
+
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
+              options: '-c 5'
     KPCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpy/kernel_pca.py
         format: [csv, txt]
@@ -400,7 +441,7 @@ methods:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
     LARS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpy/lars.py
         format: [csv, txt]
@@ -408,7 +449,7 @@ methods:
             - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
     ALLKNN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpy/allknn.py
         format: [csv, txt]
@@ -416,7 +457,7 @@ methods:
             - files: ['datasets/wine.csv']
               options: '-k 3 -s 42'
     LinearRegression:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/mlpy/linear_regression.py
         format: [csv, txt]
@@ -431,7 +472,7 @@ methods:
 library: shogun
 methods:
     PCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/pca.py
         format: [csv, txt]
@@ -439,7 +480,7 @@ methods:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     KMEANS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/kmeans.py
         format: [csv, txt]
@@ -447,7 +488,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
     KPCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/kernel_pca.py
         format: [csv, txt]
@@ -455,7 +496,7 @@ methods:
             - files: ['datasets/circle_data.csv', 'datasets/arcene_X.csv']
               options: '-k polynomial'
     NBC:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/nbc.py
         format: [csv, txt]
@@ -463,7 +504,7 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     ALLKNN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/allknn.py
         format: [csv, txt]
@@ -471,7 +512,7 @@ methods:
             - files: ['datasets/wine.csv']
               options: '-k 3 -s 42'
     GMM:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/gmm.py
         format: [csv, txt]
@@ -480,7 +521,7 @@ methods:
                       'datasets/iris.csv', 'datasets/vehicle.csv', 'datasets/wine.csv']
               options: '-s 42'
     LinearRegression:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/shogun/linear_regression.py
         format: [csv, txt]
@@ -495,7 +536,7 @@ methods:
 library: weka
 methods:
     PCA:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/weka/pca.py
         format: [arff]
@@ -503,7 +544,7 @@ methods:
             - files: ['datasets/cities.csv', 'datasets/faces.csv', 'datasets/iris.csv' ,
                       'datasets/wine.csv', 'datasets/ionosphere.csv', 'datasets/diabetes_X.csv']
     NBC:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/weka/nbc.py
         format: [arff]
@@ -511,15 +552,16 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'] ]
     KMEANS:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/weka/kmeans.py
         format: [arff]
         datasets:
-            - files: ['datasets/wine.csv', 'datasets/iris.csv', 'datasets/cloud.csv', 'datasets/USCensus1990.csv']
+            - files: ['datasets/wine.csv', 'datasets/iris.csv',
+                      'datasets/cloud.csv', 'datasets/USCensus1990.csv']
               options: '-c 3'
     ALLKNN:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/weka/allknn.py
         format: [arff]
@@ -527,7 +569,7 @@ methods:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv']
               options: '-k 3 -s 42'
     LinearRegression:
-        run: ['timing']
+        run: ['metric']
         iteration: 3
         script: methods/weka/linear_regression.py
         format: [arff]
@@ -536,3 +578,42 @@ methods:
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                         ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'],
                         ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'] ]
+---
+# HLearn: Homomorphic machine learning
+library: hlearn
+methods:
+    ALLKNN:
+        run: ['metric']
+        iteration: 2
+        script: methods/hlearn/allknn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                      'datasets/pendigits.csv']
+              options: '-k 4 -s 42'
+---
+#  FLANN:
+#  A Library for Fast Library for Approximate Nearest Neighbors
+library: flann
+methods:
+    ALLKNN:
+          run: ['metric']
+          script: methods/flann/allknn.py
+          format: [csv, txt]
+          datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv']
+                options: '-k 3 -s 42 -e 0.0'
+---
+#  FLANN:
+#  A Library for Fast Library for Approximate Nearest Neighbors
+library: annoy
+methods:
+    ALLKNN:
+          run: ['metric']
+          script: methods/annoy/allknn.py
+          format: [csv, txt]
+          datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv']
+                options: '-k 3 -s 42 -e 0.0'
