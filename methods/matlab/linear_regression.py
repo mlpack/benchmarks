@@ -68,7 +68,7 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
 
     # If the dataset contains two files then the second file is the test
@@ -93,56 +93,22 @@ class LinearRegression(object):
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
-    except Exception:
+    except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
+    # Datastructure to store the results.
+    metrics = {}
+
+    # Parse data: runtime.
     timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % time), self.verbose)
 
-      return time
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time
 
-  def RunMetrics(self, options):
-    if len(self.dataset) == 3:
-      # Check if the files to calculate the different metric are available.
-      if not CheckFileAvailable("predictions_matlab_linear.csv"):
-        self.RunTiming(options)
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-
-      probabilities = LoadDataset("matlab_linear_probs.csv")
-      predictedlabels = LoadDataset("predictions_matlab_linear.csv")
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
-    else:
-      Log.Fatal("This method requires three datasets!")
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -166,12 +132,3 @@ class LinearRegression(object):
       timer = collections.namedtuple("timer", ["total_time"])
 
       return timer(float(match.group("total_time")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    return timer.total_time
