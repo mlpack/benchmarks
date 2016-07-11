@@ -102,8 +102,8 @@ class ALLKNN(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(r"""
-        .*?tree_building: (?P<tree_building>.*?)s.*?
         .*?computing_neighbors: (?P<computing_neighbors>.*?)s.*?
+        .*?tree_building: (?P<tree_building>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data.decode())
