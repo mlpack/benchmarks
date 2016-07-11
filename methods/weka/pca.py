@@ -29,21 +29,21 @@ This class implements the Principal Components Analysis benchmark.
 '''
 class PCA(object):
 
-  ''' 
+  '''
   Create the Principal Components Analysis benchmark instance.
-  
+
   @param dataset - Input dataset to perform PCA on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"], 
-      verbose=True): 
+  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"],
+      verbose=True):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
-    
+
   '''
   Perform Principal Components Analysis. If the method has been successfully 
   completed return the elapsed time in seconds.
@@ -52,7 +52,7 @@ class PCA(object):
   @return - Elapsed time in seconds or a negative value if the method was not 
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
     # Split the command using shell-like syntax.
@@ -62,28 +62,27 @@ class PCA(object):
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False, 
+      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
           timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
-    except Exception:
+    except Exception as e:
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    elif isinstance(timer, int):
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % time), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time 
+    # Parse data: runtime.
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.loading_time
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -98,7 +97,7 @@ class PCA(object):
         .*?loading_data: (?P<loading_time>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-    
+
     match = pattern.match(data.decode())
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -113,13 +112,3 @@ class PCA(object):
       else:
         return timer(float(match.group("loading_time").replace(",", ".")),
               float(match.group("total_time").replace(",", ".")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_time
-    return time
