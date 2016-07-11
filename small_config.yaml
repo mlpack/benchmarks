@@ -605,6 +605,19 @@ methods:
                         'datasets/wine_qual.csv']
                 options: '-k 3 -s 42 -e 0.0'
 ---
+#  ANN:
+#  A Library for Approximate Nearest Neighbor Searching
+library: ann
+methods:
+    ALLKNN:
+          run: ['metric']
+          script: methods/ann/allknn.py
+          format: [csv, txt]
+          datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv']
+                options: '-k 3 -s 42 -e 0.0'
+---
 #  FLANN:
 #  A Library for Fast Library for Approximate Nearest Neighbors
 library: annoy
