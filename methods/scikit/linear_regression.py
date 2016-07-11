@@ -107,14 +107,16 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
-    Log.Info("Perform Linear Regression.", self.verbose)
-    return self.LinearRegressionScikit(options)
-
-  '''
-  Run all the metrics for Linear Regression.
-  '''
   def RunMetrics(self, options):
+    Log.Info("Perform Linear Regression.", self.verbose)
+    results = self.LinearRegressionScikit(options)
+
+    if results < 0:
+      return results
+
+    # Datastructure to store the results.
+    metrics = {'Runtime' : results}
+
     if len(self.dataset) >= 3:
 
       # Check if we need to create a model.
@@ -134,20 +136,17 @@ class LinearRegression(object):
       AvgF = Metrics.AvgFMeasure(confusionMatrix)
       AvgLift = Metrics.LiftMultiClass(confusionMatrix)
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
 
-    else:
-      Log.Fatal("This method requires three datasets.")
+      metrics['Avg Accuracy'] = AvgAcc
+      metrics['MultiClass Precision'] = AvgPrec
+      metrics['MultiClass Recall'] = AvgRec
+      metrics['MultiClass FMeasure'] = AvgF
+      metrics['MultiClass Lift'] = AvgLift
+      metrics['MultiClass MCC'] = AvgMCC
+      metrics['MultiClass Information'] = AvgInformation
+      metrics['Simple MSE'] = SimpleMSE
+
+    return metrics

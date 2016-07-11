@@ -105,7 +105,11 @@ class NMF(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform NMF.", self.verbose)
 
-    return self.NMFScikit(options)
+    results = self.NMFScikit(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

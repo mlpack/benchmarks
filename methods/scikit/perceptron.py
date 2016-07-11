@@ -112,15 +112,16 @@ class PERCEPTRON(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Perceptron Classification.", self.verbose)
 
-    return self.PerceptronScikit(options)
+    results = self.PerceptronScikit(options)
+    if results < 0:
+      return results
 
-  '''
-  Run all the metrics for Perceptron classification.
-  '''
-  def RunMetrics(self, options):
+    metrics = {'Runtime' : results}
+
+
     if len(self.dataset) >= 3:
 
       # Check if we need to create a model.
@@ -130,12 +131,7 @@ class PERCEPTRON(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-
-      #probabilities = self.model.predict_proba(testData)
       predictedlabels = self.model.predict(testData)
-
-      # Datastructure to store the results.
-      metrics = {}
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
@@ -145,7 +141,5 @@ class PERCEPTRON(object):
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      return metrics
-    else:
-      Log.Warn("This method requires three datasets.")
-      return None
+
+    return metrics

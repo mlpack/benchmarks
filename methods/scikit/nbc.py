@@ -101,15 +101,21 @@ class NBC(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
+    results = None
     if len(self.dataset) >= 2:
-      return self.NBCScikit(options)
+      results = self.NBCScikit(options)
+
+      if results < 0:
+        return results
     else:
       Log.Fatal("This method requires two datasets.")
 
-  def RunMetrics(self, options):
+    # Datastructure to store the results.
+    metrics = {'Runtime' : results}
+
     if len(self.dataset) >= 3:
 
       # Check if we need to create a model.
@@ -119,11 +125,7 @@ class NBC(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-
       predictedlabels = self.model.predict(testData)
-
-      # Datastructure to store the results.
-      metrics = {}
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
@@ -131,7 +133,5 @@ class NBC(object):
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      return metrics
 
-    else:
-      Log.Fatal("This method requires three datasets.")
+    return metrics

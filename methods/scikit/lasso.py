@@ -58,7 +58,7 @@ class LASSO(object):
       # Get all the parameters.
       lambda1 = re.search("-l (\d+)", options)
       lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
-          
+
       try:
         with totalTimer:
           # Perform LASSO.
@@ -83,11 +83,15 @@ class LASSO(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform LASSO.", self.verbose)
 
     if len(self.dataset) != 2:
       Log.Fatal("This method requires two datasets.")
       return -1
 
-    return self.LASSOScikit(options)
+    results = self.LASSOScikit(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

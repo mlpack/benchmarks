@@ -65,7 +65,7 @@ class GMM(object):
       try:
         # Create the Gaussian Mixture Model
 	# Some params changed to match mlpack defaults.
-        model = mixture.GMM(n_components=g, covariance_type='full',
+        model = mixture.GaussianMixture(n_components=g, covariance_type='full',
             random_state=s, n_iter=n, n_init=10, thresh=1e-10)
         with totalTimer:
           model.fit(dataPoints)
@@ -87,7 +87,11 @@ class GMM(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform GMM.", self.verbose)
 
-    return self.GMMScikit(options)
+    results = self.GMMScikit(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

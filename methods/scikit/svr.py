@@ -39,7 +39,6 @@ class SVR(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-   
 
   '''
   Use the scikit libary to implement svr Regression.
@@ -74,7 +73,7 @@ class SVR(object):
       except Exception as e:
         q.put(-1)
         return -1
-      
+
       time = totalTimer.ElapsedTime()
       q.put(time)
       return time
@@ -89,8 +88,11 @@ class SVR(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform SVR.", self.verbose)
 
-    return self.SVRScikit(options)
+    results = self.SVRScikit(options)
+    if results < 0:
+      return results
 
+    return {'Runtime' : results}

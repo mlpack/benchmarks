@@ -82,11 +82,15 @@ class SparseCoding(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Sparse Coding.", self.verbose)
 
     if len(self.dataset) != 2:
       Log.Fatal("This method requires two datasets.")
       return -1
 
-    return self.SparseCodingScikit(options)
+    results = self.SparseCodingScikit(options)
+    if results < 0:
+      return results
+
+    return {'Runtime' : results}

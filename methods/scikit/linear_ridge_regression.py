@@ -108,14 +108,16 @@ class LinearRidgeRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
-    Log.Info("Perform Linear Ridge Regression.", self.verbose)
-    return self.LinearRidgeRegressionScikit(options)
-
-  '''
-  Run all the metrics for Linear Ridge Regression.
-  '''
   def RunMetrics(self, options):
+    Log.Info("Perform Linear Ridge Regression.", self.verbose)
+
+    results = self.LinearRidgeRegressionScikit(options)
+    if results < 0:
+      return results
+
+    # Datastructure to store the results.
+    metrics = {'Runtime' : results}
+
     if len(self.dataset) >= 3:
 
       trainData, labels = SplitTrainData(self.dataset)
@@ -128,9 +130,6 @@ class LinearRidgeRegression(object):
       predictedlabels = np.rint(self.BuildModel(trainData, labels, alpha=alpha).predict(testData))
 
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics_dict = {}
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
+      metrics['Simple MSE'] = SimpleMSE
 
-    else:
-      Log.Fatal("This method requires three datasets.")
+    return metrics
