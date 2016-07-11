@@ -104,6 +104,9 @@ export FLANN_PATH=methods/flann/
 # Export the path to the ANN library.
 export ANN_PATH=methods/ann/
 
+# Export the path to the HLearn library.
+export HLEARN_PATH=""
+
 # Color settings.
 NO_COLOR=\033[0m
 ERROR_COLOR=\033[0;31m
