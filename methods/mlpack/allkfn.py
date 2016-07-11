@@ -45,7 +45,6 @@ class ALLKFN(object):
     self.path = path
     self.timeout = timeout
     self.debug = debug
-    self.baseCases = None
 
     # Get description from executable.
     cmd = shlex.split(self.path + "mlpack_allkfn -h")
@@ -105,14 +104,13 @@ class ALLKFN(object):
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Perform All K-Furthest-Neighbors. If the method has been successfully
-  completed return the elapsed time in seconds.
+  Run all the metrics.
 
   @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
+  @return - dictionary with metrics values or None if the method was
+  not successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform ALLKFN.", self.verbose)
 
     # If the dataset contains two files then the second file is the query file.
@@ -137,38 +135,24 @@ class ALLKFN(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    self.baseCases = self.parseNumBaseCases(s)
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
-
-      return time
-
-  '''
-  Run all the metrics.
-
-  @param options - Extra options for the method.
-  @return - dictionary with metrics values or None if the method was
-  not successful.
-  '''
-  def RunMetrics(self, options):
-    if self.baseCases is None:
-        self.RunTiming(options)
-
     # Datastructure to store the results.
     metrics = {}
 
-    if self.baseCases is None:
-      Log.Fatal("Can't parse the number of base cases")
-      return None
-    else:
-      metrics['BaseCases'] = self.baseCases
-      return metrics
+    # Parse data (runtime and number of base cases).
+    baseCases = self.parseNumBaseCases(s)
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.loading_data - timer.saving_data
+      metrics['TreeBuilding'] = timer.tree_building
+      metrics['ComputingNeighbors'] = timer.computing_neighbors
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    if baseCases != -1:
+      metrics['BaseCases'] = baseCases
+
+    return metrics
 
   '''
   Parse the number of base cases from a given string.
@@ -186,8 +170,8 @@ class ALLKFN(object):
     match = pattern.match(data)
 
     if not match:
-      Log.Fatal("Can't parse the base cases: wrong format")
-      return None
+      # Can't parse the base cases: wrong format
+      return -1
     else:
       return int(match.group("num_base_cases"))
 
@@ -201,10 +185,12 @@ class ALLKFN(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?loading_data: (?P<loading_data>.*?)s.*?
-        .*?saving_data: (?P<saving_data>.*?)s.*?
-        .*?total_time: (?P<total_time>.*?)s.*?
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+              .*?computing_neighbors: (?P<computing_neighbors>.*?)s.*?
+              .*?loading_data: (?P<loading_data>.*?)s.*?
+              .*?saving_data: (?P<saving_data>.*?)s.*?
+              .*?total_time: (?P<total_time>.*?)s.*?
+              .*?tree_building: (?P<tree_building>.*?)s.*?
+              """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data)
 
@@ -213,19 +199,11 @@ class ALLKFN(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["loading_data", "saving_data",
-          "total_time"])
+      timer = collections.namedtuple("timer", ["computing_neighbors",
+          "loading_data", "saving_data", "total_time", "tree_building"])
 
-      return timer(float(match.group("loading_data")),
-          float(match.group("saving_data")),
-          float(match.group("total_time")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data - timer.saving_data
-    return time
+      return timer(float(match.group("computing_neighbors")),
+                   float(match.group("loading_data")),
+                   float(match.group("saving_data")),
+                   float(match.group("total_time")),
+                   float(match.group("tree_building")))

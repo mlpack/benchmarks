@@ -109,33 +109,6 @@ class NBC(object):
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Run all the metrics for the classifier.
-  '''
-  def RunMetrics(self, options):
-    if len(self.dataset) >= 3:
-      # Check if we need to build and run the model.
-      if not CheckFileAvailable('output.csv'):
-        self.RunTiming(options)
-
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = LoadDataset("output.csv")
-
-      # Datastructure to store the results.
-      metrics = {}
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      return metrics
-    else:
-      Log.Fatal("This method requires three datasets.")
-
-
-  '''
   Perform Parametric Naive Bayes Classifier. If the method has been successfully
   completed return the elapsed time in seconds.
 
@@ -143,7 +116,7 @@ class NBC(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
     if len(self.dataset) < 2:
@@ -152,7 +125,7 @@ class NBC(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_nbc -t " + self.dataset[0] + " -T "
-        + self.dataset[1] + " -v " + options)
+        + self.dataset[1] + " -v " + options + " -o output.csv")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -166,16 +139,32 @@ class NBC(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time
+    # Parse data: runtime.
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.saving_data - timer.loading_data
+      metrics['Testing'] = timer.nbc_testing
+      metrics['Training'] = timer.nbc_testing
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    if len(self.dataset) >= 3 and CheckFileAvailable('output.csv'):
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+      predictedlabels = LoadDataset("output.csv")
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -187,8 +176,11 @@ class NBC(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?testing: (?P<testing>.*?)s.*?
-        .*?training: (?P<training>.*?)s.*?
+        .*?loading_data: (?P<loading_data>.*?)s.*?
+        .*?nbc_testing: (?P<nbc_testing>.*?)s.*?
+        .*?nbc_training: (?P<nbc_training>.*?)s.*?
+        .*?saving_data: (?P<saving_data>.*?)s.*?
+        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data)
@@ -197,17 +189,11 @@ class NBC(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["testing", "training"])
+      timer = collections.namedtuple("timer", ["loading_data", "nbc_testing",
+          "nbc_training", "saving_data", "total_time"])
 
-      return timer(float(match.group("testing")),
-          float(match.group("training")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.testing + timer.training
-    return time
+      return timer(float(match.group("loading_data")),
+                   float(match.group("nbc_testing")),
+                   float(match.group("nbc_training")),
+                   float(match.group("saving_data")),
+                   float(match.group("total_time")))

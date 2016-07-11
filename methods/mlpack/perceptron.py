@@ -116,14 +116,14 @@ class PERCEPTRON(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Perceptron Prediction.", self.verbose)
 
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_perceptron -t " + self.dataset[0] +
-          " -T " + self.dataset[1] + " -v " + options)
+          " -T " + self.dataset[1] + " -v " + options + " -o output.csv")
     else:
       Log.Fatal("This method requires atleast two datasets.")
 
@@ -131,7 +131,7 @@ class PERCEPTRON(object):
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
-        timeout=self.timeout)
+          timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -139,33 +139,23 @@ class PERCEPTRON(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
+    # Datastructure to store the results.
+    metrics = {}
+
+    # Parse data: runtime.
     timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
 
-      return time
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.saving_data - timer.loading_data
+      metrics['Training'] = timer.training
+      metrics['Testing'] = timer.testing
 
-  '''
-  Run all the metrics for the classifier.
-  '''
-  def RunMetrics(self, options):
-    if len(self.dataset) >= 3:
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
-      # Check if we need to build and run the model.
-      if not CheckFileAvailable('output.csv'):
-        self.RunTiming(options)
-
+    if len(self.dataset) >= 3 and CheckFileAvailable('output.csv'):
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
       predictedlabels = LoadDataset("output.csv")
-
-      # Datastructure to store the results.
-      metrics = {}
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
@@ -174,9 +164,8 @@ class PERCEPTRON(object):
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       return metrics
-    else:
-      Log.Warn("This method requires three datasets.")
-      return None
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -190,7 +179,9 @@ class PERCEPTRON(object):
     pattern = re.compile(br"""
         .*?loading_data: (?P<loading_data>.*?)s.*?
         .*?saving_data: (?P<saving_data>.*?)s.*?
+        .*?testing: (?P<testing>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
+        .*?training: (?P<training>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data)
@@ -199,17 +190,13 @@ class PERCEPTRON(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
+      timer = collections.namedtuple('timer', ["loading_data",
+                                               "saving_data",
+                                               "testing",
+                                               "total_time",
+                                               "training"])
       return timer(float(match.group("loading_data")),
-          float(match.group("total_time")), float(match.group("saving_data")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data - timer.saving_data
-    return time
-
+                   float(match.group("saving_data")),
+                   float(match.group("testing")),
+                   float(match.group("total_time")),
+                   float(match.group("training")))

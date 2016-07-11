@@ -109,7 +109,7 @@ class HMMTRAIN(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform HMM Training.", self.verbose)
 
     # If the dataset contains two files then the second file is the query file.
@@ -133,16 +133,17 @@ class HMMTRAIN(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time
+    # Parse data: runtime.
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.loading_data
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -168,13 +169,3 @@ class HMMTRAIN(object):
 
       return timer(float(match.group("loading_data")),
           float(match.group("total_time")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data
-    return time

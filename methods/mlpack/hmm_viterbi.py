@@ -109,7 +109,7 @@ class HMMVITERBI(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform HMM Viterbi State Prediction.", self.verbose)
 
     if len(self.dataset) >= 2:
@@ -131,16 +131,18 @@ class HMMVITERBI(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time
+    # Parse data: runtime.
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.loading_data
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -149,11 +151,10 @@ class HMMVITERBI(object):
   @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''
   def parseTimer(self, data):
-    # Compile the regular expression pattern into a regular expression object to
-    # parse the timer data.
+    # Compile the regular expression pattern into a regular expression object
+    # to parse the timer data.
     pattern = re.compile(br"""
         .*?loading_data: (?P<loading_data>.*?)s.*?
-        .*?saving_data: (?P<saving_data>.*?)s.*?
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
@@ -163,19 +164,7 @@ class HMMVITERBI(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["loading_data", "saving_data",
-          "total_time"])
+      timer = collections.namedtuple("timer", ["loading_data", "total_time"])
 
       return timer(float(match.group("loading_data")),
-          float(match.group("saving_data")),
-          float(match.group("total_time")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data - timer.saving_data
-    return time
+                   float(match.group("total_time")))

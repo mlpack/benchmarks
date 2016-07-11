@@ -116,7 +116,7 @@ class DecisionStump(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Decision Stump Prediction.", self.verbose)
 
     # If the dataset contains two files then the second file is the labels file.
@@ -131,7 +131,7 @@ class DecisionStump(object):
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
-        timeout=self.timeout)
+          timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -139,21 +139,17 @@ class DecisionStump(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
+    # Datastructure to store the results.
+    metrics = {}
+
+    # Parse data (runtime and number of base cases).
     timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
 
-      return time
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.loading_data - timer.saving_data
 
-  '''
-  Run all the metrics for the classifier.
-  '''
-  def RunMetrics(self, options):
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
@@ -175,19 +171,16 @@ class DecisionStump(object):
       #MeanSquaredError = Metrics.MeanSquaredError(labels, probabilities, confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
+      metrics['Avg Accuracy'] = AvgAcc
+      metrics['MultiClass Precision'] = AvgPrec
+      metrics['MultiClass Recall'] = AvgRec
+      metrics['MultiClass FMeasure'] = AvgF
+      metrics['MultiClass Lift'] = AvgLift
+      metrics['MultiClass MCC'] = AvgMCC
+      metrics['MultiClass Information'] = AvgInformation
+      metrics['Simple MSE'] = SimpleMSE
 
-    else:
-      Log.Fatal("This method requires three datasets.")
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -213,14 +206,3 @@ class DecisionStump(object):
       timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
       return timer(float(match.group("loading_data")),
           float(match.group("total_time")), float(match.group("saving_data")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data - timer.saving_data
-    return time
-

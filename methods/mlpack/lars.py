@@ -108,7 +108,7 @@ class LARS(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform LARS.", self.verbose)
 
     if len(self.dataset) < 2:
@@ -131,16 +131,18 @@ class LARS(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = timer.lars_regression
-      Log.Info(("total time: %fs" % (time)), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time
+    # Parse data: runtime.
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.lars_regression
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.

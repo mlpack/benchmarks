@@ -109,7 +109,7 @@ class NCA(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Neighborhood Components Analysis.", self.verbose)
 
     # If the dataset contains two files then the second file is the labels file.
@@ -133,16 +133,18 @@ class NCA(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.ParseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time
+    # Parse data: runtime.
+    timer = self.ParseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.total_time - timer.saving_data - timer.loading_data
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -169,15 +171,5 @@ class NCA(object):
           "total_time"])
 
       return timer(float(match.group("loading_data")),
-          float(match.group("saving_data")),
-          float(match.group("total_time")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data - timer.saving_data
-    return time
+                   float(match.group("saving_data")),
+                   float(match.group("total_time")))

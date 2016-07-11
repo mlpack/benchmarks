@@ -108,16 +108,16 @@ class SparseCoding(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Sparse Coding.", self.verbose)
 
     # If the dataset contains two files then the second file is the initial
     # dictionary. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "mlpack_sparse_coding -i " + self.dataset[0]
-          + " -D " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_sparse_coding -t " + self.dataset[0]
+          + " -i " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "mlpack_sparse_coding -i " + self.dataset +
+      cmd = shlex.split(self.path + "mlpack_sparse_coding -t " + self.dataset +
           " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
@@ -132,16 +132,18 @@ class SparseCoding(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
-    timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
+    # Datastructure to store the results.
+    metrics = {}
 
-      return time
+    # Parse data: runtime.
+    timer = self.parseTimer(s)
+
+    if timer != -1:
+      metrics['Runtime'] = timer.lars_regression + timer.sparse_coding
+
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
+    return metrics
 
   '''
   Parse the timer data form a given string.
@@ -164,17 +166,7 @@ class SparseCoding(object):
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["lars_regression",
-          "sparse_coding"])
+                                               "sparse_coding"])
 
       return timer(float(match.group("lars_regression")),
-          float(match.group("sparse_coding")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.lars_regression + timer.sparse_coding
-    return time
+                   float(match.group("sparse_coding")))

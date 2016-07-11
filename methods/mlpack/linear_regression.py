@@ -116,23 +116,23 @@ class LinearRegression(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform Simple Linear Regression.", self.verbose)
 
     # If the dataset contains two files then the second file is the test
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "mlpack_linear_regression -i " +
-          self.dataset[0] + " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.path + "mlpack_linear_regression -t " +
+          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "mlpack_linear_regression -i " +
+      cmd = shlex.split(self.path + "mlpack_linear_regression -t " +
           self.dataset[0] + " -v " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
-        timeout=self.timeout)
+          timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       Log.Warn(str(e))
       return -2
@@ -140,21 +140,17 @@ class LinearRegression(object):
       Log.Fatal("Could not execute command: " + str(cmd))
       return -1
 
-    # Return the elapsed time.
+    # Datastructure to store the results.
+    metrics = {}
+
+    # Parse data: runtime.
     timer = self.parseTimer(s)
-    if not timer:
-      Log.Fatal("Can't parse the timer")
-      return -1
-    else:
-      time = self.GetTime(timer)
-      Log.Info(("total time: %fs" % (time)), self.verbose)
 
-      return time
+    if timer != -1:
+      metrics['Runtime'] = timer.regression
 
-  '''
-  Run all the metrics for the classifier.
-  '''
-  def RunMetrics(self, options):
+      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+
     if len(self.dataset) >= 3:
 
       # Check if we need to build and run the model.
@@ -175,18 +171,16 @@ class LinearRegression(object):
       AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
       AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics_dict = {}
-      metrics_dict['Avg Accuracy'] = AvgAcc
-      metrics_dict['MultiClass Precision'] = AvgPrec
-      metrics_dict['MultiClass Recall'] = AvgRec
-      metrics_dict['MultiClass FMeasure'] = AvgF
-      metrics_dict['MultiClass Lift'] = AvgLift
-      metrics_dict['MultiClass MCC'] = AvgMCC
-      metrics_dict['MultiClass Information'] = AvgInformation
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
-    else:
-      Log.Fatal("This method requires three datasets.")
+      metrics['Avg Accuracy'] = AvgAcc
+      metrics['MultiClass Precision'] = AvgPrec
+      metrics['MultiClass Recall'] = AvgRec
+      metrics['MultiClass FMeasure'] = AvgF
+      metrics['MultiClass Lift'] = AvgLift
+      metrics['MultiClass MCC'] = AvgMCC
+      metrics['MultiClass Information'] = AvgInformation
+      metrics['Simple MSE'] = SimpleMSE
+
+    return metrics
 
 
   '''
@@ -199,9 +193,7 @@ class LinearRegression(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?loading_data: (?P<loading_data>.*?)s.*?
-        .*?saving_data: (?P<saving_data>.*?)s.*?
-        .*?total_time: (?P<total_time>.*?)s.*?
+        .*?regression: (?P<regression>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data)
@@ -210,16 +202,5 @@ class LinearRegression(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
-      return timer(float(match.group("loading_data")),
-          float(match.group("total_time")), float(match.group("saving_data")))
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    time = timer.total_time - timer.loading_data - timer.saving_data
-    return time
+      timer = collections.namedtuple('timer', ["regression"])
+      return timer(float(match.group("regression")))
