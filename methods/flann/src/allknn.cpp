@@ -95,15 +95,19 @@ int main(int argc, char** argv)
     Matrix<int> indices(new int[query.rows*k], query.rows, k);
     Matrix<double> dists(new double[query.rows*k], query.rows, k);
 
-    Timer::Start("knn_time");
+    Timer::Start("tree_building");
 
     // Perform All K-Nearest-Neighbors.
     Index<L2<double> > index(dataset, flann::KDTreeSingleIndexParams(leafSize));
     index.buildIndex();
 
+    Timer::Stop("tree_building");
+
+    Timer::Start("computing_neighbors");
+
     index.knnSearch(query, indices, dists, k, flann::SearchParams(0, epsilon));
 
-    Timer::Stop("knn_time");
+    Timer::Stop("computing_neighbors");
 
     delete[] indices.ptr();
     delete[] dists.ptr();
