@@ -102,7 +102,7 @@ public class LogisticRegression {
 
           // Add some dummy data to the new attribute.
           for (int i = 0; i < testData.numInstances(); i++)
-            myInstances.add(new Instance(1.0,  new double[1]));
+            myInstances.add(new DenseInstance(1.0,  new double[1]));
 
           // Merge the new dummy attribute with the testdata set.
           testData = Instances.mergeInstances(testData, myInstances);
