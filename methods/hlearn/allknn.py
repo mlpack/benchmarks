@@ -130,7 +130,7 @@ class ALLKNN(object):
         .*?outputting\ neighbors.*?time=(?P<outputting_neighbors>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
-    match = pattern.match(data)
+    match = pattern.match(data.decode())
 
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
