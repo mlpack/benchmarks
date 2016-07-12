@@ -53,6 +53,18 @@ class LogisticRegression(object):
     self.timeout = timeout
 
   '''
+  Destructor to clean up at the end. Use this method to remove created files.
+  '''
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["weka_linreg_predictions.csv",
+                "weka_predicted.csv",
+                "weka_probabilities.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
+
+  '''
   Logistic Regression. If the method has been successfully completed return
   the elapsed time in seconds.
 
