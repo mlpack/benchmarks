@@ -590,7 +590,7 @@ methods:
         datasets:
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/pendigits.csv']
-              options: '-k 4 -s 42'
+              options: '-k 4'
 ---
 #  FLANN:
 #  A Library for Fast Library for Approximate Nearest Neighbors

@@ -60,10 +60,10 @@ class ALLKNN(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "hlearn-allknn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " -v " + options)
+          self.dataset[1] + " " + options)
     else:
       cmd = shlex.split(self.path + "hlearn-allknn -r " + self.dataset +
-          " -v " + options)
+          " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
