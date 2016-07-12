@@ -46,6 +46,16 @@ class ALLKNN(object):
     self.timeout = timeout
 
   '''
+  Destructor to clean up at the end. Use this method to remove created files.
+  '''
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["neighbors_hlearn.csv", "distances_hlearn.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
+
+  '''
   Perform All K-Nearest-Neighbors. If the method has been successfully completed
   return the elapsed time in seconds.
 
