@@ -82,7 +82,7 @@ class PERCEPTRON(object):
         Log.Fatal("This method requires atleast two datasets.")
 
       # Gather all parameters.
-      s = re.search('-i (\d+)', options)
+      s = re.search('-n (\d+)', options)
       self.iterations = 1000 if not s else int(s.group(1))
 
       # Use the last row of the training set as the responses.

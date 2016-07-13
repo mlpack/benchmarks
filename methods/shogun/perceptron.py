@@ -87,7 +87,7 @@ class PERCEPTRON(object):
           X, y = SplitTrainData(self.dataset)
 
           # Gather all parameters.
-          s = re.search('-i (\d+)', options)
+          s = re.search('-n (\d+)', options)
           self.iterations = 1000 if not s else int(s.group(1))
 
           with totalTimer:

@@ -12,14 +12,14 @@ function perceptron(cmd)
 %
 % Options:
 %     (-l) [string]    A file containing labels for the training set.
-%     (-i) [int]       The maximum number of iterations the perceptron
+%     (-n) [int]       The maximum number of iterations the perceptron
 %                      is to be run  Default value 1000.
 
 %Load input dataset.
 trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
 labelsFile = regexp(cmd, '.*?-l ([^\s]+)', 'tokens', 'once');
-iterations = str2double(regexp(cmd,'.* -i (\d+)','tokens','once'));
+iterations = str2double(regexp(cmd,'.* -n (\d+)','tokens','once'));
 
 X = csvread(trainFile{:})';
 

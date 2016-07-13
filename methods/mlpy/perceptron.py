@@ -86,7 +86,7 @@ class PERCEPTRON(object):
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
 
-      i = re.search('-i (\d+)', options)
+      i = re.search('-n (\d+)', options)
       self.iterations = 1000 if not i else int(i.group(1))
 
       try:
