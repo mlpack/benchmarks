@@ -375,8 +375,8 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
                             simplejson.dumps(finalMetrics), datasetId, methodId)
 
                         # Update runtime data.
-                        db.NewResult(buildID, libraryID, dataMatrix[row][col],
-                            0, datasetId, methodId)
+                        db.UpdateResult(buildID, libraryID,
+                            dataMatrix[row][col], 0, datasetId, methodId)
                       except Exception:
                         pass
                     else:
