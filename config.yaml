@@ -1692,6 +1692,25 @@ methods:
                        ['datasets/cosExp.csv'],
                        ['datasets/TomsHardware.csv']]
               options: '-c 1.0 -e 1.0 -g 0.1'
+
+    KNC:
+            run: ['timing', 'metric']
+            script: methods/shogun/knc.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                           ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
 ---
 # Weka: Data Mining Software in Java
 library: weka

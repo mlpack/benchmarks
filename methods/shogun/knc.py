@@ -62,13 +62,12 @@ class KNC(object):
 
     self.n_neighbors = 5 if not n else int(n.group(1))
 
-    distance = EuclidianDistance(data, data)
-    knc = KNN(self.n_neighbors, distance, labels)
+    distance = EuclideanDistance(data, data)
+    from modshogun import KNN_KDTREE
+    knc = KNN(self.n_neighbors, distance, labels, KNN_KDTREE)
+    knc.set_leaf_size(30)
     knc.train()
 
-    # Create and train the classifier.
-    knc = LibSvm(self.C, self.kernel, labels)
-    knc.train()
     return knc
 
   '''
