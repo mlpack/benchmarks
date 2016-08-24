@@ -18,13 +18,15 @@ PROGRAM_INFO("All K-Nearest-Neighbors",
     "library.");
 
 // Define our input parameters that this program will take.
-PARAM_STRING_REQ("reference_file", "File containing the reference dataset.",
-    "r");
-PARAM_INT_REQ("k", "Number of nearest neighbors to find.", "k");
-PARAM_STRING("query_file", "File containing query points (optional).", "q", "");
-PARAM_INT("leaf_size", "Leaf size for tree building.", "l", 20);
-PARAM_INT("seed", "Random seed (if 0, std::time(NULL) is used).", "s", 0);
-PARAM_DOUBLE("epsilon", "If specified, will do approximate nearest neighbor "
+PARAM_STRING_IN("reference_file", "File containing the reference dataset.",
+    "r", "");
+PARAM_INT_IN("k", "Number of nearest neighbors to find.", "k", 0);
+PARAM_STRING_IN("query_file", "File containing query points (optional).", "q", "");
+PARAM_STRING_OUT("distances_file", "File to output distances into.", "d");
+PARAM_STRING_OUT("neighbors_file", "File to output neighbors into.", "n");
+PARAM_INT_IN("leaf_size", "Leaf size for tree building.", "l", 20);
+PARAM_INT_IN("seed", "Random seed (if 0, std::time(NULL) is used).", "s", 0);
+PARAM_DOUBLE_IN("epsilon", "If specified, will do approximate nearest neighbor "
     "search with given relative error.", "e", 0);
 
 int main(int argc, char **argv)
@@ -38,7 +40,8 @@ int main(int argc, char **argv)
 
   int lsInt = CLI::GetParam<int>("leaf_size");
 
-  size_t k = CLI::GetParam<int>("k") + 1;
+  size_t k = CLI::GetParam<int>("k");
+  bool monoSearch = false;
 
   arma::mat referenceData;
   arma::mat queryData; // So it doesn't go out of scope.
@@ -55,6 +58,8 @@ int main(int argc, char **argv)
   }
   else
   {
+    monoSearch = true;
+    ++k;
     queryData = referenceData;
   }
 
@@ -96,6 +101,9 @@ int main(int argc, char **argv)
     }
   }
 
+  arma::mat distances(monoSearch ? k - 1 : k, queryData.n_cols);
+  arma::Mat<size_t> neighbors(monoSearch ? k - 1 : k, queryData.n_cols);
+
   Timer::Start("tree_building");
 
   ANNkd_tree*  kdTree = new ANNkd_tree(dataPts, referenceData.n_cols, referenceData.n_rows, lsInt);
@@ -108,15 +116,31 @@ int main(int argc, char **argv)
   for (int i = 0; i < queryData.n_cols; ++i)
   {
     queryPoint = queryData.col(i);
+
     kdTree->annkSearch(queryPoint.memptr(), k, nnIdx,  dists, epsilon);
 
-    for (int j = 0; j < k; j++)
-    {
-      dists[j] = sqrt(dists[j]);
-    }
+    if (monoSearch)
+      for (int j = 1; j < k; j++)
+      {
+        distances(j - 1, i) = sqrt(dists[j]);
+        neighbors(j - 1, i) = nnIdx[j];
+      }
+    else
+      for (int j = 0; j < k; j++)
+      {
+        distances(j, i) = sqrt(dists[j]);
+        neighbors(j, i) = nnIdx[j];
+      }
   }
 
   Timer::Stop("computing_neighbors");
+
+  // Save output, if desired.
+  if (CLI::HasParam("distances_file"))
+    data::Save(CLI::GetParam<string>("distances_file"), distances);
+
+  if (CLI::HasParam("neighbors_file"))
+    data::Save(CLI::GetParam<string>("neighbors_file"), neighbors);
 
   delete [] nnIdx;
   delete [] dists;
