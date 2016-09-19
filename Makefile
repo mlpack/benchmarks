@@ -61,8 +61,8 @@ COPY := False
 
 # Set the environment variable for the mlpack executables.
 
-ifdef $(shell which allknn)
-	export MLPACK_BIN=$(shell dirname $(firstword $(shell which allknn)))/
+ifdef $(shell which mlpack_knn)
+	export MLPACK_BIN=$(shell dirname $(firstword $(shell which mlpack_knn)))/
 else
 	export MLPACK_BIN=""
 endif
