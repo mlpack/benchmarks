@@ -5,7 +5,18 @@
   Class to handle the database.
 '''
 
-import sqlite3
+# Import the sqlite3 python package.
+try:
+  import sqlite3
+except ImportError:
+  pass
+
+# Import the mysql python package.
+try:
+  import MySQLdb as mdb
+except ImportError:
+  pass
+
 import datetime
 
 
@@ -17,82 +28,115 @@ class Database:
   '''
   Open the database connection.
 
-  @param databasePath - Path to the database.
+  @param driver - Driver used for the connection (mysql or sqlite).
+  @param database - Path to the database or databse name.
+  @param host - The hostname used for the mysql connection.
+  @param user - The username used for the mysql connection.
+  @param password - The password used for the mysql connection.
   '''
-  def __init__(self, databasePath="benchmark.db"):
-    con = sqlite3.connect(databasePath)
-    con.execute('pragma foreign_keys = on')
+  def __init__(self, driver="sqlite", database="benchmark.db",
+      host="localhost", user=None, password=None):
+    self.con = None
+    self.cur = None
+    self.driver = driver
 
-    self.con = con
-    self.cur = con.cursor()
+    if driver == "mysql":
+      self.con = mdb.connect(host, user, password, database);
+      self.cur = self.con.cursor()
+      self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
+
+    elif driver == "sqlite":
+      self.con = sqlite3.connect(database)
+      self.con.execute('pragma foreign_keys = on')
+      self.cur = self.con.cursor()
 
   '''
   Create a new build table.
   '''
   def CreateBuildTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS builds (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           build TIMESTAMP NOT NULL,
           libary_id INTEGER NOT NULL,
 
           FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new libraries table.
   '''
   def CreateLibrariesTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS libraries (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           name TEXT NOT NULL
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new datasets table.
   '''
   def CreateDatasetsTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS datasets (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL UNIQUE,
+          id INTEGER PRIMARY KEY %s,
+          name TEXT NOT NULL,
           size INTEGER NOT NULL,
           attributes INTEGER NOT NULL,
           instances INTEGER NOT NULL,
           type TEXT NOT NULL
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new methods table.
   '''
   def CreateMethodsTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS methods (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           name TEXT NOT NULL,
           parameters TEXT NOT NULL,
           alias TEXT NOT NULL
         );
-        """)
-    # Update methods table schema.
-    try:
-      self.cur.execute("SELECT alias FROM methods")
-      self.cur.fetchall()
-    except sqlite3.OperationalError as e:
-      self.cur.execute("ALTER TABLE methods ADD COLUMN alias TEXT");
-      self.cur.fetchall()
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
+      # Update methods table schema.
+      try:
+        self.cur.execute("SELECT alias FROM methods")
+        self.cur.fetchall()
+      except sqlite3.OperationalError as e:
+        self.cur.execute("ALTER TABLE methods ADD COLUMN alias TEXT");
+        self.cur.fetchall()
 
   '''
   Create a new results table.
   '''
   def CreateResultsTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS results (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           build_id INTEGER NOT NULL,
           libary_id INTEGER NOT NULL,
           time REAL NOT NULL,
@@ -105,15 +149,20 @@ class Database:
           FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
           FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new metric results table
   '''
   def CreateMetricResultsTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS metrics (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           build_id INTEGER NOT NULL,
           libary_id INTEGER NOT NULL,
           metric TEXT NOT NULL,
@@ -125,15 +174,20 @@ class Database:
           FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
           FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new metric results table
   '''
   def CreateMetricBootstrapTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS bootstrap (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           build_id INTEGER NOT NULL,
           libary_id INTEGER NOT NULL,
           metric TEXT NOT NULL,
@@ -145,15 +199,20 @@ class Database:
           FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
           FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new memory table.
   '''
   def CreateMemoryTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS memory (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           build_id INTEGER NOT NULL,
           libary_id INTEGER NOT NULL,
           method_id INTEGER NOT NULL,
@@ -165,21 +224,31 @@ class Database:
           FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE,
           FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
     '''
   Create a method information table.
   '''
   def CreateMethodInfoTable(self):
-    self.con.executescript("""
+    comand = """
         CREATE TABLE IF NOT EXISTS method_info (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY %s,
           method_id INTEGER NOT NULL,
           info TEXT NOT NULL,
 
           FOREIGN KEY(method_id) REFERENCES methods(id) ON DELETE CASCADE
         );
-        """)
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(comand % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
   Create a new build, libraries, datasets and results table.
@@ -203,9 +272,18 @@ class Database:
   '''
   def NewBuild(self, libaryId):
     with self.con:
-      self.cur.execute("INSERT INTO builds VALUES (NULL,?, ?)",
-          (datetime.datetime.now(), libaryId))
-      self.cur.execute("SELECT last_insert_rowid()")
+      command = "INSERT INTO builds VALUES (NULL,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command, (datetime.datetime.now(), libaryId))
+        self.cur.execute("SELECT LAST_INSERT_ID()")
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?'),
+            (datetime.datetime.now(), libaryId))
+
+        self.cur.execute("SELECT last_insert_rowid()")
+
       return self.cur.fetchall()[0][0]
 
   '''
@@ -218,8 +296,15 @@ class Database:
   '''
   def NewMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
     with self.con:
-      self.cur.execute("INSERT INTO metrics VALUES (NULL,?,?,?,?,?)",
-          (buildId, libaryId, str(metric), datasetId, methodId))
+      command = "INSERT INTO metrics VALUES (NULL,%s,%s,%s,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command,
+            (buildId, libaryId, str(metric), datasetId, methodId))
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?', '?', '?'),
+            (buildId, libaryId, str(metric), datasetId, methodId))
 
   '''
   Add a new metric result record to the bootstrap table.
@@ -231,9 +316,15 @@ class Database:
   '''
   def NewBootstrapResult(self, buildId, libaryId, metric, datasetId, methodId):
     with self.con:
-      self.cur.execute("INSERT INTO bootstrap VALUES (NULL,?,?,?,?,?)",
-          (buildId, libaryId, str(metric), datasetId, methodId))
+      command = "INSERT INTO bootstrap VALUES (NULL,%s,%s,%s,%s,%s)"
 
+      if self.driver == "mysql":
+        self.cur.execute(command,
+            (buildId, libaryId, str(metric), datasetId, methodId))
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?', '?', '?'),
+            (buildId, libaryId, str(metric), datasetId, methodId))
 
   def UpdateMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
     with self.con:
@@ -284,9 +375,18 @@ class Database:
   '''
   def NewDataset(self, name, size, attributes, instances, datasetType="real"):
     with self.con:
-      self.cur.execute("INSERT INTO datasets VALUES (NULL,?,?,?,?,?)",
-          (name, size, attributes, instances, datasetType))
-      self.cur.execute("SELECT last_insert_rowid()")
+      command = "INSERT INTO datasets VALUES (NULL,%s,%s,%s,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command,
+            (name, size, attributes, instances, datasetType))
+        self.cur.execute("SELECT LAST_INSERT_ID()")
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?', '?', '?'),
+            (name, size, attributes, instances, datasetType))
+        self.cur.execute("SELECT last_insert_rowid()")
+
       return self.cur.fetchall()[0][0]
 
   '''
@@ -330,8 +430,16 @@ class Database:
   '''
   def NewLibrary(self, name):
     with self.con:
-      self.cur.execute("INSERT INTO libraries VALUES (NULL,?)", (name,))
-      self.cur.execute("SELECT last_insert_rowid()")
+      command = "INSERT INTO libraries VALUES (NULL, %s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command, (name,))
+        self.cur.execute("SELECT LAST_INSERT_ID()")
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?'), (name,))
+        self.cur.execute("SELECT last_insert_rowid()")
+
       return self.cur.fetchall()[0][0]
 
   '''
@@ -346,8 +454,17 @@ class Database:
   '''
   def NewResult(self, buildId, libaryId, time, var, datasetId, methodId):
     with self.con:
-      self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)",
-        (buildId, libaryId, time, var, datasetId, methodId))
+      command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command,
+            (buildId, libaryId, time, var, datasetId, methodId))
+        self.cur.execute("SELECT LAST_INSERT_ID()")
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?', '?', '?', '?'),
+            (buildId, libaryId, time, var, datasetId, methodId))
+        self.cur.execute("SELECT last_insert_rowid()")
 
   '''
   Get the specified result from the results table.
@@ -409,9 +526,16 @@ class Database:
   '''
   def NewMethod(self, name, parameters, alias):
     with self.con:
-      self.cur.execute("INSERT INTO methods VALUES (NULL,?, ?,?)",
-          (name, parameters, alias))
-      self.cur.execute("SELECT last_insert_rowid()")
+      command = "INSERT INTO methods VALUES (NULL,%s,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command, (name, parameters, alias))
+        self.cur.execute("SELECT LAST_INSERT_ID()")
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?'), (name, parameters, alias))
+        self.cur.execute("SELECT last_insert_rowid()")
+
       return self.cur.fetchall()[0][0]
 
   def UpdateMethod(self, methodId, alias):
@@ -476,8 +600,15 @@ class Database:
     results = self.cur.fetchall()
     with self.con:
       for res in results:
-        self.cur.execute("INSERT INTO results VALUES (NULL,?,?,?,?,?,?)",
-            (newBuildId, res[2], res[3], res[4], res[5], res[6]))
+        command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s)"
+
+        if self.driver == "mysql":
+          self.cur.execute(command,
+              (newBuildId, res[2], res[3], res[4], res[5], res[6]))
+
+        elif self.driver == "sqlite":
+          self.cur.execute(command % ('?', '?', '?', '?', '?', '?'),
+              (newBuildId, res[2], res[3], res[4], res[5], res[6]))
 
   '''
   Get a list of all methods.
@@ -565,8 +696,15 @@ class Database:
   '''
   def NewMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
      with self.con:
-      self.cur.execute("INSERT INTO memory VALUES (NULL,?,?,?,?,?)",
-          (buildId, libaryId, methodId, datasetId, memoryInfo))
+      command = "INSERT INTO memory VALUES (NULL,%s,%s,%s,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command,
+            (buildId, libaryId, methodId, datasetId, memoryInfo))
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?', '?', '?'),
+            (buildId, libaryId, methodId, datasetId, memoryInfo))
 
   '''
   Update the given memory record in the memory table if the record is available
@@ -624,8 +762,13 @@ class Database:
   '''
   def NewMethodInfo(self, methodId, info):
     with self.con:
-      self.cur.execute("INSERT INTO method_info VALUES (NULL,?,?)",
-        (methodId, info))
+      command = "INSERT INTO method_info VALUES (NULL,%s,%s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command, (methodId, info))
+
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?'), (methodId, info))
 
   '''
   Get the parameters of a given method.

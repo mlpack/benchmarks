@@ -31,9 +31,11 @@ except ImportError:
 import random
 import argparse
 import datetime
-import simplejson
 
-
+try:
+  import simplejson
+except ImportError:
+  Log.Warn("No module named simplejson")
 
 '''
 Show system informations. Are there no data available, the value is 'N/A'.
@@ -117,6 +119,10 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
   # Benchmark settings.
   timeout = 23000
   database = "reports/benchmark.db"
+  driver = "sqlite"
+  databaseHost = None
+  databaseUser = None
+  databasePassword = None
 
   bootstrapCount = 10
 
@@ -145,10 +151,19 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
         bootstrapCount = value
       if key == "irc":
         ircData = value
+      if key == "driver":
+        driver = value
+      if key == "databaseHost":
+        databaseHost = value
+      if key == "databaseUser":
+        databaseUser = value
+      if key == "databasePassword":
+        databasePassword = value
 
   # Create database connection if the user asked for to save the reports.
   if log:
-    db = Database(database)
+    db = Database(driver=driver, database=database, host=databaseHost,
+        user=databaseUser, password=databasePassword)
     db.CreateTables()
 
   if irc_available and ircData:
