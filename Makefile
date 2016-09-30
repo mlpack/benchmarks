@@ -47,6 +47,8 @@ METHODBLOCK := ""
 UPDATE := False
 FILES := ""
 COPY := False
+USER := ""
+PASSWORD := ""
 
 ################################################################################################
 # How to use:                                                                                  #
@@ -214,7 +216,7 @@ endif
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 .run:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK) --f $(FILES) --n $(COPY)
+	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK) --f $(FILES) --n $(COPY) -r $(USER) -p $(PASSWORD)
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)

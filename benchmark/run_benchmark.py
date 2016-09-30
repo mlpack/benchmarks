@@ -115,14 +115,13 @@ prints a runtime information table.
 @param methodBlocks - Run only the specified methods.
 @param update - Update the records in the database.
 '''
-def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new):
+def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
+    databaseUser, databasePassword):
   # Benchmark settings.
   timeout = 23000
   database = "reports/benchmark.db"
   driver = "sqlite"
   databaseHost = None
-  databaseUser = None
-  databasePassword = None
 
   bootstrapCount = 10
 
@@ -466,6 +465,10 @@ if __name__ == '__main__':
       specified files.""", required=False)
   parser.add_argument('-n','--new', help="""Copy the database before
       performing the benchmark.""", required=False)
+  parser.add_argument('-r','--user', help="""Database username.""",
+      required=False)
+  parser.add_argument('-p','--password', help="""Database password.""",
+      required=False)
 
   args = parser.parse_args()
 
@@ -475,5 +478,6 @@ if __name__ == '__main__':
     update = True if args.update == "True" else False
     args.files = "" if args.files == None else args.files
     new = True if args.new == "True" else False
+
     Main(args.config, args.blocks, log, args.methodBlocks, update, args.files,
-        new)
+        new, args.user, args.password)
