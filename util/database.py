@@ -35,13 +35,13 @@ class Database:
   @param password - The password used for the mysql connection.
   '''
   def __init__(self, driver="sqlite", database="benchmark.db",
-      host="localhost", user=None, password=None):
+      host="localhost", user=None, password=None, port=3306):
     self.con = None
     self.cur = None
     self.driver = driver
 
     if driver == "mysql":
-      self.con = mdb.connect(host, user, password, database);
+      self.con = mdb.connect(host=host, port=port, user=user, db=database, passwd=password)
       self.cur = self.con.cursor()
       self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
 

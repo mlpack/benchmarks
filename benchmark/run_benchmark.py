@@ -122,6 +122,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
   database = "reports/benchmark.db"
   driver = "sqlite"
   databaseHost = None
+  databasePort = 3306
 
   bootstrapCount = 10
 
@@ -158,11 +159,13 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
         databaseUser = value
       if key == "databasePassword":
         databasePassword = value
+      if key == "port":
+        databasePort = value
 
   # Create database connection if the user asked for to save the reports.
   if log:
     db = Database(driver=driver, database=database, host=databaseHost,
-        user=databaseUser, password=databasePassword)
+        user=databaseUser, password=databasePassword, port=databasePort)
     db.CreateTables()
 
   if irc_available and ircData:
