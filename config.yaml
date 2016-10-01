@@ -3,7 +3,10 @@ library: general
 settings:
     # Time until a timeout in seconds.
     timeout: 9000
-    database: 'reports/benchmark.db'
+    databaseHost: 'mlpack.org'
+    port: 3306
+    database: 'benchmark_release'
+    driver : 'mysql'
     keepReports: 20
     bootstrap: 10
     libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann']
