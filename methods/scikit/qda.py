@@ -103,9 +103,12 @@ class QDA(object):
   '''
   def RunMetrics(self, options):
     Log.Info("Perform QDA.", self.verbose)
+    results = None
 
     if len(self.dataset) >= 2:
-      return self.QDAScikit(options)
+      results = self.QDAScikit(options)
+      if results < 0:
+        return results
     else:
       Log.Fatal("This method requires two datasets.")
 
