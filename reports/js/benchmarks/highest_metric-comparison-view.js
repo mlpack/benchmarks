@@ -10,7 +10,7 @@ hmc.datasets = []
 hmc.active_metrics = [];
 hmc.active_libraries = [];
 hmc.metric_names = [];
-hmc.results = 
+hmc.results = [];
 hmc.active_library_list = [];
 
 // The chart type has been selected.
@@ -42,16 +42,19 @@ hmc.orderSelect = function()
 
   hmc.results.sort(function(a, b)
   {
-
     var metric_a = 0;
     var metric_b = 0;
 
-    for (i = 0; i < a[3].length; i++) {
-      if (a[3][i][0] == metric) metric_a = a[3][i][1];
+    var length_a = dbType === "sqlite" ? a[3].length : a.metric.length;
+    for (i = 0; i < length_a; i++) {
+      var metricValue = dbType === "sqlite" ? a[3][i][0] : a.metric[i][0];
+      if (metricValue == metric) metric_a = metricValue;
     };
 
-    for (i = 0; i < b[3].length; i++) {
-      if (b[3][i][0] == metric) metric_b = b[3][i][1];
+    var length_b = dbType === "sqlite" ? b[3].length : b.metric.length;
+    for (i = 0; i < length_b; i++) {
+      var metricValue = dbType === "sqlite" ? b[3][i][0] : b.metric[i][0];
+      if (metricValue == metric) metric_b = metricValue;
     };
 
     return metric_a - metric_b;
@@ -64,16 +67,18 @@ hmc.orderSelect = function()
 
 // List the datasets.
 hmc.listDatasets = function()
-{ 
+{
   var sqlstr = "SELECT DISTINCT datasets.name FROM datasets, metrics WHERE datasets.id=metrics.dataset_id ORDER BY datasets.name;";
-  var results = db.exec(sqlstr);
+  var results = dbExec(sqlstr);
 
   var dataset_select_box = document.getElementById("main_dataset_select");
   clearSelectBox(dataset_select_box);
-  for (i = 0; i < results[0].values.length; i++)
+
+  var length = dbType === "sqlite" ? results[0].values.length : results.length
+  for (i = 0; i < length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = results[0].values[i][0];
+    new_option.text = dbType === "sqlite" ? results[0].values[i][0] : results[i].name;
     dataset_select_box.add(new_option);
   }
   dataset_select_box.selectedIndex = -1;
@@ -87,21 +92,23 @@ hmc.datasetSelect = function()
   // Create an empty chart.
   hmc.clear();
 
+  var sqlstr = "SELECT DISTINCT libary_id as id from builds;"
+  var params = dbExec(sqlstr);
 
+  sqlstr = "SELECT DISTINCT methods.name as methodname, methods.parameters, libraries.name as lib, metrics.metric FROM methods, metrics, datasets, libraries, builds WHERE metrics.dataset_id = datasets.id AND metrics.method_id = methods.id AND datasets.name = '" + hmc.dataset_name + "' AND libraries.id = metrics.libary_id AND ("
 
-  var sqlstr = "SELECT DISTINCT libary_id from builds"
-  var params = db.exec(sqlstr);
-  sqlstr = "SELECT DISTINCT methods.name, methods.parameters, libraries.name, metrics.metric FROM methods, metrics, datasets, libraries, builds WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id AND datasets.name == '" + hmc.dataset_name + "' AND libraries.id == metrics.libary_id AND ("
-  for(i = 0; i < params[0].values.length; i++)
+  var length = dbType === "sqlite" ? params[0].values.length : params.length
+  for(i = 0; i < length; i++)
   {
-    var libsqlstr = "SELECT id FROM builds WHERE libary_id = " + params[0].values[i] + " ORDER BY id DESC LIMIT 1;"
-    var libid = db.exec(libsqlstr)
+    var idValue = dbType === "sqlite" ? params[0].values[i] : params[i].id;
+    var libsqlstr = "SELECT id FROM builds WHERE libary_id = " + idValue + " ORDER BY id DESC LIMIT 1;"
+    var libid = dbExec(libsqlstr)
 
-    sqlstr += " metrics.build_id = "  + libid[0].values[0] + " OR "
+    libid = dbType === "sqlite" ? libid[0].values[0] : libid[0].id;
+    sqlstr += " metrics.build_id = "  + libid + " OR "
   }
   sqlstr += " metrics.build_id = 0) ORDER BY methods.name;";
-
-  hmc.results = db.exec(sqlstr)[0].values;
+  hmc.results = dbType === "sqlite" ? dbExec(sqlstr)[0].values : dbExec(sqlstr);
 
   // Obtain unique list of metric names.
   hmc.metric_names = ["Library", "Method"]
@@ -109,7 +116,8 @@ hmc.datasetSelect = function()
   clearSelectBox(metric_select_box);
   for(i = 0; i < hmc.results.length; i++)
   {
-    var json = jQuery.parseJSON(hmc.results[i][3]);
+    var value = dbType === "sqlite" ? hmc.results[i][3] : hmc.results[i].metric;
+    var json = jQuery.parseJSON(value);
     var metrics = [];
     $.each(json, function (k, d) {
       metrics.push([k, d]);
@@ -120,7 +128,15 @@ hmc.datasetSelect = function()
         metric_select_box.add(new_option);
       }
     })
-    hmc.results[i][3] = metrics;
+
+    if (dbType === "sqlite")
+    {
+      hmc.results[i][3] = metrics;
+    }
+    else
+    {
+      hmc.results[i].metric = metrics
+    }
   }
 
   metric_select_box.selectedIndex = 0;
@@ -162,7 +178,7 @@ hmc.buildChart = function()
       .attr("class", "runtime-table");
   var thead = table.append("thead");
   var tbody = table.append("tbody");
-  
+
   var hrow = thead.append("tr").selectAll("th")
       .data(hmc.metric_names)
       .enter()
@@ -171,7 +187,7 @@ hmc.buildChart = function()
 
   var rows = tbody.selectAll("tr")
       .data(hmc.results.map(function(d){
-        return d[2];
+        return dbType === "sqlite" ? d[2] : d.lib;
       }))
       .enter()
       .append("tr")
@@ -179,12 +195,14 @@ hmc.buildChart = function()
 
   var resultFormat = d3.format("x>7.2f");
   rows.selectAll("td")
-      .data(function(d, i) {        
-        var method_name = hmc.results[i][0];
-        if (hmc.results[i][1] == "") {
+      .data(function(d, i) {
+        var method_name = dbType === "sqlite" ? hmc.results[i][0] : hmc.results[i].methodname;
+        var parameters = dbType === "sqlite" ? hmc.results[i][1] : hmc.results[i].parameters;
+
+        if (parameters == "") {
           method_name += " (default)";
         } else {
-          method_name += " (" + hmc.results[i][1] + ")";
+          method_name += " (" + parameters + ")";
         }
 
         var ret = [method_name];
@@ -193,9 +211,13 @@ hmc.buildChart = function()
           ret.push('---');
         }
 
-        for(j = 0; j < hmc.results[i][3].length; j++)
+        var length = dbType === "sqlite" ? hmc.results[i][3].length : hmc.results[i].metric.length;
+        for(j = 0; j <length; j++)
         {
-          ret[hmc.metric_names.indexOf(hmc.results[i][3][j][0]) - 1] = String(resultFormat(hmc.results[i][3][j][1])).replace(/x/g, '&nbsp;');
+          var metricName = dbType === "sqlite" ? hmc.results[i][3][j][0] : hmc.results[i].metric[j][0];
+          var metricValue = dbType === "sqlite" ? hmc.results[i][3][j][1] : hmc.results[i].metric[j][1];
+
+          ret[hmc.metric_names.indexOf(metricName) - 1] = String(resultFormat(metricValue)).replace(/x/g, '&nbsp;');
         }
 
         return ret;
