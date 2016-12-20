@@ -46,16 +46,17 @@ mmpc.onTypeSelect = function()
 // List the methods.
 mmpc.listMethods = function()
 {
-  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, metrics " +
-                        "WHERE methods.id=metrics.method_id ORDER BY name;");
+  var methods = dbExec("SELECT DISTINCT methods.name FROM methods, metrics " +
+                        "WHERE methods.id = metrics.method_id ORDER BY name;");
+  methods = dbType === "sqlite" ? methods[0].values : methods;
 
   var method_select_box = document.getElementById("method_select");
   clearSelectBox(method_select_box);
   // Put new things in the list box.
-  for(i = 0; i < methods[0].values.length; i++)
+  for(i = 0; i < methods.length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = methods[0].values[i];
+    new_option.text = dbType === "sqlite" ? methods[i] : methods[i].name;
     method_select_box.add(new_option);
   }
   method_select_box.selectedIndex = -1;
@@ -66,19 +67,20 @@ mmpc.listMethods = function()
 // List the datasets.
 mmpc.listDatasets = function()
 {
-  var sqlstr = "SELECT DISTINCT datasets.name FROM datasets, metrics, methods " +
-               "WHERE datasets.id == metrics.dataset_id " +
-                 "AND methods.id == metrics.method_id " +
-                 "AND methods.name == '" + mmpc.method_name + "' " +
+  var sqlstr = "SELECT DISTINCT datasets.name as dataset FROM datasets, metrics, methods " +
+               "WHERE datasets.id = metrics.dataset_id " +
+                 "AND methods.id = metrics.method_id " +
+                 "AND methods.name = '" + mmpc.method_name + "' " +
                  "ORDER BY datasets.name;";
-  var results = db.exec(sqlstr);
+  var results = dbExec(sqlstr);
+  results = dbType === "sqlite" ? results[0].values : results;
 
   var dataset_select_box = document.getElementById("main_dataset_select");
   clearSelectBox(dataset_select_box);
-  for (i = 0; i < results[0].values.length; i++)
+  for (i = 0; i < results.length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = results[0].values[i][0];
+    new_option.text = dbType === "sqlite" ? results[i][0] : results[i].dataset;
     dataset_select_box.add(new_option);
   }
   dataset_select_box.selectedIndex = -1;
@@ -89,20 +91,22 @@ mmpc.listDatasets = function()
 // List different parameters.
 mmpc.listOptions = function()
 {
-  var sqlstr = "SELECT DISTINCT methods.parameters FROM datasets, methods, metrics " +
-               "WHERE datasets.id == metrics.dataset_id " +
-                 "AND methods.id == metrics.method_id " +
-                 "AND methods.name == '" + mmpc.method_name + "' " +
-                 "AND datasets.name == '" + mmpc.dataset_name + "';";
-  var results = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT methods.parameters as parameter FROM datasets, methods, metrics " +
+               "WHERE datasets.id = metrics.dataset_id " +
+                 "AND methods.id = metrics.method_id " +
+                 "AND methods.name = '" + mmpc.method_name + "' " +
+                 "AND datasets.name = '" + mmpc.dataset_name + "';";
+  var results = dbExec(sqlstr);
+  results = dbType === "sqlite" ? results[0].values : results;
 
   var addOption = function(p, c) {
-    var options = mmpc.getOptionList(c.toString());
+    var options = mmpc.getOptionList(dbType === "sqlite" ? c.toString() : c.parameter);
+
     for (i = 0; i < options.length; i++)
       if(p.indexOf(options[i]) < 0) p.push(options[i]);
     return p;
   };
-  var options = results[0].values.reduce(addOption, []);
+  var options = results.reduce(addOption, []);
 
   var option_select_box = document.getElementById("option_select");
   clearSelectBox(option_select_box);
@@ -120,21 +124,22 @@ mmpc.listOptions = function()
 // List the metrics.
 mmpc.listMetrics = function()
 {
-  var sqlstr = "SELECT metrics.metric FROM datasets, metrics, methods " +
-               "WHERE datasets.id == metrics.dataset_id " +
-                 "AND methods.id == metrics.method_id " +
-                 "AND methods.name == '" + mmpc.method_name + "' " +
-                 "AND datasets.name == '" + mmpc.dataset_name + "';";
-  var results = db.exec(sqlstr);
+  var sqlstr = "SELECT metrics.metric as metric FROM datasets, metrics, methods " +
+               "WHERE datasets.id = metrics.dataset_id " +
+                 "AND methods.id = metrics.method_id " +
+                 "AND methods.name = '" + mmpc.method_name + "' " +
+                 "AND datasets.name = '" + mmpc.dataset_name + "';";
+  var results = dbExec(sqlstr);
+  results = dbType === "sqlite" ? results[0].values : results;
 
   addMetric = function(p, c) {
-    var json = jQuery.parseJSON(c);
+    var json = jQuery.parseJSON(dbType === "sqlite" ? c : c.metric);
     for(var k in json)
       if(p.indexOf(k) < 0)
         p.push(k);
     return p;
   };
-  metrics = results[0].values.reduce(addMetric, []);
+  metrics = results.reduce(addMetric, []);
 
   var metric_select_box = document.getElementById("metric_select");
   clearSelectBox(metric_select_box);
@@ -184,29 +189,41 @@ mmpc.metricSelect = function()
   var metric_select_box = document.getElementById("metric_select");
   mmpc.metric_name = metric_select_box.options[metric_select_box.selectedIndex].text;
 
-  var sqlstr = "SELECT metrics.metric, methods.parameters, libraries.name, metrics.build_id " +
+  var sqlstr = "SELECT metrics.metric as metric, methods.parameters as parameter, libraries.name as lib, metrics.build_id " +
                "FROM datasets, metrics, methods, libraries, builds " +
-               "WHERE datasets.id == metrics.dataset_id " +
-                 "AND methods.id == metrics.method_id " +
-                 "AND metrics.libary_id == libraries.id " +
-                 "AND builds.id == metrics.build_id " +
-                 "AND methods.name == '" + mmpc.method_name + "' " +
-                 "AND datasets.name == '" + mmpc.dataset_name + "';";
-  mmpc.results = db.exec(sqlstr);
+               "WHERE datasets.id = metrics.dataset_id " +
+                 "AND methods.id = metrics.method_id " +
+                 "AND metrics.libary_id = libraries.id " +
+                 "AND builds.id = metrics.build_id " +
+                 "AND methods.name = '" + mmpc.method_name + "' " +
+                 "AND datasets.name = '" + mmpc.dataset_name + "';";
+  mmpc.results = dbExec(sqlstr);
+  mmpc.results = dbType === "sqlite" ? mmpc.results[0].values : mmpc.results;
+
+  console.log(mmpc.results)
 
   var filterAndSet = function(p, d) {
-    var metrics = jQuery.parseJSON(d[0]);
-    var value = mmpc.getOptionValue(d[1].toString(), mmpc.option);
+    var metrics = jQuery.parseJSON(dbType === "sqlite" ? d[0] : d.metric);
+    var value = mmpc.getOptionValue(dbType === "sqlite" ? d[1].toString() : d.parameter, mmpc.option);
     if(value != "" && mmpc.metric_name in metrics)
     {
-      d[0] = metrics[mmpc.metric_name];
-      d[1] = mmpc.removeOption(d[1].toString(), mmpc.option);
-      d[4] = value;
+      if (dbType === "sqlite")
+      {
+        d[0] = metrics[mmpc.metric_name];
+        d[1] = mmpc.removeOption(d[1].toString(), mmpc.option);
+        d[4] = value;
+      }
+      else
+      {
+        d.metric = metrics[mmpc.metric_name];
+        d.parameter = mmpc.removeOption(d.parameter.toString(), mmpc.option);
+        d.value = value;
+      }
       p.push(d);
     }
     return p;
   };
-  mmpc.results[0].values = mmpc.results[0].values.reduce(filterAndSet,[]);
+  mmpc.results = mmpc.results.reduce(filterAndSet,[]);
 
   // Create an empty chart.
   mmpc.clear();
@@ -262,11 +279,13 @@ mmpc.clickAddButton = function()
   mmpc.control_list_length++;
 
   var addLibrary = function(p, d) {
-    if (p.indexOf(d[2]) < 0)
-        p.push(d[2]);
+
+    var lib = dbType === "sqlite" ? d[2] : d.lib;
+    if (p.indexOf(lib) < 0)
+        p.push(lib);
     return p;
   };
-  distinct_libraries = mmpc.results[0].values.reduce(addLibrary, []);
+  distinct_libraries = mmpc.results.reduce(addLibrary, []);
 
   var library_select_box = document.getElementById("library_select_" + String(mmpc.control_list_length - 1));
   clearSelectBox(library_select_box);
@@ -286,11 +305,13 @@ mmpc.libraryControlListSelect = function(id)
 
   // Add list of parameters.
   var addParams = function(p, d) {
-    if (library_name === d[2].toString() && p.indexOf(d[1]) < 0)
-      p.push(d[1]);
+    var lib = dbType === "sqlite" ? d[2] : d.lib;
+    var parameter = dbType === "sqlite" ? d[1] : d.parameter;
+    if (library_name === lib.toString() && p.indexOf(parameter) < 0)
+      p.push(parameter);
     return p;
   };
-  var params = mmpc.results[0].values.reduce(addParams, []);
+  var params = mmpc.results.reduce(addParams, []);
   var parambox = document.getElementById("param_select_" + id);
   clearSelectBox(parambox);
   for (i = 0; i < params.length; i++)
@@ -357,7 +378,7 @@ mmpc.getOptionList = function(str)
 {
   optList = str.split(/-+/)
       .map(function (d) {return d.replace(/^\s+|\s+$/g, '').split(/[\s=]+/); })
-      .filter(function (d) {return (d.length > 1);})
+      .filter(function (d) {return (d.length >= 1);})
       .map(function (d) {return d[0];});
   optList.shift();
   return optList;
@@ -366,14 +387,11 @@ mmpc.getOptionList = function(str)
 // Build the chart and display it on the screen.
 mmpc.buildChart = function()
 {
-  var numeric_param = ! mmpc.results[0].values
-      .map(function (d) {return isNaN(d[4]);})
+  var numeric_param = ! mmpc.results.map(function (d) {return isNaN(dbType === "sqlite" ? d[4] : d.value);})
       .reduce(function (p, c) {return (p || c);},false);
 
-
   if (numeric_param) //Parse numbers.
-    mmpc.results[0].values = mmpc.results[0].values
-        .map(function (d) {d[4] = parseFloat(d[4]); return d;});
+    mmpc.results = mmpc.results.map(function (d) {d[4] = parseFloat(dbType === "sqlite" ? d[4] : d.value); return d;});
 
   var lineResults = [];
   for (i = 0; i < mmpc.control_list_length; i++)
@@ -384,9 +402,11 @@ mmpc.buildChart = function()
     var library_name = librarybox.options[librarybox.selectedIndex].text;
     //Filter results that match library and parameters.
     var hasLibraryAndParams = function(d) {
-      return (param_name == d[1] && library_name == d[2]);
+      var parameter = dbType === "sqlite" ? d[1]: d.parameter;
+      var lib = dbType === "sqlite" ? d[2]: d.lib;
+      return (param_name == parameter && library_name == lib);
     };
-    var results = mmpc.results[0].values.filter(hasLibraryAndParams)
+    var results = mmpc.results.filter(hasLibraryAndParams)
     //Order by asc parameter value, desc build id.
     results = results.sort(function (a, b) {
         if (a[4] == b[4])
@@ -406,14 +426,14 @@ mmpc.buildChart = function()
 
   // Set up scales.
   var instances = lineResults.reduce(function (p, d) {return p.concat(d);},[]);
-  var score_list = instances.map(function(d) {return d[0];});
+  var score_list = instances.map(function(d) {return dbType === "sqlite" ? d[0] : d.metric;});
   var maxScore = Math.max.apply(null, score_list);
   var score_scale = d3.scale.linear()
       .domain([0, maxScore])
       .range([height, 0]);
 
   var params_scale;
-  var param_list = instances.map(function(d) {return d[4];})
+  var param_list = instances.map(function(d) { return dbType === "sqlite" ?  d[4] : d.value;})
       .reduce(function (p, d) {if(p.indexOf(d) < 0) p.push(d); return p;},[]);
   if (numeric_param && param_list.length > 1)
   {
@@ -467,15 +487,15 @@ mmpc.buildChart = function()
       .attr("class", "d3-tip")
       .offset([-10, 0])
       .html(function(d) {
-          return "<strong> Score for '" + d[4].toString() + "' (" + d[2] +
-              ", '" + d[1] + "'):</strong> <span style='color:yellow'>" + d[0] + "</span>"; }
+          return "<strong> Score for '" + (dbType === "sqlite" ? d[4].toString() : d.value.toString()) + "' (" + (dbType === "sqlite" ? d[2] : d.lib) +
+              ", '" + (dbType === "sqlite" ? d[1] : d.parameter) + "'):</strong> <span style='color:yellow'>" + (dbType === "sqlite" ? d[0] : d.metric) + "</span>"; }
       );
   svg.call(tip);
 
   // Add all of the data points.
   var lineFunc = d3.svg.line()
-      .x(function(d) { return params_scale(d[4]); })
-      .y(function(d) { return score_scale(d[0]); });
+      .x(function(d) { return params_scale(dbType === "sqlite" ?  d[4] : d.value); })
+      .y(function(d) { return score_scale(dbType === "sqlite" ? d[0] : d.metric); });
 
   for(i = 0; i < lineResults.length; i++)
   {
@@ -498,22 +518,22 @@ mmpc.buildChart = function()
     // circle; looks kind of nice.
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 6)
-        .attr("cx", function(d) { return params_scale(d[4]); })
-        .attr("cy", function(d) { return score_scale(d[0]); })
+        .attr("cx", function(d) { return params_scale(dbType === "sqlite" ?  d[4] : d.value); })
+        .attr("cy", function(d) { return score_scale(dbType === "sqlite" ? d[0] : d.metric); })
         .attr('fill', '#222222')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 4)
-        .attr("cx", function(d) { return params_scale(d[4]); })
-        .attr("cy", function(d) { return score_scale(d[0]); })
+        .attr("cx", function(d) { return params_scale(dbType === "sqlite" ?  d[4] : d.value); })
+        .attr("cy", function(d) { return score_scale(dbType === "sqlite" ? d[0] : d.metric); })
         .attr('fill', '#ffffff')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     svg.selectAll("dot").data(lineResults[i]).enter().append("circle")
         .attr("r", 3)
-        .attr("cx", function(d) { return params_scale(d[4]); })
-        .attr("cy", function(d) { return score_scale(d[0]); })
+        .attr("cx", function(d) { return params_scale(dbType === "sqlite" ?  d[4] : d.value); })
+        .attr("cy", function(d) { return score_scale(dbType === "sqlite" ? d[0] : d.metric); })
         .attr('fill', function(d) { return color(i); })
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
