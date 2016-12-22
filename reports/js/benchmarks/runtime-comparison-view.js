@@ -51,7 +51,7 @@ rc.listOrder = function()
   clearSelectBox(order_select_box);
 
   var options = ["instances", "attributes", "size", ]
-  // // Add new things.
+  // Add new things.
   for (i = 0; i < options.length; i++)
   {
     var new_option = document.createElement("option");
@@ -67,17 +67,18 @@ rc.listOrder = function()
 // List methods.
 rc.listMethods = function()
 {
-  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, results WHERE methods.id == results.method_id ORDER BY name;");
+  var methods = dbExec("SELECT DISTINCT methods.name FROM methods, results WHERE methods.id = results.method_id ORDER BY name;");
   var method_select_box = document.getElementById("method_select");
 
   // Remove old things.
   clearSelectBox(method_select_box);
 
   // Add new things.
-  for (i = 0; i < methods[0].values.length; i++)
+  var length = dbType === "sqlite" ? methods[0].values.length : methods.length
+  for (i = 0; i < length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = methods[0].values[i];
+    new_option.text = dbType === "sqlite" ? methods[0].values[i] : methods[i].name;
     method_select_box.add(new_option);
   }
   method_select_box.selectedIndex = -1;
@@ -93,26 +94,40 @@ rc.methodSelect = function()
   var method_select_box = document.getElementById("method_select");
   rc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT DISTINCT methods.parameters, results.libary_id, count(DISTINCT results.libary_id) FROM methods, results WHERE methods.name == '" + rc.method_name + "' AND methods.id == results.method_id GROUP BY methods.parameters;";
-  var params = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT methods.parameters, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) AS count FROM methods, metrics WHERE methods.name = '" + rc.method_name + "' AND methods.id = metrics.method_id GROUP BY methods.parameters;";
+  var params = dbExec(sqlstr);
 
   // Loop through results and fill the second list box.
   var param_select_box = document.getElementById("param_select");
   clearSelectBox(param_select_box);
-  for (i = 0; i < params[0].values.length; i++)
+
+  var new_option = document.createElement("option");
+  param_select_box.add(new_option);
+
+  if ((dbType === "sqlite" && params[0]) || (dbType === "mysql" && params))
   {
-    var new_option = document.createElement("option");
-    if (params[0].values[i][0])
+    // Put in the new options.
+    var length = dbType === "sqlite" ? params[0].values.length : params.length;
+    for (i = 0; i < length; i++)
     {
-      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][2] + " libraries)";
+      var new_option = document.createElement("option");
+
+      var parameters = dbType === "sqlite" ? params[0].values[i][0] : params[i].parameters;
+      var libraries = dbType === "sqlite" ? params[0].values[i][2] : params[i].count;
+
+      if (parameters)
+      {
+        new_option.text = parameters + " (" + libraries + " libraries)";
+      }
+      else
+      {
+        new_option.text = "[no parameters] (" + libraries + " libraries)";
+      }
+      param_select_box.add(new_option);
     }
-    else
-    {
-      new_option.text = "[no parameters] (" + params[0].values[i][2] + " libraries)";
-    }
-    param_select_box.add(new_option);
   }
-  param_select_box.selectedIndex = -1;
+
+  param_select_box.selectedIndex = 0;
 }
 
 // Called when a set of parameters is selected.  Now we are ready to draw the chart.
@@ -132,18 +147,35 @@ rc.paramSelect = function()
     rc.param_name = "";
   }
 
-  // Given a method name and parameters, query the SQLite database for all of
-  // the runs.
-  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
-    "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
-    "AND methods.name == '" + rc.method_name + "' AND methods.parameters == '" + rc.param_name + "' AND libraries.id == results.libary_id " +
-    "GROUP BY datasets.id, libraries.id, " + rc.groupBy + ";";
-  rc.results = db.exec(sqlstr);
+  // Extract the name of the method we selected.
+  var order_select_box = document.getElementById("main_dataset_select");
+  rc.groupBy = "datasets." + order_select_box.options[order_select_box.selectedIndex].text; // At higher scope.
+
+  if (rc.groupBy == "datasets.instances")
+  {
+    rc.groupBy = "di";
+  }
+  else if (rc.groupBy == "datasets.attributes")
+  {
+    rc.groupBy = "da";
+  }
+  else
+  {
+    rc.groupBy = "ds";
+  }
+
+  var sqlstr = "SELECT DISTINCT * FROM " +
+      "(SELECT results.time as time, results.var as var, libraries.id, libraries.name as lib, datasets.name as dataset, datasets.id as did, libraries.id as lid, results.build_id as bid, datasets.instances as di, datasets.attributes as da, datasets.size as ds " +
+      "FROM results, datasets, methods, libraries WHERE " +
+      "results.dataset_id = datasets.id AND results.method_id = methods.id AND methods.name = '" + rc.method_name + "' AND methods.parameters = '" + rc.param_name + "' AND libraries.id = results.libary_id ORDER BY bid DESC " +
+      ") tmp GROUP BY lid, " + rc.groupBy + ", did;";
+  rc.results = dbExec(sqlstr);
+  rc.results = dbType === "sqlite" ? rc.results[0].values : rc.results;
 
   // Obtain unique list of datasets.
-  rc.datasets = rc.results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  rc.datasets = rc.results.map(function(d) { return dbType === "sqlite" ? d[4] : d.dataset; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
-  rc.libraries = rc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  rc.libraries = rc.results.map(function(d) { return dbType === "sqlite" ? d[3] : d.lib; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
   // By default, everything is active.
   rc.active_datasets = {};
@@ -168,16 +200,31 @@ rc.orderSelect = function()
   var order_select_box = document.getElementById("main_dataset_select");
   rc.groupBy = "datasets." + order_select_box.options[order_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT DISTINCT results.time, results.var, libraries.id, libraries.name, datasets.name, datasets.id " +
-    "FROM results, datasets, methods, libraries WHERE results.dataset_id == datasets.id AND results.method_id == methods.id " +
-    "AND methods.name == '" + rc.method_name + "' AND methods.parameters == '" + rc.param_name + "' AND libraries.id == results.libary_id " +
-    "GROUP BY libraries.id, " + rc.groupBy + ";";
-  rc.results = db.exec(sqlstr);
+  if (rc.groupBy == "datasets.instances")
+  {
+    rc.groupBy = "di";
+  }
+  else if (rc.groupBy == "datasets.attributes")
+  {
+    rc.groupBy = "da";
+  }
+  else
+  {
+    rc.groupBy = "ds";
+  }
+
+  var sqlstr = "SELECT DISTINCT * FROM " +
+    "(SELECT results.time as time, results.var as var, libraries.id, libraries.name as lib, datasets.name as dataset, datasets.id as did, libraries.id as lid, results.build_id as bid, datasets.instances as di, datasets.attributes as da, datasets.size as ds " +
+    "FROM results, datasets, methods, libraries WHERE " +
+    "results.dataset_id = datasets.id AND results.method_id = methods.id AND methods.name = '" + rc.method_name + "' AND methods.parameters = '" + rc.param_name + "' AND libraries.id = results.libary_id ORDER BY bid DESC " +
+    ") tmp GROUP BY lid, " + rc.groupBy + ", did;";
+  rc.results = dbExec(sqlstr);
+  rc.results = dbType === "sqlite" ? rc.results[0].values : rc.results;
 
    // Obtain unique list of datasets.
-  rc.datasets = rc.results[0].values.map(function(d) { return d[4]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  rc.datasets = rc.results.map(function(d) { return dbType === "sqlite" ? d[4] : d.dataset; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
-  rc.libraries = rc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  rc.libraries = rc.results.map(function(d) { return dbType === "sqlite" ? d[3] : d.lib; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
   // By default, everything is active.
   rc.active_datasets = {};
@@ -218,6 +265,21 @@ rc.clearChart = function()
 // Build the chart and display it on screen.
 rc.buildChart = function()
 {
+  rc.results = rc.results.map(function(d) {
+    var runtime = dbType === "sqlite" ? d[0] : d.time;
+    if (runtime == 0)
+    {
+      if (dbType === "sqlite")
+      {
+        d[0] = "failure";
+      }
+      else
+      {
+        d.time = "failure";
+      }
+    }
+    return d; })
+
   // Get lists of active libraries and active datasets.
   var active_library_list = rc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_libraries[c] == true) { p.push(c); } return p; }, []);
   var active_dataset_list = rc.datasets.map(function(d) { return d; }).reduce(function(p, c) { if(rc.active_datasets[c] == true) { p.push(c); } return p; }, []);
@@ -231,7 +293,7 @@ rc.buildChart = function()
       .domain(active_library_list)
       .rangeRoundBands([0, group_scale.rangeBand()]);
 
-  var max_runtime = d3.max(rc.results[0].values, function(d) { if(rc.active_datasets[d[4]] == false || rc.active_libraries[d[3]] == false) { return 0; } else { return mapRuntime(d[0], 0); } });
+  var max_runtime = d3.max(rc.results, function(d) { if(rc.active_datasets[dbType === "sqlite" ? d[4] : d.dataset] == false || rc.active_libraries[dbType === "sqlite" ? d[3] : d.lib] == false) { return 0; } else { return mapRuntime(dbType === "sqlite" ? d[0] : d.time, 0); } });
   // Increase max_runtime so we have 16 spare pixels at the top.
   max_runtime = max_runtime * ((height + 16) / height);
 
@@ -284,9 +346,9 @@ rc.buildChart = function()
       .attr("class", "d3-tip")
       .offset([-10, 0])
       .html(function(d) {
-          var runtime = d[0];
-          if (d[0] != ">9000" && d[0] != "failure") { runtime = d[0].toFixed(1); }
-          return "<strong>Runtime for " + d[3] + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; }
+          var runtime = dbType === "sqlite" ? d[0] : parseFloat(d.time);
+          if (runtime != ">9000" && runtime != 0 && runtime != "failure") { runtime = dbType === "sqlite" ? d[0].toFixed(3) : runtime.toFixed(1);  }
+          return "<strong>Runtime for " + (dbType === "sqlite" ? d[3] : d.lib) + ":</strong> <span style='color:yellow'>" + runtime + "s</span>"; }
       );
 
   svg.call(tip);
@@ -298,18 +360,20 @@ rc.buildChart = function()
   gs.data(function(d) // For a given dataset d, collect all of the data points for that dataset.
         {
           var ret = [];
-          for(i = 0; i < rc.results[0].values.length; i++)
+          for(i = 0; i < rc.results.length; i++)
           {
-            if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true)
+            var dataset = dbType === "sqlite" ? rc.results[i][4] : rc.results[i].dataset;
+            var library = dbType === "sqlite" ? rc.results[i][3] : rc.results[i].lib;
+            if(dataset == d && rc.active_libraries[library] == true)
             {
-              ret.push(rc.results[0].values[i]);
+              ret.push(rc.results[i]);
             }
           }
           return ret;
         })
     .enter().append("rect") // This rectangle is so tooltips work everywhere.
         .attr("width", library_scale.rangeBand())
-        .attr("x", function(d) { return library_scale(d[3]); })
+        .attr("x", function(d) { return library_scale(dbType === "sqlite" ? d[3] : d.lib); })
         .attr("y", function(d) { return runtime_scale(max_runtime); })
         .attr("height", function(d) { return height - runtime_scale(max_runtime); })
         .attr("fill", "rgba(0, 0, 0, 0.0)") // Complete transparency.
@@ -319,32 +383,38 @@ rc.buildChart = function()
   gs.data(function(d) // For a given dataset d, collect all of the data points for that dataset.
         {
           var ret = [];
-          for(i = 0; i < rc.results[0].values.length; i++)
+          for(i = 0; i < rc.results.length; i++)
           {
-            if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true && rc.results[0].values[i][0] != "failure" && rc.results[0].values[i][0] != ">9000")
+            var dataset = dbType === "sqlite" ? rc.results[i][4] : rc.results[i].dataset;
+            var library = dbType === "sqlite" ? rc.results[i][3] : rc.results[i].lib;
+            var runtime = dbType === "sqlite" ? rc.results[i][0] : rc.results[i].time;
+            if(dataset == d && rc.active_libraries[library] == true && runtime != "failure" && runtime != ">9000")
             {
-              ret.push(rc.results[0].values[i]);
+              ret.push(rc.results[i]);
             }
           }
           return ret;
         })
     .enter().append("rect")
         .attr("width", library_scale.rangeBand())
-        .attr("x", function(d) { return library_scale(d[3]); })
-        .attr("y", function(d) { return runtime_scale(mapRuntime(d[0], max_runtime)); })
-        .attr("height", function(d) { return height - runtime_scale(mapRuntime(d[0], max_runtime)); })
-        .style("fill", function(d) { return color(d[3]); })
+        .attr("x", function(d) { return library_scale(dbType === "sqlite" ? d[3] : d.lib); })
+        .attr("y", function(d) { return runtime_scale(mapRuntime(dbType === "sqlite" ? d[0] : d.time, max_runtime)); })
+        .attr("height", function(d) { return height - runtime_scale(mapRuntime(dbType === "sqlite" ? d[0] : d.time, max_runtime)); })
+        .style("fill", function(d) { return (color(dbType === "sqlite" ? d[3] : d.lib)); })
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
 
   var failureData = gs.data(function(d)
       {
         var ret = [];
-        for(i = 0; i < rc.results[0].values.length; i++)
+        for(i = 0; i < rc.results.length; i++)
         {
-          if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true && rc.results[0].values[i][0] == "failure")
+          var dataset = dbType === "sqlite" ? rc.results[i][4] : rc.results[i].dataset;
+          var library = dbType === "sqlite" ? rc.results[i][3] : rc.results[i].lib;
+          var runtime = dbType === "sqlite" ? rc.results[i][0] : rc.results[i].time;
+          if(dataset == d && rc.active_libraries[library] == true && runtime == "failure")
           {
-            ret.push(rc.results[0].values[i]);
+            ret.push(rc.results[i]);
           }
         }
         return ret;
@@ -364,7 +434,7 @@ rc.buildChart = function()
 
   failureData.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", function(d) { return library_scale(d[3]) + library_scale.rangeBand() / 2 })
+        .attr("y", function(d) { return library_scale(dbType === "sqlite" ? d[3] : d.lib) + library_scale.rangeBand() / 2 })
         .attr("dy", "0.25em")
         .attr("x", -height + 2)
         .text("failure")
@@ -374,11 +444,14 @@ rc.buildChart = function()
   var timeoutData = gs.data(function(d)
       {
         var ret = [];
-        for(i = 0; i < rc.results[0].values.length; i++)
+        for(i = 0; i < rc.results.length; i++)
         {
-          if(rc.results[0].values[i][4] == d && rc.active_libraries[rc.results[0].values[i][3]] == true && rc.results[0].values[i][0] == ">9000")
+          var dataset = dbType === "sqlite" ? rc.results[i][4] : rc.results[i].dataset;
+          var library = dbType === "sqlite" ? rc.results[i][3] : rc.results[i].lib;
+          var runtime = dbType === "sqlite" ? rc.results[i][0] : rc.results[i].time;
+          if(dataset == d && rc.active_libraries[library] == true && runtime == ">9000")
           {
-            ret.push(rc.results[0].values[i]);
+            ret.push(rc.results[i]);
           }
         }
         return ret;
@@ -388,30 +461,30 @@ rc.buildChart = function()
   // Make a rectangle that's almost full-height.
   timeoutData.append("rect")
       .attr("width", library_scale.rangeBand())
-      .attr("x", function(d) { return library_scale(d[3]); })
+      .attr("x", function(d) { return library_scale(dbType === "sqlite" ? d[3] : d.lib); })
       .attr("y", runtime_scale(max_runtime) + 16)
       .attr("height", height - (runtime_scale(max_runtime) + 16))
-      .style("fill", function(d) { return color(d[3]); })
+      .style("fill", function(d) { return color(dbType === "sqlite" ? d[3] : d.lib); })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);
   // Now make a little rectangle that's the bottom of the arrow.
   timeoutData.append("rect")
       .attr("width", library_scale.rangeBand() / 2)
-      .attr("x", function(d) { return library_scale(d[3]) + library_scale.rangeBand() / 4; })
+      .attr("x", function(d) { return library_scale(dbType === "sqlite" ? d[3] : d.lib) + library_scale.rangeBand() / 4; })
       .attr("y", 8)
       .attr("height", 8)
-      .style("fill", function(d) { return color(d[3]); })
+      .style("fill", function(d) { return color(dbType === "sqlite" ? d[3] : d.lib); })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);
   // Now create the triangle that points upwards.
   timeoutData.append("polygon")
       .attr("points", function(d)
         {
-          var x = library_scale(d[3]);
+          var x = library_scale(dbType === "sqlite" ? d[3] : d.lib);
           var width = library_scale.rangeBand();
           return String(x) + ",8 " + String(x + width) + ",8 " + String(x + (width / 2)) + ",0";
         })
-      .attr("fill", function(d) { return color(d[3]); });
+      .attr("fill", function(d) { return color(dbType === "sqlite" ? d[3] : d.lib); });
 
   // Add a horizontal legend at the bottom.
   var librarySelectTitle = d3.select(".legendholder").append("div")
@@ -519,7 +592,7 @@ rc.buildChart = function()
 
   active_library_list.unshift("dataset");
   var hrow = thead.append("tr").selectAll("th")
-//  hrow.append("th").attr("class", "table-dataset-th").text("dataset")
+  //  hrow.append("th").attr("class", "table-dataset-th").text("dataset")
       .data(active_library_list)
       .enter()
       .append("th")
@@ -539,19 +612,22 @@ rc.buildChart = function()
             ret.push(['---']);
           }
 
-          for(i = 0; i < rc.results[0].values.length; i++)
+          for(i = 0; i < rc.results.length; i++)
           {
-            var library = rc.results[0].values[i][3];
-            if(rc.results[0].values[i][4] == d && rc.active_libraries[library] == true)
+            var dataset = dbType === "sqlite" ? rc.results[i][4] : rc.results[i].dataset;
+            var library = dbType === "sqlite" ? rc.results[i][3] : rc.results[i].lib;
+            if(dataset == d && rc.active_libraries[library] == true)
             {
-              ret[active_library_list.indexOf(library)] = rc.results[0].values[i];
+              ret[active_library_list.indexOf(library)] = rc.results[i];
             }
           }
           return ret;
       }).enter()
       .append("td")
-      .html(function(d) { if (d[0] != "failure" && d[0] != "---") { if (typeof d == "string") { return d; } else { if (d[0] == ">9000") { return ">9000s"; } else { return "&nbsp;" + String(resultFormat(d[0])).replace(/x/g, '&nbsp;') + "s&nbsp;"; } } } else { return d[0]; } })
-      .attr("class", function(d) { if (typeof d == "string") { return "dataset-name"; } else if (d[0] == "---") { return "timing-not-run-cell"; } else if (d[0] == ">9000" || d[0] == "failure") { return "timing-text-cell"; } else { return "timing-cell"; } });
+      .html(function(d) { var runtime = (dbType === "sqlite" ? d[0] : d.time);
+        if (runtime != "failure" && runtime != "---") { if (typeof d == "string") { return d; } else { if ((dbType === "sqlite" ? d[0] : d.time) == ">9000") { return ">9000s"; } else { return "&nbsp;" + String(resultFormat((dbType === "sqlite" ? d[0] : d.time))).replace(/x/g, '&nbsp;') + "s&nbsp;"; } } } else { return (dbType === "sqlite" ? d[0] : d.time); } })
+      .attr("class", function(d) {
+        if (typeof d == "string") { return "dataset-name"; } else if ((dbType === "sqlite" ? d[0] : d.time) == "---") { return "timing-not-run-cell"; } else if ((dbType === "sqlite" ? d[0] : d.time) == ">9000" || (dbType === "sqlite" ? d[0] : d.time) == "failure") { return "timing-text-cell"; } else { return "timing-cell"; } });
 }
 
 // Toggle a library to on or off.
