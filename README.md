@@ -18,6 +18,7 @@ Quick links to this file:
 * [Getting the datasets](#getting-the-datasets)
 * [Configuration](#configuration)
 * [Competing libraries](#competing-libraries)
+* [Citation details](#citation-details)
 
 ## Prerequisites
 
@@ -93,7 +94,7 @@ Source directories
     ./methods/<library>     -- source code for scripts
 
 Working directories
-    
+
     ./
     ./reports               -- output from the make_reports  and memory_benchmark executable
     ./reports/benchmark.db  -- database for benchmark runs
@@ -144,7 +145,7 @@ The libary block contains some settings that control the specified benchmark scr
 library: mlpack
 methods:
     PCA:
-        run: ['timing', 'metric', 'bootstrap'] 
+        run: ['timing', 'metric', 'bootstrap']
         script: methods/mlpack/pca.py
         format: [csv, txt]
         datasets:
@@ -153,7 +154,7 @@ methods:
             - files: [['datasets/wine_train.csv', 'datasets/wine_test.csv', 'datasets/wine_labels.csv']]
               options: '-d 2'
     NMF:
-        run: [] 
+        run: []
         script: methods/mlpack/nmf.py
         format: [csv, txt]
         datasets:
