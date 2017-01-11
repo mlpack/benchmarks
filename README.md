@@ -243,3 +243,15 @@ In this case we benchmark the pca method located in methods/mlpack/pca.py with t
 * http://mlpy.sourceforge.net
 * http://www.cs.umd.edu/~mount/ANN/
 * http://www.cs.ubc.ca/research/flann/
+
+## Citation details
+
+If you use the benchmarks in your work, we'd really appreciate it if you could cite the following paper (given in BiBTeX format):
+
+    @inproceedings{edel2014automatic,
+      title={An automatic benchmarking system},
+      author={Edel, Marcus and Soni, Anand and Curtin, Ryan R},
+      booktitle={NIPS 2014 Workshop on Software Engineering for Machine Learning (SE4ML’2014)},
+      volume={1},
+      year={2014}
+    }
