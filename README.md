@@ -24,7 +24,7 @@ Quick links to this file:
 
 * **[Python 3.3+](http://www.python.org "Python Website")**: The main benchmark script is written with the programming language python: The benchmark script by default uses the version of Python on your path.
 * **[Python-yaml](http://pyyaml.org "Python-yaml Website")**: PyYAML is a YAML parser and emitter for Python. We've picked YAML as the configuration file format for specifying the structure for the project.
-* **[SQLite](http://www.sqlite.org "SQLite Website")**: SQLite is a lightweight disk-based database that doesn't require a separate server process. We use the python built-in SQLite database to save the benchmark results.
+* **[SQLite](http://www.sqlite.org "SQLite Website")** (**Optional**): SQLite is a lightweight disk-based database that doesn't require a separate server process. We use the python built-in SQLite database to save the benchmark results.
 * **[Valgrind](http://valgrind.org "Valgrind Website")** (**Optional**): Valgrind is a suite of tools for debugging and profiling. This package is only needed if you want to run the memory benchmarks.
 * **[python-xmlrunner](https://github.com/lamby/pkg-python-xmlrunner "python-xmlrunner github")** (**Optional**): The xmlrunner module is a unittest test runner that can save test results to XML files. This package is only needed if you want to run the tests.
 
