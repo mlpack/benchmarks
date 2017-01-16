@@ -19,8 +19,12 @@ if cmd_subfolder not in sys.path:
 from log import *
 from profiler import *
 
+try:
+  import subprocess32 as subprocess
+except ImportError:
+  import subprocess
+
 import shlex
-import subprocess
 import re
 import collections
 

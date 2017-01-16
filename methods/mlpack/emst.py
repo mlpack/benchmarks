@@ -20,7 +20,12 @@ from log import *
 from profiler import *
 
 import shlex
-import subprocess
+
+try:
+  import subprocess32 as subprocess
+except ImportError:
+  import subprocess
+
 import re
 import collections
 
