@@ -76,16 +76,19 @@ def GetDataset(dataset, format):
     datasetList = ""
     modifiedList = ""
 
-    mdataset = CheckFileExtension(dataset, format)
+    if "." in dataset:
+      mdataset = CheckFileExtension(dataset, format)
 
-    # Check if the dataset is available.
-    if os.path.isfile(mdataset):
-      datasetList = mdataset
+      # Check if the dataset is available.
+      if os.path.isfile(mdataset):
+        datasetList = mdataset
+      else:
+        # Convert the dataset in the given format.
+        convert = Convert(dataset, format[0])
+        datasetList = convert.modifiedDataset
+        modifiedList = convert.modifiedDataset
     else:
-      # Convert the dataset in the given format.
-      convert = Convert(dataset, format[0])
-      datasetList = convert.modifiedDataset
-      modifiedList = convert.modifiedDataset
+      datasetList = dataset
 
   return (datasetList, modifiedList)
 
