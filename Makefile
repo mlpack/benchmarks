@@ -74,6 +74,8 @@ export MLPACK_BIN_DEBUG=$(MLPACK_BIN)
 
 # Export the MLPACK_PATH environment variable.
 export MLPACK_PATH=$(shell dirname $(MLPACK_BIN))/
+export MLPACK_BIN_SRC=methods/mlpack/src/build/
+export MLPACK_BIN_DEBUG_SRC=methods/mlpack/src/build/
 
 # Set the environment variable for the matlab executable.
 # You can use the following command to search the 'matlab' file everytime:
