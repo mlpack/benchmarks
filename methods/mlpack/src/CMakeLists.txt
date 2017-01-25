@@ -35,7 +35,7 @@ endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 # Find the libraries we need to compile against.
 set(Boost_ADDITIONAL_VERSIONS
   "1.49.0" "1.50.0" "1.51.0" "1.52.0" "1.53.0" "1.54.0" "1.55.0")
-find_package(Boost 1.49 COMPONENTS system serialization REQUIRED)
+find_package(Boost 1.49 COMPONENTS program_options system serialization REQUIRED)
 find_package(Armadillo 3.6.0 REQUIRED)
 find_package(Mlpack REQUIRED)
 
@@ -54,5 +54,17 @@ set(mlp_forward_source
 # source.
 add_executable(mlp_forward ${mlp_forward_source})
 target_link_libraries(mlp_forward ${Boost_LIBRARIES}
+                                  ${ARMADILLO_LIBRARIES}
+                                  ${MLPACK_LIBRARY})
+
+# Set source file path.
+set(mlp_backward_source
+    mlp_backward.cpp
+)
+
+# Define the executable and link against the libraries we need to build the
+# source.
+add_executable(mlp_backward ${mlp_backward_source})
+target_link_libraries(mlp_backward ${Boost_LIBRARIES}
                                   ${ARMADILLO_LIBRARIES}
                                   ${MLPACK_LIBRARY})
