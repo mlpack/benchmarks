@@ -442,7 +442,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
               resultsMessage += result[0][0] + " " + result[0][1]
               resultsMessage += " (old) => " + result[1][1] + " (new)| "
 
-          if "<=>" in resultsMessage:
+          if "=>" in resultsMessage:
             if irc_available and ircData:
               watchMessages.append(resultsMessage)
             else:
