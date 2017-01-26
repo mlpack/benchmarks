@@ -440,7 +440,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
           for result in zip(dataMatrixPrevious, dataMatrix):
             if result[0][1] != '-' and result[1][1] != '-':
               resultsMessage += result[0][0] + " " + result[0][1]
-              resultsMessage += " <=> " + result[1][1] + " | "
+              resultsMessage += " (old) => " + result[1][1] + " (new)| "
 
           if "<=>" in resultsMessage:
             if irc_available and ircData:
