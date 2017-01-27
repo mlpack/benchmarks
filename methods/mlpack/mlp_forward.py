@@ -119,7 +119,6 @@ class MLP_FORWARD(object):
   @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''
   def parseTimer(self, data):
-    print(data)
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
