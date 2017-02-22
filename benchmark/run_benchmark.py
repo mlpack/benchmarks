@@ -380,9 +380,17 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                   # Update the Runtime matrix view.
                   if 'Runtime' in finalMetrics:
-                    if isFloat(finalMetrics['Runtime']):
+                    if ">" in finalMetrics['Runtime']:
+                      # Runtime timeout.
+                      dataMatrix[row][col] = -1
+                    elif finalMetrics['Runtime'] == "failure":
+                      # Runtime failure.
+                      dataMatrix[row][col] = -2
+                    elif isFloat(finalMetrics['Runtime']):
+                      # Truncate to specified precision.
                       dataMatrix[row][col] = "{0:.6f}".format(finalMetrics['Runtime'])
                     else:
+                      # Integer, no need to specify the precision.
                       dataMatrix[row][col] = finalMetrics['Runtime']
 
                   if log:
