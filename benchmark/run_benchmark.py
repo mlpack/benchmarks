@@ -380,10 +380,10 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                   # Update the Runtime matrix view.
                   if 'Runtime' in finalMetrics:
-                    if ">" in finalMetrics['Runtime']:
+                    if ">" in str(finalMetrics['Runtime']):
                       # Runtime timeout.
                       dataMatrix[row][col] = -1
-                    elif finalMetrics['Runtime'] == "failure":
+                    elif "failure" == str(finalMetrics['Runtime']):
                       # Runtime failure.
                       dataMatrix[row][col] = -2
                     elif isFloat(finalMetrics['Runtime']):
