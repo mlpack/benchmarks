@@ -473,7 +473,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                 timeDiff = "{0:.2f}".format(new - old)
 
-                if timeDiff > 0:
+                if (new - old) > 0:
                   offset = (differenceThreshold * timeDiff) / 100
                   if timeDiff > offset:
                     summaryDifference += 1
