@@ -471,11 +471,12 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
                 new = float(result[1][1])
                 old = float(result[0][1])
 
-                timeDiff = "{0:.2f}".format(new - old)
+                timeDiffValue = new - old
+                timeDiff = "{0:.2f}".format(timeDiffValue)
 
                 if (new - old) > 0:
-                  offset = (differenceThreshold * timeDiff) / 100
-                  if timeDiff > offset:
+                  offset = (differenceThreshold * timeDiffValue) / 100
+                  if timeDiffValue > offset:
                     summaryDifference += 1
 
               else:
