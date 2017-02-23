@@ -146,7 +146,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
   # Summary parameter.
   summaryBenchmarks = 0
   summaryDifference = 0
-  differenceThreshold = 10
+  differenceThreshold = 18
 
   # Read the general block and set the attributes.
   if "general" in streamData:
@@ -475,7 +475,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
                 timeDiff = "{0:.2f}".format(timeDiffValue)
 
                 if (new - old) > 0:
-                  offset = (differenceThreshold * timeDiffValue) / 100
+                  offset = (differenceThreshold * old) / 100
                   if timeDiffValue > offset:
                     summaryDifference += 1
 
