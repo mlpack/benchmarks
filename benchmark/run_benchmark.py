@@ -143,6 +143,11 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
   streamData = config.StreamMerge()
   ircData = None
 
+  # Summary parameter.
+  summaryBenchmarks = 0
+  summaryDifference = 0
+  differenceThreshold = 10
+
   # Read the general block and set the attributes.
   if "general" in streamData:
     for key, value in streamData["general"]:
@@ -447,8 +452,43 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
           resultsMessage += " | "
           for result in zip(dataMatrixPrevious, dataMatrix):
             if result[0][1] != '-' and result[1][1] != '-':
-              resultsMessage += result[0][0] + " " + result[0][1]
-              resultsMessage += " (old) => " + result[1][1] + " (new)| "
+
+              # Increase the number of benchmark results for the summary.
+              summaryBenchmarks += 1
+
+              # Truncate to specified precision.
+              if isFloat(result[0][1]):
+                timeOld = "{0:.2f}".format(float(result[0][1]))
+              else:
+                timeOld = result[0][1]
+
+              if isFloat(result[1][1]):
+                timeCurrent = "{0:.2f}".format(float(result[1][1]))
+              else:
+                timeCurrent = result[1][1]
+
+              if isFloat(result[0][1]) and isFloat(result[1][1]):
+                new = float(result[1][1])
+                old = float(result[0][1])
+
+                timeDiff = "{0:.2f}".format(new - old)
+
+                if timeDiff > 0:
+                  offset = (differenceThreshold * timeDiff) / 100
+                  if timeDiff > offset:
+                    summaryDifference += 1
+
+              else:
+                timeDiff = "-"
+
+              # Add dataset name.
+              resultsMessage += result[0][0] + " "
+              # Add old runtime.
+              resultsMessage += timeOld + " (old) => "
+              # Add current runtime.
+              resultsMessage += timeCurrent + " (new) => "
+              # Add runtime difference.
+              resultsMessage += timeDiff + " | "
 
           if "=>" in resultsMessage:
             if irc_available and ircData:
@@ -459,6 +499,11 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
           Log.Notice("\n\n")
 
   if irc_available and ircData and len(watchMessages) > 0:
+    # Add summary message ("Benchmarks x of y passed").
+    summaryMessage = "Benchmarks " + str(summaryBenchmarks - summaryDifference)
+    summaryMessage += " of " + str(summaryBenchmarks) + " passed"
+    watchMessages.append(summaryMessage)
+
     ircBOT.send_messages(watchMessages)
 
 
