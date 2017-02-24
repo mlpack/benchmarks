@@ -146,7 +146,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
   # Summary parameter.
   summaryBenchmarks = 0
   summaryDifference = 0
-  differenceThreshold = 18
+  differenceThreshold = 10
 
   # Read the general block and set the attributes.
   if "general" in streamData:
@@ -476,7 +476,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                 if (new - old) > 0:
                   offset = (differenceThreshold * old) / 100
-                  if timeDiffValue > offset:
+                  if timeDiffValue > 0 and timeDiffValue > offset:
                     summaryDifference += 1
 
               else:
@@ -489,7 +489,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
               # Add current runtime.
               resultsMessage += timeCurrent + " (new) => "
               # Add runtime difference.
-              resultsMessage += timeDiff + " | "
+              resultsMessage += timeDiff + " (diff) | "
 
           if "=>" in resultsMessage:
             if irc_available and ircData:
@@ -502,7 +502,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
   if irc_available and ircData and len(watchMessages) > 0:
     # Add summary message ("Benchmarks x of y passed").
     summaryMessage = "Benchmarks " + str(summaryBenchmarks - summaryDifference)
-    summaryMessage += " of " + str(summaryBenchmarks) + " passed"
+    summaryMessage += " of " + str(summaryBenchmarks) + " passed."
     watchMessages.append(summaryMessage)
 
     ircBOT.send_messages(watchMessages)
