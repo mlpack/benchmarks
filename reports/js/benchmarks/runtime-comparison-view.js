@@ -267,7 +267,7 @@ rc.buildChart = function()
 {
   rc.results = rc.results.map(function(d) {
     var runtime = dbType === "sqlite" ? d[0] : d.time;
-    if (runtime == 0)
+    if (runtime == -2)
     {
       if (dbType === "sqlite")
       {
@@ -278,6 +278,18 @@ rc.buildChart = function()
         d.time = "failure";
       }
     }
+    else if (runtime == -1)
+    {
+      if (dbType === "sqlite")
+      {
+        d[0] = ">9000";
+      }
+      else
+      {
+        d.time = ">9000";
+      }
+    }
+
     return d; })
 
   // Get lists of active libraries and active datasets.
