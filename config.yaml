@@ -805,6 +805,13 @@ methods:
        format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
+    DecisionTree:
+       run: ['metric']
+       iteration: 3
+       script: methods/matlab/decision_tree.py
+       format: [csv, txt]
+       datasets:
+           - files: [ [] ]
 ---
 # Scikit-Learn: machine learning in Python
 library: scikit
