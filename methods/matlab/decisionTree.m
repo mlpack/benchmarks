@@ -32,7 +32,7 @@ total_time = tic;
 %This will return a fitted binary classification decision treebased on the input variables contained in matrix X and output Y.
 %The returned binary tree splits branching nodes based on the values of a column of X.
 
-B=fitctree(X,Y,'MinLeafSize',10);
+B=fitctree(X,y,'MinLeafSize',10);
 if ~isempty(testFile)
   testSet = csvread(testFile{:});
   predictions = predict(B, testSet);
