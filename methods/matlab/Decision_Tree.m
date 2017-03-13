@@ -1,4 +1,4 @@
-function decisionTree(cmd)
+function Decision_Tree(cmd)
 % Decision Tree Prediction.
 %
 % Required options:
