@@ -42,7 +42,7 @@ end
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
 if ~isempty(testFile)
     csvwrite('predictions.csv', idx);
-    csvwrite('matlab_lr_probs.csv', predictions);
+    csvwrite('matlab_DTree_probs.csv', predictions);
 end
 
 if ~isempty(estimatesFile)
