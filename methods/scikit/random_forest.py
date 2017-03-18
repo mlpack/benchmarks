@@ -51,7 +51,17 @@ class RANDOMFOREST(object):
     self.criterion = 'gini'
     self.max_depth = None
     self.seed = 0
-
+    self.min_samples_split = 2
+    self.min_samples_leaf = 1
+    self.min_weight_fraction_leaf = 0.0
+    self.max_features = 'auto'
+    self.max_leaf_nodes = None
+    self.min_impurity_split = 1e-07
+    self.bootstrap = True
+    self.oob_score = False
+    self.n_jobs = 1
+    self.warm_start = False
+    self.class_weight = None
   '''
   Build the model for the Random Forest Classifier.
 
@@ -64,7 +74,14 @@ class RANDOMFOREST(object):
     randomforest = RandomForestClassifier(n_estimators=self.n_estimators,
                                           max_depth=self.max_depth,
                                           criterion=self.criterion,
-                                          random_state=self.seed)
+                                          random_state=self.seed,
+                                          min_samples_split = self.min_samples_split,
+                                          min_samples_leaf = self.min_samples_leaf,
+                                          min_weight_fraction_leaf = self.min_weight_fraction_leaf,
+                                          max_features = self.max_features,max_leaf_nodes =self.max_leaf_nodes,
+                                          min_impurity_split = self.min_impurity_split,bootstrap = self.bootstrap,
+                                          oob_score = self.oob_score,n_jobs = self.n_jobs,warm_start = self.warm_start,
+                                          class_weight = self.class_weight)
     randomforest.fit(data, labels)
     return randomforest
 
@@ -88,12 +105,17 @@ class RANDOMFOREST(object):
       c = re.search("-c (\s+)", options)
       d = re.search("-d (\s+)", options)
       s = re.search("-s (\d+)", options)
+      mss = re.search("-mss (\d+)", options)
+      msl = re.search("-msl (\d+)", options)
+      nj = re.search("-nj (\d+)", options)
 
       self.n_estimators = 50 if not e else int(e.group(1))
       self.criterion = 'gini' if not c else str(c.group(1))
       self.max_depth = None if not d else int(d.group(1))
       self.seed = 0 if not s else int(s.group(1))
-
+      self.min_samples_split = 2 if not mss else int(mss.group(1))
+      self.min_samples_leaf = 1 if not msl else int(msl.group(1))
+      self.n_jobs = 1 if not nj else int(nj.group(1))
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
