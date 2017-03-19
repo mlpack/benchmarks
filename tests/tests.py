@@ -22,6 +22,7 @@ modules = [
 'benchmark_linear_ridge_regression',
 'benchmark_local_coordinate_coding',
 'benchmark_lasso',
+'benchmark_decision_tree',
 #'benchmark_lsh',
 #'benchmark_nbc',
 'benchmark_nca',
