@@ -1,6 +1,6 @@
 '''
   @file decision_tree.py
-  Class to benchmark the mlpack Logistic Regression method.
+  Class to benchmark the mlpack Decision Tree method.
 '''
 
 import os
