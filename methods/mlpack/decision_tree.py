@@ -38,7 +38,7 @@ import collections
 '''
 This class implements the Decision Tree benchmark.
 '''
-class DecisionTree(object):
+class DTC(object):
 
   '''
   Create the Decision Tree benchmark instance, show some
