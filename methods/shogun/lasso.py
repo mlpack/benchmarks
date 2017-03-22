@@ -63,22 +63,20 @@ class LASSO(object):
       # If the dataset contains two files then the second file is the responses
       # file.
       try:
+        # Load input dataset.
         Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
-          testSet = np.genfromtxt(self.dataset[1], delimiter=',')
+        inputData = np.genfromtxt(self.dataset[0], delimiter=',')
+        responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
 
-          # Get all the parameters.
-          lambda1 = re.search("-l (\d+)", options)
-          lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
-
-        # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset)
+        # Get all the parameters.
+        lambda1 = re.search("-l (\d+\.\d+)", options)
+        lambda1 = 0.0 if not lambda1 else float(lambda1.group(1))
 
         with totalTimer:
-          model = LeastAngleRegression(lasso=True)
+          model = LeastAngleRegression(True)
           model.set_max_l1_norm(lambda1) 
-          model.set_labels(RegressionLabels(y))
-          model.train(RealFeatures(X.T))
+          model.set_labels(RegressionLabels(responsesData))
+          model.train(RealFeatures(inputData.T))
 
       except Exception as e:
         print(e)

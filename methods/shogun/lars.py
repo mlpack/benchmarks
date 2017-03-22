@@ -60,8 +60,8 @@ class LARS(object):
         responsesFeat = RegressionLabels(responsesData)
 
         # Get all the parameters.
-        lambda1 = re.search("-l (\d+)", options)
-        lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+        lambda1 = re.search("-l (\d+\.\d+)", options)
+        lambda1 = 0.0 if not lambda1 else float(lambda1.group(1))
 
         with totalTimer:
           # Perform LARS.

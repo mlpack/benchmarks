@@ -1646,7 +1646,17 @@ methods:
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv']]
               options: '-l 0.01'
-
+    LARS:
+        run: ['timing']
+        iteration: 3
+        script: methods/shogun/lars.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv']]
+              options: '-l 0.01'
     QDA:
             run: ['metric','metric']
             script: methods/shogun/qda.py
