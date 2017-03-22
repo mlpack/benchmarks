@@ -135,4 +135,4 @@ class DTC(object):
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       return metrics
     else:
-Log.Fatal("This method requires three datasets.")
+      Log.Fatal("This method requires three datasets.")
