@@ -3,9 +3,9 @@ library: general
 settings:
     # Time until a timeout in seconds.
     timeout: 9000
-    databaseHost: 'mlpack.org'
+    databaseHost: 'localhost'
     port: 3306
-    database: 'benchmark_release'
+    database: 'benchmarks'
     driver : 'mysql'
     keepReports: 20
     bootstrap: 10
@@ -1830,6 +1830,13 @@ methods:
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42'
+
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
                 options: '-k 3 -s 42 -e 0.0'
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
@@ -1876,6 +1883,13 @@ methods:
           script: methods/flann/allknn.py
           format: [csv, txt]
           datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options: '-k 3 -s 42'
+
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
