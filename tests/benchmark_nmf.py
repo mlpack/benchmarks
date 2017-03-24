@@ -46,19 +46,11 @@ class NMF_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-r 6 -u multdist")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("-r 6 -u multdist", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-r 6 -u multdist")
+    self.assertTrue(result["Runtime"] > 0)
 
   '''
   Test the destructor.
@@ -100,11 +92,11 @@ class NMF_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-r 6 -u alspgrad")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-r 6 -u alspgrad")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the matlab Non-negative Matrix Factorization script.
@@ -132,11 +124,11 @@ class NMF_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-r 6 -u multdist")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-r 6 -u multdist")
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()
