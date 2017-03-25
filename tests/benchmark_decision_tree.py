@@ -42,13 +42,13 @@ class DecisionTree_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.verbose, self.verbose)
     self.assertEqual(self.instance.timeout, self.timeout)
     self.assertEqual(self.instance.dataset, self.dataset)
-
+  
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 1")
+    self.assertTrue(result["Runtime"] > 0)
 
   # '''
   # Test the 'RunMemory' function.
@@ -97,11 +97,11 @@ class DecisionTree_MLPACK_TEST(unittest.TestCase):
       self.assertEqual(self.instance.dataset, self.dataset)
 
     '''
-    Test the 'RunTiming' function.
-    '''
-    def test_RunTiming(self):
-      result = self.instance.RunTiming("")
-      self.assertTrue(result > 0)
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 1")
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()
