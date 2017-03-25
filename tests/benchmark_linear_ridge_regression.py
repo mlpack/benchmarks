@@ -44,11 +44,12 @@ class LinearRidgeRegression_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-t 1.0")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-t 1.0")
+    self.assertTrue(result["Simple MSE"] > 0)
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit Linear Ridge Regression script.
@@ -76,11 +77,12 @@ class LinearRidgeRegression_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-t 1.0")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-t 1.0")
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Simple MSE"] > 0)
 
 
 if __name__ == '__main__':

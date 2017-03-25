@@ -46,19 +46,11 @@ class PCA_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
   '''
   Test the destructor.
@@ -74,37 +66,37 @@ class PCA_MLPACK_TEST(unittest.TestCase):
 
     self.assertTrue(clean)
 
-# '''
-# Test the weka Principal Components Analysis script.
-# '''
-# class PCA_WEKA_TEST(unittest.TestCase):
+'''
+Test the weka Principal Components Analysis script.
+'''
+class PCA_WEKA_TEST(unittest.TestCase):
 
-#   '''
-#   Test initialization.
-#   '''
-#   def setUp(self):
-#     self.dataset = "datasets/iris.csv"
-#     self.verbose = False
-#     self.timeout = 9000
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = "datasets/iris.csv"
+    self.verbose = False
+    self.timeout = 9000
 
-#     module = Loader.ImportModuleFromPath("methods/weka/pca.py")
-#     obj = getattr(module, "PCA")
-#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+    module = Loader.ImportModuleFromPath("methods/weka/pca.py")
+    obj = getattr(module, "PCA")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
-#   '''
-#   Test the constructor.
-#   '''
-#   def test_Constructor(self):
-#     self.assertEqual(self.instance.verbose, self.verbose)
-#     self.assertEqual(self.instance.timeout, self.timeout)
-#     self.assertEqual(self.instance.dataset, self.dataset)
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
 
-#   '''
-#   Test the 'RunTiming' function.
-#   '''
-#   def test_RunTiming(self):
-#     result = self.instance.RunTiming("")
-#     self.assertTrue(result > 0)
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the shogun Principal Components Analysis script.
@@ -132,11 +124,11 @@ class PCA_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit Principal Components Analysis script.
@@ -164,11 +156,11 @@ class PCA_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the mlpy Principal Components Analysis script.
@@ -196,11 +188,11 @@ class PCA_MLPY_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the matlab Principal Components Analysis script.
@@ -228,11 +220,11 @@ class PCA_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

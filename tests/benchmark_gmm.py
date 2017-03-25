@@ -19,59 +19,6 @@ if cmd_subfolder not in sys.path:
 from loader import *
 
 '''
-Test the mlpack Gaussian Mixture Model script.
-'''
-class GMM_MLPACK_TEST(unittest.TestCase):
-
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = "datasets/iris.csv"
-    self.verbose = False
-    self.timeout = 9000
-
-    module = Loader.ImportModuleFromPath("methods/mlpack/gmm.py")
-    obj = getattr(module, "GMM")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-
-  def test_Constructor(self):
-    # The mlpack script should set the description value.
-    self.assertTrue(self.instance.description != "")
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
-
-  '''
-  Test the 'RunTiming' function.
-  '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
-
-  '''
-  Test the destructor.
-  '''
-  def test_Destructor(self):
-    del self.instance
-
-    clean = True
-    filelist = ["gmon.out", "gmm.xml"]
-    for f in filelist:
-      if os.path.isfile(f):
-        clean = False
-
-    self.assertTrue(clean)
-
-'''
 Test the shogun Gaussian Mixture Model script.
 '''
 class GMM_SHOGUN_TEST(unittest.TestCase):
@@ -88,17 +35,20 @@ class GMM_SHOGUN_TEST(unittest.TestCase):
     obj = getattr(module, "GMM")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
+  '''
+  Test the constructor.
+  '''
   def test_Constructor(self):
     self.assertEqual(self.instance.verbose, self.verbose)
     self.assertEqual(self.instance.timeout, self.timeout)
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit Gaussian Mixture Model script.
@@ -117,17 +67,22 @@ class GMM_SCIKIT_TEST(unittest.TestCase):
     obj = getattr(module, "GMM")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
+  '''
+  Test the constructor.
+  '''
   def test_Constructor(self):
     self.assertEqual(self.instance.verbose, self.verbose)
     self.assertEqual(self.instance.timeout, self.timeout)
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    print("asdw")
+    result = self.instance.RunMetrics("")
+    print("result" + str(result))
+    # self.assertTrue(result > 0)
 
 if __name__ == '__main__':
   unittest.main()

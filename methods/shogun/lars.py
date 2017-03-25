@@ -69,7 +69,7 @@ class LARS(object):
           model.set_max_l1_norm(lambda1)
           model.set_labels(responsesFeat)
           model.train(inputFeat)
-          model.get_w(model.get_path_size() - 1)
+          model.get_w_for_var(model.get_path_size() - 1)
       except Exception as e:
         q.put(-1)
         return -1
@@ -88,7 +88,7 @@ class LARS(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform LARS.", self.verbose)
 
     if len(self.dataset) != 2:
