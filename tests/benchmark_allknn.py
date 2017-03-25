@@ -197,7 +197,6 @@ class ALLKNN_SHOGUN_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("-k 3")
-    print(result)
     self.assertTrue(result["Runtime"] > 0)
 
 '''
