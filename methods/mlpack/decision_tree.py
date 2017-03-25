@@ -142,8 +142,9 @@ class DecisionTree(object):
     timer = self.parseTimer(s)
 
     if timer != -1:
-      metrics['Runtime'] = timer.total_time - timer.total_time - timer.saving_data
-
+      
+      metrics['Runtime'] = timer.total_time - timer.loading_data
+      
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
     if len(self.dataset) >= 3:
