@@ -151,7 +151,7 @@ class DecisionTree(object):
 
       # Check if we need to build and run the model.
       if not CheckFileAvailable('predictions.csv'):
-        self.RunTiming(options)
+        self.RunMetrics(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
