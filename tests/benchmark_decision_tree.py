@@ -30,7 +30,7 @@ class DecisionTree_MLPACK_TEST(unittest.TestCase):
     self.timeout = 9000
 
     module = Loader.ImportModuleFromPath("methods/mlpack/decision_tree.py")
-    obj = getattr(module, "LinearRegression")
+    obj = getattr(module, "DecisionTree")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
