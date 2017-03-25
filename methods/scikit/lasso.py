@@ -86,7 +86,7 @@ class LASSO(object):
   def RunMetrics(self, options):
     Log.Info("Perform LASSO.", self.verbose)
 
-    if len(self.dataset) != 2:
+    if len(self.dataset) < 2:
       Log.Fatal("This method requires two datasets.")
       return -1
 

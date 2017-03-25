@@ -64,7 +64,7 @@ class GMM(object):
 
       try:
         # Create the Gaussian Mixture Model
-	# Some params changed to match mlpack defaults.
+	      # Some params changed to match mlpack defaults.
         model = mixture.GaussianMixture(n_components=g, covariance_type='full',
             random_state=s, n_iter=n, n_init=10, thresh=1e-10)
         with totalTimer:

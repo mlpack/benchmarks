@@ -224,7 +224,7 @@ dc.buildChart = function()
 {
   dc.results = dc.results.map(function(d) {
   var runtime = dbType === "sqlite" ? d[0] : d.time;
-  if (runtime == 0)
+  if (runtime == -2)
   {
     if (dbType === "sqlite")
     {
@@ -235,6 +235,18 @@ dc.buildChart = function()
       d.time = "failure";
     }
   }
+  else if (runtime == -1)
+  {
+    if (dbType === "sqlite")
+    {
+      d[0] = ">9000";
+    }
+    else
+    {
+      d.time = ">9000";
+    }
+  }
+
   return d; })
 
   var input_range = [];

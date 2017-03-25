@@ -85,9 +85,7 @@ class ALLKNN(object):
     timer = self.parseTimer(s)
 
     if timer != -1:
-      metrics['Runtime'] = timer.tree_building + timer.computing_neighbors
-      metrics['TreeBuilding'] = timer.tree_building
-      metrics['ComputingNeighbors'] = timer.computing_neighbors
+      metrics['Runtime'] = timer.total_time
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
@@ -103,8 +101,7 @@ class ALLKNN(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(r"""
-        .*?tree_building: (?P<tree_building>.*?)s.*?
-        .*?computing_neighbors: (?P<computing_neighbors>.*?)s.*?
+        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data.decode())
@@ -113,12 +110,9 @@ class ALLKNN(object):
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["tree_building",
-                                               "computing_neighbors"])
+      timer = collections.namedtuple("timer", ["total_time"])
 
-      if match.group("tree_building").count(".") == 1:
-        return timer(float(match.group("tree_building")),
-                     float(match.group("computing_neighbors")))
+      if match.group("total_time").count(".") == 1:
+        return timer(float(match.group("total_time")))
       else:
-        return timer(float(match.group("tree_building").replace(",", ".")),
-                     float(match.group("computing_neighbors").replace(",", ".")))
+        return timer(float(match.group("total_time").replace(",", ".")))
