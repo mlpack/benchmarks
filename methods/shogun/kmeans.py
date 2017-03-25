@@ -131,29 +131,6 @@ class KMEANS(object):
     return {'Runtime' : results}
 
   '''
-  Parse the timer data form a given string.
-
-  @param data - String to parse timer data from.
-  @return - Namedtuple that contains the timer data or -1 in case of an error.
-  '''
-  def parseTimer(self, data):
-    # Compile the regular expression pattern into a regular expression object to
-    # parse the timer data.
-    pattern = re.compile(br"""
-        .*?total_time: (?P<total_time>.*?)s.*?
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    match = pattern.match(data)
-    if not match:
-      Log.Fatal("Can't parse the data: wrong format")
-      return -1
-    else:
-      # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["total_time"])
-
-      return timer(float(match.group("total_time")))
-
-  '''
   Return the elapsed time in seconds.
 
   @param timer - Namedtuple that contains the timer data.

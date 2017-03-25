@@ -47,6 +47,7 @@ class LASSO(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
 
   '''
   Use the shogun libary to implement Linear Regression.
@@ -64,7 +65,7 @@ class LASSO(object):
       # file.
       try:
         Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
+        if len(self.dataset) >= 2:
           testSet = np.genfromtxt(self.dataset[1], delimiter=',')
 
           # Get all the parameters.
@@ -76,7 +77,7 @@ class LASSO(object):
 
         with totalTimer:
           model = LeastAngleRegression(lasso=True)
-          model.set_max_l1_norm(lambda1) 
+          model.set_max_l1_norm(lambda1)
           model.set_labels(RegressionLabels(y))
           model.train(RealFeatures(X.T))
 
@@ -108,7 +109,7 @@ class LASSO(object):
 
     metrics = {'Runtime' : results}
 
-    if not self.predictions:
+    if self.predictions != None:
       self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])

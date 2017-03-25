@@ -61,7 +61,6 @@ class ICA(object):
         with totalTimer:
           model = FastICA(random_state=s)
           ic = model.fit(data).transform(data)
-          mixing = model.get_mixing_matrix()
       except Exception as e:
         q.put(-1)
         return -1

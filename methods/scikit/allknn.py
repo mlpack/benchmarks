@@ -95,9 +95,9 @@ class ALLKNN(object):
           if len(self.dataset) == 2:
             out = model.kneighbors(queryData, k, return_distance=True)
           else:
-	    # We have to increment k by one because mlpack ignores the
-	    # self-neighbor, whereas scikit-learn will happily return the
-	    # nearest neighbor of point 0 as point 0.
+            # We have to increment k by one because mlpack ignores the
+            # self-neighbor, whereas scikit-learn will happily return the
+            # nearest neighbor of point 0 as point 0.
             out = model.kneighbors(referenceData, k + 1, return_distance=True)
         except Exception as e:
           q.put(-1)
