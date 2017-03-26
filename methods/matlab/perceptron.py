@@ -2,7 +2,7 @@
   @file perceptron.py
   @author Anand Soni
 
-  Class to benchmark the matlab Pereptron method.
+  Class to benchmark the matlab Perceptron method.
 '''
 
 import os
