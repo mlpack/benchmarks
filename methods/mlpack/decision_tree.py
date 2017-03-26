@@ -96,32 +96,37 @@ class DecisionTree(object):
   @return Returns False if the method was not successful, if the method was
   successful save the report file in the specified file.
   '''
-  def RunMemory(self, options, fileName, massifOptions="--depth=2"):
-    Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
+   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
+      Log.Info("Perform Memory Profiling.", self.verbose)
 
-    # If the dataset contains two files then the second file is the test
-    # regressors file. In this case we add this to the command line.
+    # If the dataset contains two files then the second file is the test file.
+    # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "mlpack_decision_tree -i " +
-          self.dataset[0] + " -t " + self.dataset[1] + " -v " + options)
+      cmd = shlex.split(self.debug + "mlpack_decision_tree -t " +
+          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.debug + "mlpack_decision_tree -i " +
-          self.dataset[0] + " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
-  Run all the metrics for the classifier.
+  Perform Decision tree Prediction. If the method has been
+  successfully completed return the elapsed time in seconds.
+  @param options - Extra options for the method.
+  @return - Elapsed time in seconds or a negative value if the method was not
+  successful.
   '''
   def RunMetrics(self, options):
-    # If the dataset contains two files then the second file is the test
-    # regressors file. In this case we add this to the command line.
+    Log.Info("Perform Decision tree Prediction.", self.verbose)
+
+    # If the dataset contains two files then the second file is the labels file.
+    # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_decision_tree -t " +
           self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
     else:
-      cmd = shlex.split(self.path + "mlpack_decision_tree -t " +
-          self.dataset + " -v " + options)
+      Log.Fatal("This method requires atleast two datasets.")
+
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
