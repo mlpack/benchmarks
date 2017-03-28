@@ -46,19 +46,11 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
-
-  # '''
-  # Test the 'RunMemory' function.
-  # '''
-  # def test_RunMemory(self):
-  #   result = self.instance.RunMemory("", "test.mout")
-  #   self.assertEqual(result, None)
-  #   os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
   '''
   Test the destructor.
@@ -74,30 +66,30 @@ class LinearRegression_MLPACK_TEST(unittest.TestCase):
 
     self.assertTrue(clean)
 
-# '''
-# Test the weka Simple Linear Regression Prediction script.
-# '''
-# class LinearRegression_WEKA_TEST(unittest.TestCase):
+'''
+Test the weka Simple Linear Regression Prediction script.
+'''
+class LinearRegression_WEKA_TEST(unittest.TestCase):
 
-#   '''
-#   Test initialization.
-#   '''
-#   def setUp(self):
-#     self.dataset = ['datasets/iris_test.arff']
-#     self.verbose = False
-#     self.timeout = 9000
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_test.arff']
+    self.verbose = False
+    self.timeout = 9000
 
-#     module = Loader.ImportModuleFromPath("methods/weka/linear_regression.py")
-#     obj = getattr(module, "LinearRegression")
-#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+    module = Loader.ImportModuleFromPath("methods/weka/linear_regression.py")
+    obj = getattr(module, "LinearRegression")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
-#   '''
-#   Test the constructor.
-#   '''
-#   def test_Constructor(self):
-#     self.assertEqual(self.instance.verbose, self.verbose)
-#     self.assertEqual(self.instance.timeout, self.timeout)
-#     self.assertEqual(self.instance.dataset, self.dataset)
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
 
 '''
 Test the shogun Simple Linear Regression Prediction script.
@@ -125,11 +117,11 @@ class LinearRegression_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit Simple Linear Regression Prediction script.
@@ -157,11 +149,11 @@ class LinearRegression_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the mlpy Simple Linear Regression Prediction script.
@@ -189,43 +181,44 @@ class LinearRegression_MLPY_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    print(result)
+    self.assertTrue(result["Runtime"] > 0)
 
-# '''
-# Test the matlab Simple Linear Regression Prediction script.
-# '''
-# class LinearRegression_MATLAB_TEST(unittest.TestCase):
+'''
+Test the matlab Simple Linear Regression Prediction script.
+'''
+class LinearRegression_MATLAB_TEST(unittest.TestCase):
 
-#   '''
-#   Test initialization.
-#   '''
-#   def setUp(self):
-#     self.dataset = ['datasets/diabetes.csv']
-#     self.verbose = False
-#     self.timeout = 9000
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/diabetes.csv']
+    self.verbose = False
+    self.timeout = 9000
 
-#     module = Loader.ImportModuleFromPath("methods/matlab/linear_regression.py")
-#     obj = getattr(module, "LinearRegression")
-#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+    module = Loader.ImportModuleFromPath("methods/matlab/linear_regression.py")
+    obj = getattr(module, "LinearRegression")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
-#   '''
-#   Test the constructor.
-#   '''
-#   def test_Constructor(self):
-#     self.assertEqual(self.instance.verbose, self.verbose)
-#     self.assertEqual(self.instance.timeout, self.timeout)
-#     self.assertEqual(self.instance.dataset, self.dataset)
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
 
-#   '''
-#   Test the 'RunTiming' function.
-#   '''
-#   def test_RunTiming(self):
-#     result = self.instance.RunTiming("")
-#     self.assertTrue(result > 0)
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

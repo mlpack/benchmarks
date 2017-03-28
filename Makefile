@@ -71,7 +71,7 @@ export MLPACK_BIN_DEBUG_SRC=methods/mlpack/src/build/
 export MATLAB_BIN=""
 
 # Export the MATLABPATH environment variable.
-export MATLABPATH=methods/matlab/
+export MATLABPATH=$(shell pwd)/methods/matlab/
 
 # Export the WEKA_CLASSPATH environment variable.
 # You can use the following command to search the 'weka.jar' file everytime:
