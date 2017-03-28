@@ -994,7 +994,7 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-
+]
     SVM:
             run: ['metric']
             script: methods/scikit/svm.py
