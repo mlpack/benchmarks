@@ -43,10 +43,10 @@ class QDA_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
     self.assertTrue(result > 0)
 
 '''

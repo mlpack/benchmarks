@@ -62,7 +62,6 @@ class LinearRidgeRegression(object):
       # Load input dataset.
       # If the dataset contains two files then the second file is the responses
       # file.
-      
       Log.Info("Loading dataset", self.verbose)
       if len(self.dataset) >= 2:
         testSet = np.genfromtxt(self.dataset[1], delimiter=',')
@@ -122,9 +121,8 @@ class LinearRidgeRegression(object):
       predictedlabels = model.apply_regression(RealFeatures(testData.T)).get_labels()
 
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics_dict = {}
-      metrics_dict['Simple MSE'] = SimpleMSE
-      return metrics_dict
+      metrics['Simple MSE'] = SimpleMSE
+      return metrics
 
     else:
       Log.Fatal("This method requires three datasets!")
