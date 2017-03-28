@@ -44,19 +44,11 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-c 2")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("-c 2", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-c 2")
+    self.assertTrue(result["Runtime"] > 0)
 
   '''
   Test the destructor.
@@ -98,48 +90,16 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-c 2")
-    self.assertTrue(result > 0)
-
-# '''
-# Test the weka K-Means clustering script.
-# '''
-# class KMEANS_WEKA_TEST(unittest.TestCase):
-
-#   '''
-#   Test initialization.
-#   '''
-#   def setUp(self):
-#     self.dataset = ['datasets/iris.csv']
-#     self.verbose = False
-#     self.timeout = 9000
-
-#     module = Loader.ImportModuleFromPath("methods/weka/kmeans.py")
-#     obj = getattr(module, "KMEANS")
-#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-
-#   '''
-#   Test the constructor.
-#   '''
-#   def test_Constructor(self):
-#     self.assertEqual(self.instance.verbose, self.verbose)
-#     self.assertEqual(self.instance.timeout, self.timeout)
-#     self.assertEqual(self.instance.dataset, self.dataset)
-
-#   '''
-#   Test the 'RunTiming' function.
-#   '''
-#   def test_RunTiming(self):
-#     result = self.instance.RunTiming("-c 2")
-#     self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-c 2")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
-Test the scikit K-Means clustering script.
+Test the weka K-Means clustering script.
 '''
-class KMEANS_SCIKIT_TEST(unittest.TestCase):
+class KMEANS_WEKA_TEST(unittest.TestCase):
 
   '''
   Test initialization.
@@ -149,7 +109,7 @@ class KMEANS_SCIKIT_TEST(unittest.TestCase):
     self.verbose = False
     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/scikit/kmeans.py")
+    module = Loader.ImportModuleFromPath("methods/weka/kmeans.py")
     obj = getattr(module, "KMEANS")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
@@ -162,11 +122,11 @@ class KMEANS_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-c 2")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-c 2")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the matlab K-Means clustering script.
@@ -194,43 +154,11 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-c 2")
-    self.assertTrue(result > 0)
-
-'''
-Test the shogun K-Means clustering script.
-'''
-class KMEANS_SHOGUN_TEST(unittest.TestCase):
-
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = ['datasets/iris.csv']
-    self.verbose = False
-    self.timeout = 9000
-
-    module = Loader.ImportModuleFromPath("methods/shogun/kmeans.py")
-    obj = getattr(module, "KMEANS")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
-
-  '''
-  Test the 'RunTiming' function.
-  '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-c 2")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-c 2")
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

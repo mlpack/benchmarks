@@ -46,19 +46,14 @@ class ALLKNN_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("-k 3", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["ComputingNeighbors"] > 0)
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["TreeBuilding"] > 0)
+    self.assertTrue(result["BaseCases"] > 0)
 
   '''
   Test the destructor.
@@ -101,11 +96,11 @@ class ALLKNN_MATLAB_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the mlpy All K-Nearest-Neighbors script.
@@ -133,11 +128,11 @@ class ALLKNN_MLPY_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit All K-Nearest-Neighbors script.
@@ -165,11 +160,12 @@ class ALLKNN_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    print(result)
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the shogun All K-Nearest-Neighbors script.
@@ -197,43 +193,43 @@ class ALLKNN_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["Runtime"] > 0)
 
-# '''
-# Test the weka All K-Nearest-Neighbors script.
-# '''
-# class ALLKNN_WEKA_TEST(unittest.TestCase):
+'''
+Test the weka All K-Nearest-Neighbors script.
+'''
+class ALLKNN_WEKA_TEST(unittest.TestCase):
 
-#   '''
-#   Test initialization.
-#   '''
-#   def setUp(self):
-#     self.dataset = "datasets/wine.csv"
-#     self.verbose = False
-#     self.timeout = 9000
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = "datasets/wine.csv"
+    self.verbose = False
+    self.timeout = 9000
 
-#     module = Loader.ImportModuleFromPath("methods/weka/allknn.py")
-#     obj = getattr(module, "ALLKNN")
-#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+    module = Loader.ImportModuleFromPath("methods/weka/allknn.py")
+    obj = getattr(module, "ALLKNN")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
-#   '''
-#   Test the constructor.
-#   '''
-#   def test_Constructor(self):
-#     self.assertEqual(self.instance.verbose, self.verbose)
-#     self.assertEqual(self.instance.timeout, self.timeout)
-#     self.assertEqual(self.instance.dataset, self.dataset)
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
 
-#   '''
-#   Test the 'RunTiming' function.
-#   '''
-#   def test_RunTiming(self):
-#     result = self.instance.RunTiming("-k 3")
-#     self.assertTrue(result > 0)
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the ann All K-Nearest-Neighbors script.
@@ -261,11 +257,13 @@ class ALLKNN_ANN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ComputingNeighbors"] > 0)
+    self.assertTrue(result["TreeBuilding"] > 0)
 
 '''
 Test the flann All K-Nearest-Neighbors script.
@@ -293,11 +291,13 @@ class ALLKNN_FLANN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["TreeBuilding"] > 0)
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ComputingNeighbors"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

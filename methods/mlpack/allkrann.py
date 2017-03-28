@@ -59,7 +59,7 @@ class ALLKRANN(object):
       Log.Fatal("Could not execute command: " + str(cmd))
     else:
       # Use regular expression pattern to get the description.
-      pattern = re.compile(br"""(.*?)Required.*?options:""",
+      pattern = re.compile(br"""(.*?)Optional.*?options:""",
           re.VERBOSE|re.MULTILINE|re.DOTALL)
 
       match = pattern.match(s)

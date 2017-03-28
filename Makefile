@@ -19,18 +19,6 @@ ifndef YAML_CHECK
   YAML_INSTALLED := 1
 endif
 
-# Check if matplotlib is installed.
-MATPLOTLIB_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, matplotlib;' 2>&1)
-ifndef MATPLOTLIB_CHECK
-  MATPLOTLIB_INSTALLED := 1
-endif
-
-# Check if pyplot is installed.
-PYPLOT_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, matplotlib.pyplot;' 2>&1)
-ifndef PYPLOT_CHECK
-  PYPLOT_INSTALLED := 1
-endif
-
 # Check if numpy is installed.
 NUMPY_CHECK := $(shell $(PYTHON_BIN) -c 'import sys, numpy;' 2>&1)
 ifndef NUMPY_CHECK
@@ -83,7 +71,7 @@ export MLPACK_BIN_DEBUG_SRC=methods/mlpack/src/build/
 export MATLAB_BIN=""
 
 # Export the MATLABPATH environment variable.
-export MATLABPATH=methods/matlab/
+export MATLABPATH=$(shell pwd)/methods/matlab/
 
 # Export the WEKA_CLASSPATH environment variable.
 # You can use the following command to search the 'weka.jar' file everytime:
@@ -116,13 +104,12 @@ NO_COLOR=\033[0m
 ERROR_COLOR=\033[0;31m
 WARN_COLOR=\033[0;33m
 
-.PHONY: help test run memory scripts reports
+.PHONY: help test run memory scripts
 
 help: .check .help
 test: .check .test
 run: .check .run
 memory: .check .check_memory .memory
-reports: .check .check_reports .reports
 scripts: .scripts
 checks: .check .checks
 
@@ -157,7 +144,6 @@ checks: .check .checks
 	@echo "  run [parameters]       Perform the benchmark with the given config."
 	@echo "  memory [parameters]    Get memory profiling information with the given config."
 	@echo "  scripts                Compile the java files for the weka methods."
-	@echo "  reports [parameters]   Create the reports."
 	@echo "  help                   Show this info."
 	@echo ""
 	@echo "For further information consult the documentation found at \
@@ -180,19 +166,6 @@ ifndef PYTHON_VERSION
 	python3.3+ to run all tests properly; however, some modules may still \
 	work with older python versions."
 endif
-endif
-
-.check_reports:
-ifndef MATPLOTLIB_INSTALLED
-	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'matplotlib' module was \
-	not found; please install the 'matplotlib' module to create the benchmark reports."
-	@exit 1
-endif
-
-ifndef PYPLOT_INSTALLED
-	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The python 'matplotlib.pyplot' module \
-	was not found; please install the 'matplotlib.pyplot' module to create the benchmark reports."
-	@exit 1
 endif
 
 ifndef NUMPY_INSTALLED
@@ -222,9 +195,6 @@ endif
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
-
-.reports:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/make_reports.py -c $(CONFIG)
 
 .scripts:
 	# Compile the java files for the weka methods.

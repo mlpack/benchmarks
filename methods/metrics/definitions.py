@@ -226,8 +226,8 @@ class Metrics(object):
   @param class_i - Index of the class in the confusion matrix
   @param CM - The confusion matrix
   MCC is a balanced measure which returns values between +1 and -1.
-  A coefficient of +1 represents a perfect prediction, 0 no better
-  than random prediction and −1 indicates total disagreement between
+  A coefficient of +1 represents a perfect prediction, 0 no better than random
+  prediction and -1 indicates total disagreement between
   prediction and observation.
   '''
   @staticmethod
@@ -267,7 +267,7 @@ class Metrics(object):
   @param CM - The confusion matrix
   MCC is a balanced measure which returns values between +1 and -1.
   A coefficient of +1 represents a perfect prediction, 0 no better
-  than random prediction and −1 indicates total disagreement between
+  than random prediction and -1 indicates total disagreement between
   prediction and observation. We use the MCC for a single class as
   obtained by applying the One vs All approach in the above method
   below.

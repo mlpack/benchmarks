@@ -9,8 +9,8 @@ settings:
     driver : 'mysql'
     keepReports: 20
     bootstrap: 10
-    libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann']
-    version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2']
+    libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann','annoy']
+    version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2','1.8.3']
 ---
 #  MLPACK:
 #  A Scalable C++  Machine Learning Library
@@ -994,7 +994,7 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-]
+
     SVM:
             run: ['metric']
             script: methods/scikit/svm.py
@@ -1944,3 +1944,13 @@ methods:
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
                 options: '-k 4'
+library: annoy
+methods:
+    
+    ANN:
+            run: ['metric']
+            script: methods/annoy/ann.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']]
+                  options: '-k 10 -n 10'
