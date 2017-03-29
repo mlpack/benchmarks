@@ -36,8 +36,7 @@ class RandomForest_SCIKIT_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("")
-    if (type(result) is int)!= True:
-        self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()
