@@ -25,7 +25,7 @@ class DecisionTree_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
     self.verbose = False
     self.timeout = 9000
 
