@@ -101,13 +101,13 @@ class DecisionTree(object):
 
     # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
-    if len(self.dataset) >= 2:
-      cmd = shlex.split(self.debug + "mlpack_decision_tree -t " +
+      if len(self.dataset) >= 2:
+          cmd = shlex.split(self.debug + "mlpack_decision_tree -t " +
           self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
-    else:
-      Log.Fatal("This method requires atleast two datasets.")
+      else:
+          Log.Fatal("This method requires atleast two datasets.")
 
-    return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
+      return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
   '''
   Perform Decision tree Prediction. If the method has been
