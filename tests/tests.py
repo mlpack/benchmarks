@@ -29,7 +29,8 @@ modules = [
 'benchmark_pca',
 'benchmark_range_search',
 'benchmark_sparse_coding',
-'benchmark_svr'
+'benchmark_svr',
+'benchmark_random_forest'
 ]
 
 def load_tests(loader, tests, pattern):
