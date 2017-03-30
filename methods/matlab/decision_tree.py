@@ -69,10 +69,10 @@ class DecisionTree(object):
 
     # If the dataset contains two files then the second file is the test
     # file. In this case we add this to the command line.
-    if len(self.dataset) == 2:
-      inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1] + " " + options
+    if len(self.dataset) >= 2:
+      inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -v " + options
     else:
-      inputCmd = "-i " + self.dataset[0] + " " + options
+      Log.Fatal("This method requires atleast two datasets.")
 
     print(self.path + "matlab -nodisplay -nosplash -r \"try, " +
         "Decision_Tree('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
