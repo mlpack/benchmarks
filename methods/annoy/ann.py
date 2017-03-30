@@ -84,7 +84,7 @@ class ANN(object):
               ans = max(la,key=la.count)
         except Exception as e:
           Log.Info(e)
-          q.put(-1)
+          q.put(e)
           return -1
       time = totalTimer.ElapsedTime()
       q.put(time)
