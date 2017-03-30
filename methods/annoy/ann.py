@@ -47,30 +47,29 @@ class ANN(object):
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
       query_labels = np.genfromtxt(self.dataset[2],delimiter=',')
-      train = referenceData[:,0:referenceData.shape[1]-1]
-      labels = referenceData[:,referenceData.shape[1]-1]
-
-      with totalTimer:
-        # Get all the parameters.
-        k = re.search("-k (\d+)", options)
-        n = re.search("-n (\d+)", options) #no of trees        
-        if not k:
+      train,labels = SplitTrainData(referenceData)
+      k = re.search("-k (\d+)", options)
+      n = re.search("-n (\d+)", options) #no of trees
+      if not k:
           Log.Fatal("Required option: Number of furthest neighbors to find.")
           q.put(-1)
           return -1
-        else:
+      else:
           k = int(k.group(1))
           if (k < 1 or k > referenceData.shape[0]):
             Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
               + " and less or equal than " + str(referenceData.shape[0]))
             q.put(-1)
             return -1
-        if not n:
+      if not n:
             Log.Fatal("Required option: Number of trees to build")
             q.put(-1)
             return -1
-        else:
+      else:
             n=int(n.group(1))
+
+      with totalTimer:
+        # Get all the parameters.
         try:
           # Perform Approximate Nearest-Neighbors
           acc = 0
@@ -88,7 +87,6 @@ class ANN(object):
           Log.Info(e)
           q.put(-1)
           return -1
-
       time = totalTimer.ElapsedTime()
       q.put(time)
       return time
@@ -105,8 +103,9 @@ class ANN(object):
   '''
   def RunMetrics(self, options):
     Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
-
-    results = self.AnnAnnoy(options)
+    results = None
+    if len(self.dataset)>=2:
+      results = self.AnnAnnoy(options)
     if results < 0:
       return results
 
