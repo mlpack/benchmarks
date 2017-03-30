@@ -46,7 +46,6 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      query_labels = np.genfromtxt(self.dataset[2],delimiter=',')
       train,labels = SplitTrainData(referenceData)
       k = re.search("-k (\d+)", options)
       n = re.search("-n (\d+)", options) #no of trees
