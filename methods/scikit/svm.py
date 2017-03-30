@@ -49,7 +49,11 @@ class SVM(object):
     self.model = None
     self.kernel = 'rbf'
     self.C = 1.0
-    self.gamma = 0.0
+    self.gamma = 'auto'
+    self.degree = 3
+    self.cache_size = 200
+    self.max_iter = -1
+    self.decision_function_shape = None
 
   '''
   Build the model for the Support vector machines.
@@ -62,7 +66,11 @@ class SVM(object):
     # Create and train the classifier.
     svm = ssvm.SVC(kernel=self.kernel,
                    C=self.C,
-                   gamma = self.gamma)
+                   gamma = self.gamma,
+                   degree=self.degree,
+                   cache_size = self.cache_size,
+                   max_iter = self.max_iter,
+                   decision_function_shape = self.decision_function_shape)
     svm.fit(data, labels)
     return svm
 
@@ -84,10 +92,18 @@ class SVM(object):
       k = re.search("-k (\s+)", options)
       c = re.search("-c (\d+)", options)
       g = re.search("-g (\d+)", options)
+      degree = re.search("--degree (\d+)", options)
+      cache_size = re.search("--cache_size (\d+)", options)
+      max_iter = re.search("--max_iter (\d+)", options)
+      decision_function_shape = re.search("--decision_function_shape (\d+)", options)
 
       self.kernel = 'rbf' if not k else str(k.group(1))
       self.C = 1.0 if not c else float(c.group(1))
-      self.gamma = 0.0 if not g else float(g.group(1))
+      self.gamma = 'auto' if not g else float(g.group(1))
+      self.degree = 3 if not degree else int(degree.group(1))
+      self.cache_size = 200.0 if not cache_size else float(cache_size.group(1))
+      self.max_iter = -1 if not max_iter else int(max_iter.group(1))
+      self.decision_function_shape = None if not decision_function_shape else str(decision_function_shape.group(1))
 
       try:
         with totalTimer:
