@@ -35,7 +35,7 @@ class ANN_ANNOY_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics("-k 10 -n 10")
     self.assertTrue(result["Runtime"] > 0)
 
 
