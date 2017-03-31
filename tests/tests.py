@@ -31,6 +31,7 @@ modules = [
 'benchmark_sparse_coding',
 'benchmark_svr',
 'benchmark_decision_tree',
+'benchmark_random_forest',
 #'metrics_unit_test'
 ]
 
