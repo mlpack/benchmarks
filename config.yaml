@@ -53,7 +53,7 @@ methods:
                        ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv'],
                        ['datasets/shuttle_train.csv', 'datasets/shuttle_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
-                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv']
+                       ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
     DecisionTree:
         run: ['metric']
         script: methods/mlpack/decision_tree.py
