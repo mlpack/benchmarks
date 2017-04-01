@@ -11,6 +11,7 @@ if cmd_subfolder not in sys.path:
 
 from log import *
 from timer import *
+from misc import *
 
 import numpy as np
 from annoy import AnnoyIndex
@@ -46,6 +47,7 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
+      train , label = SplitTrainData(self.dataset)
       k = re.search("-k (\d+)", options)
       n = re.search("-n (\d+)", options) #no of trees
       if not k:
@@ -71,9 +73,9 @@ class ANN(object):
         try:
           # Perform Approximate Nearest-Neighbors
           acc = 0
-          t = AnnoyIndex(referenceData.shape[1])
-          for i in range(len(referenceData)):
-              t.add_item(i,referenceData[i])
+          t = AnnoyIndex(train.shape[1])
+          for i in range(len(train)):
+              t.add_item(i,train[i])
           t.build(n)
           for i in range(len(queryData)):
               v = t.get_nns_by_vector(queryData[i],k)
