@@ -6,6 +6,7 @@ modules = [
 'benchmark_allkfn',
 'benchmark_allknn',
 'benchmark_allkrann',
+'benchmark_ann',
 'benchmark_det',
 'benchmark_emst',
 'benchmark_fastmks',
@@ -21,17 +22,17 @@ modules = [
 'benchmark_linear_regression',
 'benchmark_linear_ridge_regression',
 'benchmark_local_coordinate_coding',
+'benchmark_logistic_regression',
 'benchmark_lasso',
 'benchmark_lsh',
 'benchmark_nbc',
 'benchmark_nca',
 'benchmark_nmf',
 'benchmark_pca',
+'benchmark_random_forest',
 'benchmark_range_search',
 'benchmark_sparse_coding',
-'benchmark_svr',
-'benchmark_random_forest',
-'benchmark_logistic_regression'
+'benchmark_svr'
 ]
 
 def load_tests(loader, tests, pattern):

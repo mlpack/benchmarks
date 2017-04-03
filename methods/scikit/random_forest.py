@@ -71,17 +71,22 @@ class RANDOMFOREST(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    randomforest = RandomForestClassifier(n_estimators=self.n_estimators,
-                                          max_depth=self.max_depth,
-                                          criterion=self.criterion,
-                                          random_state=self.seed,
-                                          min_samples_split = self.min_samples_split,
-                                          min_samples_leaf = self.min_samples_leaf,
-                                          min_weight_fraction_leaf = self.min_weight_fraction_leaf,
-                                          max_features = self.max_features,max_leaf_nodes =self.max_leaf_nodes,
-                                          min_impurity_split = self.min_impurity_split,bootstrap = self.bootstrap,
-                                          oob_score = self.oob_score,n_jobs = self.n_jobs,warm_start = self.warm_start,
-                                          class_weight = self.class_weight)
+    randomforest = RandomForestClassifier(
+        n_estimators = self.n_estimators,
+        max_depth = self.max_depth,
+        criterion = self.criterion,
+        random_state = self.seed,
+        min_samples_split = self.min_samples_split,
+        min_samples_leaf = self.min_samples_leaf,
+        min_weight_fraction_leaf = self.min_weight_fraction_leaf,
+        max_features = self.max_features,
+        max_leaf_nodes = self.max_leaf_nodes,
+        min_impurity_split = self.min_impurity_split,
+        bootstrap = self.bootstrap,
+        oob_score = self.oob_score,
+        n_jobs = self.n_jobs,
+        warm_start = self.warm_start,
+        class_weight = self.class_weight)
     randomforest.fit(data, labels)
     return randomforest
 
@@ -105,9 +110,9 @@ class RANDOMFOREST(object):
       c = re.search("-c (\s+)", options)
       d = re.search("-d (\s+)", options)
       s = re.search("-s (\d+)", options)
-      mss = re.search("-mss (\d+)", options)
-      msl = re.search("-msl (\d+)", options)
-      nj = re.search("-nj (\d+)", options)
+      mss = re.search("--min_samples_split (\d+)", options)
+      msl = re.search("--min_samples_leaf (\d+)", options)
+      nj = re.search("--n_jobs (\d+)", options)
 
       self.n_estimators = 50 if not e else int(e.group(1))
       self.criterion = 'gini' if not c else str(c.group(1))
@@ -122,7 +127,6 @@ class RANDOMFOREST(object):
           # Run Random Forest Classifier on the test dataset.
           self.model.predict(testData)
       except Exception as e:
-        Log.Debug(str(e))
         q.put(-1)
         return -1
 
@@ -147,6 +151,7 @@ class RANDOMFOREST(object):
     results = None
     if len(self.dataset) >= 2:
       results = self.RANDOMFORESTScikit(options)
+      print(results)
 
       if results < 0:
         return results
@@ -172,6 +177,7 @@ class RANDOMFOREST(object):
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels,
+          predictedlabels)
 
     return metrics
