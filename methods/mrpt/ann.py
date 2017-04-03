@@ -39,7 +39,7 @@ class ANN(object):
   successful.
   '''
   def AnnMrpt(self, options):
-    def RunMrpt(q):
+    def RunAnnMrpt(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -47,35 +47,34 @@ class ANN(object):
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
       query_labels = np.genfromtxt(self.dataset[2],delimiter=',')
-      train = referenceData[:,0:referenceData.shape[1]-1]
-      labels = referenceData[:,referenceData.shape[1]-1]
-      
+      train,labels = SplitTrainData(self.dataset)
+      k = re.search("-k (\d+)", options)
+      n = re.search("-n (\d+)", options) #no of trees
+      d = re.search("-d (\d+)", options) #depth
+      v = re.search("-v (\d+)", options) #votes_required
+      if not k:
+        Log.Fatal("Required option: Number of furthest neighbors to find.")
+        q.put(-1)
+        return -1
+      else:
+        k = int(k.group(1))
+        if (k < 1 or k > referenceData.shape[0]):
+          Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
+            + " and less or equal than " + str(referenceData.shape[0]))
+          q.put(-1)
+          return -1
+      if not n:
+          Log.Fatal("Required option: Number of trees to build")
+          q.put(-1)
+          return -1
+      else:
+          n=int(n.group(1))
+      d = 5 if not d else int(d.group(1))
+      v = 4 if not v else int(v.group(1))
 
       with totalTimer:
         # Get all the parameters.
-        k = re.search("-k (\d+)", options)
-        n = re.search("-n (\d+)", options) #no of trees
-        d = re.search("-d (\d+)", options) #depth
-        v = re.search("-v (\d+)", options) #votes_required
-        if not k:
-          Log.Fatal("Required option: Number of furthest neighbors to find.")
-          q.put(-1)
-          return -1
-        else:
-          k = int(k.group(1))
-          if (k < 1 or k > referenceData.shape[0]):
-            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
-              + " and less or equal than " + str(referenceData.shape[0]))
-            q.put(-1)
-            return -1
-        if not n:
-            Log.Fatal("Required option: Number of trees to build")
-            q.put(-1)
-            return -1
-        else:
-            n=int(n.group(1))
-        d = 5 if not d else int(d.group(1))
-        v = 4 if not v else int(v.group(1))
+      
         try:
           # Perform Approximate Nearest-Neighbors
           acc = 0
