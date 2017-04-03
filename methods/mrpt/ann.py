@@ -46,7 +46,7 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      train,labels = SplitTrainData(self.dataset)
+      train, label = SplitTrainData(self.dataset)
       # Get all the parameters.
       k = re.search("-k (\d+)", options)
       n = re.search("-n (\d+)", options) #no of trees
@@ -76,11 +76,11 @@ class ANN(object):
         try:
           # Perform Approximate Nearest-Neighbors
           acc = 0
-          index = mrpt.MRPTIndex(train,depth=d,n_trees=n)
+          index = mrpt.MRPTIndex(np.float32(train),depth=d,n_trees=n)
           index.build()
           approximate_neighbors = np.zeros((len(queryData), k))
           for i in range(len(queryData)):
-              approximate_neighbors[i]=index.ann(queryData[i],k,votes_required=v)
+              approximate_neighbors[i]=index.ann(np.float32(queryData[i]),k,votes_required=v)
         except Exception as e:
           Log.Info(e)
           q.put(-1)
@@ -102,8 +102,9 @@ class ANN(object):
   '''
   def RunMetrics(self, options):
     Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
-
-    results = self.AnnMrpt(options)
+    results = None
+    if len(self.dataset)>=2:
+      results = self.AnnMrpt(options)
     if results < 0:
       return results
 
