@@ -1,3 +1,9 @@
+'''
+  @file ann.py
+
+  Class to benchmark the Annoy Approximate Nearest Neighbors method.
+'''
+
 import os
 import sys
 import inspect
@@ -47,9 +53,10 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      train , label = SplitTrainData(self.dataset)
+      train, label = SplitTrainData(self.dataset)
+
       k = re.search("-k (\d+)", options)
-      n = re.search("-n (\d+)", options) #no of trees
+      n = re.search("-n (\d+)", options) # Number of trees.
       if not k:
           Log.Fatal("Required option: Number of furthest neighbors to find.")
           q.put(-1)
@@ -102,8 +109,8 @@ class ANN(object):
     results = None
     if len(self.dataset)>=2:
       results = self.AnnAnnoy(options)
-    
+
     if results < 0:
       return results
 
-    return {'Runtime' : results}         
+    return {'Runtime' : results}
