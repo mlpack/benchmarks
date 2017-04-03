@@ -30,7 +30,9 @@ modules = [
 'benchmark_range_search',
 'benchmark_sparse_coding',
 'benchmark_svr',
-'benchmark_random_forest'
+'benchmark_decision_tree',
+'benchmark_random_forest',
+#'metrics_unit_test'
 ]
 
 def load_tests(loader, tests, pattern):
