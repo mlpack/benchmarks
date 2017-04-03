@@ -11,7 +11,7 @@ if cmd_subfolder not in sys.path:
 
 from log import *
 from timer import *
-
+from misc import *
 import numpy as np
 import mrpt
 
@@ -46,8 +46,8 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      query_labels = np.genfromtxt(self.dataset[2],delimiter=',')
       train,labels = SplitTrainData(self.dataset)
+      # Get all the parameters.
       k = re.search("-k (\d+)", options)
       n = re.search("-n (\d+)", options) #no of trees
       d = re.search("-d (\d+)", options) #depth
@@ -73,8 +73,6 @@ class ANN(object):
       v = 4 if not v else int(v.group(1))
 
       with totalTimer:
-        # Get all the parameters.
-      
         try:
           # Perform Approximate Nearest-Neighbors
           acc = 0
@@ -95,7 +93,7 @@ class ANN(object):
     return timeout(RunAnnMrpt, self.timeout)
 
   '''
-  Perform All K-Nearest-Neighbors. If the method has been successfully completed
+  Perform Approximate K-Nearest-Neighbors. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
