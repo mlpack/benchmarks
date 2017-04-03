@@ -110,9 +110,9 @@ class RANDOMFOREST(object):
       c = re.search("-c (\s+)", options)
       d = re.search("-d (\s+)", options)
       s = re.search("-s (\d+)", options)
-      mss = re.search("-mss (\d+)", options)
-      msl = re.search("-msl (\d+)", options)
-      nj = re.search("-nj (\d+)", options)
+      mss = re.search("--min_samples_split (\d+)", options)
+      msl = re.search("--min_samples_leaf (\d+)", options)
+      nj = re.search("--n_jobs (\d+)", options)
 
       self.n_estimators = 50 if not e else int(e.group(1))
       self.criterion = 'gini' if not c else str(c.group(1))
