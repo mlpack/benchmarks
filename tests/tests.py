@@ -30,6 +30,7 @@ modules = [
 'benchmark_range_search',
 'benchmark_sparse_coding',
 'benchmark_svr',
+'benchmark_ann',
 'benchmark_random_forest'
 ]
 
