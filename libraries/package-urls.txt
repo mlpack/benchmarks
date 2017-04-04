@@ -1,6 +1,6 @@
-ann https://www.cs.umd.edu/~mount/ANN/Files/1.12/ann_1.1.2.tar.gz
+ann https://www.cs.umd.edu/~mount/ANN/Files/1.1.2/ann_1.1.2.tar.gz
 flann https://github.com/mariusmuja/flann/archive/1.9.1.tar.gz
-hlearn https://github.com/mikeizbicki/HLearn/archive/2.0.0.0.tar.gz
+HLearn https://github.com/mikeizbicki/HLearn/archive/2.0.0.0.tar.gz
 subhask https://github.com/mikeizbicki/subhask/archive/subhask-0.1.tar.gz
 mlpack http://www.mlpack.org/files/mlpack-2.2.0.tar.gz
 mlpy http://freefr.dl.sourceforge.net/project/mlpy/mlpy%203.5.0/mlpy-3.5.0.tar.gz
