@@ -48,7 +48,7 @@ class ANN_ANNOY_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("-k 10 -n 10")
     self.assertTrue(result["Runtime"] > 0)
-    
+
 class ANN_MRPT_TEST(unittest.TestCase):
 
   '''

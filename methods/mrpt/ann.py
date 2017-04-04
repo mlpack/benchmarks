@@ -1,3 +1,9 @@
+'''
+  @file ann.py
+
+  Class to benchmark the MRPT Approximate Nearest Neighbors method.
+'''
+
 import os
 import sys
 import inspect
@@ -13,6 +19,7 @@ from log import *
 from timer import *
 from misc import *
 import numpy as np
+
 import mrpt
 
 '''
@@ -31,8 +38,9 @@ class ANN(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+
   '''
-  Use the Annoy libary to implement Approximate Nearest-Neighbors.
+  Use the MRPT libary to implement Approximate Nearest-Neighbors.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
@@ -47,11 +55,13 @@ class ANN(object):
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
       train, label = SplitTrainData(self.dataset)
+
       # Get all the parameters.
       k = re.search("-k (\d+)", options)
-      n = re.search("-n (\d+)", options) #no of trees
-      d = re.search("-d (\d+)", options) #depth
-      v = re.search("-v (\d+)", options) #votes_required
+      n = re.search("-n (\d+)", options) # Number of trees.
+      d = re.search("-d (\d+)", options) # The tree depth.
+      v = re.search("-v (\d+)", options) # Number of votes_required.
+
       if not k:
         Log.Fatal("Required option: Number of furthest neighbors to find.")
         q.put(-1)
@@ -69,18 +79,20 @@ class ANN(object):
           return -1
       else:
           n=int(n.group(1))
+
       d = 5 if not d else int(d.group(1))
       v = 4 if not v else int(v.group(1))
 
       with totalTimer:
         try:
-          # Perform Approximate Nearest-Neighbors
+          # Perform Approximate Nearest-Neighbors.
           acc = 0
-          index = mrpt.MRPTIndex(np.float32(train),depth=d,n_trees=n)
+          index = mrpt.MRPTIndex(np.float32(train), depth=d, n_trees=n)
           index.build()
           approximate_neighbors = np.zeros((len(queryData), k))
           for i in range(len(queryData)):
-              approximate_neighbors[i]=index.ann(np.float32(queryData[i]),k,votes_required=v)
+              approximate_neighbors[i] = index.ann(np.float32(queryData[i]), k,
+                  votes_required=v)
         except Exception as e:
           Log.Info(e)
           q.put(-1)
@@ -93,8 +105,8 @@ class ANN(object):
     return timeout(RunAnnMrpt, self.timeout)
 
   '''
-  Perform Approximate K-Nearest-Neighbors. If the method has been successfully completed
-  return the elapsed time in seconds.
+  Perform Approximate K-Nearest-Neighbors. If the method has been successfully
+  completed return the elapsed time in seconds.
 
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
@@ -103,8 +115,9 @@ class ANN(object):
   def RunMetrics(self, options):
     Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
     results = None
-    if len(self.dataset)>=2:
+    if len(self.dataset) >= 2:
       results = self.AnnMrpt(options)
+
     if results < 0:
       return results
 
