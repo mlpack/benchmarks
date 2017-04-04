@@ -48,7 +48,35 @@ class ANN_ANNOY_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("-k 10 -n 10")
     self.assertTrue(result["Runtime"] > 0)
+    
+class ANN_MRPT_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv',
+        'datasets/iris_labels.csv']
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/mrpt/ann.py")
+    obj = getattr(module, "ANN")
+    self.instance = obj(self.dataset, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 10 -n 10")
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()
-

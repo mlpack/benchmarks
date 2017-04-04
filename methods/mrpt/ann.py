@@ -1,9 +1,3 @@
-'''
-  @file ann.py
-
-  Class to benchmark the Annoy Approximate Nearest Neighbors method.
-'''
-
 import os
 import sys
 import inspect
@@ -18,9 +12,8 @@ if cmd_subfolder not in sys.path:
 from log import *
 from timer import *
 from misc import *
-
 import numpy as np
-from annoy import AnnoyIndex
+import mrpt
 
 '''
 This class implements the Approximate K-Nearest-Neighbors benchmark.
@@ -45,8 +38,8 @@ class ANN(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def AnnAnnoy(self, options):
-    def RunAnnAnnoy(q):
+  def AnnMrpt(self, options):
+    def RunAnnMrpt(q):
       totalTimer = Timer()
 
       # Load input dataset.
@@ -54,50 +47,53 @@ class ANN(object):
       referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
       train, label = SplitTrainData(self.dataset)
-
+      # Get all the parameters.
       k = re.search("-k (\d+)", options)
-      n = re.search("-n (\d+)", options) # Number of trees.
+      n = re.search("-n (\d+)", options) #no of trees
+      d = re.search("-d (\d+)", options) #depth
+      v = re.search("-v (\d+)", options) #votes_required
       if not k:
-          Log.Fatal("Required option: Number of furthest neighbors to find.")
+        Log.Fatal("Required option: Number of furthest neighbors to find.")
+        q.put(-1)
+        return -1
+      else:
+        k = int(k.group(1))
+        if (k < 1 or k > referenceData.shape[0]):
+          Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
+            + " and less or equal than " + str(referenceData.shape[0]))
+          q.put(-1)
+          return -1
+      if not n:
+          Log.Fatal("Required option: Number of trees to build")
           q.put(-1)
           return -1
       else:
-          k = int(k.group(1))
-          if (k < 1 or k > referenceData.shape[0]):
-            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
-              + " and less or equal than " + str(referenceData.shape[0]))
-            q.put(-1)
-            return -1
-      if not n:
-            Log.Fatal("Required option: Number of trees to build")
-            q.put(-1)
-            return -1
-      else:
-            n=int(n.group(1))
+          n=int(n.group(1))
+      d = 5 if not d else int(d.group(1))
+      v = 4 if not v else int(v.group(1))
 
       with totalTimer:
-        # Get all the parameters.
         try:
           # Perform Approximate Nearest-Neighbors
           acc = 0
-          t = AnnoyIndex(train.shape[1])
-          for i in range(len(train)):
-              t.add_item(i,train[i])
-          t.build(n)
+          index = mrpt.MRPTIndex(np.float32(train),depth=d,n_trees=n)
+          index.build()
+          approximate_neighbors = np.zeros((len(queryData), k))
           for i in range(len(queryData)):
-              v = t.get_nns_by_vector(queryData[i],k)
+              approximate_neighbors[i]=index.ann(np.float32(queryData[i]),k,votes_required=v)
         except Exception as e:
           Log.Info(e)
-          q.put(e)
+          q.put(-1)
           return -1
+
       time = totalTimer.ElapsedTime()
       q.put(time)
       return time
 
-    return timeout(RunAnnAnnoy, self.timeout)
+    return timeout(RunAnnMrpt, self.timeout)
 
   '''
-  Perform All K-Nearest-Neighbors. If the method has been successfully completed
+  Perform Approximate K-Nearest-Neighbors. If the method has been successfully completed
   return the elapsed time in seconds.
 
   @param options - Extra options for the method.
@@ -108,8 +104,7 @@ class ANN(object):
     Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
     results = None
     if len(self.dataset)>=2:
-      results = self.AnnAnnoy(options)
-
+      results = self.AnnMrpt(options)
     if results < 0:
       return results
 
