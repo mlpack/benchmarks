@@ -39,7 +39,7 @@ class LARS(object):
     self.dataset = dataset
     self.timeout = timeout
     self.max_iter1 = 500
-    self.eps1=2.2204460492503131e-16
+    self.eps1=np.finfo(float).eps
     self.alpha = 1.0
   '''
   Use the scikit libary to implement Least Angle Regression.
@@ -61,7 +61,7 @@ class LARS(object):
       max_iter1 = re.search("--max_iter (\d+)", options)
       max_iter1 = 500 if not max_iter1 else int(max_iter1.group(1))
       eps1 = re.search("--eps (\d+)", options)
-      eps1 = 2.2204460492503131e-16 if not eps1 else float(eps1.group(1))
+      eps1 = np.finfo(float).eps if not eps1 else float(eps1.group(1))
       try:
         with totalTimer:
           # Perform LARS.
