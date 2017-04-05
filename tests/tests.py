@@ -24,6 +24,7 @@ modules = [
 'benchmark_local_coordinate_coding',
 'benchmark_logistic_regression',
 'benchmark_lasso',
+'benchmark_decision_tree',
 'benchmark_lsh',
 'benchmark_nbc',
 'benchmark_nca',
