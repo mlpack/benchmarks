@@ -73,7 +73,8 @@ class DTC(object):
                                  max_depth=self.max_depth,
                                  random_state=self.seed,
                                  splitter = self.splitter,
-                                 min_samples_split = self.min_samples_split,                                 min_weight_fraction_leaf=self.min_weight_fraction_leaf,
+                                 min_samples_split = self.min_samples_split,                                 
+                                 min_weight_fraction_leaf=self.min_weight_fraction_leaf,
                                  max_features = self.max_features,
                                  max_leaf_nodes = self.max_leaf_nodes,
                                  min_impurity_split = self.min_impurity_split,
@@ -105,6 +106,7 @@ class DTC(object):
       msl = re.search("--min_samples_leaf (\d+)", options)
       mf = re.search("--max_features (\d+)", options)
       mln = re.search("--max_leaf_nodes (\d+)", options)
+      
       self.criterion = 'gini' if not c else str(c.group(1))
       self.max_depth = None if not d else int(d.group(1))
       self.splitter = 'best' if not s else str(s.group(1))
