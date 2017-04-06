@@ -63,7 +63,9 @@ class LARS(object):
       try:
         with totalTimer:
           # Perform LARS.
-          model = LassoLars(alpha=lambda1,max_iter=max_iter1, eps = eps1)
+          model = LassoLars(alpha=lambda1,
+                            max_iter=max_iter1,
+                            eps = eps1)
           model.fit(inputData, responsesData)
           out = model.coef_
       except Exception as e:
