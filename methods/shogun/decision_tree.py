@@ -101,38 +101,11 @@ class DTC(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
-    Log.Info("Perform DTC.", self.verbose)
-
-    if len(self.dataset) >= 2:
-      return self.DTCShogun(options)
-    else:
-      Log.Fatal("This method requires two datasets.")
-
+  
   def RunMetrics(self, options):
-    if len(self.dataset) >= 3:
-
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        trainData = RealFeatures(trainData.T)
-        labels = MulticlassLabels(labels)
-        self.model = self.BuildModel(trainData, labels, options)
-
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-
-      predictedlabels = self.model.apply_multiclass(RealFeatures(testData.T)).get_labels()
-
-      # Datastructure to store the results.
-      metrics = {}
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      return metrics
+    Log.Info("Perform DTC.", self.verbose)
+    if len(self.dataset) >= 2:
+        results =self.DTCShogun(options)
+        return results
     else:
-      Log.Fatal("This method requires three datasets.")
+      Log.Fatal("This method requires at least two datasets.")
