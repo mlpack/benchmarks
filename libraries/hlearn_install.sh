@@ -47,6 +47,6 @@ cd hlearn/
 cabal sandbox init
 cabal sandbox add-source ../subhask
 cabal update
-cabal install --only-dependencies
+cabal install --only-dependencies --force-reinstalls
 cabal build
 cabal install

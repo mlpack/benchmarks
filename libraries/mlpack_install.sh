@@ -28,5 +28,5 @@ tar -xzpf mlpack*.tar.gz --strip-components=1 -C mlpack/
 cd mlpack/
 mkdir build/
 cd build/
-cmake -DCMAKE_INSTALL_PREFIX=../../ ../
+cmake -DCMAKE_INSTALL_PREFIX=../../ -DBUILD_TESTS=OFF ../
 make install
