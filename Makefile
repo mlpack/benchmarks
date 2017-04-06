@@ -111,6 +111,7 @@ test: .check .test
 run: .check .run
 memory: .check .check_memory .memory
 scripts: .scripts
+setup: .check .setup
 checks: .check .checks
 
 .help:
@@ -144,6 +145,7 @@ checks: .check .checks
 	@echo "  run [parameters]       Perform the benchmark with the given config."
 	@echo "  memory [parameters]    Get memory profiling information with the given config."
 	@echo "  scripts                Compile the java files for the weka methods."
+	@echo "  setup                  Download packages and install into libraries/."
 	@echo "  help                   Show this info."
 	@echo ""
 	@echo "For further information consult the documentation found at \
@@ -203,5 +205,9 @@ endif
 	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(MLPACK_PATH)/include -I$(ANN_PATH)/include -L$(MLPACK_PATH)/lib -L$(ANN_PATH)/lib -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
 	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(MLPACK_PATH)/include -I$(FLANN_PATH)/include -L$(MLPACK_PATH)/lib -L$(FLANN_PATH)/lib -lmlpack -lboost_program_options
+
+.setup:
+	cd libraries/ && ./download_packages.sh && ./install_all.sh
+
 .checks:
 	$(PYTHON_BIN) tests/tests.py
