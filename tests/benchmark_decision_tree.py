@@ -30,7 +30,7 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
     self.timeout = 9000
 
     module = Loader.ImportModuleFromPath("methods/shogun/decision_tree.py")
-    obj = getattr(module, "DecisionTree")
+    obj = getattr(module, "DTC")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
