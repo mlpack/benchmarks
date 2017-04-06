@@ -25,7 +25,7 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv','datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -37,8 +37,6 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   Test the constructor.
   '''
   def test_Constructor(self):
-    # The mlpack script should set the description value.
-    self.assertTrue(self.instance.description != "")
     self.assertEqual(self.instance.verbose, self.verbose)
     self.assertEqual(self.instance.timeout, self.timeout)
     self.assertEqual(self.instance.dataset, self.dataset)
@@ -49,19 +47,6 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("")
     self.assertTrue(result["Runtime"] > 0)
-
-  '''
-  Test the destructor.
-  '''
-  def test_Destructor(self):
-    del self.instance
-
-    clean = True
-    filelist = ["gmon.out", "parameters.csv"]
-    for f in filelist:
-      if os.path.isfile(f):
-        clean = False
-
-    self.assertTrue(clean)
+    
 if __name__ == '__main__':
   unittest.main()
