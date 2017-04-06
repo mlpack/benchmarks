@@ -1,6 +1,12 @@
 #!/bin/bash
 #
-# Install all of the packages.
+# Install all of the packages, after removing whatever old packages were installed.
+rm -rf bin/ lib/ share/ include/
+mkdir bin/
+mkdir lib/
+mkdir share/
+mkdir include/
+
 ./ann_install.sh
 if [ "$?" -ne "0" ]; then
   echo "Error installing ANN!";
