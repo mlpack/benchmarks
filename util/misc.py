@@ -111,7 +111,7 @@ def FindRightRow(dataMatrix, datasetName, datasetCount):
 
 '''
 Collect informations for the given dataset.
-
+F
 @param path - Path to the dataset.
 @return Tuple that contains the informations about the given dataset
 (name, size, attributes, instances, type).
@@ -121,19 +121,22 @@ def DatasetInfo(path):
     path = path[0]
 
   instances = 0
-  with open(path, "r") as fid:
-    for line in fid:
-      instances += 1
-
   attributes = 0
-  with open(path, "r") as fid:
-    for line in fid:
-      attributes = line.count(",") + 1
-      break
-
-  name = NormalizeDatasetName(path)
-  size = os.path.getsize(path) / (1 << 20)
+  size = 0
   datasetType = "real"
+  name = NormalizeDatasetName(path)
+
+  if "." in path:
+    with open(path, "r") as fid:
+      for line in fid:
+        instances += 1
+
+    with open(path, "r") as fid:
+      for line in fid:
+        attributes = line.count(",") + 1
+        break
+
+    size = os.path.getsize(path) / (1 << 20)
 
   return (name, size, attributes, instances, datasetType)
 

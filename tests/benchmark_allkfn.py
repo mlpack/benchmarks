@@ -46,19 +46,14 @@ class ALLKFN_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 3")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("-k 3", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 3")
+    self.assertTrue(result["ComputingNeighbors"] > 0)
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["TreeBuilding"] > 0)
+    self.assertTrue(result["BaseCases"] > 0)
 
   '''
   Test the destructor.

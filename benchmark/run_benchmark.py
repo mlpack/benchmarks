@@ -76,16 +76,19 @@ def GetDataset(dataset, format):
     datasetList = ""
     modifiedList = ""
 
-    mdataset = CheckFileExtension(dataset, format)
+    if "." in dataset:
+      mdataset = CheckFileExtension(dataset, format)
 
-    # Check if the dataset is available.
-    if os.path.isfile(mdataset):
-      datasetList = mdataset
+      # Check if the dataset is available.
+      if os.path.isfile(mdataset):
+        datasetList = mdataset
+      else:
+        # Convert the dataset in the given format.
+        convert = Convert(dataset, format[0])
+        datasetList = convert.modifiedDataset
+        modifiedList = convert.modifiedDataset
     else:
-      # Convert the dataset in the given format.
-      convert = Convert(dataset, format[0])
-      datasetList = convert.modifiedDataset
-      modifiedList = convert.modifiedDataset
+      datasetList = dataset
 
   return (datasetList, modifiedList)
 
@@ -139,6 +142,11 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
   config = Parser(configfile, verbose=False)
   streamData = config.StreamMerge()
   ircData = None
+
+  # Summary parameter.
+  summaryBenchmarks = 0
+  summaryDifference = 0
+  differenceThreshold = 10
 
   # Read the general block and set the attributes.
   if "general" in streamData:
@@ -377,9 +385,17 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                   # Update the Runtime matrix view.
                   if 'Runtime' in finalMetrics:
-                    if isFloat(finalMetrics['Runtime']):
+                    if ">" in str(finalMetrics['Runtime']):
+                      # Runtime timeout.
+                      dataMatrix[row][col] = -1
+                    elif "failure" == str(finalMetrics['Runtime']):
+                      # Runtime failure.
+                      dataMatrix[row][col] = -2
+                    elif isFloat(finalMetrics['Runtime']):
+                      # Truncate to specified precision.
                       dataMatrix[row][col] = "{0:.6f}".format(finalMetrics['Runtime'])
                     else:
+                      # Integer, no need to specify the precision.
                       dataMatrix[row][col] = finalMetrics['Runtime']
 
                   if log:
@@ -436,10 +452,46 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
           resultsMessage += " | "
           for result in zip(dataMatrixPrevious, dataMatrix):
             if result[0][1] != '-' and result[1][1] != '-':
-              resultsMessage += result[0][0] + " " + result[0][1]
-              resultsMessage += " <=> " + result[1][1] + " | "
 
-          if "<=>" in resultsMessage:
+              # Increase the number of benchmark results for the summary.
+              summaryBenchmarks += 1
+
+              # Truncate to specified precision.
+              if isFloat(result[0][1]):
+                timeOld = "{0:.2f}".format(float(result[0][1]))
+              else:
+                timeOld = result[0][1]
+
+              if isFloat(result[1][1]):
+                timeCurrent = "{0:.2f}".format(float(result[1][1]))
+              else:
+                timeCurrent = result[1][1]
+
+              if isFloat(result[0][1]) and isFloat(result[1][1]):
+                new = float(result[1][1])
+                old = float(result[0][1])
+
+                timeDiffValue = new - old
+                timeDiff = "{0:.2f}".format(timeDiffValue)
+
+                if (new - old) > 0:
+                  offset = (differenceThreshold * old) / 100
+                  if timeDiffValue > 0 and timeDiffValue > offset:
+                    summaryDifference += 1
+
+              else:
+                timeDiff = "-"
+
+              # Add dataset name.
+              resultsMessage += result[0][0] + " "
+              # Add old runtime.
+              resultsMessage += timeOld + " (old) => "
+              # Add current runtime.
+              resultsMessage += timeCurrent + " (new) => "
+              # Add runtime difference.
+              resultsMessage += timeDiff + " (diff) | "
+
+          if "=>" in resultsMessage:
             if irc_available and ircData:
               watchMessages.append(resultsMessage)
             else:
@@ -448,6 +500,11 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
           Log.Notice("\n\n")
 
   if irc_available and ircData and len(watchMessages) > 0:
+    # Add summary message ("Benchmarks x of y passed").
+    summaryMessage = "Benchmarks " + str(summaryBenchmarks - summaryDifference)
+    summaryMessage += " of " + str(summaryBenchmarks) + " passed."
+    watchMessages.append(summaryMessage)
+
     ircBOT.send_messages(watchMessages)
 
 

@@ -123,7 +123,7 @@ mpc.paramSelect = function()
 
   // Given a method name and parameters, query the SQLite database for all of
   // the runs.
-  var sqlstr = "SELECT DISTINCT * FROM (SELECT DISTINCT metrics.metric as metric, libraries.id as lid, libraries.name as lib, datasets.name as dataset, datasets.id as did " +
+  var sqlstr = "SELECT DISTINCT * FROM (SELECT DISTINCT metrics.metric as metric, libraries.id as lid, libraries.name as lib, datasets.name as dataset, datasets.id as did, metrics.build_id as bid " +
       "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id = datasets.id AND metrics.method_id = methods.id " +
       "AND methods.name = '" + mpc.method_name + "' AND methods.parameters = '" + mpc.param_name + "' AND libraries.id = metrics.libary_id " +
       "ORDER BY bid DESC ) tmp GROUP BY did, lid;";
@@ -131,7 +131,7 @@ mpc.paramSelect = function()
   var values = dbType === "sqlite" ? mpc.results[0].values : mpc.results;
 
   // Obtain unique list of datasets.
-  mpc.datasets = values.map(function(d) { return dbType === "sqlite" ? d[3] : d.name; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  mpc.datasets = values.map(function(d) { return dbType === "sqlite" ? d[3] : d.dataset; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
   mpc.libraries = values.map(function(d) { return dbType === "sqlite" ? d[2] : d.lib; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
@@ -170,9 +170,6 @@ mpc.datasetSelect = function()
   // Okay, now get the results of the query for that method, parameters, and dataset.
   var sqlstr = "SELECT metrics.metric, metrics.build_id, builds.build, libraries.name from metrics, methods, libraries, builds, datasets WHERE methods.id = metrics.method_id AND methods.name = '" + mpc.method_name + "' AND methods.parameters = '" + mpc.param_name + "' AND metrics.libary_id = libraries.id AND builds.id = metrics.build_id AND datasets.id = metrics.dataset_id AND datasets.name = '" + mpc.dataset_name + "' GROUP BY metrics.build_id;";
   mpc.results = dbExec(sqlstr);
-
-  console.log("sqlstr")
-  console.log(sqlstr)
 
   // Obtain unique list of metric names.
   mpc.metric_names = []

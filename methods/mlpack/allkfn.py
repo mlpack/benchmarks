@@ -20,7 +20,12 @@ from log import *
 from profiler import *
 
 import shlex
-import subprocess
+
+try:
+  import subprocess32 as subprocess
+except ImportError:
+  import subprocess
+
 import re
 import collections
 
@@ -55,7 +60,7 @@ class ALLKFN(object):
       return -1
 
     # Use regular expression pattern to get the description.
-    pattern = re.compile(br"""(.*?)Required.*?options:""",
+    pattern = re.compile(br"""(.*?)Optional.*?options:""",
         re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(s)
