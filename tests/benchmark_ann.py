@@ -55,8 +55,7 @@ class ANN_MRPT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv',
-        'datasets/iris_labels.csv']
+    self.dataset = ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -75,7 +74,7 @@ class ANN_MRPT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 10 -n 10")
+    result = self.instance.RunMetrics("-k 5 -n 5")
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
