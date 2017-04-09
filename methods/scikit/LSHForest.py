@@ -1,7 +1,7 @@
 '''
   @file LSHForest.py
 
-  Approximate Nearest Neighbors with scikit.
+  Approximate Nearest Neighbors using LSHForest with scikit.
 '''
 
 import os
@@ -26,7 +26,6 @@ from timer import *
 from definitions import *
 from misc import *
 
-import numpy as np
 from sklearn.neighbors import LSHForest
 
 '''
@@ -46,8 +45,8 @@ class ANN(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n_estimators = 10
-    self.n_neighbors = 5
+    self.n = 10
+    self.k = 5
 
   '''
   Build the model for the Approximate Nearest Neighbors.
@@ -58,8 +57,8 @@ class ANN(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    lshf = LSHForest(n_estimators = self.n_estimators,
-                     n_neighbors = self.n_neighbors)
+    lshf = LSHForest(n_estimators = self.n,
+                     n_neighbors = self.k)
     lshf.fit(data)
     return lshf
 
@@ -77,16 +76,16 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
-      n_estimators = re.search("-n (\d+)", options)
-      n_neighbors = re.search("-k (\d+)", options)
-      self.n_estimators = 10 if not n_estimators else int(n_estimators.group(1))
-      self.n_neighbors = 5 if not n_neighbors else int(n_neighbors.group(1))
+      n = re.search("-n (\d+)", options) #Number of Estimators.
+      k = re.search("-k (\d+)", options) #Number of Neighbors.
+      self.n = 10 if not n else int(n.group(1)) 
+      self.k = 5 if not k else int(k.group(1)) 
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
           # Run Approximate on the test dataset.
           distances,indices = self.model.kneighbors(testData,
-                                                    n_neighbors = self.n_neighbors)
+                                                    n_neighbors = self.k)
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
