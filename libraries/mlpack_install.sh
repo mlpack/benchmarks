@@ -30,3 +30,10 @@ mkdir build/
 cd build/
 cmake -DCMAKE_INSTALL_PREFIX=../../ -DBUILD_TESTS=OFF ../
 make install
+
+# Also install debug version.
+cd ..
+mkdir build-debug/
+cd build-debug/
+cmake -DDEBUG=ON -DCMAKE_INSTALL_PREFIX=../../debug/ -DBUILD_TEST=OFF ../
+make install
