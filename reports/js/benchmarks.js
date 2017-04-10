@@ -1,3 +1,6 @@
+var dbType = "sqlite"
+// dbType = "mysql"
+
 // Load benchmark.db.  Later, we will do something cool with it, once I figure
 // out how.  If this is file:///, suggest that the user start a server since
 // XMLHttpRequests may not work.
@@ -8,19 +11,48 @@ if(window.location.protocol == "file:")
 }
 else
 {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'benchmark.db', true);
-  xhr.responseType = 'arraybuffer';
-  var db = new SQL.Database();
+  if (dbType === "sqlite")
+  {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'benchmark.db', true);
+    xhr.responseType = 'arraybuffer';
+    var db = new SQL.Database();
 
-  xhr.onload = function(e) {
-    var uInt8Array = new Uint8Array(this.response);
-    db = new SQL.Database(uInt8Array);
+    xhr.onload = function(e) {
+      var uInt8Array = new Uint8Array(this.response);
+      db = new SQL.Database(uInt8Array);
 
-    createColorMapping();
-  };
+      createColorMapping();
+    };
 
-  xhr.send(); // Load the dataset.
+    xhr.send(); // Load the dataset.
+  }
+}
+
+function dbExec(query)
+{
+  if (dbType === "mysql")
+  {
+    var result = $.ajax({
+        type: "POST",
+        url:'http://127.0.0.1/reports/php/mysql_wrapper.php',
+        dataType: 'json',
+        data: {request: query},
+        async: false,
+        complete: function (response)
+        {
+        },
+        error: function ()
+        {
+          console.log("error")
+        },
+    });
+    return jQuery.parseJSON(result.responseText);
+  }
+  else
+  {
+    return db.exec(query);
+  }
 }
 
 // "Global" variables.

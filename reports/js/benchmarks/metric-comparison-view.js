@@ -30,16 +30,17 @@ mc.onTypeSelect = function()
 
 // List the datasets.
 mc.listDatasets = function()
-{ 
-  var sqlstr = "SELECT DISTINCT datasets.name FROM datasets, metrics WHERE datasets.id=metrics.dataset_id ORDER BY datasets.name;";
-  var results = db.exec(sqlstr);
+{
+  var sqlstr = "SELECT DISTINCT datasets.name as dataset FROM datasets, metrics WHERE datasets.id = metrics.dataset_id ORDER BY datasets.name;";
+  var results = dbExec(sqlstr);
+  results = dbType === "sqlite" ? results[0].values : results;
 
   var dataset_select_box = document.getElementById("main_dataset_select");
   clearSelectBox(dataset_select_box);
-  for (i = 0; i < results[0].values.length; i++)
+  for (i = 0; i < results.length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = results[0].values[i][0];
+    new_option.text = dbType === "sqlite" ? results[i][0] : results[i].dataset;
     dataset_select_box.add(new_option);
   }
   dataset_select_box.selectedIndex = -1;
@@ -47,15 +48,17 @@ mc.listDatasets = function()
 
 mc.listMethods = function()
 {
-  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, metrics WHERE methods.id=metrics.method_id AND metrics.metric<>'{}' ORDER BY name;");
+  var methods = dbExec("SELECT DISTINCT methods.name as method FROM methods, metrics WHERE methods.id = metrics.method_id AND metrics.metric<>'{}' ORDER BY name;");
+  methods = dbType === "sqlite" ? methods[0].values : methods;
 
   var method_select_box = document.getElementById("method_select");
   clearSelectBox(method_select_box);
+
   // Put new things in the list box.
-  for(i = 0; i < methods[0].values.length; i++)
+  for(i = 0; i < methods.length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = methods[0].values[i];
+    new_option.text = dbType === "sqlite" ? methods[i] : methods.method;
     method_select_box.add(new_option);
   }
   method_select_box.selectedIndex = -1;
@@ -71,25 +74,28 @@ mc.methodSelect = function()
   var method_select_box = document.getElementById("method_select");
   mc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT DISTINCT methods.parameters, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) FROM methods, metrics WHERE methods.name == '" + mc.method_name + "' AND methods.id == metrics.method_id GROUP BY methods.parameters;";
-
-  var params = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT methods.parameters as parameter, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) as count FROM methods, metrics WHERE methods.name = '" + mc.method_name + "' AND methods.id = metrics.method_id GROUP BY methods.parameters;";
+  var params = dbExec(sqlstr);
+  params = dbType === "sqlite" ? params[0].values : params;
 
   // Loop through results and fill the second list box.
   var param_select_box = document.getElementById("param_select");
   clearSelectBox(param_select_box);
 
   // Put in the new options.
-  for (i = 0; i < params[0].values.length; i++)
+  for (i = 0; i < params.length; i++)
   {
     var new_option = document.createElement("option");
-    if (params[0].values[i][0])
+
+    var parameterValue = dbType === "sqlite" ? params[i][0] : params[i].parameter;
+    var countValue = dbType === "sqlite" ? params[i][2] : params[i].count;
+    if (parameterValue)
     {
-      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][2] + " libraries)";
+      new_option.text = parameterValue + " (" + countValue + " libraries)";
     }
     else
     {
-      new_option.text = "[no parameters] (" + params[0].values[i][2] + " libraries)";
+      new_option.text = "[no parameters] (" + countValue + " libraries)";
     }
     param_select_box.add(new_option);
   }
@@ -112,16 +118,17 @@ mc.paramSelect = function()
 
   // Given a method name and parameters, query the SQLite database for all of
   // the runs.
-  var sqlstr = "SELECT DISTINCT metrics.metric, libraries.id, libraries.name, datasets.name, datasets.id " +
-    "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id " +
-    "AND methods.name == '" + mc.method_name + "' AND methods.parameters == '" + mc.param_name + "' AND libraries.id == metrics.libary_id " +
+  var sqlstr = "SELECT DISTINCT metrics.metric as metric, libraries.id, libraries.name as lib, datasets.name as dataset, datasets.id " +
+    "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id = datasets.id AND metrics.method_id = methods.id " +
+    "AND methods.name = '" + mc.method_name + "' AND methods.parameters = '" + mc.param_name + "' AND libraries.id = metrics.libary_id " +
     "AND metrics.metric<>'{}' GROUP BY datasets.id, libraries.id;";
-  mc.results = db.exec(sqlstr);
+  mc.results = dbExec(sqlstr);
+  mc.results = dbType === "sqlite" ? mc.results[0].values : mc.results;
 
   // Obtain unique list of datasets.
-  mc.datasets = mc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  mc.datasets = mc.results.map(function(d) { return dbType === "sqlite" ? d[3] : d.dataset; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
-  mc.libraries = mc.results[0].values.map(function(d) { return d[2]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  mc.libraries = mc.results.map(function(d) { return dbType === "sqlite" ? d[2] : d.lib; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
   var dataset_select_box = document.getElementById("main_dataset_select");
 
@@ -170,8 +177,9 @@ mc.datasetSelect = function()
   mc.control_list_length = 0;
 
   // Collect the results for lists of methods.
-  var sqlstr = "SELECT DISTINCT methods.name, methods.parameters, libraries.name FROM methods, metrics, datasets, libraries WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id AND datasets.name == '" + mc.dataset_name + "' AND libraries.id == metrics.libary_id ORDER BY methods.name;";
-  mc.methods = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT methods.name as method, methods.parameters as parameter, libraries.name as lib FROM methods, metrics, datasets, libraries WHERE metrics.dataset_id = datasets.id AND metrics.method_id = methods.id AND datasets.name = '" + mc.dataset_name + "' AND libraries.id = metrics.libary_id ORDER BY methods.name;";
+  mc.methods = dbExec(sqlstr);
+  mc.methods = dbType === "sqlite" ? mc.methods[0].values : mc.methods;
 }
 
 // The user has requested to add a new thing.
@@ -207,7 +215,7 @@ mc.clickAddButton = function()
 
   // Add list of methods.
   var newbox = document.getElementById("method_select_" + String(mc.control_list_length - 1));
-  distinct_methods = mc.methods[0].values.map(function(d) { return d[0]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  distinct_methods = mc.methods.map(function(d) { return dbType === "sqlite" ? d[0] : d.method; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   for (i = 0; i < distinct_methods.length; i++)
   {
     var new_option = document.createElement("option");
@@ -223,7 +231,7 @@ mc.methodControlListSelect = function(id)
   var method_name = selectbox.options[selectbox.selectedIndex].text;
 
   // Now we need to add parameters.
-  distinct_parameters = mc.methods[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[0] != method_name) { return p; } else if(p.indexOf(c[1]) < 0) { p.push(c[1]); } return p; }, []);
+  distinct_parameters = mc.methods.map(function(d) { return d; }).reduce(function(p, c) { if((dbType === "sqlite" ? c[0] : c.method) != method_name) { return p; } else if(p.indexOf(dbType === "sqlite" ? c[1] : c.parameter) < 0) { p.push(dbType === "sqlite" ? c[1] : c.parameter); } return p; }, []);
   var parambox = document.getElementById("param_select_" + id);
   clearSelectBox(parambox);
   for (i = 0; i < distinct_parameters.length; i++)
@@ -244,7 +252,7 @@ mc.paramControlListSelect = function(id)
   var param_name = param_select_box.options[param_select_box.selectedIndex].text;
   if (param_name == "[no parameters]") { param_name = ""; }
 
-  distinct_libraries = mc.methods[0].values.map(function(d) { return d; }).reduce(function(p, c) { if(c[0] != method_name || c[1] != param_name) { return p; } else if(p.indexOf(c[2]) < 0) { p.push(c[2]); } return p; }, []);
+  distinct_libraries = mc.methods.map(function(d) { return d; }).reduce(function(p, c) { if((dbType === "sqlite" ? c[0] : c.method) != method_name || (dbType === "sqlite" ? c[1] : c.parameter) != param_name) { return p; } else if(p.indexOf(dbType === "sqlite" ? c[2] : c.lib) < 0) { p.push(dbType === "sqlite" ? c[2] : c.lib); } return p; }, []);
 
   var library_select_box = document.getElementById("library_select_" + id);
   clearSelectBox(library_select_box);
@@ -282,15 +290,13 @@ mc.clickRedrawMethods = function()
     var librarybox = document.getElementById("library_select_" + String(i));
     var library_name = librarybox.options[librarybox.selectedIndex].text;
 
-    // mc.libraries.push(library_name);
-
     mc.active_library_list.push(library_name + method_name + param_name)
 
     // Given a method name and parameters, query the SQLite database for all of
     // the runs.
-    sqlstr = sqlstr + "SELECT DISTINCT metrics.metric, libraries.id, libraries.name, datasets.name, datasets.id, methods.name, methods.parameters " +
-            "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id AND datasets.name == '" + mc.dataset_name + "' AND " +
-            "methods.name == '" + method_name + "' AND methods.parameters == '" + param_name + "' AND libraries.name == '" + library_name + "' AND metrics.metric<>'{}' GROUP BY datasets.id, libraries.id";
+    sqlstr = sqlstr + "SELECT DISTINCT * FROM (SELECT metrics.metric as metric, libraries.id as lid, libraries.name as lib, datasets.name as dataset, datasets.id as did, methods.name as method, methods.parameters as paremter, metrics.build_id as bid " +
+        "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id = datasets.id AND metrics.method_id = methods.id AND datasets.name = '" + mc.dataset_name + "' AND " +
+        "methods.name = '" + method_name + "' AND methods.parameters = '" + param_name + "' AND libraries.name = '" + library_name + "' AND libraries.id = metrics.libary_id AND metrics.metric<>'{}' ORDER BY bid DESC ) tmp GROUP BY did, lid";
 
     if (i < mc.control_list_length - 1)
     {
@@ -299,13 +305,15 @@ mc.clickRedrawMethods = function()
   }
 
   sqlstr = sqlstr + ";";
-  mc.results = db.exec(sqlstr);
+  mc.results = dbExec(sqlstr);
+  mc.results = dbType === "sqlite" ? mc.results[0].values : mc.results;
 
   // Obtain unique list of metric names.
   mc.metric_names = []
-  for(i = 0; i < mc.results[0].values.length; i++)
+  for(i = 0; i < mc.results.length; i++)
   {
-    var json = jQuery.parseJSON(mc.results[0].values[i][0]);
+    var jsonValue = dbType === "sqlite" ? mc.results[i][0] : mc.results[i].metric;
+    var json = jQuery.parseJSON(jsonValue);
     $.each(json, function (k, d) {
       if(mc.metric_names.indexOf(k) < 0) mc.metric_names.push(k);
     })
@@ -342,11 +350,16 @@ mc.clearChart = function()
 // Build the chart and display it on screen.
 mc.buildChart = function()
 {
+  console.log("results")
+  console.log(mc.results)
+
+
   // Set up scales.
   var max_score = 0
-  for(i = 0; i < mc.results[0].values.length; i++)
+  for(i = 0; i < mc.results.length; i++)
   {
-    var json = jQuery.parseJSON(mc.results[0].values[i][0]);
+    var jsonValue = dbType === "sqlite" ? mc.results[i][0] : mc.results[i].metric;
+    var json = jQuery.parseJSON(jsonValue);
     $.each(json, function (k, data) {
       if (data > max_score) max_score = data;
     })
@@ -359,7 +372,7 @@ mc.buildChart = function()
   var library_scale = d3.scale.ordinal()
     .domain(mc.active_library_list)
     .rangeRoundBands([0, group_scale.rangeBand()]);
-  
+
   var score_scale = d3.scale.linear()
     .domain([0, max_score])
     .range([height, 0]);
@@ -413,31 +426,56 @@ mc.buildChart = function()
     .attr("class", "d3-tip")
     .offset([-10, 0])
     .html(function(d) {
+
+
         var score = d[0];
-        if (d[0] != "") { score = d[0].toFixed(3); }
+        if (score != "") { score = d[0].toFixed(3); }
         return "<strong>Score for " + d[3] + " (" + d[5] + "):</strong> <span style='color:yellow'>" + score + "</span>"; });
 
   svg.call(tip);
+
+
+
 
   // Add all of the data points.
   group.selectAll("rect")
     .data(function(d)
         {
         var ret = [];
-        for(i = 0; i < mc.results[0].values.length; i++)
+        for(i = 0; i < mc.results.length; i++)
         {
-          var json = jQuery.parseJSON(mc.results[0].values[i][0]);
+          var jsonValue = dbType === "sqlite" ? mc.results[i][0] : mc.results[i].metric;
+          var json = jQuery.parseJSON(jsonValue);
+
+          console.log("mc.results[i]")
+          console.log(mc.results[i])
+
+
           $.each(json, function (k, data) {
-            if(k == d) { ret.push([data, mc.results[0].values[i][3], k, mc.results[0].values[i][2], mc.results[0].values[i][5], mc.results[0].values[i][6]]); }
+            if(k == d) { ret.push([data,
+              dbType === "sqlite" ? mc.results[i][3] : mc.results[i].dataset,
+              k,
+              dbType === "sqlite" ? mc.results[i][2] : mc.results[i].lib,
+              dbType === "sqlite" ? mc.results[i][5] : mc.results[i].method,
+              dbType === "sqlite" ? mc.results[i][6] : mc.results[i].paremter]); }
           })
         }
+
+        console.log("ret")
+        console.log(ret)
         return ret;
         })
   .enter().append("rect")
     .attr("width", library_scale.rangeBand())
-    .attr("x", function(d) { 
-      return library_scale(d[3] + d[4] + d[5]);
-    })
+    .attr("x", function(d) {
+
+      // var identifier = d[3] + d[] + d[]
+
+      // library_name + method_name + param_name
+      console.log(d)
+      // console.log(d[0] + d[3] + d[4] + d[5])
+      // console.log(library_scale(d[0] + d[3] + d[4] + d[5]))
+      return library_scale(d[3] + d[4] + d[5]); })
     .attr("y", function(d) { return score_scale(d[0], max_score); })
     .attr("height", function(d) { return height - score_scale(d[0]); })
     .style("fill", function(d) { return color(mc.active_library_list.indexOf(d[3] + d[4] + d[5])); })
@@ -451,7 +489,7 @@ mc.buildChart = function()
   var tbody = table.append("tbody");
 
   var table_names = ["metric"];
-  for(i = 0; i < mc.results[0].values.length; i++) table_names.push(i);
+  for(i = 0; i < mc.results.length; i++) table_names.push(i);
 
   mc.active_library_list.unshift("metric");
   var hrow = thead.append("tr").selectAll("th")
@@ -475,13 +513,14 @@ mc.buildChart = function()
             ret.push(['---']);
           }
 
-          for(i = 0; i < mc.results[0].values.length; i++)
+          for(i = 0; i < mc.results.length; i++)
           {
-            var library = mc.results[0].values[i][2] + mc.results[0].values[i][5] + mc.results[0].values[i][6];
-            var json = jQuery.parseJSON(mc.results[0].values[i][0]);
+            var library = dbType === "sqlite" ? (mc.results[i][2] + mc.results[i][5] + mc.results[i][6]) : (mc.results[i].lib + mc.results[i].method + mc.results[i].paremter);
+            var jsonValue = dbType === "sqlite" ? mc.results[i][0] : mc.results[i].metric;
+            var json = jQuery.parseJSON(jsonValue);
             $.each(json, function (k, data) {
               if(k == d) {
-                ret[mc.active_library_list.indexOf(library)] = ([data, mc.results[0].values[i][3], k]);
+                ret[mc.active_library_list.indexOf(library)] = ([data, dbType === "sqlite" ? mc.results[i][3] : mc.results.lib, k]);
               }
             })
           }

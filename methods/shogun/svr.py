@@ -97,7 +97,7 @@ class SVR(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def RunTiming(self, options):
+  def RunMetrics(self, options):
     Log.Info("Perform SVR Regression.", self.verbose)
 
     results = self.SVRShogun(options)

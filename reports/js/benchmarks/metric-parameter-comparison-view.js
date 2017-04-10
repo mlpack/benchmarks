@@ -43,15 +43,18 @@ mpc.onTypeSelect = function()
 
 mpc.listMethods = function()
 {
-  var methods = db.exec("SELECT DISTINCT methods.name FROM methods, metrics WHERE methods.id=metrics.method_id AND metrics.metric<>'{}' ORDER BY name;");
+  var sqlstr = "SELECT DISTINCT methods.name FROM methods, metrics WHERE methods.id=metrics.method_id AND metrics.metric<>'{}' ORDER BY name;";
+  var methods = dbExec(sqlstr);
 
   var method_select_box = document.getElementById("method_select");
   clearSelectBox(method_select_box);
+
   // Put new things in the list box.
-  for(i = 0; i < methods[0].values.length; i++)
+  var length = dbType === "sqlite" ? methods[0].values.length : methods.length
+  for(i = 0; i < length; i++)
   {
     var new_option = document.createElement("option");
-    new_option.text = methods[0].values[i];
+    new_option.text = dbType === "sqlite" ? methods[0].values[i] : methods[i].name;
     method_select_box.add(new_option);
   }
   method_select_box.selectedIndex = -1;
@@ -67,29 +70,36 @@ mpc.methodSelect = function()
   var method_select_box = document.getElementById("method_select");
   mpc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT DISTINCT methods.parameters, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) FROM methods, metrics WHERE methods.name == '" + mpc.method_name + "' AND methods.id == metrics.method_id GROUP BY methods.parameters;";
-
-  var params = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT methods.parameters, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) AS count FROM methods, metrics WHERE methods.name = '" + mpc.method_name + "' AND methods.id = metrics.method_id GROUP BY methods.parameters;";
+  var params = dbExec(sqlstr);
 
   // Loop through results and fill the second list box.
   var param_select_box = document.getElementById("param_select");
   clearSelectBox(param_select_box);
 
+  var new_option = document.createElement("option");
+  new_option.text = "-"
+  param_select_box.add(new_option);
+
   // Put in the new options.
-  for (i = 0; i < params[0].values.length; i++)
+  var length = dbType === "sqlite" ? params[0].values.length : params.length
+  for (i = 0; i < length; i++)
   {
     var new_option = document.createElement("option");
-    if (params[0].values[i][0])
+
+    var parameters = dbType === "sqlite" ? params[0].values[i][0] : params[i].parameters;
+    var libraries = dbType === "sqlite" ? params[0].values[i][2] : params[i].count;
+    if (parameters)
     {
-      new_option.text = params[0].values[i][0] + " (" + params[0].values[i][2] + " libraries)";
+      new_option.text = parameters + " (" + libraries + " libraries)";
     }
     else
     {
-      new_option.text = "[no parameters] (" + params[0].values[i][2] + " libraries)";
+      new_option.text = "[no parameters] (" + libraries + " libraries)";
     }
     param_select_box.add(new_option);
   }
-  param_select_box.selectedIndex = -1;
+  param_select_box.selectedIndex = 0;
 }
 
 // The user has selected parameters.
@@ -106,18 +116,24 @@ mpc.paramSelect = function()
   mpc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
   if (mpc.param_name == "[no parameters]") { mpc.param_name = ""; }
 
+  if (mpc.param_name == "-")
+  {
+    return
+  }
+
   // Given a method name and parameters, query the SQLite database for all of
   // the runs.
-  var sqlstr = "SELECT DISTINCT metrics.metric, libraries.id, libraries.name, datasets.name, datasets.id " +
-    "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id == datasets.id AND metrics.method_id == methods.id " +
-    "AND methods.name == '" + mpc.method_name + "' AND methods.parameters == '" + mpc.param_name + "' AND libraries.id == metrics.libary_id " +
-    "AND metrics.metric<>'{}' GROUP BY datasets.id, libraries.id;";
-  mpc.results = db.exec(sqlstr);
+  var sqlstr = "SELECT DISTINCT * FROM (SELECT DISTINCT metrics.metric as metric, libraries.id as lid, libraries.name as lib, datasets.name as dataset, datasets.id as did, metrics.build_id as bid " +
+      "FROM metrics, datasets, methods, libraries WHERE metrics.dataset_id = datasets.id AND metrics.method_id = methods.id " +
+      "AND methods.name = '" + mpc.method_name + "' AND methods.parameters = '" + mpc.param_name + "' AND libraries.id = metrics.libary_id " +
+      "ORDER BY bid DESC ) tmp GROUP BY did, lid;";
+  mpc.results = dbExec(sqlstr);
+  var values = dbType === "sqlite" ? mpc.results[0].values : mpc.results;
 
   // Obtain unique list of datasets.
-  mpc.datasets = mpc.results[0].values.map(function(d) { return d[3]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  mpc.datasets = values.map(function(d) { return dbType === "sqlite" ? d[3] : d.dataset; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
   // Obtain unique list of libraries.
-  mpc.libraries = mpc.results[0].values.map(function(d) { return d[2]; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  mpc.libraries = values.map(function(d) { return dbType === "sqlite" ? d[2] : d.lib; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
 
   var dataset_select_box = document.getElementById("main_dataset_select");
 
@@ -126,6 +142,11 @@ mpc.paramSelect = function()
   {
     dataset_select_box.options[i] = null;
   }
+
+  var new_option = document.createElement("option");
+  new_option.text = "-";
+  new_option.style.textAlign = "center";
+  dataset_select_box.add(new_option);
 
   for (i = 0; i < mpc.datasets.length; i++)
   {
@@ -141,15 +162,23 @@ mpc.datasetSelect = function()
   var dataset_select_box = document.getElementById("main_dataset_select");
   mpc.dataset_name = dataset_select_box.options[dataset_select_box.selectedIndex].text;
 
+  if (mpc.dataset_name == "-")
+  {
+    return;
+  }
+
   // Okay, now get the results of the query for that method, parameters, and dataset.
-  var sqlstr = "SELECT metrics.metric, metrics.build_id, builds.build, libraries.name from metrics, methods, libraries, builds, datasets WHERE methods.id == metrics.method_id AND methods.name == '" + mpc.method_name + "' AND methods.parameters == '" + mpc.param_name + "' AND metrics.libary_id == libraries.id AND builds.id == metrics.build_id AND datasets.id == metrics.dataset_id AND datasets.name == '" + mpc.dataset_name + "' GROUP BY metrics.build_id;";
-  mpc.results = db.exec(sqlstr);
+  var sqlstr = "SELECT metrics.metric, metrics.build_id, builds.build, libraries.name from metrics, methods, libraries, builds, datasets WHERE methods.id = metrics.method_id AND methods.name = '" + mpc.method_name + "' AND methods.parameters = '" + mpc.param_name + "' AND metrics.libary_id = libraries.id AND builds.id = metrics.build_id AND datasets.id = metrics.dataset_id AND datasets.name = '" + mpc.dataset_name + "' GROUP BY metrics.build_id;";
+  mpc.results = dbExec(sqlstr);
 
   // Obtain unique list of metric names.
   mpc.metric_names = []
-  for(i = 0; i < mpc.results[0].values.length; i++)
+  var length = dbType === "sqlite" ? mpc.results[0].values.length : mpc.results.length;
+  for(i = 0; i < length; i++)
   {
-    var json = jQuery.parseJSON(mpc.results[0].values[i][0]);
+    var value = dbType === "sqlite" ? mpc.results[0].values[i][0] : mpc.results[i].metric
+    var json = jQuery.parseJSON(value);
+
     $.each(json, function (k, d) {
       if(mpc.metric_names.indexOf(k) < 0) mpc.metric_names.push(k);
     })
@@ -198,11 +227,13 @@ mpc.buildChart = function()
   var active_library_list = mpc.libraries.map(function(d) { return d; }).reduce(function(p, c) { if(mpc.active_libraries[c] == true) { p.push(c); } return p; }, []);
   var active_dataset_list = mpc.metric_names.map(function(d) { return d; }).reduce(function(p, c) { if(mpc.active_metrics[c] == true) { p.push(c); } return p; }, []);
 
+  var length = dbType === "sqlite" ? mpc.results[0].values.length : mpc.results.length
   // Set up scales.
   var max_score = 0
-  for(i = 0; i < mpc.results[0].values.length; i++)
+  for(i = 0; i < length; i++)
   {
-    var json = jQuery.parseJSON(mpc.results[0].values[i][0]);
+    var value = dbType === "sqlite" ? mpc.results[0].values[i][0] : mpc.results[i].metric;
+    var json = jQuery.parseJSON(value);
     $.each(json, function (k, data) {
       if (data > max_score) max_score = data;
     })
@@ -274,14 +305,18 @@ mpc.buildChart = function()
     .data(function(d) // For a given dataset d, collect all of the data points for that dataset.
         {
         var ret = [];
-        for(i = 0; i < mpc.results[0].values.length; i++)
+        for(i = 0; i < length; i++)
         {
-          var json = jQuery.parseJSON(mpc.results[0].values[i][0]);
+          var metricValue = dbType === "sqlite" ? mpc.results[0].values[i][0] : mpc.results[i].metric;
+          var libValue = dbType === "sqlite" ? mpc.results[0].values[i][3] : mpc.results[i].name;
+
+          var json = jQuery.parseJSON(metricValue);
           $.each(json, function (k, data) {
-            if((k == d) && mpc.active_libraries[mpc.results[0].values[i][3]] == true) { ret.push([data, mpc.results[0].values[i][3], k]); }
+            if((k == d) && mpc.active_libraries[libValue] == true)
+            { ret.push([data, libValue, k]); }
           })
         }
-       
+
         return ret;
         })
   .enter().append("rect")
@@ -419,13 +454,15 @@ mpc.buildChart = function()
             ret.push(['---']);
           }
 
-          for(i = 0; i < mpc.results[0].values.length; i++)
+          for(i = 0; i < length; i++)
           {
-            var library = mpc.results[0].values[i][3];
-            var json = jQuery.parseJSON(mpc.results[0].values[i][0]);
+            var metricValue = dbType === "sqlite" ? mpc.results[0].values[i][0] : mpc.results[i].metric;
+            var libValue = dbType === "sqlite" ? mpc.results[0].values[i][3] : mpc.results[i].name;
+
+            var json = jQuery.parseJSON(metricValue);
             $.each(json, function (k, data) {
-              if((k == d) && mpc.active_libraries[library] == true) {
-                ret[active_library_list.indexOf(library)] = ([data, mpc.results[0].values[i][3], k]);
+              if((k == d) && mpc.active_libraries[libValue] == true) {
+                ret[active_library_list.indexOf(libValue)] = ([data, libValue, k]);
               }
             })
           }

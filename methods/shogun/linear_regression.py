@@ -47,6 +47,7 @@ class LinearRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
 
   '''
   Use the shogun libary to implement Linear Regression.
@@ -107,8 +108,8 @@ class LinearRegression(object):
 
     metrics = {'Runtime' : results}
 
-    if not self.predictions:
-      self.RunTiming(options)
+    if self.predictions != None:
+      self.RunMetrics(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])

@@ -40,6 +40,14 @@ class Database:
     self.cur = None
     self.driver = driver
 
+    self.host = host
+    self.port = port
+    self.user = user
+    self.database = database
+    self.password = password
+    self.driver = driver
+    self.error = 0
+
     if driver == "mysql":
       self.con = mdb.connect(host=host, port=port, user=user, db=database, passwd=password)
       self.cur = self.con.cursor()
@@ -295,16 +303,27 @@ class Database:
   @param methodId - The id of the method.
   '''
   def NewMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
-    with self.con:
-      command = "INSERT INTO metrics VALUES (NULL,%s,%s,%s,%s,%s)"
+    try:
+      with self.con:
+        command = "INSERT INTO metrics VALUES (NULL,%s,%s,%s,%s,%s)"
 
-      if self.driver == "mysql":
-        self.cur.execute(command,
-            (buildId, libaryId, str(metric), datasetId, methodId))
+        if self.driver == "mysql":
+          self.cur.execute(command,
+              (buildId, libaryId, str(metric), datasetId, methodId))
 
-      elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?'),
-            (buildId, libaryId, str(metric), datasetId, methodId))
+        elif self.driver == "sqlite":
+          self.cur.execute(command % ('?', '?', '?', '?', '?'),
+              (buildId, libaryId, str(metric), datasetId, methodId))
+
+        self.error = 0
+    except Exception:
+      if self.error == 0:
+        self.error = 1
+        self.con = mdb.connect(host=self.host, port=self.port, user=self.user, db=self.database, passwd=self.password)
+        self.cur = self.con.cursor()
+        self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
+
+        self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId)
 
   '''
   Add a new metric result record to the bootstrap table.
