@@ -35,6 +35,7 @@ Benchmarks are run with the `make` command.
 * `make memory`     -- Get memory profiling information.
 * `make reports`    -- Create the reports.
 * `make test`       -- Test the configuration file. Check for correct syntax and then try to open files referred in the configuration file.
+* `make setup`      -- Download and set up all of the libraries to compare against.
 * `make scripts`    -- Make additional scripts.
 
 
