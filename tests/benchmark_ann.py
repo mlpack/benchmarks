@@ -77,5 +77,33 @@ class ANN_MRPT_TEST(unittest.TestCase):
     result = self.instance.RunMetrics("-k 5 -n 5")
     self.assertTrue(result["Runtime"] > 0)
 
+class ANN_SCIKIT_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv']
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/scikit/LSHForest.py")
+    obj = getattr(module, "ANN")
+    self.instance = obj(self.dataset, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 5 -n 5")
+    self.assertTrue(result["Runtime"] > 0)
+
 if __name__ == '__main__':
   unittest.main()
