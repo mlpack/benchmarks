@@ -46,7 +46,7 @@ class NBC(object):
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"],
+  def __init__(self, dataset, timeout=0, path=os.environ["JAVAPATH"],
       verbose=True):
     self.verbose = verbose
     self.dataset = dataset
