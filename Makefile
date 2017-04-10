@@ -1,3 +1,13 @@
+# These are the directories that contain everything we need after 'make setup'
+# is completed.  We assume that 'matlab' is available on the PATH.
+export INCLUDEPATH := $(shell pwd)/libraries/include/
+export LIBPATH := $(shell pwd)/libraries/lib/
+export BINPATH := $(shell pwd)/libraries/bin/
+export JAVAPATH := $(shell pwd)/libraries/share/
+export DEBUGBINPATH := $(shell pwd)/libraries/debug/bin/
+export DEBUGINCLUDEPATH := $(shell pwd)/libraries/debug/include/
+export DEBUGLIBPATH := $(shell pwd)/libraries/debug/lib/
+
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.3)
 ifndef PYTHON_BIN
@@ -38,51 +48,9 @@ COPY := False
 USER := ""
 PASSWORD := ""
 
-################################################################################################
-# How to use:                                                                                  #
-# Specify the environment variables in this file or set these variables from the command line. #
-# All environment path variables should end with a slash.                                      #
-# Note that four settings need to be changed for this to work.                                 #
-# 1) SHOGUN_PATH                                                                               #
-# 2) PYTHONPATH                                                                                #
-# 3) WEKA_CLASSPATH                                                                            #
-# 4) MATLAB_BIN                                                                                #
-################################################################################################
-
-# Set the environment variable for the mlpack executables.
-
-ifdef $(shell which mlpack_knn)
-	export MLPACK_BIN=$(shell dirname $(firstword $(shell which mlpack_knn)))/
-else
-	export MLPACK_BIN=""
-endif
-
-# Set the environment variable for the mlpack executables.
-export MLPACK_BIN_DEBUG=$(MLPACK_BIN)
-
-# Export the MLPACK_PATH environment variable.
-export MLPACK_PATH=$(shell dirname $(MLPACK_BIN))/
+# Set the environment variable for the compiled mlpack executables.
 export MLPACK_BIN_SRC=methods/mlpack/src/build/
 export MLPACK_BIN_DEBUG_SRC=methods/mlpack/src/build/
-
-# Set the environment variable for the matlab executable.
-# You can use the following command to search the 'matlab' file everytime:
-# export MATLAB_BIN=$(shell find / -name matlab  -print 2>/dev/null -quit)
-export MATLAB_BIN=""
-
-# Export the MATLABPATH environment variable.
-export MATLABPATH=$(shell pwd)/methods/matlab/
-
-# Export the WEKA_CLASSPATH environment variable.
-# You can use the following command to search the 'weka.jar' file everytime:
-# export WEKA_CLASSPATH=".:$(shell find / -name weka.jar  -print 2>/dev/null -quit)"
-export WEKA_CLASSPATH=".:/Users/marcus/Downloads/weka-3-6-11/weka.jar"
-
-# Export the SHOGUN_PATH environment variable.
-export SHOGUN_PATH=""
-
-# Export the PYTHONPATH environment variable.
-export PYTHONPATH=""
 
 # Set the environment variable for the the ms_print executable.
 export MS_PRINT_BIN=$(shell which ms_print)
@@ -92,12 +60,14 @@ export VALGRIND_BIN=$(shell which valgrind)
 
 # Export the path to the FLANN library.
 export FLANN_PATH=methods/flann/
-
 # Export the path to the ANN library.
 export ANN_PATH=methods/ann/
 
-# Export the path to the HLearn library.
-export HLEARN_PATH=""
+# Set LD_LIBRARY_PATH correctly.
+export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
+# Set PYTHONPATH correctly.
+PYVERSION=$(shell python3 -c 'import sys; print("python" + sys.version[0:3])')
+export PYTHONPATH=$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/dist-packages:$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/site-packages
 
 # Color settings.
 NO_COLOR=\033[0m
@@ -200,11 +170,14 @@ endif
 
 .scripts:
 	# Compile the java files for the weka methods.
-	javac -cp $(shell echo $(WEKA_CLASSPATH)) -d methods/weka methods/weka/src/*.java
+	javac -cp $(shell echo $(JAVAPATH)/weka.jar) -d methods/weka methods/weka/src/*.java
 	# Compile the ann scripts.
-	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(MLPACK_PATH)/include -I$(ANN_PATH)/include -L$(MLPACK_PATH)/lib -L$(ANN_PATH)/lib -lANN -lmlpack -lboost_program_options
+	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(INCLUDEPATH) -L$(LIBPATH) -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
-	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(MLPACK_PATH)/include -I$(FLANN_PATH)/include -L$(MLPACK_PATH)/lib -L$(FLANN_PATH)/lib -lmlpack -lboost_program_options
+	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(INCLUDEPATH) -L$(LIBPATH) -lmlpack -lboost_program_options -llz4
+	# Compile the mlpack scripts.  (Can't do this until ANN is released or a
+	# git version of mlpack is used.)
+	#cd methods/mlpack/src/ && ./build_scripts.sh
 
 .setup:
 	cd libraries/ && ./download_packages.sh && ./install_all.sh
