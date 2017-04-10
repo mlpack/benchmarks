@@ -42,6 +42,11 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing scikit-learn!";
   exit 1;
 fi
+./annoy_install.sh
+if [ "$?" -ne "0" ]; then
+  echo "Error installing annoy!";
+  exit 1;
+fi
 ./shogun_install.sh
 if [ "$?" -ne "0" ]; then
   echo "Error installing shogun!";
