@@ -43,8 +43,8 @@ class LARS(object):
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MLPACK_BIN"],
-    verbose=True, debug=os.environ["MLPACK_BIN_DEBUG"]):
+  def __init__(self, dataset, timeout=0, path=os.environ["BINPATH"],
+    verbose=True, debug=os.environ["DEBUGBINPATH"]):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
