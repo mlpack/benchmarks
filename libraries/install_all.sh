@@ -45,6 +45,10 @@ fi
 ./nearpy_install.sh
 if [ "$?" -ne "0" ]; then
   echo "Error installing nearpy!";
+fi
+./annoy_install.sh
+if [ "$?" -ne "0" ]; then
+  echo "Error installing annoy!";
   exit 1;
 fi
 ./shogun_install.sh
