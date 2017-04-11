@@ -5,25 +5,19 @@
 # Include files will be installed to ../include/.
 # Library files will be installed to ../lib/.
 #
-# One mlpack*.tar.gz file should be located in this directory containing the
+# One mlpack.tar.gz file should be located in this directory containing the
 # source code of the desired mlpack version.
-tars=`ls mlpack*.tar.gz | wc -l`;
+tars=`ls mlpack.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
-  echo "No mlpack source .tar.gz found in libraries/!"
-  exit 1
-fi
-if [ "$tars" -ne "1" ];
-then
-  echo "More than one mlpack source .tar.gz found."
-  echo "Ensure only one is present in libraries/!"
+  echo "No source mlpack.tar.gz found in libraries/!"
   exit 1
 fi
 
 # Remove any old directory.
 rm -rf mlpack/
 mkdir mlpack/
-tar -xzpf mlpack*.tar.gz --strip-components=1 -C mlpack/
+tar -xzpf mlpack.tar.gz --strip-components=1 -C mlpack/
 
 cd mlpack/
 mkdir build/
