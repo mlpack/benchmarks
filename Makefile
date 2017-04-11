@@ -67,7 +67,7 @@ export ANN_PATH=methods/ann/
 export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
 # Set PYTHONPATH correctly.
 PYVERSION=$(shell python3 -c 'import sys; print("python" + sys.version[0:3])')
-export PYTHONPATH=$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/dist-packages:$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/site-packages
+export PYTHONPATH=$(shell printenv PYTHONPATH):$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/dist-packages:$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/site-packages
 
 # Color settings.
 NO_COLOR=\033[0m
