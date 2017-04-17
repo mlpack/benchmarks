@@ -46,7 +46,7 @@ class RANDOMFOREST(object):
     self.timeout = timeout
     self.model = None
     self.form = 1
-    self.NumTrees = 10
+    self.numTrees = 10
 
   '''
   Build the model for the Random Forest Classifier.
@@ -56,13 +56,13 @@ class RANDOMFOREST(object):
   '''
   def BuildModel(self, data, labels, options):
 
-    m_vote = MajorityVote()
-    random_forest = RandomForest(self.form,self.NumTrees)
-    random_forest.set_combination_rule(m_vote)
-    random_forest.set_labels(labels)
-    random_forest.train(data)
+    mVote = MajorityVote()
+    randomForest = RandomForest(self.form,self.numTrees)
+    randomForest.set_combination_rule(mVote)
+    randomForest.set_labels(labels)
+    randomForest.train(data)
 
-    return random_forest
+    return randomForest
 
   '''
   Use the shogun libary to implement the Random Forest Classifier.
@@ -80,9 +80,9 @@ class RANDOMFOREST(object):
       labels = MulticlassLabels(labels)
       testData = RealFeatures(LoadDataset(self.dataset[1]).T)
       n = re.search("-n (\d+)", options) #Number of Trees
-      f = re.search("-f (\d+)", options) #Form
+      f = re.search("-f (\d+)", options) #Number of attributes to be chosen randomly to select from
       self.form = 1 if not f else int(f.group(1))
-      self.NumTrees = 10 if not n else int(n.group(1))
+      self.numTrees = 10 if not n else int(n.group(1))
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
