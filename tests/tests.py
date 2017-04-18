@@ -30,7 +30,7 @@ modules = [
 'benchmark_nca',
 'benchmark_nmf',
 'benchmark_pca',
-'benchmark_random_forest'
+'benchmark_random_forest',
 'benchmark_range_search',
 'benchmark_sparse_coding',
 'benchmark_svr'
