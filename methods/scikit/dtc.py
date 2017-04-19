@@ -58,6 +58,7 @@ class DTC(object):
     self.max_features = None
     self.random_state = None
     self.min_impurity_split = 1e-07
+    self.max_leaf_nodes = None
     self.class_weight = None
     self.presort = False
   '''
