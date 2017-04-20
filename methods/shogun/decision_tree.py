@@ -1,6 +1,7 @@
 '''
   @file decision_tree.py
   @author Saurabh Mahindre
+
   Classifier implementing the CART (decision tree) classifier with shogun.
 '''
 
@@ -30,7 +31,7 @@ import numpy as np
 from modshogun import RealFeatures, MulticlassLabels, CARTree, EuclideanDistance
 
 '''
-This class implements the decision trees benchmark.
+This class implements the decision tree benchmark.
 '''
 class DTC(object):
 
@@ -53,9 +54,8 @@ class DTC(object):
   @return The created model.
   '''
   def BuildModel(self, data, labels, options):
-
     cart = CARTree()
-    cart.set_feature_types(np.array([False]*data.get_num_features()))
+    cart.set_feature_types(np.array([False] * data.get_num_features()))
     cart.set_labels(labels)
     cart.train(data)
 
@@ -83,7 +83,6 @@ class DTC(object):
           # Run the CARTree Classifier on the test dataset.
           self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
-        Log.Debug(str(e))
         q.put(-1)
         return -1
 
@@ -101,11 +100,14 @@ class DTC(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  
+
   def RunMetrics(self, options):
     Log.Info("Perform DTC.", self.verbose)
+
+    results = None
     if len(self.dataset) >= 2:
-        results =self.DTCShogun(options)
-        return results
+        results = self.DTCShogun(options)
     else:
       Log.Fatal("This method requires at least two datasets.")
+
+    return {'Runtime' : results}
