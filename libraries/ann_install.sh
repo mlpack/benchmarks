@@ -20,7 +20,7 @@ mkdir ann/
 tar -xzpf ann.tar.gz --strip-components=1 -C ann/
 
 cd ann/
-make linux-g++
+CXXFLAGS=-fPIC make linux-g++
 cp -r include/* ../include/
 cp -r bin/* ../bin/
 cp -r lib/* ../lib/
