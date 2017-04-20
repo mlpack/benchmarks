@@ -79,9 +79,9 @@ class LogisticRegression(object):
     # If the dataset contains two files then the second file is the responses
     # file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-        " LogisticRegression -i " + self.dataset[0] + " -t " + self.dataset[1]
-        + " " + options)
+      cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
+        ":methods/weka LogisticRegression -i " + self.dataset[0] + " -t " +
+        self.dataset[1] + " " + options)
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
         " LogisticRegression -i " + self.dataset[0] + " " + options)

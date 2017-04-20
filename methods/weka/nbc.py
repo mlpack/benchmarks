@@ -69,8 +69,9 @@ class NBC(object):
       return -1
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-      " NBC -t " + self.dataset[0] + " -T " + self.dataset[1] + " " + options)
+    cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
+        ":methods/weka" + " NBC -t " + self.dataset[0] + " -T " +
+        self.dataset[1] + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
