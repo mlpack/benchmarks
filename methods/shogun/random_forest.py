@@ -27,7 +27,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, RandomForest, EuclideanDistance
+from modshogun import RealFeatures, MulticlassLabels, RandomForest, EuclideanDistance, MajorityVote
 
 '''
 This class implements the decision trees benchmark.
