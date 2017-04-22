@@ -89,7 +89,6 @@ class RANDOMFOREST(object):
           # Run the Random Forest Classifier on the test dataset.
           self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
-        Log.Debug(str(e))
         q.put(-1)
         return -1
 
@@ -112,6 +111,7 @@ class RANDOMFOREST(object):
     Log.Info("Perform Random Forest.", self.verbose)
     if len(self.dataset) >= 2:
         results =self.RandomForestShogun(options)
-        return results
     else:
       Log.Fatal("This method requires at least two datasets.")
+    
+    return {'Runtime' : results}
