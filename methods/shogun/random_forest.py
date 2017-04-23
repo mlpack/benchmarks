@@ -55,7 +55,6 @@ class RANDOMFOREST(object):
   @return The created model.
   '''
   def BuildModel(self, data, labels, options):
-
     mVote = MajorityVote()
     randomForest = RandomForest(self.form,self.numTrees)
     randomForest.set_combination_rule(mVote)
@@ -79,10 +78,15 @@ class RANDOMFOREST(object):
       trainData = RealFeatures(trainData.T)
       labels = MulticlassLabels(labels)
       testData = RealFeatures(LoadDataset(self.dataset[1]).T)
-      n = re.search("-n (\d+)", options) #Number of Trees
-      f = re.search("-f (\d+)", options) #Number of attributes to be chosen randomly to select from
+
+      # Number of Trees.
+      n = re.search("-n (\d+)", options)
+      # Number of attributes to be chosen randomly to select from.
+      f = re.search("-f (\d+)", options)
+
       self.form = 1 if not f else int(f.group(1))
       self.numTrees = 10 if not n else int(n.group(1))
+
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
@@ -94,7 +98,6 @@ class RANDOMFOREST(object):
 
       time = totalTimer.ElapsedTime()
       q.put(time)
-
       return time
 
     return timeout(RunRandomForestShogun, self.timeout)
@@ -106,12 +109,12 @@ class RANDOMFOREST(object):
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  
   def RunMetrics(self, options):
     Log.Info("Perform Random Forest.", self.verbose)
+
     if len(self.dataset) >= 2:
-        results =self.RandomForestShogun(options)
+        results = self.RandomForestShogun(options)
     else:
       Log.Fatal("This method requires at least two datasets.")
-    
+
     return {'Runtime' : results}
