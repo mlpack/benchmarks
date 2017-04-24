@@ -25,6 +25,7 @@ if metrics_folder not in sys.path:
 from log import *
 from timer import *
 from definitions import *
+from misc import *
 
 import numpy as np
 from modshogun import RealFeatures, MulticlassLabels
@@ -46,7 +47,8 @@ class LogisticRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-    self.z = 0;
+    self.predictions = None
+    self.z = 1
     self.model = None
 
   '''
@@ -81,19 +83,19 @@ class LogisticRegression(object):
           testSet = LoadDataset(self.dataset[1])
 
         # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset[0])
+        X, y = SplitTrainData(self.dataset)
 
         # Get the regularization value.
         self.z = re.search("-l (\d+)", options)
-        self.z = 0 if not z else int(z.group(1))
+        self.z = 1 if not self.z else int(self.z.group(1))
 
         with totalTimer:
           # Perform logistic regression.
-          self.model = BuildModel(x, y)
+          self.model = self.BuildModel(X, y)
           self.model.train()
 
-          if len(self.dataset) == 2:
-            pred = classifier.apply(RealFeatures(testSet.T))
+          if len(self.dataset) > 1:
+            pred = self.model.apply(RealFeatures(testSet.T))
             self.predictions = pred.get_labels()
 
       except Exception as e:
@@ -129,28 +131,28 @@ class LogisticRegression(object):
         trainData, responses = SplitTrainData(self.dataset)
         self.model = self.BuildModel(trainData, responses)
 
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
+      if self.predictions:
+        testData = LoadDataset(self.dataset[1])
+        truelabels = LoadDataset(self.dataset[2])
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+        confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+        AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
+        AvgPrec = Metrics.AvgPrecision(confusionMatrix)
+        AvgRec = Metrics.AvgRecall(confusionMatrix)
+        AvgF = Metrics.AvgFMeasure(confusionMatrix)
+        AvgLift = Metrics.LiftMultiClass(confusionMatrix)
+        AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
+        AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+        SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+        metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
 
-      metrics['Avg Accuracy'] = AvgAcc
-      metrics['MultiClass Precision'] = AvgPrec
-      metrics['MultiClass Recall'] = AvgRec
-      metrics['MultiClass FMeasure'] = AvgF
-      metrics['MultiClass Lift'] = AvgLift
-      metrics['MultiClass MCC'] = AvgMCC
-      metrics['MultiClass Information'] = AvgInformation
-      metrics['Simple MSE'] = SimpleMSE
+        metrics['Avg Accuracy'] = AvgAcc
+        metrics['MultiClass Precision'] = AvgPrec
+        metrics['MultiClass Recall'] = AvgRec
+        metrics['MultiClass FMeasure'] = AvgF
+        metrics['MultiClass Lift'] = AvgLift
+        metrics['MultiClass MCC'] = AvgMCC
+        metrics['MultiClass Information'] = AvgInformation
+        metrics['Simple MSE'] = SimpleMSE
 
     return metrics
-
