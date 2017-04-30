@@ -38,7 +38,7 @@ class LARS(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-
+    
   '''
   Use the scikit libary to implement Least Angle Regression.
 
@@ -54,15 +54,18 @@ class LARS(object):
       Log.Info("Loading dataset", self.verbose)
       inputData = np.genfromtxt(self.dataset[0], delimiter=',')
       responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
-
+      lambda1 = re.search("-l (\d+)", options)
+      lambda1 = 1.0 if not lambda1 else float(lambda1.group(1))
+      max_iter1 = re.search("--max_iter (\d+)", options)
+      max_iter1 = 500 if not max_iter1 else int(max_iter1.group(1))
+      eps1 = re.search("--eps (\d+)", options)
+      eps1 = np.finfo(float).eps if not eps1 else float(eps1.group(1))
       try:
         with totalTimer:
-          # Get all the parameters.
-          lambda1 = re.search("-l (\d+)", options)
-          lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
-
           # Perform LARS.
-          model = LassoLars(alpha=lambda1)
+          model = LassoLars(alpha=lambda1,
+                            max_iter=max_iter1,
+                            eps = eps1)
           model.fit(inputData, responsesData)
           out = model.coef_
       except Exception as e:

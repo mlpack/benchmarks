@@ -46,19 +46,11 @@ class SparseCoding_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("-k 2")
-    self.assertTrue(result > 0)
-
-  '''
-  Test the 'RunMemory' function.
-  '''
-  def test_RunMemory(self):
-    result = self.instance.RunMemory("-k 2", "test.mout")
-    self.assertEqual(result, None)
-    os.remove("test.mout")
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-k 2")
+    self.assertTrue(result["Runtime"] > 0)
 
   '''
   Test the destructor.

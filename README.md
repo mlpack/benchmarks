@@ -34,7 +34,6 @@ Benchmarks are run with the `make` command.
 
 * `make run`        -- Perform the benchmark.
 * `make memory`     -- Get memory profiling information.
-* `make reports`    -- Create the reports.
 * `make test`       -- Test the configuration file. Check for correct syntax and then try to open files referred in the configuration file.
 * `make scripts`    -- Make additional scripts.
 
@@ -62,7 +61,7 @@ You can also run a list of methods with the following command line:
 #### Benchmarking a Single Library
 
 If you are making changes to any of the scripts for a specified library, or if you simply want to benchmark a single library, you can benchmark the library with the `BLOCK` flag. For example, if you only wanted to benchmark all MLPACK scripts use the following command line:
-    
+
     $ make run BLOCK=mlpack
 
 You can also benchmark a list of libraries with the following command line:
@@ -90,13 +89,12 @@ Source directories
     ./util                  -- common files used by several scripts
     ./tests                 -- source code for tests
     ./benchmark             -- executables for the different benchmarks tasks
-    ./make_reports          -- source code for the reports page
     ./methods/<library>     -- source code for scripts
 
 Working directories
 
     ./
-    ./reports               -- output from the make_reports  and memory_benchmark executable
+    ./reports               -- output from the memory_benchmark executable
     ./reports/benchmark.db  -- database for benchmark runs
 
 ## Getting the datasets
@@ -108,7 +106,7 @@ The datasets are kept in a separate repository as a git submodule. You can get t
 This will checkout the datasets from the benchmark-datasets repository and place them in your working directory.
 
 ## Configuration
-The benchmark script requires several parameters that specify the benchmark runs, the parameters of the graph to be generated, etc. 
+The benchmark script requires several parameters that specify the benchmark runs, the parameters of the graph to be generated, etc.
 
 For complete details, refer the wiki page : https://github.com/zoq/benchmarks/wiki/Google-Summer-of-Code-2014-:-Improvement-of-Automatic-Benchmarking-System
 
@@ -225,7 +223,7 @@ methods:
     PCA:
         script: methods/mlpack/pca.py
         format: [csv, txt, hdf5, bin]
-        run: ['timing', 'metric', 'bootstrap'] 
+        run: ['timing', 'metric', 'bootstrap']
         iterations: 2
         datasets:
             - files: [['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']]

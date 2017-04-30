@@ -43,11 +43,11 @@ class LASSO_SHOGUN_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit Lasso Regression script.
@@ -58,7 +58,7 @@ class LASSO_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_test.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -77,9 +77,9 @@ class LASSO_SCIKIT_TEST(unittest.TestCase):
   '''
   Test the 'RunTiming' function.
   '''
-  def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
 
 
 if __name__ == '__main__':
