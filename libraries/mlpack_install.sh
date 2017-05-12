@@ -34,10 +34,22 @@ make install
 
 # Work around bug in 2.2.0 and 2.2.1.
 cd ../../bin/
-ln -s mlpack_knn mlpack_allknn
-ln -s mlpack_kfn mlpack_allkfn
-ln -s mlpack_krann mlpack_allkrann
+if [ ! -f mlpack_knn ]; then
+  ln -s mlpack_knn mlpack_allknn
+fi
+if [ ! -f mlpack_kfn ]; then
+  ln -s mlpack_kfn mlpack_allkfn
+fi
+if [ ! -f mlpack_krann ]; then
+  ln -s mlpack_krann mlpack_allkrann
+fi
 cd ../debug/bin/
-ln -s mlpack_knn mlpack_allknn
-ln -s mlpack_kfn mlpack_allkfn
-ln -s mlpack_krann mlpack_allkrann
+if [ ! -f mlpack_knn ]; then
+  ln -s mlpack_knn mlpack_allknn
+fi
+if [ ! -f mlpack_kfn ]; then
+  ln -s mlpack_kfn mlpack_allkfn
+fi
+if [ ! -f mlpack_krann ]; then
+  ln -s mlpack_krann mlpack_allkrann
+fi
