@@ -2001,28 +2001,6 @@ methods:
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
                 options: '-k 3 -s 42 -e 0.25'
 ---
-# HLearn: Homomorphic machine learning
-library: hlearn
-methods:
-    ALLKNN:
-          run: ['metric']
-          script: methods/hlearn/allknn.py
-          format: [csv, txt]
-          datasets:
-              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
-                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
-                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
-                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
-                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3'
-
-              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
-                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
-                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
-                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
-                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 4'
----
 # MRPT: fast nearest neighbor search with random projection
 library: mrpt
 methods:

@@ -80,7 +80,7 @@ class MLP_BACKWARD(object):
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform MLP Backard.", self.verbose)
+    Log.Info("Perform MLP Backward.", self.verbose)
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlp_backward -v " + options)

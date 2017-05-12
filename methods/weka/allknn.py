@@ -37,7 +37,7 @@ class ALLKNN(object):
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"],
+  def __init__(self, dataset, timeout=0, path=os.environ["JAVAPATH"],
       verbose = True):
     self.verbose = verbose
     self.dataset = dataset
@@ -58,13 +58,14 @@ class ALLKNN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + options
+      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + \
+          options
     else:
       inputCmd = "-r " + self.dataset + " " + options
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-      " AllKnn " + inputCmd + " " + options)
+    cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
+        ":methods/weka" + " AllKnn " + inputCmd + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

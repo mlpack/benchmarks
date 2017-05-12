@@ -21,12 +21,6 @@ class Loader(object):
   '''
   @staticmethod
   def ImportModuleFromPath(path):
-    if hasattr(os, "getcwdu"):
-      # Returns a unicode object represantation.
-      realPath = os.path.realpath(os.getcwdu())
-    else:
-      realPath = os.path.realpath(os.path.curdir)
-
     destinationPath = os.path.dirname(path)
 
     if destinationPath == "":
@@ -40,14 +34,12 @@ class Loader(object):
     else:
       modName = scriptName
 
-    os.chdir(destinationPath)
     fileHandle = None
     try:
-      tup = imp.find_module(modName, ['.'])
+      tup = imp.find_module(modName, [destinationPath])
       module = imp.load_module(modName, *tup)
       fileHandle = tup[0]
     finally:
-      os.chdir(realPath)
       if fileHandle is not None:
         fileHandle.close()
 

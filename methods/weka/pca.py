@@ -37,7 +37,7 @@ class PCA(object):
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["WEKA_CLASSPATH"],
+  def __init__(self, dataset, timeout=0, path=os.environ["JAVAPATH"],
       verbose=True):
     self.verbose = verbose
     self.dataset = dataset
@@ -56,8 +56,8 @@ class PCA(object):
     Log.Info("Perform PCA.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -classpath " + self.path + ":methods/weka" + 
-      " PCA -i " + self.dataset + " " + options)
+    cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
+        ":methods/weka" + " PCA -i " + self.dataset + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
