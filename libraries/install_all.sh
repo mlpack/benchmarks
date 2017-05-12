@@ -17,11 +17,11 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing FLANN!";
   exit 1;
 fi
-./hlearn_install.sh
-if [ "$?" -ne "0" ]; then
-  echo "Error installing HLearn!";
-  exit 1;
-fi
+#./hlearn_install.sh
+#if [ "$?" -ne "0" ]; then
+#  echo "Error installing HLearn!";
+#  exit 1;
+#fi
 ./matlab_install.sh
 if [ "$?" -ne "0" ]; then
   echo "Error checking for MATLAB!";
