@@ -114,7 +114,7 @@ checks: .check .checks
 	@echo "                         configuration file."
 	@echo "  run [parameters]       Perform the benchmark with the given config."
 	@echo "  memory [parameters]    Get memory profiling information with the given config."
-	@echo "  scripts                Compile the java files for the weka methods."
+	@echo "  scripts                Compile any benchmarking scripts."
 	@echo "  setup                  Download packages and install into libraries/."
 	@echo "  help                   Show this info."
 	@echo "  checks                 Run unit tests for benchmarking scripts."
