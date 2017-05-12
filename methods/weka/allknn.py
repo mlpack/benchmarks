@@ -58,7 +58,7 @@ class ALLKNN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " +
+      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + \
           options
     else:
       inputCmd = "-r " + self.dataset + " " + options
