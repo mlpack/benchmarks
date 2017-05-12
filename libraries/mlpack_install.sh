@@ -31,3 +31,13 @@ mkdir build-debug/
 cd build-debug/
 cmake -DDEBUG=ON -DCMAKE_INSTALL_PREFIX=../../debug/ -DBUILD_TEST=OFF ../
 make install
+
+# Work around bug in 2.2.0 and 2.2.1.
+cd ../../bin/
+ln -s mlpack_knn mlpack_allknn
+ln -s mlpack_kfn mlpack_allkfn
+ln -s mlpack_krann mlpack_allkrann
+cd ../debug/bin/
+ln -s mlpack_knn mlpack_allknn
+ln -s mlpack_kfn mlpack_allkfn
+ln -s mlpack_krann mlpack_allkrann
