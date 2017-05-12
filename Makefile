@@ -117,6 +117,7 @@ checks: .check .checks
 	@echo "  scripts                Compile the java files for the weka methods."
 	@echo "  setup                  Download packages and install into libraries/."
 	@echo "  help                   Show this info."
+	@echo "  checks                 Run unit tests for benchmarking scripts."
 	@echo ""
 	@echo "For further information consult the documentation found at \
 	http://www.mlpack.org"
