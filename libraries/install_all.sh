@@ -1,11 +1,12 @@
 #!/bin/bash
 #
 # Install all of the packages, after removing whatever old packages were installed.
-rm -rf bin/ lib/ share/ include/
+rm -rf bin/ lib/ share/ include/ debug/
 mkdir bin/
 mkdir lib/
 mkdir share/
 mkdir include/
+mkdir debug/
 
 ./ann_install.sh
 if [ "$?" -ne "0" ]; then
