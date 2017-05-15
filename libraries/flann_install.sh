@@ -6,7 +6,14 @@
 # Library files will be installed to ../lib/.
 #
 # One flann.tar.gz file should be located in this directory containing the
-# source code of the desired mlpack version.
+# source code of the desired mlpack version.  The first argument is the number
+# of cores to use for build.
+if [ "$1" -eq "" ]; then
+  cores="1";
+else
+  cores="$1";
+fi
+
 tars=`ls flann.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
@@ -28,4 +35,4 @@ cmake -DCMAKE_CXX_FLAGS=-I/usr/include/hdf5/serial/ \
     -DBUILD_MATLAB_BINDINGS=OFF \
     -DBUILD_CUDA_LIBRARY=OFF \
     ../
-make install
+make -j$cores install

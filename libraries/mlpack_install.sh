@@ -6,7 +6,14 @@
 # Library files will be installed to ../lib/.
 #
 # One mlpack.tar.gz file should be located in this directory containing the
-# source code of the desired mlpack version.
+# source code of the desired mlpack version.  The first argument is the number
+# of cores to use during build.
+if [ "$1" -eq "" ]; then
+  cores="1";
+else
+  cores="$1";
+fi
+
 tars=`ls mlpack.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
@@ -30,7 +37,7 @@ cd ..
 mkdir build-debug/
 cd build-debug/
 cmake -DDEBUG=ON -DCMAKE_INSTALL_PREFIX=../../debug/ -DBUILD_TEST=OFF ../
-make install
+make -j$cores install
 
 # Work around bug in 2.2.0 and 2.2.1.
 cd ../../bin/

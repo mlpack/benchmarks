@@ -6,7 +6,14 @@
 # Library files will be installed to ../lib/.
 #
 # One ann.tar.gz file should be located in this directory containing the
-# source code of the desired mlpack version.
+# source code of the desired mlpack version.  The first argument is the number
+# of cores to use for build.
+if [ "$1" -eq "" ]; then
+  cores="1";
+else
+  cores="$1";
+fi
+
 tars=`ls ann.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
@@ -20,7 +27,7 @@ mkdir ann/
 tar -xzpf ann.tar.gz --strip-components=1 -C ann/
 
 cd ann/
-CXXFLAGS=-fPIC make linux-g++
+CXXFLAGS=-fPIC make -j$cores linux-g++
 cp -r include/* ../include/
 cp -r bin/* ../bin/
 cp -r lib/* ../lib/
