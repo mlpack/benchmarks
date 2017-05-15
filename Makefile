@@ -47,6 +47,7 @@ FILES := ""
 COPY := False
 USER := ""
 PASSWORD := ""
+BUILD_CORES := 1
 
 # Set the environment variable for the compiled mlpack executables.
 export MLPACK_BIN_SRC=methods/mlpack/src/build/
@@ -183,7 +184,7 @@ endif
 	#cd methods/mlpack/src/ && ./build_scripts.sh
 
 .setup:
-	cd libraries/ && ./download_packages.sh && ./install_all.sh
+	cd libraries/ && ./download_packages.sh && ./install_all.sh $(BUILD_CORES)
 
 .checks:
 	$(PYTHON_BIN) tests/tests.py
