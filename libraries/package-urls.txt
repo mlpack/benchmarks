@@ -8,3 +8,4 @@ scikit https://github.com/scikit-learn/scikit-learn/archive/0.18.1.tar.gz
 shogun https://github.com/shogun-toolbox/shogun/archive/shogun_5.0.0.tar.gz
 weka http://prdownloads.sourceforge.net/weka/weka-3-8-1.zip
 annoy https://pypi.python.org/packages/3a/14/e733caa00f20544d4f3685434073a6911f4712e7316b140537a750cceb37/annoy-1.8.3.tar.gz
+mrpt https://github.com/teemupitkanen/mrpt/archive/master.tar.gz

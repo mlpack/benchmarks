@@ -60,3 +60,8 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing Weka!";
   exit 1;
 fi
+./mrpt_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing MRPT!";
+  exit 1;
+fi
