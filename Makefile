@@ -1,12 +1,13 @@
 # These are the directories that contain everything we need after 'make setup'
 # is completed.  We assume that 'matlab' is available on the PATH.
-export INCLUDEPATH := $(shell pwd)/libraries/include/
-export LIBPATH := $(shell pwd)/libraries/lib/
-export BINPATH := $(shell pwd)/libraries/bin/
-export JAVAPATH := $(shell pwd)/libraries/share/
-export DEBUGBINPATH := $(shell pwd)/libraries/debug/bin/
-export DEBUGINCLUDEPATH := $(shell pwd)/libraries/debug/include/
-export DEBUGLIBPATH := $(shell pwd)/libraries/debug/lib/
+export ROOTPATH := $(shell pwd)
+export INCLUDEPATH := $(shell echo $(ROOTPATH))/libraries/include/
+export LIBPATH := $(shell echo $(ROOTPATH))/libraries/lib/
+export BINPATH := $(shell echo $(ROOTPATH))/libraries/bin/
+export JAVAPATH := $(shell echo $(ROOTPATH))/libraries/share/
+export DEBUGBINPATH := $(shell echo $(ROOTPATH))/libraries/debug/bin/
+export DEBUGINCLUDEPATH := $(shell echo $(ROOTPATH))/libraries/debug/include/
+export DEBUGLIBPATH := $(shell echo $(ROOTPATH))/libraries/debug/lib/
 
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.3)
@@ -68,7 +69,7 @@ export ANN_PATH=methods/ann/
 export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
 # Set PYTHONPATH correctly.
 PYVERSION=$(shell python3 -c 'import sys; print("python" + sys.version[0:3])')
-export PYTHONPATH=$(shell printenv PYTHONPATH):$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/dist-packages:$(shell pwd)/libraries/lib/$(shell echo $(PYVERSION))/site-packages
+export PYTHONPATH=$(shell printenv PYTHONPATH):$(shell echo $(ROOTPATH))/libraries/lib/$(shell echo $(PYVERSION))/dist-packages:$(shell echo $(ROOTPATH))/libraries/lib/$(shell echo $(PYVERSION))/site-packages
 # Set MATLABPATH correctly.
 export MATLABPATH=$(shell printenv MATLABPATH):$(shell pwd)/methods/matlab
 
