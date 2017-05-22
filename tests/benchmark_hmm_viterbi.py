@@ -27,10 +27,17 @@ class HMMVITERBI_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml']
     self.verbose = False
     self.timeout = 9000
 
+    # Create the hmm model file used to test the hmm generate method.
+    self.dataset = 'datasets/iris.csv'
+    module = Loader.ImportModuleFromPath("methods/mlpack/hmm_train.py")
+    obj = getattr(module, "HMMTRAIN")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+    result = self.instance.RunMetrics("-t gaussian -n 2 -o datasets/iris_hmm.xml")
+
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_hmm.xml']
     module = Loader.ImportModuleFromPath("methods/mlpack/hmm_viterbi.py")
     obj = getattr(module, "HMMVITERBI")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)

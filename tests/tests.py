@@ -3,6 +3,7 @@ import xmlrunner
 
 # Test modules.
 modules = [
+'benchmark_decision_tree',
 'benchmark_allkfn',
 'benchmark_allknn',
 'benchmark_allkrann',

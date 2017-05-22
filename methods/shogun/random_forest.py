@@ -1,8 +1,7 @@
 '''
-  @file decision_tree.py
-  @author Saurabh Mahindre
+  @file random_forest.py
 
-  Classifier implementing the CART (decision tree) classifier with shogun.
+  Classifier implementing the Random Forest classifier with shogun.
 '''
 
 import os
@@ -28,15 +27,15 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, CARTree, EuclideanDistance
+from modshogun import RealFeatures, MulticlassLabels, RandomForest, EuclideanDistance, MajorityVote
 
 '''
-This class implements the decision tree benchmark.
+This class implements the decision trees benchmark.
 '''
-class DTC(object):
+class RANDOMFOREST(object):
 
   '''
-  Create the CARTree Classifier benchmark instance.
+  Create the Random Forest Classifier benchmark instance.
   @param dataset - Input dataset.
   @param timeout - The time until the timeout. Default no timeout.
   @param verbose - Display informational messages.
@@ -46,29 +45,32 @@ class DTC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.form = 1
+    self.numTrees = 10
 
   '''
-  Build the model for the CARTree Classifier.
+  Build the model for the Random Forest Classifier.
   @param data - The train data.
   @param labels - The labels for the train set.
   @return The created model.
   '''
   def BuildModel(self, data, labels, options):
-    cart = CARTree()
-    cart.set_feature_types(np.array([False] * data.get_num_features()))
-    cart.set_labels(labels)
-    cart.train(data)
+    mVote = MajorityVote()
+    randomForest = RandomForest(self.form,self.numTrees)
+    randomForest.set_combination_rule(mVote)
+    randomForest.set_labels(labels)
+    randomForest.train(data)
 
-    return cart
+    return randomForest
 
   '''
-  Use the shogun libary to implement the CARTree Classifier.
+  Use the shogun libary to implement the Random Forest Classifier.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-  def DTCShogun(self, options):
-    def RunDTCShogun(q):
+  def RandomForestShogun(self, options):
+    def RunRandomForestShogun(q):
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -77,10 +79,18 @@ class DTC(object):
       labels = MulticlassLabels(labels)
       testData = RealFeatures(LoadDataset(self.dataset[1]).T)
 
+      # Number of Trees.
+      n = re.search("-n (\d+)", options)
+      # Number of attributes to be chosen randomly to select from.
+      f = re.search("-f (\d+)", options)
+
+      self.form = 1 if not f else int(f.group(1))
+      self.numTrees = 10 if not n else int(n.group(1))
+
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
-          # Run the CARTree Classifier on the test dataset.
+          # Run the Random Forest Classifier on the test dataset.
           self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         q.put(-1)
@@ -88,25 +98,22 @@ class DTC(object):
 
       time = totalTimer.ElapsedTime()
       q.put(time)
-
       return time
 
-    return timeout(RunDTCShogun, self.timeout)
+    return timeout(RunRandomForestShogun, self.timeout)
 
   '''
-  Perform the classification using CARTree. If the method has been
+  Perform the classification using Random Forest. If the method has been
   successfully completed return the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
-
   def RunMetrics(self, options):
-    Log.Info("Perform DTC.", self.verbose)
+    Log.Info("Perform Random Forest.", self.verbose)
 
-    results = None
     if len(self.dataset) >= 2:
-        results = self.DTCShogun(options)
+        results = self.RandomForestShogun(options)
     else:
       Log.Fatal("This method requires at least two datasets.")
 

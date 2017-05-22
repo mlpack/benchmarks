@@ -5,24 +5,25 @@
 # Include files will be installed to ../include/.
 # Library files will be installed to ../lib/.
 #
-# One shogun*.tar.gz file should be located in this directory.
-tars=`ls shogun*.tar.gz | wc -l`;
+# One shogun.tar.gz file should be located in this directory. The first argument
+# is the number of cores to use for build.
+if [ "$1" -eq "" ]; then
+  cores="1";
+else
+  cores="$1";
+fi
+
+tars=`ls shogun.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
-  echo "No shogun source .tar.gz found in libraries/!"
-  exit 1
-fi
-if [ "$tars" -ne "1" ];
-then
-  echo "More than one shogun source .tar.gz found."
-  echo "Ensure only one is present in libraries/!"
+  echo "No source shogun.tar.gz found in libraries/!"
   exit 1
 fi
 
 # Remove any old directory.
 rm -rf shogun/
 mkdir shogun/
-tar -xzpf shogun*.tar.gz --strip-components=1 -C shogun/
+tar -xzpf shogun.tar.gz --strip-components=1 -C shogun/
 
 cd shogun/
 mkdir build/
@@ -36,5 +37,5 @@ cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.5 \
     -DENABLE_TESTING=OFF \
     -DCMAKE_INSTALL_PREFIX=../../ \
     ../
-make
+make -j$cores
 make install
