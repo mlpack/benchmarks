@@ -59,7 +59,6 @@ class ANN(object):
         # Get all the parameters.
         try:
           # Perform Approximate Nearest-Neighbors
-          acc = 0
           dimension = train.shape[1]
           rbp = RandomBinaryProjections('rbp', 10)
           engine = Engine(dimension, lshashes=[rbp])
