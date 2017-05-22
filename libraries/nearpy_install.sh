@@ -6,7 +6,7 @@
 # Library files will be installed to ../lib/.
 #
 # One Nearpy*.tar.gz file should be located in this directory.
-tars=`ls Nearpy*.tar.gz | wc -l`;
+tars=`ls Nearpy.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
   echo "No Nearpy source .tar.gz found in libraries/!"
