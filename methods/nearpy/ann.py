@@ -52,7 +52,6 @@ class ANN(object):
 
       # Load input dataset.
       Log.Info("Loading dataset", self.verbose)
-      referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
       train, label = SplitTrainData(self.dataset)
 
