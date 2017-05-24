@@ -6,7 +6,7 @@
 # Library files will be installed to ../lib/.
 #
 # One Nearpy*.tar.gz file should be located in this directory.
-tars=`ls Nearpy.tar.gz | wc -l`;
+tars=`ls nearpy.tar.gz | wc -l`;
 if [ "$tars" -eq "0" ];
 then
   echo "No Nearpy source .tar.gz found in libraries/!"
@@ -22,7 +22,7 @@ fi
 # Remove any old directory.
 rm -rf nearpy/
 mkdir nearpy/
-tar -xzpf Nearpy*.tar.gz --strip-components=1 -C nearpy/
+tar -xzpf nearpy.tar.gz --strip-components=1 -C nearpy/
 
 cd nearpy/
 python3 setup.py build
