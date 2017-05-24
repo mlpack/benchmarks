@@ -175,11 +175,11 @@ endif
 
 .scripts:
 	# Compile the java files for the weka methods.
-	javac -cp $(shell echo $(JAVAPATH)/weka.jar) -d methods/weka methods/weka/src/*.java
+	javac -cp "$(JAVAPATH)"weka.jar -d methods/weka methods/weka/src/*.java
 	# Compile the ann scripts.
-	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I$(INCLUDEPATH) -L$(LIBPATH) -lANN -lmlpack -lboost_program_options
+	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
-	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I$(INCLUDEPATH) -L$(LIBPATH) -lmlpack -lboost_program_options -llz4
+	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -lmlpack -lboost_program_options -llz4
 	# Compile the mlpack scripts.  (Can't do this until ANN is released or a
 	# git version of mlpack is used.)
 	#cd methods/mlpack/src/ && ./build_scripts.sh
