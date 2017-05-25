@@ -27,7 +27,7 @@ class ICA_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = 'datasets/wine.csv'
     self.verbose = False
     self.timeout = 9000
 
@@ -75,7 +75,7 @@ class ICA_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = 'datasets/wine.csv'
     self.verbose = False
     self.timeout = 9000
 
@@ -100,3 +100,4 @@ class ICA_SCIKIT_TEST(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()
+

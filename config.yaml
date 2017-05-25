@@ -1173,7 +1173,6 @@ methods:
                       'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
                       'datasets/optdigits.csv', 'datasets/isolet.csv',
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
-              options: '-s 42'
     LinearRegression:
         run: ['metric']
         iteration: 3

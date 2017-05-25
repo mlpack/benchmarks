@@ -47,8 +47,18 @@ class ElasticNet(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.rho = 0.5
+    self.rho = 1.0
     self.alpha = 0.5
+    self.fit_intercept = True
+    self.normalize = False
+    self.precompute = False
+    self.max_iter = 1000
+    self.copy_X = True
+    self.tol = 0.0001
+    self.warm_start = False
+    self.positive = False
+    self.selection = 'cyclic'
+
 
   '''
   Build the model for the Elastic Net Classifier.
@@ -60,7 +70,16 @@ class ElasticNet(object):
   def BuildModel(self, data, labels):
     # Create and train the classifier.
     elasticNet = SElasticNet(alpha=self.rho,
-                             l1_ratio=self.alpha)
+                             l1_ratio=self.alpha,
+                             fit_intercept = self.fit_intercept,
+                             normalize = self.normalize,
+                             precompute = self.precompute,
+                             max_iter = self.max_iter,
+                             copy_X = self.copy_X,
+                             tol = self.tol,
+                             warm_start = self.warm_start,
+                             positive = self.positive,
+                             selection = self.selection)
     elasticNet.fit(data, labels)
     return elasticNet
 
@@ -81,9 +100,19 @@ class ElasticNet(object):
 
       r = re.search("-r (\d+)", options)
       a = re.search("-a (\d+)", options)
+      max_iter = re.search("--max_iter (\d+)", options)
+      tol = re.search("--tol (\d+)", options)
+      selection = re.search("--selection (\s+)", options)
 
-      self.rho = 0.5 if not r else int(r.group(1))
+      self.rho = 1.0 if not r else int(r.group(1))
       self.alpha = 0.5 if not r else int(a.group(1))
+      self.max_iter = 1000 if not max_iter else int(max_iter.group(1))
+      self.tol = 0.0001 if not tol else float(tol.group(1))
+      self.selection = 'cyclic' if not selection else str(selection.group(1))
+      if self.selection not in ['cyclic','random']:
+          Log.Fatal("Invalid selection: " + str(selection.group(1)) + ". Must be either cyclic or random")
+          q.put(-1)
+          return -1
 
       try:
         with totalTimer:
