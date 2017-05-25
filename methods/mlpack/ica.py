@@ -114,7 +114,7 @@ class ICA(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_radical -i " + self.dataset + " -v "
-        + options + " -o output_ic.csv -u output_unmixing.csv -v")
+        + options + " -o output_ic.csv -u output_unmixing.csv")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
