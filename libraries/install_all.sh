@@ -45,6 +45,10 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing scikit-learn!";
   exit 1;
 fi
+./nearpy_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing nearpy!";
+fi
 ./annoy_install.sh $1
 if [ "$?" -ne "0" ]; then
   echo "Error installing annoy!";
