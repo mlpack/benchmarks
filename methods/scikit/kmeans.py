@@ -64,6 +64,7 @@ class KMEANS(object):
       clusters = re.search("-c (\d+)", options)
       maxIterations = re.search("-m (\d+)", options)
       seed = re.search("-s (\d+)", options)
+      algorithm = re.search("-a (\s+)", options)
 
       # Now do validation of options.
       if not clusters and len(self.dataset) != 2:
@@ -77,18 +78,25 @@ class KMEANS(object):
         return -1
 
       m = 1000 if not maxIterations else int(maxIterations.group(1))
-
+      algorithm = 'auto' if not algorithm else str(algorithm.group(1))
+      
+      if algorithm not in ['naive','elkan','auto']:
+       Log.Fatal("Invalid value for algorithm: "+algorithm+" must be either elkan or naive")
+       q.put(-1)
+       return -1
+      if algorithm == 'naive':
+       algorithm = 'auto'
       try:
         # Create the KMeans object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
             kmeans = KMeans(n_clusters=int(clusters.group(1)), init=centroids,
-                n_init=1, max_iter=m)
+                n_init=1, max_iter=m,algorithm=algorithm)
           elif seed:
             kmeans = KMeans(n_clusters=int(clusters.group(1)), init='random',
-                n_init=1, max_iter=m, random_state=int(seed.group(1)))
+                n_init=1, max_iter=m, random_state=int(seed.group(1)),algorithm=algorithm)
           else:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m)
+            kmeans = KMeans(n_clusters=int(clusters.group(1)), n_init=1, max_iter=m,algorithm=algorithm)
 
           kmeans.fit(data)
           labels = kmeans.labels_

@@ -84,6 +84,10 @@ class KPCA(object):
             degree = 1 if not degree else int(degree.group(1))
 
             model = KernelPCA(n_components=d, kernel="poly", degree=degree)
+          elif kernel.group(1) == "cosine":
+            model = KernelPCA(n_components=d, kernel="cosine", degree=degree)
+          elif kernel.group(1) == "gaussian":
+            model = KernelPCA(n_components=d, kernel="rbf", degree=degree)
           else:
             Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
                 "choices are 'linear', 'hyptan' and 'polynomial'.")

@@ -54,12 +54,36 @@ class ICA(object):
       data = np.genfromtxt(self.dataset, delimiter=',')
 
       s = re.search('-s (\d+)', options)
+      n_components = re.search('--n_components (\d+)', options)
+      algorithm = re.search('--algorithm (\s+)', options)
+      fun = re.search('--fun (\s+)', options)
+      max_iter = re.search('--max_iter (\d+)', options)
+      tol = re.search('--tol (\d+)', options)
+
       s = 0 if not s else int(s.group(1))
+      n_components = None if not n_components else int(n_components.group(1))
+      algorithm = 'parallel' if not algorithm else str(algorithm.group(1))
+      if algorithm not in ['parallel','deflation']:
+          Log.Fatal("Invalid value for algorithm: "+ str(algorithm.group(1))+" .Must be either parallel or deflation")
+          q.put(-1)
+          return -1
+      fun = 'logcosh' if not fun else str(fun.group(1))
+      if fun not in ['logcosh','exp','cube']:
+          Log.Fatal("Invalid value for fun: "+ str(fun.group(1))+" .Must be either logcosh,exp or cube")
+          q.put(-1)
+          return -1
+      max_iter = 200 if not max_iter else int(max_iter.group(1))
+      tol = 0.0001 if not tol else float(tol.group(1))
 
       try:
         # Perform ICA.
         with totalTimer:
-          model = FastICA(random_state=s)
+          model = FastICA(n_components = n_components,
+                          algorithm = algorithm,
+                          fun = fun,
+                          max_iter = max_iter,
+                          tol = tol,
+                          random_state = s)
           ic = model.fit(data).transform(data)
       except Exception as e:
         q.put(-1)
