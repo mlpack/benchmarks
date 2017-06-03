@@ -65,7 +65,7 @@ class ALLKNN(object):
         k = re.search("-k (\d+)", options)
         leafSize = re.search("-l (\d+)", options)
         radius = re.search("--radius (\d+)", options)
-        algorithm = re.search("--algorithm (\s+)", options)
+        tree_type = re.search("-t (\s+)", options)
         metric = re.search("--metric (\s+)", options)
         p = re.search("-p (\d+)", options) # Parameter for the Minkowski metric. When p=1 it is equivalent to using manhattan_distance and euclidean for p=2. For arbitrary p, minkowski_distance is used.
         n_jobs = re.search("--n_jobs (\d+)", options)
@@ -90,12 +90,12 @@ class ALLKNN(object):
           return -1
         else:
           leafSize = int(leafSize.group(1))
-        if not algorithm:
-            algorithm = 'kd_tree'
-        elif str(algorithm.group(1)):
-            algorithm = str(algorithm.group(1))
-            if algorithm !='auto' or algorithm !='ball_tree' or algorithm != 'kd_tree' or algorithm != 'brute':
-                Log.Fatal("Invalid algorithm type: "+ str(algorithm.group(1)) + ". Must be either auto, ball_tree, kd_tree or brute.")
+        if not tree_type:
+            tree_type = 'kd_tree'
+        elif str(tree_type.group(1)):
+            tree_type = str(tree_type.group(1))
+            if tree_type !='auto' or tree_type !='ball_tree' or tree_type != 'kd_tree' or tree_type != 'brute':
+                Log.Fatal("Invalid tree type: "+ str(tree_type.group(1)) + ". Must be either auto, ball_tree, kd_tree or brute.")
                 q.put(-1)
                 return -1
         radius = 1.0 if not radius else float(radius.group(1))
@@ -112,7 +112,7 @@ class ALLKNN(object):
 
         try:
           # Perform All K-Nearest-Neighbors.
-          model = NearestNeighbors(n_neighbors=k, algorithm=algorithm, leaf_size=leafSize, radius=radius, metric=metric, p=p, n_jobs=n_jobs)
+          model = NearestNeighbors(n_neighbors=k, algorithm=tree_type, leaf_size=leafSize, radius=radius, metric=metric, p=p, n_jobs=n_jobs)
           model.fit(referenceData)
 
           if len(self.dataset) == 2:
