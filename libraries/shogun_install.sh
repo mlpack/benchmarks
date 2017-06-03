@@ -37,5 +37,5 @@ cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.5 \
     -DENABLE_TESTING=OFF \
     -DCMAKE_INSTALL_PREFIX=../../ \
     ../
-make -j$cores
+make
 make install
