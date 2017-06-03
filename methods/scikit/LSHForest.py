@@ -45,8 +45,8 @@ class ANN(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n = 10
-    self.k = 5
+    self.n_estimators = 10
+    self.n_neighbors = 5
 
   '''
   Build the model for the Approximate Nearest Neighbors.
@@ -80,9 +80,9 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
-      n_estimators = re.search("--n_estimators (\d+)", options) #Number of trees in the LSH Forest.
-      n_neighbors = re.search("--n_neighbors (\d+)", options) #Number of neighbors to be returned from the query function.
-      min_hash_match = re.search("--min_hash_match (\d+)", options) #Lowest hash length to be searched when candidate selection is performed for the nearest neighbors.
+      n_estimators = re.search("-n (\d+)", options) #Number of trees in the LSH Forest.
+      n_neighbors = re.search("-k (\d+)", options) #Number of neighbors to be returned from the query function.
+      min_hash_match = re.search("-H (\d+)", options) #Lowest hash length to be searched when candidate selection is performed for the nearest neighbors.
       n_candidates = re.search("--n_candidates (\d+)", options) #Minimum number of candidates evaluated per estimator,assuming enough items meet the min_hash_match constraint.
       radius = re.search("--radius (\d+)", options) #Radius from data point to its neighbors.
       radius_cutoff_ratio = re.search("--radius_cutoff_ratio (\d+)", options) #A value ranges from 0 to 1. Radius neighbors will be searched until the ratio between total neighbors within the radius and the total candidates becomes less than this value
