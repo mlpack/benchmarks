@@ -64,7 +64,7 @@ class SparseCoding(object):
         with totalTimer:
           # Perform Sparse Coding.
           model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
-              transform_alpha=l,max_iter = max_iter)
+              transform_alpha=l, max_iter = max_iter)
           code = model.transform(inputData)
       except Exception as e:
         q.put(-1)
