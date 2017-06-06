@@ -82,10 +82,10 @@ class ANN(object):
       testData = LoadDataset(self.dataset[1])
       n_estimators = re.search("-n (\d+)", options) #Number of trees in the LSH Forest.
       n_neighbors = re.search("-k (\d+)", options) #Number of neighbors to be returned from the query function.
-      min_hash_match = re.search("-H (\d+)", options) #Lowest hash length to be searched when candidate selection is performed for the nearest neighbors.
-      n_candidates = re.search("--n_candidates (\d+)", options) #Minimum number of candidates evaluated per estimator,assuming enough items meet the min_hash_match constraint.
+      min_hash_match = re.search("-H (\d+)", options) #Lowest hash length to be searched when candidate selection is performed.
+      n_candidates = re.search("--n_candidates (\d+)", options) #Minimum number of candidates evaluated per estimator.
       radius = re.search("--radius (\d+)", options) #Radius from data point to its neighbors.
-      radius_cutoff_ratio = re.search("--radius_cutoff_ratio (\d+)", options) #A value ranges from 0 to 1. Radius neighbors will be searched until the ratio between total neighbors within the radius and the total candidates becomes less than this value
+      radius_cutoff_ratio = re.search("--radius_cutoff_ratio (\d+)", options) #A value ranges from 0 to 1.
       self.n_estimators = 10 if not n_estimators else int(n_estimators.group(1))
       self.n_neighbors = 5 if not n_neighbors else int(n_neighbors.group(1))
       self.min_hash_match = 4 if not min_hash_match else int(min_hash_match.group(1))
@@ -97,7 +97,7 @@ class ANN(object):
           self.model = self.BuildModel(trainData, labels)
           # Run Approximate on the test dataset.
           distances,indices = self.model.kneighbors(testData,
-                                                    n_neighbors = self.k)
+                                                    n_neighbors = self.n_neighbors)
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
