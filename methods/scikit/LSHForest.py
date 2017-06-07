@@ -80,12 +80,18 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
-      n_estimators = re.search("-n (\d+)", options) #Number of trees in the LSH Forest.
-      n_neighbors = re.search("-k (\d+)", options) #Number of neighbors to be returned from the query function.
-      min_hash_match = re.search("-H (\d+)", options) #Lowest hash length to be searched when candidate selection is performed.
-      n_candidates = re.search("--n_candidates (\d+)", options) #Minimum number of candidates evaluated per estimator.
-      radius = re.search("--radius (\d+)", options) #Radius from data point to its neighbors.
-      radius_cutoff_ratio = re.search("--radius_cutoff_ratio (\d+)", options) #A value ranges from 0 to 1.
+      #Number of trees in the LSH Forest.
+      n_estimators = re.search("-n (\d+)", options)
+      #Number of neighbors to be returned from the query function.
+      n_neighbors = re.search("-k (\d+)", options)
+      #Lowest hash length to be searched when candidate selection is performed.
+      min_hash_match = re.search("-H (\d+)", options)
+      #Minimum number of candidates evaluated per estimator.
+      n_candidates = re.search("--n_candidates (\d+)", options)
+      #Radius from data point to its neighbors.
+      radius = re.search("--radius (\d+)", options)
+      #A value ranges from 0 to 1.
+      radius_cutoff_ratio = re.search("--radius_cutoff_ratio (\d+)", options)
       self.n_estimators = 10 if not n_estimators else int(n_estimators.group(1))
       self.n_neighbors = 5 if not n_neighbors else int(n_neighbors.group(1))
       self.min_hash_match = 4 if not min_hash_match else int(min_hash_match.group(1))
