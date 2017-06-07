@@ -110,7 +110,8 @@ class ElasticNet(object):
       self.tol = 0.0001 if not tol else float(tol.group(1))
       self.selection = 'cyclic' if not selection else str(selection.group(1))
       if self.selection not in ['cyclic','random']:
-          Log.Fatal("Invalid selection: " + str(selection.group(1)) + ". Must be either cyclic or random")
+          Log.Fatal("Invalid selection: " + str(selection.group(1)) 
+                    + ". Must be either cyclic or random")
           q.put(-1)
           return -1
 
