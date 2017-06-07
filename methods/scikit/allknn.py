@@ -67,7 +67,10 @@ class ALLKNN(object):
         radius = re.search("--radius (\d+)", options)
         tree_type = re.search("-t (\s+)", options)
         metric = re.search("--metric (\s+)", options)
-        p = re.search("-p (\d+)", options) # Parameter for the Minkowski metric. When p=1 it is equivalent to using manhattan_distance and euclidean for p=2. For arbitrary p, minkowski_distance is used.
+        # Parameter for the Minkowski metric. 
+        # When p=1 it is equivalent to using manhattan_distance and euclidean for p=2. 
+        # For arbitrary p, minkowski_distance is used.
+        p = re.search("-p (\d+)", options)
         n_jobs = re.search("--n_jobs (\d+)", options)
         if not k:
           Log.Fatal("Required option: Number of furthest neighbors to find.")
@@ -95,7 +98,8 @@ class ALLKNN(object):
         elif str(tree_type.group(1)):
             tree_type = str(tree_type.group(1))
             if tree_type !='auto' or tree_type !='ball_tree' or tree_type != 'kd_tree' or tree_type != 'brute':
-                Log.Fatal("Invalid tree type: "+ str(tree_type.group(1)) + ". Must be either auto, ball_tree, kd_tree or brute.")
+                Log.Fatal("Invalid tree type: "+ str(tree_type.group(1)) 
+                          + ". Must be either auto, ball_tree, kd_tree or brute.")
                 q.put(-1)
                 return -1
         radius = 1.0 if not radius else float(radius.group(1))
@@ -105,14 +109,21 @@ class ALLKNN(object):
         elif metric.group(1):
             metric = str(metric.group(1))
             if metric not in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']:
-                Log.Fatal("Invalid metric type: "+ str(metric.group(1))+ ". Must be either cityblock, cosine, euclidean, l1, l2 or manhattan")
+                Log.Fatal("Invalid metric type: "+ str(metric.group(1))
+                          + ". Must be either cityblock, cosine, euclidean, l1, l2 or manhattan")
                 q.put(-1)
                 return -1
         n_jobs = 1 if not n_jobs else int(n_jobs.group(1))
 
         try:
           # Perform All K-Nearest-Neighbors.
-          model = NearestNeighbors(n_neighbors=k, algorithm=tree_type, leaf_size=leafSize, radius=radius, metric=metric, p=p, n_jobs=n_jobs)
+          model = NearestNeighbors(n_neighbors=k, 
+                                   algorithm=tree_type, 
+                                   leaf_size=leafSize, 
+                                   radius=radius, 
+                                   metric=metric, 
+                                   p=p, 
+                                   n_jobs=n_jobs)
           model.fit(referenceData)
 
           if len(self.dataset) == 2:
