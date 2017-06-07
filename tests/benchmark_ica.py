@@ -100,3 +100,4 @@ class ICA_SCIKIT_TEST(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()
+
