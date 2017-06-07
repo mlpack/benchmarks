@@ -38,7 +38,7 @@ Benchmarks are run with the `make` command.
 * `make setup`      -- Download and set up all of the libraries to compare against.
 * `make scripts`    -- Make additional scripts.
 
-
+Make sure you edit the WEKA_CLASSPATH in the Makefile as the address to the 'weka.jar' file.
 Running `make` with no additional arguments except the task option will use the default parameters specified in the `Makefile` (e.g. config file). You can set an alternate config file with the `CONFIG` flag. You can also run a single benchmark script with the `BLOCK` and `METHODBLOCK` flag. Use `make help` to see a full list of options.
 
 
