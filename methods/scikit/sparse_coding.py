@@ -56,13 +56,15 @@ class SparseCoding(object):
 
       # Get all the parameters.
       l = re.search("-l (\d+)", options)
+      max_iter = re.search("-n (\d+)", options)
       l = 0 if not l else int(l.group(1))
+      max_iter = 1000 if not max_iter else int(max_iter.group(1)) 
 
       try:
         with totalTimer:
           # Perform Sparse Coding.
           model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
-              transform_alpha=l)
+              transform_alpha=l, max_iter = max_iter)
           code = model.transform(inputData)
       except Exception as e:
         q.put(-1)
