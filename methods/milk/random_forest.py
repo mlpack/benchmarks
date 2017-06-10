@@ -59,7 +59,7 @@ class RANDOMFOREST(object):
     return randomfores
 
   '''
-  Use the scikit libary to implement the Random Forest Classifier.
+  Use the milk libary to implement the Random Forest Classifier.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.

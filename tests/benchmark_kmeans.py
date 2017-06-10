@@ -162,3 +162,36 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()
+
+'''
+Test the milk K-Means clustering script.
+'''
+class KMEANS_MILK_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris.csv']
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/milk/kmeans.py")
+    obj = getattr(module, "KMEANS")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("-c 2")
+    self.assertTrue(result["Runtime"] > 0)
+

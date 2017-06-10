@@ -38,7 +38,7 @@ class KMEANS(object):
     self.timeout = timeout
 
   '''
-  Use the scikit libary to implement K-Means Clustering.
+  Use the Milk libary to implement K-Means Clustering.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.

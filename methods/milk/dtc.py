@@ -73,8 +73,6 @@ class DTC(object):
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
-          # Run Random Forest Classifier on the test dataset.
-          # self.model.apply(testData)
       except Exception as e:
         q.put(-1)
         return -1

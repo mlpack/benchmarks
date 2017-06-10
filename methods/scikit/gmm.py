@@ -55,18 +55,24 @@ class GMM(object):
 
       # Get all the parameters.
       g = re.search("-g (\d+)", options)
-      n = re.search("-n (\d+)", options)
-      s = re.search("-n (\d+)", options)
-
+      s = re.search("-s (\d+)", options)
+      tol = re.search("-T (\d+)", options)
+      n_init = re.search("-t (\d+)", options)
+      max_iter = re.search("-n (\d+)", options)
       g = 1 if not g else int(g.group(1))
-      n = 250 if not n else int(n.group(1))
       s = 0 if not s else int(s.group(1))
+      tol = 0.001 if not tol else float(tol.group(1))
+      max_iter = 100 if not max_iter else int(max_iter.group(1))
+      n_init = 1 if not n_init else int(n_init.group(1))
 
       try:
         # Create the Gaussian Mixture Model
 	      # Some params changed to match mlpack defaults.
-        model = mixture.GaussianMixture(n_components=g, covariance_type='full',
-            random_state=s, n_iter=n, n_init=10, thresh=1e-10)
+        model = mixture.GaussianMixture(n_components=g,
+                                        random_state=s,
+                                        n_init=n_init,
+                                        tol=tol,
+					max_iter = max_iter)
         with totalTimer:
           model.fit(dataPoints)
       except Exception as e:

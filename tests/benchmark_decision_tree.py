@@ -17,6 +17,10 @@ if cmd_subfolder not in sys.path:
 
 from loader import *
 
+'''
+Test the scikit Decision Tree Prediction script.
+'''
+
 class DecisionTree_SCIKIT_TEST(unittest.TestCase):
 
   '''
@@ -80,3 +84,36 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()
+
+'''
+Test the milk Decision Tree Prediction script.
+'''
+class DecisionTree_Milk_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/milk/dtc.py")
+    obj = getattr(module, "DTC")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Runtime"] > 0)
+

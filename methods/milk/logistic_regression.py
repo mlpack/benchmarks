@@ -29,7 +29,7 @@ import numpy as np
 import milk.supervised.logistic
 
 '''
-This class implements the Random Forest Classifier benchmark.
+This class implements the Logistic Regression Classifier benchmark.
 '''
 class LogisticRegression(object):
 
@@ -57,7 +57,7 @@ class LogisticRegression(object):
     return learner
 
   '''
-  Use the scikit libary to implement the Random Forest Classifier.
+  Use the milk libary to implement the Logistic Classifier.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
