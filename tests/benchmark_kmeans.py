@@ -192,6 +192,6 @@ class KMEANS_MILK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 2")
+    result = self.instance.RunMetrics("-c 3")
     self.assertTrue(result["Runtime"] > 0)
 
