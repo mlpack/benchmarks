@@ -50,10 +50,9 @@ class LogisticRegression(object):
   @param labels - The labels for the train set.
   @return The created model.
   '''
-  def BuildModel(self, data, labels):
+  def BuildModel(self):
     # Create and train the classifier.
     learner = milk.supervised.logistic.logistic_learner()
-    learner = learner.train(data, labels)
     return learner
 
   '''
@@ -71,8 +70,9 @@ class LogisticRegression(object):
       testData = LoadDataset(self.dataset[1])
 
       try:
+        self.model = self.BuildModel()
         with totalTimer:
-          self.model = self.BuildModel(trainData, labels)
+          self.model = self.model.train(trainData, labels)
       except Exception as e:
         q.put(-1)
         return -1
@@ -96,7 +96,6 @@ class LogisticRegression(object):
     results = None
     if len(self.dataset) >= 2:
       results = self.LogisticRegressionMilk(options)
-      print(results)
 
       if results < 0:
         return results

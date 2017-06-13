@@ -51,12 +51,11 @@ class RANDOMFOREST(object):
   @param labels - The labels for the train set.
   @return The created model.
   '''
-  def BuildModel(self, data, labels):
+  def BuildModel(self):
     # Create and train the classifier.
     rf_learner = randomforest.rf_learner()
     learner = one_against_one(rf_learner)
-    randomfores = learner.train(data, labels)
-    return randomfores
+    return learner
 
   '''
   Use the milk libary to implement the Random Forest Classifier.
@@ -73,10 +72,9 @@ class RANDOMFOREST(object):
       testData = LoadDataset(self.dataset[1])
 
       try:
+        self.model = self.BuildModel()
         with totalTimer:
-          self.model = self.BuildModel(trainData, labels)
-          # Run Random Forest Classifier on the test dataset.
-          # self.model.apply(testData)
+          self.model = self.model.train(trainData, labels)
       except Exception as e:
         q.put(-1)
         return -1
@@ -100,7 +98,6 @@ class RANDOMFOREST(object):
     results = None
     if len(self.dataset) >= 2:
       results = self.RANDOMFORESTMilk(options)
-      print(results)
 
       if results < 0:
         return results

@@ -52,13 +52,12 @@ class ADABOOST(object):
   @param labels - The labels for the train set.
   @return The created model.
   '''
-  def BuildModel(self, data, labels):
+  def BuildModel(self):
     # Create and train the classifier.
     weak = milk.supervised.tree.stump_learner()
     learner = milk.supervised.adaboost.boost_learner(weak)
     learner = one_against_one(learner)
-    adaboost = learner.train(data, labels)
-    return adaboost
+    return learner
 
   '''
   Use the milk libary to implement the AdaBoost classifier.
@@ -75,8 +74,10 @@ class ADABOOST(object):
       testData = LoadDataset(self.dataset[1])
 
       try:
+        self.model = self.BuildModel()
         with totalTimer:
-          self.model = self.BuildModel(trainData, labels)
+         self.model = self.model.train(trainData, labels)
+          
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)

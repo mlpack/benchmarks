@@ -27,7 +27,7 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris.csv','datasets/iris_centroids.csv']
+    self.dataset = ['datasets/iris.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -172,7 +172,7 @@ class KMEANS_MILK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris.csv']
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
     self.timeout = 9000
 

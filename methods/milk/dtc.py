@@ -44,17 +44,17 @@ class DTC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.min_split = 4
   '''
   Build the model for the Decision Tree Classifier.
   @param data - The train data.
   @param labels - The labels for the train set.
   @return The created model.
   '''
-  def BuildModel(self, data, labels):
+  def BuildModel(self):
     # Create and train the classifier.
-    dtc_learner = tree_learner()
-    dtc = dtc_learner.train(data, labels)
-    return dtc
+    dtc_learner = tree_learner(min_split = self.min_split)
+    return dtc_learner
 
   '''
   Use the milk libary to implement the Decision Tree Classifier.
@@ -69,11 +69,16 @@ class DTC(object):
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
+      
+      min_split = re.search("--minimum_leaf_size (\d+)", options)
+      self.min_split = 4 if not min_split else int(min_split.group(1))
 
       try:
+        self.model = self.BuildModel()
         with totalTimer:
-          self.model = self.BuildModel(trainData, labels)
+          self.model = self.model.train(trainData, labels)
       except Exception as e:
+        Log.Debug(e)
         q.put(-1)
         return -1
 
@@ -96,7 +101,6 @@ class DTC(object):
     results = None
     if len(self.dataset) >= 2:
       results = self.DTCMilk(options)
-      print(results)
 
       if results < 0:
         return results
