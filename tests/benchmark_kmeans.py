@@ -27,7 +27,7 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris.csv']
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -47,7 +47,7 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 2")
+    result = self.instance.RunMetrics("-c 3")
     self.assertTrue(result["Runtime"] > 0)
 
   '''
@@ -73,7 +73,7 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris.csv']
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -93,7 +93,7 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 2")
+    result = self.instance.RunMetrics("-c 3")
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -105,7 +105,7 @@ class KMEANS_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris.csv']
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -125,7 +125,7 @@ class KMEANS_WEKA_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 2")
+    result = self.instance.RunMetrics("-c 3")
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -137,7 +137,7 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris.csv']
+    self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -157,7 +157,7 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 2")
+    result = self.instance.RunMetrics("-c 3")
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
