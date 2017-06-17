@@ -81,6 +81,7 @@ class KMEANS(object):
             assignments = kmeans(data,
                                  int(clusters.group(1)),
                                  max_iter=m,
+                                 centroids=centroids,
                                  return_centroids=False)
           else:
             assignments, centroids = kmeans(data,
