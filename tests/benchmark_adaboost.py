@@ -1,7 +1,7 @@
 '''
-  @file benchmark_logistic_regression.py
+  @file benchmark_adaboost.py
 
-  Test for the Logistic Regression Classifier scripts.
+  Test for the Adaboost Classifier scripts.
 '''
 
 import unittest
@@ -16,10 +16,11 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from loader import *
+
 '''
-Test the Scikit Logistic Regression Classifier script.
+Test the mlpack Adaboost Classifier script.
 '''
-class LR_SCIKIT_TEST(unittest.TestCase):
+class ADABOOST_MLPACK_TEST(unittest.TestCase):
 
   '''
   Test initialization.
@@ -29,8 +30,56 @@ class LR_SCIKIT_TEST(unittest.TestCase):
     self.verbose = False
     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/scikit/logistic_regression.py")
-    obj = getattr(module, "LogisticRegression")
+    module = Loader.ImportModuleFromPath("methods/mlpack/adaboost.py")
+    obj = getattr(module, "ADABOOST")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics("")
+    self.assertTrue(result["Training"] > 0)
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Testing"] > 0)
+
+  '''
+  Test the destructor.
+  '''
+  def test_Destructor(self):
+    del self.instance
+
+    clean = True
+    filelist = ["gmon.out", "output.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        clean = False
+
+    self.assertTrue(clean)
+
+'''
+Test the shogun Adaboost Classifier script.
+'''
+class ADABOOST_SHOGUN_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/shogun/adaboost.py")
+    obj = getattr(module, "ADABOOST")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -49,9 +98,9 @@ class LR_SCIKIT_TEST(unittest.TestCase):
     self.assertTrue(result["Runtime"] > 0)
 
 '''
-Test the Shogun Logistic Regression Classifier script.
+Test the Scikit Adaboost Classifier script.
 '''
-class LR_SHOGUN_TEST(unittest.TestCase):
+class ADABOOST_SCIKIT_TEST(unittest.TestCase):
 
   '''
   Test initialization.
@@ -61,8 +110,8 @@ class LR_SHOGUN_TEST(unittest.TestCase):
     self.verbose = False
     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/shogun/logistic_regression.py")
-    obj = getattr(module, "LogisticRegression")
+    module = Loader.ImportModuleFromPath("methods/scikit/adaboost.py")
+    obj = getattr(module, "ADABOOST")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -79,26 +128,23 @@ class LR_SHOGUN_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("")
     self.assertTrue(result["Runtime"] > 0)
-
-
-if __name__ == '__main__':
-  unittest.main()
+    
 
 '''
-Test the Milk Logistic Regression Classifier script.
+Test the milk Adaboost script.
 '''
-class LR_Milk_TEST(unittest.TestCase):
+class ADABOOST_MILK_TEST(unittest.TestCase):
 
   '''
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
     self.verbose = False
     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/milk/logistic_regression.py")
-    obj = getattr(module, "LogisticRegression")
+    module = Loader.ImportModuleFromPath("methods/milk/adaboost.py")
+    obj = getattr(module, "ADABOOST")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -116,7 +162,5 @@ class LR_Milk_TEST(unittest.TestCase):
     result = self.instance.RunMetrics("")
     self.assertTrue(result["Runtime"] > 0)
 
-
 if __name__ == '__main__':
   unittest.main()
-

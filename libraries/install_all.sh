@@ -69,3 +69,8 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing MRPT!";
   exit 1;
 fi
+./milk_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing Milk!";
+  exit 1;
+fi
