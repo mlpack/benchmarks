@@ -33,7 +33,8 @@ modules = [
 'benchmark_random_forest',
 'benchmark_range_search',
 'benchmark_sparse_coding',
-'benchmark_svr'
+'benchmark_svr',
+'benchmark_adaboost'
 ]
 
 def load_tests(loader, tests, pattern):
