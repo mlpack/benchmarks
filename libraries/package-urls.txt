@@ -11,3 +11,4 @@ nearpy https://github.com/pixelogik/NearPy/archive/1.0.0.tar.gz
 annoy https://pypi.python.org/packages/3a/14/e733caa00f20544d4f3685434073a6911f4712e7316b140537a750cceb37/annoy-1.8.3.tar.gz
 mrpt https://github.com/teemupitkanen/mrpt/archive/master.tar.gz
 milk https://github.com/luispedro/milk/archive/release-0.6.1.tar.gz
+panns https://github.com/ryanrhymes/panns/archive/0.2.0.tar.gz
