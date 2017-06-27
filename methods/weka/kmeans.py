@@ -56,8 +56,12 @@ class KMEANS(object):
     Log.Info("Perform K-Means.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -classpath " + self.path + "/weka.jar:methods/weka" +
-      " KMeans -i " + self.dataset[0] + " " + options)
+    if len(self.dataset) >= 2:
+      cmd = shlex.split("java -classpath " + self.path +
+        "/weka.jar:methods/weka KMeans -i " + self.dataset[0] + " " + options)
+    else:
+      cmd = shlex.split("java -classpath " + self.path +
+        "/weka.jar:methods/weka KMeans -i " + self.dataset + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

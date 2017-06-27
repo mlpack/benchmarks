@@ -84,7 +84,7 @@ class LogisticRegression(object):
         self.dataset[1] + " " + options)
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-        " LogisticRegression -i " + self.dataset[0] + " " + options)
+        " LogisticRegression -i " + self.dataset + " " + options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
