@@ -63,7 +63,7 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset[0], delimiter=',')
         centroids = np.genfromtxt(self.dataset[1], delimiter=',')
       else:
-        data = np.genfromtxt(self.dataset, delimiter=',')
+        data = np.genfromtxt(self.dataset[0], delimiter=',')
 
       # Gather parameters.
       clusters = re.search("-c (\d+)", options)
