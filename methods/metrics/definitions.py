@@ -137,6 +137,7 @@ class Metrics(object):
   '''
   @staticmethod
   def FMeasureClass(class_i,CM):
+    l = len(CM)
     precClass = Metrics.PrecisionForAClass(class_i,CM)
     recClass = Metrics.RecallForAClass(class_i,CM)
     if (precClass + recClass) != 0:
