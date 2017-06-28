@@ -17,7 +17,6 @@ ifndef PYTHON_BIN
     PYTHON_BIN := $(shell which python)
   endif
 endif
-
 ifdef PYTHON_BIN
 # Get the python version.
 ifeq ($(shell expr `$(PYTHON_BIN) -c 'import sys; print(sys.version[:3])'` \>= 3.3)	, 1)

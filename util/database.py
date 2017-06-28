@@ -18,7 +18,7 @@ except ImportError:
   pass
 
 import datetime
-
+import json
 
 '''
 This class implements functions to handle the database.
@@ -151,6 +151,8 @@ class Database:
           var REAL NOT NULL,
           dataset_id INTEGER NOT NULL,
           method_id INTEGER NOT NULL,
+          sweep_id INTEGER NOT NULL,
+          sweep_elem_id INTEGER NOT NULL,
 
           FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
           FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
@@ -176,6 +178,8 @@ class Database:
           metric TEXT NOT NULL,
           dataset_id INTEGER NOT NULL,
           method_id INTEGER NOT NULL,
+          sweep_id INTEGER NOT NULL,
+          sweep_elem_id INTEGER NOT NULL,
 
           FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
           FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
@@ -201,6 +205,8 @@ class Database:
           metric TEXT NOT NULL,
           dataset_id INTEGER NOT NULL,
           method_id INTEGER NOT NULL,
+          sweep_id INTEGER NOT NULL,
+          sweep_elem_id INTEGER NOT NULL,
 
           FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
           FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
@@ -226,6 +232,8 @@ class Database:
           method_id INTEGER NOT NULL,
           dataset_id INTEGER NOT NULL,
           memory_info TEXT NOT NULL,
+          sweep_id INTEGER NOT NULL,
+          sweep_elem_id INTEGER NOT NULL,
 
           FOREIGN KEY(build_id) REFERENCES builds(id) ON DELETE CASCADE,
           FOREIGN KEY(libary_id) REFERENCES libraries(id) ON DELETE CASCADE,
@@ -239,7 +247,7 @@ class Database:
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
-    '''
+  '''
   Create a method information table.
   '''
   def CreateMethodInfoTable(self):
@@ -259,6 +267,25 @@ class Database:
       self.con.executescript(comand % "AUTOINCREMENT")
 
   '''
+  Create a table to hold information about sweeps.
+  '''
+  def CreateSweepsTable(self):
+    command = """
+        CREATE TABLE IF NOT EXISTS sweeps (
+          id INTEGER PRIMARY KEY %s,
+          type TEXT NOT NULL,
+          begin TEXT NOT NULL,
+          step TEXT NOT NULL,
+          end TEXT NOT NULL
+        );
+        """
+
+    if self.driver == "mysql":
+      self.cur.execute(command % "AUTO_INCREMENT")
+    elif self.driver == "sqlite":
+      self.con.executescript(command % "AUTOINCREMENT")
+
+  '''
   Create a new build, libraries, datasets and results table.
   '''
   def CreateTables(self):
@@ -271,6 +298,7 @@ class Database:
     self.CreateMemoryTable()
     self.CreateMethodInfoTable()
     self.CreateMetricBootstrapTable()
+    self.CreateSweepsTable()
 
   '''
   Add a new build record to the builds table.
@@ -301,19 +329,24 @@ class Database:
   @param metric - The metric result as string.
   @param datasetId - The id of the dataset.
   @param methodId - The id of the method.
+  @param sweepId - The id of the sweep (-1 for no sweep).
+  @param sweepElementId - The element id of the sweep (-1 for no sweep).
   '''
-  def NewMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
+  def NewMetricResult(self, buildId, libaryId, metric, datasetId, methodId,
+                      sweepId=-1, sweepElementId=-1):
     try:
       with self.con:
-        command = "INSERT INTO metrics VALUES (NULL,%s,%s,%s,%s,%s)"
+        command = "INSERT INTO metrics VALUES (NULL,%s,%s,%s,%s,%s,%s,%s)"
 
         if self.driver == "mysql":
           self.cur.execute(command,
-              (buildId, libaryId, str(metric), datasetId, methodId))
+              (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
+               sweepElementId))
 
         elif self.driver == "sqlite":
-          self.cur.execute(command % ('?', '?', '?', '?', '?'),
-              (buildId, libaryId, str(metric), datasetId, methodId))
+          self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?'),
+              (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
+               sweepElementId))
 
         self.error = 0
     except Exception:
@@ -323,7 +356,8 @@ class Database:
         self.cur = self.con.cursor()
         self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
 
-        self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId)
+        self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId,
+                             sweepId, sweepElementId)
 
   '''
   Add a new metric result record to the bootstrap table.
@@ -332,54 +366,116 @@ class Database:
   @param metric - The metric result as string.
   @param datasetId - The id of the dataset.
   @param methodId - The id of the method.
+  @param sweepId - The id of the sweep (-1 if no sweep).
+  @param sweepElementId - The element id of the sweep (-1 if no sweep).
   '''
-  def NewBootstrapResult(self, buildId, libaryId, metric, datasetId, methodId):
+  def NewBootstrapResult(self, buildId, libaryId, metric, datasetId, methodId,
+                         sweepId=-1, sweepElementId=-1):
     with self.con:
-      command = "INSERT INTO bootstrap VALUES (NULL,%s,%s,%s,%s,%s)"
+      command = "INSERT INTO bootstrap VALUES (NULL,%s,%s,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
         self.cur.execute(command,
-            (buildId, libaryId, str(metric), datasetId, methodId))
+            (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
+             sweepElementId))
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?'),
-            (buildId, libaryId, str(metric), datasetId, methodId))
+        self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?'),
+            (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
+             sweepElementId))
 
-  def UpdateMetricResult(self, buildId, libaryId, metric, datasetId, methodId):
+  '''
+  Create a new sweep.
+
+  @param sweepType Type of the sweep ('float' or 'int'), a string.
+  @param sweepBegin First value of the sweep.
+  @param sweepStep Step size of the sweep.
+  @param sweepEnd Final value of the sweep.
+  '''
+  def NewSweep(self, sweepType, sweepBegin, sweepStep, sweepEnd):
     with self.con:
-      if self.GetMetricResult(buildId, libaryId, datasetId, methodId):
-        self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
-            + " WHERE build_id=" + str(buildId) + " AND libary_id="
-            + str(libaryId) + " AND dataset_id=" + str(datasetId)
-            + " AND method_id=" + str(methodId))
+      command = "INSERT INTO sweeps VALUES (NULL, %s, %s, %s, %s)"
+
+      if self.driver == "mysql":
+        self.cur.execute(command, (sweepType, sweepBegin, sweepStep, sweepEnd))
+        self.cur.execute("SELECT LAST_INSERT_ID()")
+      elif self.driver == "sqlite":
+        self.cur.execute(command % ('?', '?', '?', '?'),
+            (sweepType, sweepBegin, sweepStep, sweepEnd))
+        self.cur.execute("SELECT last_insert_rowid()")
+
+      return self.cur.fetchall()[0][0]
+
+  def UpdateMetricResult(self, buildId, libaryId, metric, datasetId, methodId,
+                         sweepId=-1, sweepElementId=-1):
+    with self.con:
+      if self.GetMetricResult(buildId, libaryId, datasetId, methodId, sweepId,
+                              sweepElementId):
+        if sweepId != -1:
+          self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
+              + " WHERE build_id=" + str(buildId) + " AND libary_id="
+              + str(libaryId) + " AND dataset_id=" + str(datasetId)
+              + " AND method_id=" + str(methodId))
+        else:
+          self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
+              + " WHERE build_id=" + str(buildId) + " AND libary_id="
+              + str(libaryId) + " AND dataset_id=" + str(datasetId)
+              + " AND method_id=" + str(methodId) + " AND sweep_id="
+              + str(sweepId) + " AND sweep_element_id=" + str(sweepElementId))
       else:
-        self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId)
+        self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId,
+                             sweepId, sweepElementId)
 
-  def UpdateBootstrapResult(self, buildId, libaryId, metric, datasetId, methodId):
+  def UpdateBootstrapResult(self, buildId, libaryId, metric, datasetId,
+                            methodId, sweepId=-1, sweepElementId=-1):
     with self.con:
-      if self.GetBootstrapResult(buildId, libaryId, datasetId, methodId):
-        self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
-            + " WHERE build_id=" + str(buildId) + " AND libary_id="
-            + str(libaryId) + " AND dataset_id=" + str(datasetId)
-            + " AND method_id=" + str(methodId))
+      if self.GetBootstrapResult(buildId, libaryId, datasetId, methodId,
+                                 sweepId, sweepElementId):
+        if sweepId == -1:
+          self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
+              + " WHERE build_id=" + str(buildId) + " AND libary_id="
+              + str(libaryId) + " AND dataset_id=" + str(datasetId)
+              + " AND method_id=" + str(methodId))
+        else:
+          self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
+              + " WHERE build_id=" + str(buildId) + " AND libary_id="
+              + str(libaryId) + " AND dataset_id=" + str(datasetId)
+              + " AND method_id=" + str(methodId) + " AND sweepId="
+              + str(sweepId) + " AND sweepElementId=" + str(sweepElementId))
       else:
         self.NewBootstrapResult(buildId, libaryId, metric, datasetId, methodId)
 
-  def GetMetricResult(self, buildId, libaryId, datasetId, methodId):
+  def GetMetricResult(self, buildId, libaryId, datasetId, methodId, sweepId=-1,
+                      sweepElementId=-1):
     try:
       with self.con:
-        self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
-            + " AND libary_id=" + str(libaryId) + " AND dataset_id="
-            + str(datasetId) + " AND method_id=" + str(methodId))
+        if sweepId == -1:
+          self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
+              + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+              + str(datasetId) + " AND method_id=" + str(methodId))
+        else:
+          self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
+              + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+              + str(datasetId) + " AND method_id=" + str(methodId)
+              + " AND sweepId=" + str(sweepId) + " AND sweepElementId="
+              + str(sweepElementId))
         return self.cur.fetchall()
     except Exception:
       return None
 
-  def GetBootstrapResult(self, buildId, libaryId, datasetId, methodId):
+  def GetBootstrapResult(self, buildId, libaryId, datasetId, methodId,
+                         sweepId=-1, sweepElementId=-1):
     with self.con:
-      self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
-          + " AND libary_id=" + str(libaryId) + " AND dataset_id="
-          + str(datasetId) + " AND method_id=" + str(methodId))
+      if sweepId == -1:
+        self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
+            + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+            + str(datasetId) + " AND method_id=" + str(methodId))
+      else:
+        self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
+            + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+            + str(datasetId) + " AND method_id=" + str(methodId)
+            + " AND sweep_id=" + str(sweepId) + " AND sweep_element_id="
+            + str(sweepElementId))
       return self.cur.fetchall()
 
   '''
@@ -470,19 +566,24 @@ class Database:
   @param var - The variance of the build.
   @param datasetId - The id of the dataset.
   @param methodId - The id of the method.
+  @param sweepId - The id of the sweep (-1 if no sweep).
+  @param sweepElementId - The element in the sweep (-1 if no sweep).
   '''
-  def NewResult(self, buildId, libaryId, time, var, datasetId, methodId):
+  def NewResult(self, buildId, libaryId, time, var, datasetId, methodId,
+                sweepId=-1, sweepElementId=-1):
     with self.con:
-      command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s)"
+      command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
         self.cur.execute(command,
-            (buildId, libaryId, time, var, datasetId, methodId))
+            (buildId, libaryId, time, var, datasetId, methodId, sweepId,
+             sweepElementId))
         self.cur.execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?', '?'),
-            (buildId, libaryId, time, var, datasetId, methodId))
+        self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?', '?'),
+            (buildId, libaryId, time, var, datasetId, methodId, sweepId,
+             sweepElementId))
         self.cur.execute("SELECT last_insert_rowid()")
 
   '''
@@ -492,13 +593,23 @@ class Database:
   @param libaryId - The if ot the library.
   @param datasetId - The id of the dataset.
   @param methodId - The id of the method.
+  @param sweepId - The id of the sweep (-1 if no sweep).
+  @param sweepElementId - The element in the sweep (-1 if no sweep).
   @return The specified result record.
   '''
-  def GetResult(self, buildId, libaryId, datasetId, methodId):
+  def GetResult(self, buildId, libaryId, datasetId, methodId, sweepId=-1,
+                sweepElementId=-1):
     with self.con:
-      self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId)
-          + " AND libary_id=" + str(libaryId) + " AND dataset_id="
-          + str(datasetId) + " AND method_id=" + str(methodId))
+      if sweepId != -1:
+        self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId)
+            + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+            + str(datasetId) + " AND method_id=" + str(methodId)
+            + " AND sweep_id=" + str(sweepId) + " AND sweep_element_id="
+            + str(sweepElementId))
+      else:
+        self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId)
+            + " AND libary_id=" + str(libaryId) + " AND dataset_id="
+            + str(datasetId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
 
   '''
@@ -511,14 +622,26 @@ class Database:
   @param var - The variance of the build.
   @param datasetId - The id of the dataset.
   @param methodId - The id of the method.
+  @param sweepId - The id of the sweep (-1 if no sweep).
+  @param sweepElementId - The element of the sweep (-1 if no sweep).
   '''
-  def UpdateResult(self, buildId, libaryId, time, var, datasetId, methodId):
+  def UpdateResult(self, buildId, libaryId, time, var, datasetId, methodId,
+                   sweepId=-1, sweepElementId=-1):
     with self.con:
-      if self.GetResult(buildId, libaryId, datasetId, methodId):
-        self.cur.execute("UPDATE results SET time=" + str(time) + ",var="
-            + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id="
-            + str(libaryId) + " AND dataset_id=" + str(datasetId)
-            + " AND method_id=" + str(methodId))
+      if self.GetResult(buildId, libaryId, datasetId, methodId, sweepId,
+                        sweepElementId):
+        if sweepId != -1:
+          self.cur.execute("UPDATE results SET time=" + str(time) + ",var="
+              + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id="
+              + str(libaryId) + " AND dataset_id=" + str(datasetId)
+              + " AND method_id=" + str(methodId) + " AND sweepId="
+              + str(sweepId) + " AND sweepElementId=" + str(sweepElementId))
+        else:
+          self.cur.execute("UPDATE results SET time=" + str(time) + ",var="
+              + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id="
+              + str(libaryId) + " AND dataset_id=" + str(datasetId)
+              + " AND method_id=" + str(methodId))
+
       else:
         self.NewResult(buildId, libaryId, time, var, datasetId, methodId)
 
@@ -532,7 +655,7 @@ class Database:
   def GetMethod(self, name, parameters):
      with self.con:
       self.cur.execute("SELECT id FROM methods WHERE name='" + name +
-          "' AND parameters='" + parameters + "'")
+          "' AND parameters='" + json.dumps(parameters) + "'")
       return self.cur.fetchall()
 
   '''
@@ -548,11 +671,12 @@ class Database:
       command = "INSERT INTO methods VALUES (NULL,%s,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command, (name, parameters, alias))
+        self.cur.execute(command, (name, json.dumps(parameters), alias))
         self.cur.execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?'), (name, parameters, alias))
+        self.cur.execute(command % ('?', '?', '?'), (name,
+            json.dumps(parameters), alias))
         self.cur.execute("SELECT last_insert_rowid()")
 
       return self.cur.fetchall()[0][0]
@@ -711,19 +835,25 @@ class Database:
   @param libaryId - The id of the library.
   @param methodId - The id of the method
   @param datasetId - The id of the dataset.
+  @param sweepId - The id of the parameter sweep (-1 if no sweep).
+  @param sweepElementId - The element of the sweep this record is for (-1 if no
+      sweep).
   @param memoryInfo - The text for the memory value.
   '''
-  def NewMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
-     with self.con:
-      command = "INSERT INTO memory VALUES (NULL,%s,%s,%s,%s,%s)"
+  def NewMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo,
+      sweepId=-1, sweepElementId=-1):
+    with self.con:
+      command = "INSERT INTO memory VALUES (NULL,%s,%s,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
         self.cur.execute(command,
-            (buildId, libaryId, methodId, datasetId, memoryInfo))
+            (buildId, libaryId, methodId, datasetId, sweepId, sweepElementId,
+             memoryInfo))
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?'),
-            (buildId, libaryId, methodId, datasetId, memoryInfo))
+        self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?'),
+            (buildId, libaryId, methodId, datasetId, sweepId, sweepElementId,
+             memoryInfo))
 
   '''
   Update the given memory record in the memory table if the record is available
@@ -733,18 +863,34 @@ class Database:
   @param libaryId - The id of the library.
   @param methodId - The id of the method
   @param datasetId - The id of the dataset.
+  @param sweepId - The id of the parameter sweep (-1 if no sweep).
+  @param sweepElementId - The element of the sweep this record is for (-1 if no
+      sweep).
   @param memoryInfo - The text for the memory value.
   '''
-  def UpdateMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo):
-     with self.con:
+  def UpdateMemory(self, buildId, libaryId, methodId, datasetId, memoryInfo,
+      sweepId=-1, sweepElementId=-1):
+    with self.con:
+      if sweepId != -1:
+        if self.GetMemoryResults(buildId, libaryId, methodId, sweepId,
+            sweepElementId):
+          self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
+            + "\' WHERE build_id=" + str(buildId) + " AND libary_id="
+            + str(libaryId) + " AND dataset_id=" + str(datasetId)
+            + " AND method_id=" + str(methodId) + " AND sweepId="
+            + str(sweepId) + " AND sweepElementId=" + str(sweepElementId))
+        else:
+          self.NewMemory(buildId, libaryId, methodId, datasetId, memoryInfo,
+              sweepId, sweepElementId)
 
-      if self.GetMemoryResults(buildId, libaryId, methodId):
-        self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
-          + "\' WHERE build_id=" + str(buildId) + " AND libary_id="
-          + str(libaryId) + " AND dataset_id=" + str(datasetId)
-          + " AND method_id=" + str(methodId))
       else:
-        self.NewMemory(buildId, libaryId, methodId, datasetId, memoryInfo)
+        if self.GetMemoryResults(buildId, libaryId, methodId):
+          self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
+            + "\' WHERE build_id=" + str(buildId) + " AND libary_id="
+            + str(libaryId) + " AND dataset_id=" + str(datasetId)
+            + " AND method_id=" + str(methodId))
+        else:
+          self.NewMemory(buildId, libaryId, methodId, datasetId, memoryInfo)
 
   '''
   Get the memory informations of the given parameters.
@@ -752,13 +898,24 @@ class Database:
   @param buildId - The id of the build.
   @param libaryId - The id of the library.
   @param methodId - The id of the method.
+  @param sweepId - The id of the sweep (-1 if no sweep).
+  @param sweepElementId - The element of the sweep that is desired (-1 if no
+      sweep).
   @return The memory informations of the method.
   '''
-  def GetMemoryResults(self, buildId, libaryId, methodId):
+  def GetMemoryResults(self, buildId, libaryId, methodId, sweepId=-1,
+      sweepElementId=-1):
     with self.con:
-      self.cur.execute("SELECT * FROM memory JOIN datasets ON " +
-        "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) +
-        " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
+      if sweepId == -1:
+        self.cur.execute("SELECT * FROM memory JOIN datasets ON " +
+          "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) +
+          " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
+      else:
+        self.cur.execute("SELECT * FROM memory JOIN datasets ON " +
+            "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) +
+            " AND build_id=" + str(buildId) + " AND method_id=" +
+            str(methodId) + " AND sweepId=" + str(sweepId) +
+            " AND sweepElementId=" + str(sweepElementId))
       return self.cur.fetchall()
 
   '''
@@ -799,4 +956,20 @@ class Database:
     with self.con:
       self.cur.execute("SELECT parameters FROM methods WHERE id=" +
           str(methodId))
+      return json.loads(self.cur.fetchall())
+
+  '''
+  Get the id of a given sweep.
+
+  @param sweepType The string 'float' or 'int'.
+  @param sweepBegin The starting point of the sweep.
+  @param sweepStep The step size of the sweep.
+  @param sweepEnd The ending point of the sweep.
+  '''
+  def GetSweep(self, sweepType, sweepBegin, sweepStep, sweepEnd):
+    with self.con:
+      self.cur.execute("SELECT id FROM sweeps WHERE type='"
+          + sweepType + "' AND begin='" + str(sweepBegin)
+          + "' AND step='" + str(sweepStep) + "' AND end='"
+          + str(sweepEnd) + "'")
       return self.cur.fetchall()

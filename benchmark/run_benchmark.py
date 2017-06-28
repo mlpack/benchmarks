@@ -5,7 +5,9 @@
   Perform the timing benchmark.
 '''
 
-import os, sys, inspect
+import os, sys, inspect, json
+import math
+from copy import copy
 
 # Import the util path, this method even works if the path contains
 # symlinks to modules.
@@ -196,9 +198,12 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
       for options, libraries in sets.items():
         # Remove newlines tabs and whitespace on the left and right side from
         # the options parameter string.
-        options = options.strip(' \t\n\r')
+        if options == '':
+          options = {}
+        else:
+          options = json.loads(options)
 
-        Log.Info("Options: " + (options if options != "" else "None"))
+        Log.Info("Options: " + (str(options) if options != {} else "None"))
 
         if log:
           methodId = db.GetMethod(method, options)
@@ -291,7 +296,6 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
               Log.Fatal("Could not load the script: " + script)
               Log.Fatal("Exception: " + str(e))
             else:
-
               for dataset in datasets:
                 datasetName = NormalizeDatasetName(dataset)
                 row = FindRightRow(dataMatrix, datasetName, datasetCount)
@@ -308,128 +312,205 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                 modifiedDataset = GetDataset(dataset, format)
 
-                try:
-                  instance = methodCall(modifiedDataset[0], timeout=timeout,
-                    verbose=False)
-                except Exception as e:
-                  Log.Fatal("Could not call the constructor: " + script)
-                  Log.Fatal("Exception: " + str(e))
-                  continue
+                # Do we need to do any sweeps?
+                sweep = ["sweep" in str(v) for k, v in
+                    options.items()].count(True) > 0
+                if sweep:
+                  # Parse the sweep.
+                  for k, v in options.items():
+                    if "sweep" in str(v):
+                      p = re.compile(r"sweep\([ \t]*(?P<begin>[-0-9.e]*),[ \t]*"
+                          "(?P<step>[-0-9.e]*)[ \t]*,[ \t]*"
+                          "(?P<end>[-0-9.e]*)[ \t]*\)")
+                      m = p.match(str(v))
+                      sweep_begin = m.group("begin")
+                      sweep_step = m.group("step")
+                      sweep_end = m.group("end")
+                      sweep_name = k
+                      # Get the type of the sweep.
+                      def sweepType(sweep_begin, sweep_step, sweep_end):
+                        try:
+                          a = int(sweep_begin)
+                          b = int(sweep_step)
+                          c = int(sweep_end)
+                          return 'int'
+                        except ValueError:
+                          try:
+                            a = float(sweep_begin)
+                            b = float(sweep_step)
+                            c = float(sweep_end)
+                            return 'float'
+                          except ValueError:
+                            Log.Fatal("cannot parse sweep: " + str(v))
+                            raise Exception("cannot parse sweep")
 
-                # Logging: Add method information record.
-                if log:
+                      sweep_type = sweepType(sweep_begin, sweep_step, sweep_end)
+                      break
+
+                  sweep_len = math.ceil((float(sweep_end) - float(sweep_begin)) /
+                      float(sweep_step)) + 1
+                  # Get a sweep id.
+                  if log:
+                    sweep_id = db.GetSweep(sweep_type, sweep_begin, sweep_step,
+                        sweep_end)
+                    sweep_id = sweep_id[0][0] if sweep_id else \
+                        db.NewSweep(sweep_type, sweep_begin, sweep_step, sweep_end)
+                else:
+                  sweep_len = 1
+                  if log:
+                    sweep_id = -1
+
+                for sweep_elem in range(sweep_len):
+                  # Generate the options.
+                  run_options = copy(options)
+                  if sweep:
+                    # Modify option value.
+                    def to_num(s):
+                      try:
+                        return int(s)
+                      except ValueError:
+                        return float(s)
+
+                    run_options[sweep_name] = to_num(sweep_begin) + \
+                        to_num(sweep_step) * sweep_elem
+                    Log.Info("- Sweep step " + str(sweep_elem + 1) + " of "
+                        + str(sweep_len) + " (" + sweep_name + ": "
+                        + str(run_options[sweep_name]) + ")")
+
                   try:
-                    # Some script define a method description, if
-                    # the description is set, save this in the database.
-                    methodDescription = instance.description
-                  except AttributeError:
-                    pass
-                  else:
-                    # Only store the description in the databse if there isn't
-                    # a description.
-                    if methodDescription and not db.GetMethodInfo(methodId):
-                      db.NewMethodInfo(methodId, methodDescription)
-
-                if 'watch' in tasks and log:
-                  watchCheck = False
-                  checkFiles = [method, method.lower()] + files
-
-                  for checkFile in checkFiles:
-                    for watchFile in watchFiles:
-                      if checkFile in watchFile:
-                        watchCheck = True
-                        break;
-
-                  if not watchCheck:
+                    instance = methodCall(modifiedDataset[0], timeout=timeout,
+                        verbose=False)
+                  except Exception as e:
+                    Log.Fatal("Could not call the constructor: " + script)
+                    Log.Fatal("Exception: " + str(e))
                     continue
 
-                if 'metric' in tasks:
-                  metrics = []
-
-                  for trail in range(trials):
-                    try:
-                      currentMetric = instance.RunMetrics(options)
-
-                      if type(currentMetric) is not dict and currentMetric == -2:
-                        # Timout failure.
-                        metrics = [{ 'Runtime' :  ">" + str(timeout)}]
-                        break
-                      elif type(currentMetric) is not dict and currentMetric < 0:
-                        # Runtime exception.
-                        metrics = [{ 'Runtime' :  "failure"}]
-                        break
-                      else:
-                        # Append new data.
-                        metrics.append(currentMetric)
-                    except Exception as e:
-                      Log.Fatal("Exception: " + str(e))
-
-                  finalMetrics = {}
-                  if len(metrics) > 0:
-                    finalMetrics = metrics[0]
-                    for m in range(1, len(metrics)):
-                      for metricKey in metrics[m]:
-                        value = metrics[m][metricKey]
-
-                        if isFloat(value) or isInt(value):
-                          finalMetrics[metricKey] += value
-
-                  for metricKey in finalMetrics:
-                    value = finalMetrics[metricKey]
-                    if isFloat(value) or isInt(value):
-                      finalMetrics[metricKey] /= len(metrics)
-
-                      # Convert to int if possible.
-                      if (finalMetrics[metricKey] == int(finalMetrics[metricKey])):
-                        finalMetrics[metricKey] = int(finalMetrics[metricKey])
-
-                  # Update the Runtime matrix view.
-                  if 'Runtime' in finalMetrics:
-                    if ">" in str(finalMetrics['Runtime']):
-                      # Runtime timeout.
-                      dataMatrix[row][col] = -1
-                    elif "failure" == str(finalMetrics['Runtime']):
-                      # Runtime failure.
-                      dataMatrix[row][col] = -2
-                    elif isFloat(finalMetrics['Runtime']):
-                      # Truncate to specified precision.
-                      dataMatrix[row][col] = "{0:.6f}".format(finalMetrics['Runtime'])
-                    else:
-                      # Integer, no need to specify the precision.
-                      dataMatrix[row][col] = finalMetrics['Runtime']
-
+                  # Logging: Add method information record.
                   if log:
-                    buildID, libraryID = build[name]
-
-                    if update:
-                      try:
-                        # Update metric data.
-                        db.UpdateMetricResult(buildID, libraryID,
-                            simplejson.dumps(finalMetrics), datasetId, methodId)
-
-                        # Update runtime data.
-                        db.UpdateResult(buildID, libraryID,
-                            dataMatrix[row][col], 0, datasetId, methodId)
-                      except Exception:
-                        pass
+                    try:
+                      # Some script define a method description, if
+                      # the description is set, save this in the database.
+                      methodDescription = instance.description
+                    except AttributeError:
+                      pass
                     else:
-                      # Add new metric results.
-                      db.NewMetricResult(buildID, libraryID,
-                          simplejson.dumps(finalMetrics), datasetId, methodId)
-
-                      # Add new runtime results.
-                      db.NewResult(buildID, libraryID, dataMatrix[row][col],
-                          0, datasetId, methodId)
+                      # Only store the description in the databse if there isn't
+                      # a description.
+                      if methodDescription and not db.GetMethodInfo(methodId):
+                        db.NewMethodInfo(methodId, methodDescription)
 
                   if 'watch' in tasks and log:
-                    for prevbuildID in buildIdPrevious:
-                      resultsPrevious = db.GetResult(prevbuildID[0], libraryID,
-                          datasetId, methodId)
-                      if (resultsPrevious and resultsPrevious[0][3] != '-'):
-                        break
+                    watchCheck = False
+                    checkFiles = [method, method.lower()] + files
 
-                    if resultsPrevious:
-                      dataMatrixPrevious[row][col] = str(resultsPrevious[0][3])
+                    for checkFile in checkFiles:
+                      for watchFile in watchFiles:
+                        if checkFile in watchFile:
+                          watchCheck = True
+                          break;
+
+                    if not watchCheck:
+                      continue
+
+                  if 'metric' in tasks:
+                    metrics = []
+
+                    for trial in range(trials):
+                      try:
+                        currentMetric = instance.RunMetrics(run_options)
+
+                        if type(currentMetric) is not dict and currentMetric == -2:
+                          # Timout failure.
+                          metrics = [{ 'Runtime' :  ">" + str(timeout)}]
+                          break
+                        elif type(currentMetric) is not dict and currentMetric < 0:
+                          # Runtime exception.
+                          metrics = [{ 'Runtime' :  "failure"}]
+                          break
+                        else:
+                          # Append new data.
+                          metrics.append(currentMetric)
+                      except Exception as e:
+                        Log.Fatal("Exception: " + str(e))
+                        raise e
+
+                    finalMetrics = {}
+                    if len(metrics) > 0:
+                      finalMetrics = metrics[0]
+                      for m in range(1, len(metrics)):
+                        for metricKey in metrics[m]:
+                          value = metrics[m][metricKey]
+
+                          if isFloat(value) or isInt(value):
+                            finalMetrics[metricKey] += value
+
+                    for metricKey in finalMetrics:
+                      value = finalMetrics[metricKey]
+                      if isFloat(value) or isInt(value):
+                        finalMetrics[metricKey] /= len(metrics)
+
+                        # Convert to int if possible.
+                        if (finalMetrics[metricKey] == int(finalMetrics[metricKey])):
+                          finalMetrics[metricKey] = int(finalMetrics[metricKey])
+
+                    # Update the Runtime matrix view.
+                    if 'Runtime' in finalMetrics:
+                      if ">" in str(finalMetrics['Runtime']):
+                        # Runtime timeout.
+                        dataMatrix[row][col] = -1
+                      elif "failure" == str(finalMetrics['Runtime']):
+                        # Runtime failure.
+                        dataMatrix[row][col] = -2
+                      elif isFloat(finalMetrics['Runtime']):
+                        # Truncate to specified precision.
+                        if sweep_elem == 0:
+                          dataMatrix[row][col] = "{0:.6f}".format(finalMetrics['Runtime'])
+                        elif sweep_elem == sweep_len - 1:
+                          dataMatrix[row][col] = dataMatrix[row][col] + \
+                              "-{0:.6f}".format(finalMetrics['Runtime'])
+                      else:
+                        # Integer, no need to specify the precision.
+                        if sweep_elem == 0:
+                          dataMatrix[row][col] = str(finalMetrics['Runtime'])
+                        elif sweep_elem == sweep_len - 1:
+                          dataMatrix[row][col] = dataMatrix[row][col] + "-" + \
+                              str(finalMetrics['Runtime'])
+
+                    if log:
+                      buildID, libraryID = build[name]
+
+                      if update:
+                        try:
+                          # Update metric data.
+                          db.UpdateMetricResult(buildID, libraryID,
+                              simplejson.dumps(finalMetrics), datasetId,
+                              methodId, sweep_id, sweep_elem)
+
+                          # Update runtime data.
+                          db.UpdateResult(buildID, libraryID,
+                              finalMetrics['Runtime'], 0, datasetId, methodId,
+                              sweep_id, sweep_elem)
+                        except Exception:
+                          pass
+                      else:
+                        # Add new metric results.
+                        db.NewMetricResult(buildID, libraryID,
+                            simplejson.dumps(finalMetrics), datasetId, methodId,
+                            sweep_id, sweep_elem)
+
+                        # Add new runtime results.
+                        db.NewResult(buildID, libraryID, finalMetrics['Runtime'],
+                            0, datasetId, methodId, sweep_id, sweep_elem)
+
+                    if 'watch' in tasks and log:
+                      for prevbuildID in buildIdPrevious:
+                        resultsPrevious = db.GetResult(prevbuildID[0], libraryID,
+                            datasetId, methodId, sweep_id, sweep_elem)
+                        if (resultsPrevious and resultsPrevious[0][3] != '-'):
+                          break
+
+                      if resultsPrevious:
+                        dataMatrixPrevious[row][col] = str(resultsPrevious[0][3])
 
                 # Remove temporary datasets.
                 RemoveDataset(modifiedDataset[1])
