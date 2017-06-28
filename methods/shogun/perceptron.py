@@ -59,7 +59,8 @@ class PERCEPTRON(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    model = Perceptron(RealFeatures(data.T), MulticlassLabels(responses))
+    model = AveragedPerceptron(RealFeatures(data.T), MulticlassLabels(responses))
+    model.set_learn_rate(1.0)
     model.set_max_iter(self.iterations)
     model.train()
     return model
@@ -93,10 +94,8 @@ class PERCEPTRON(object):
           with totalTimer:
             # Perform perceptron classification.
             self.model = BuildModel(X, y)
-
-            if len(self.dataset) == 2:
-              pred = self.model.apply(RealFeatures(testSet.T))
-              self.predictions = pred.get_labels()
+            self.model.set_features(RealFeatures(testSet.T))
+            self.predictions = self.model.apply()
       except Exception as e:
         q.put(-1)
         return -1
@@ -130,7 +129,9 @@ class PERCEPTRON(object):
       if not self.model:
         trainData, responses = SplitTrainData(self.dataset)
         self.model = self.BuildModel(trainData, responses)
-
+        self.model.set_features(RealFeatures(testSet.T))
+        self.predictions = self.model.apply()
+      
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
