@@ -1863,28 +1863,31 @@ methods:
         script: methods/weka/kmeans.py
         format: [arff]
         datasets:
-            - files: ['datasets/waveform.csv']
+            - files: [ ['datasets/waveform.csv'] ]
               options: '-c 2'
 
-            - files: ['datasets/wine.csv', 'datasets/iris.csv']
+            - files: [ ['datasets/wine.csv'],
+                       ['datasets/iris.csv'] ]
               options: '-c 3'
 
-            - files: ['datasets/cloud.csv']
+            - files: [ ['datasets/cloud.csv'] ]
               options: '-c 5'
 
-            - files: ['datasets/USCensus1990.csv']
+            - files: [ ['datasets/USCensus1990.csv'] ]
               options: '-c 6'
 
-            - files: ['datasets/covtype.csv', 'datasets/wine_qual.csv']
+            - files: [ ['datasets/covtype.csv'],
+                       ['datasets/wine_qual.csv'] ]
               options: '-c 7'
 
-            - files: ['datasets/isolet.csv']
+            - files: [ ['datasets/isolet.csv'] ]
               options: '-c 26'
 
-            - files: ['datasets/mnist_all.csv', 'datasets/corel-histogram.csv']
+            - files: [ ['datasets/mnist_all.csv'],
+                       ['datasets/corel-histogram.csv'] ]
               options: '-c 10'
 
-            - files: ['datasets/1000000-10-randu.csv']
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
               options: '-c 75'
     ALLKNN:
         run: ['metric']
