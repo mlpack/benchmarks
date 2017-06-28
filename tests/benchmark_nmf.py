@@ -49,7 +49,7 @@ class NMF_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-r 6 -u multdist")
+    result = self.instance.RunMetrics({ "rank": 6, "update_rules": "multdist" })
     self.assertTrue(result["Runtime"] > 0)
 
   '''
@@ -95,7 +95,7 @@ class NMF_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-r 6 -u alspgrad")
+    result = self.instance.RunMetrics({ "rank": 6 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -127,7 +127,7 @@ class NMF_MATLAB_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-r 6 -u multdist")
+    result = self.instance.RunMetrics({ "rank": 6, "update_rules": "multdist" })
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':

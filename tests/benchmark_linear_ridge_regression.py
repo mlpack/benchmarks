@@ -47,7 +47,7 @@ class LinearRidgeRegression_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-t 1.0")
+    result = self.instance.RunMetrics({ "alpha": 1.0 })
     self.assertTrue(result["Simple MSE"] > 0)
     self.assertTrue(result["Runtime"] > 0)
 
@@ -80,7 +80,7 @@ class LinearRidgeRegression_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-t 1.0")
+    result = self.instance.RunMetrics({ "alpha": 1.0 })
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["Simple MSE"] > 0)
 

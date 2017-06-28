@@ -47,7 +47,7 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 3")
+    result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
   '''
@@ -93,7 +93,7 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 3")
+    result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -125,7 +125,7 @@ class KMEANS_WEKA_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 3")
+    result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -157,7 +157,7 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 3")
+    result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
@@ -192,6 +192,6 @@ class KMEANS_MILK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-c 3")
+    result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 

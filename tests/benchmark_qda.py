@@ -46,7 +46,7 @@ class QDA_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result > 0)
 
 '''

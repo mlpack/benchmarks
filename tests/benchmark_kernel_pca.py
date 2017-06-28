@@ -49,7 +49,7 @@ class KPCA_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k linear")
+    result = self.instance.RunMetrics({ "kernel": "linear" })
     self.assertTrue(result["Runtime"] > 0)
 
   '''
@@ -95,7 +95,7 @@ class KPCA_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k linear")
+    result = self.instance.RunMetrics({ "kernel": "linear" })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -127,7 +127,7 @@ class KPCA_MLPY_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k linear")
+    result = self.instance.RunMetrics({ "kernel": "linear" })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -159,7 +159,7 @@ class KPCA_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k linear")
+    result = self.instance.RunMetrics({ "kernel": "linear" })
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':

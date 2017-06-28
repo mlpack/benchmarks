@@ -47,7 +47,7 @@ class GMM_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -80,7 +80,7 @@ class GMM_SCIKIT_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     print("asdw")
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     print("result" + str(result))
     # self.assertTrue(result > 0)
 
