@@ -60,25 +60,37 @@ class SVM(object):
   @return The created model.
   '''
   def BuildModel(self, data, labels, options):
-    k = re.search("-k ([^\s]+)", options)
-    c = re.search("-c (\d+)", options)
-    g = re.search("-g (\d+)", options)
+    if "kernel" in options:
+      k = str(options.pop("kernel"))
+    else:
+      Log.Fatal("Required parameter 'kernel' not specified!")
+      raise Exception("missing parameter")
 
-    self.C = 1.0 if not c else float(c.group(1))
-    self.gamma = 0.0 if not g else float(g.group(1))
+    if "c" in options:
+      self.C = float(options.pop("c"))
+    if "gamma" in options:
+      self.gamma = float(options.pop("gamma"))
 
-    if not k or k.group(1) == "gaussian":
+
+    if k == "gaussian":
       self.kernel = GaussianKernel(data, data, 1)
-    elif k.group(1) == "polynomial":
-      d = re.search('-D (\d+)', options)
-      d = 1 if not d else int(d.group(1))
+    elif k == "polynomial":
+      if "degree" in options:
+        d = int(options.pop("degree"))
+      else:
+        d = 1
+
       self.kernel = PolyKernel(data, data, d, True)
-    elif k.group(1) == "linear":
+    elif k == "linear":
       self.kernel = LinearKernel(data, data)
-    elif k.group(1) == "hyptan":
+    elif k == "hyptan":
       self.kernel = SigmoidKernel(data, data, 2, 1.0, 1.0)
     else:
       self.kernel = GaussianKernel(data, data, 1)
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
 
     # Create and train the classifier.
     svm = LibSvm(self.C, self.kernel, labels)

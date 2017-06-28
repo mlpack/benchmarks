@@ -72,6 +72,27 @@ class MLP_FORWARD(object):
       self.description = description
 
   '''
+  Given an input dict of options, return an output string that can be passed to
+  the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "input_size" in options:
+      optionsStr = "--input_size " + str(options.pop("input_size"))
+    if "hidden_size" in options:
+      optionsStr = optionsStr + " --hidden_size " +
+          str(options.pop("hidden_size"))
+    if "output_size" in options:
+      optionsStr = optionsStr + " --output_size " +
+          str(options.pop("output_size"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters:" + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Perform the linear forward pass. If the method has been successfully
   completed return the elapsed time in seconds.
 
@@ -83,7 +104,8 @@ class MLP_FORWARD(object):
     Log.Info("Perform MLP Forward.", self.verbose)
 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "mlp_forward -v " + options)
+    cmd = shlex.split(self.path + "mlp_forward -v " +
+        self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

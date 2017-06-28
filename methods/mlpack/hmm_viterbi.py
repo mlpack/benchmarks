@@ -97,9 +97,13 @@ class HMMVITERBI(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform HMM Viterbi Memory Profiling.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "mlpack_hmm_viterbi -i " + self.dataset[0]
-          + " -m " + self.dataset[1] + " -v " + options)
+          + " -m " + self.dataset[1] + " -v")
     else:
       Log.Fatal("Not enough input datasets.")
       return -1
@@ -117,9 +121,13 @@ class HMMVITERBI(object):
   def RunMetrics(self, options):
     Log.Info("Perform HMM Viterbi State Prediction.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_hmm_viterbi -i " + self.dataset[0] +
-          " -m " + self.dataset[1] + " -v " + options)
+          " -m " + self.dataset[1] + " -v")
     else:
       Log.Fatal("Not enough input datasets.")
       return -1

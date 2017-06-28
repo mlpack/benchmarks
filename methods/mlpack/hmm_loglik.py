@@ -96,9 +96,13 @@ class HMMLOGLIK(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform HMM LOGLIK Memory Profiling.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_hmm_loglik -i " + self.dataset[0] +
-          " -m " + self.dataset[1] + " -v " + options)
+          " -m " + self.dataset[1] + " -v")
     else:
       Log.Fatal("This method requires two datasets.")
       return -1
@@ -116,9 +120,13 @@ class HMMLOGLIK(object):
   def RunMetrics(self, options):
     Log.Info("Perform Markov Model Sequence Log-Likelihood.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_hmm_loglik -i " + self.dataset[0] +
-          " -m " + self.dataset[1] + " -v " + options)
+          " -m " + self.dataset[1] + " -v")
     else:
       Log.Fatal("This method requires two datasets.")
       return -1

@@ -45,6 +45,24 @@ class PCA(object):
     self.timeout = timeout
 
   '''
+  Given an input dict of options, return a string that can be given to the
+  program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "new_dimensionality" in options:
+      optionsStr = "-d " + str(options.pop("new_dimensionality"))
+    if "whiten" in options:
+      optionsStr = optionsStr + " -s"
+      options.pop("whiten")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Perform Principal Components Analysis. If the method has been successfully 
   completed return the elapsed time in seconds.
 
@@ -57,7 +75,8 @@ class PCA(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " PCA -i " + self.dataset + " " + options)
+        ":methods/weka" + " PCA -i " + self.dataset + " " +
+        self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

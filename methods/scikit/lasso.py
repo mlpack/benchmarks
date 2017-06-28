@@ -56,8 +56,9 @@ class LASSO(object):
       responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
 
       # Get all the parameters.
-      lambda1 = re.search("-l (\d+)", options)
-      lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

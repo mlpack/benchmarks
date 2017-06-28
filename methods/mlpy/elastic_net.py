@@ -47,8 +47,7 @@ class ElasticNet(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.rho = 0.5
-    self.alpha = 0.5
+    self.build_options = {}
 
   '''
   Build the model for the Elastic Net Classifier.
@@ -59,8 +58,7 @@ class ElasticNet(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    elasticNet = mlpy.ElasticNet(lmb=self.rho,
-                                 eps=self.alpha)
+    elasticNet = mlpy.ElasticNet(**self.build_options)
     elasticNet.learn(data, labels)
     return elasticNet
 
@@ -79,11 +77,14 @@ class ElasticNet(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
-      r = re.search("-r (\d+)", options)
-      a = re.search("-a (\d+)", options)
-
-      self.rho = 0.5 if not r else int(r.group(1))
-      self.alpha = 0.5 if not r else int(a.group(1))
+      self.build_options = {}
+      if "rho" in options:
+        self.build_options['lmb'] = float(options.pop("rho"))
+      if "alpha" in options:
+        self.build_options['eps'] = float(options.pop("alpha"))
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

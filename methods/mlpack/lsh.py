@@ -83,6 +83,27 @@ class LSH(object):
         os.remove(f)
 
   '''
+  Convert an input dict of options to an output string that can be used by the
+  program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' not specified!")
+      raise Exception("missing parameter")
+
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the All K-Approximate-Nearest-Neighbor method.
   If the method has been successfully completed the report is saved in the
   specified file.
@@ -98,7 +119,7 @@ class LSH(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_lsh -r " + self.dataset + " -v " +
-        options)
+        self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -115,7 +136,7 @@ class LSH(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_lsh -r " + self.dataset + " -v " +
-        options)
+        self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

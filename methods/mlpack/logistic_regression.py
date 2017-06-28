@@ -90,6 +90,26 @@ class LogisticRegression(object):
         os.remove(f)
 
   '''
+  Convert an input dict of options to an output string that the program can use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "epsilon" in options:
+      optionsStr = "-e " + str(options.pop("epsilon"))
+    if "max_iterations" in options:
+      optionsStr = optionsStr + " -n " + str(options.pop("max_iterations"))
+    if "optimizer" in options:
+      optionsStr = optionsStr + " -O " + str(options.pop("optimizer"))
+    if "step_size" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("step_size"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Logistic Regression Prediction
   method. If the method has been successfully completed the report is saved in
   the specified file.
@@ -107,10 +127,11 @@ class LogisticRegression(object):
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "mlpack_logistic_regression -i " +
-          self.dataset[0] + " -t " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -t " + self.dataset[1] + " -v " +
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_logistic_regression -i " +
-          self.dataset[0] + " -v " + options)
+          self.dataset[0] + " -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -122,10 +143,11 @@ class LogisticRegression(object):
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_logistic_regression -t " +
-          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -T " + self.dataset[1] + " -v " +
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_logistic_regression -t " +
-          self.dataset + " -v " + options)
+          self.dataset + " -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

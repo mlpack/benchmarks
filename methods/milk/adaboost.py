@@ -2,7 +2,6 @@
   @file adaboost.py
   AdaBoost classifier with Milk.
 '''
-
 import os
 import sys
 import inspect
@@ -99,6 +98,11 @@ class ADABOOST(object):
   '''
   def RunMetrics(self, options):
     Log.Info("Perform ADABOOST.", self.verbose)
+
+    # No extra options allowed.
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
 
     results = None
     if len(self.dataset) >= 2:

@@ -64,19 +64,23 @@ class LinearRegression(object):
   Linear Regression benchmark instance. If the method has been successfully
   completed return the elapsed time in seconds.
 
-  @param options - Extra options for the method.
+  @param options - Extra options for the method (none accepted).
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
     Log.Info("Perform Linear Regression.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the test
     # file. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1] + " " + options
+      inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1]
     else:
-      inputCmd = "-i " + self.dataset[0] + " " + options
+      inputCmd = "-i " + self.dataset[0] + " "
 
     print(self.path + "matlab -nodisplay -nosplash -r \"try, " +
         "LINEAR_REGRESSION('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")

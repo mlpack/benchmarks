@@ -68,6 +68,10 @@ class QDA(object):
           testSet = np.genfromtxt(self.dataset[1], delimiter=',')
           testFeat = modshogun.RealFeatures(testData.T)
 
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
+
         # Labels are the last row of the training set.
         labels = modshogun.MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
 

@@ -79,13 +79,18 @@ class LinearRidgeRegression(object):
 
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
-      alpha = re.search("-t (\d+)", options)
-      alpha = 1.0 if not alpha else int(alpha.group(1))
+      opts = {}
+      if "alpha" in options:
+        opts["alpha"] = float(options.pop("alpha"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
           # Perform linear ridge regression.
-          model = self.BuildModel(X,y, alpha=alpha)
+          model = self.BuildModel(X, y, **opts)
 
           if len(self.dataset) >= 2:
             model.predict(testSet)

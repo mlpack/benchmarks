@@ -56,37 +56,41 @@ class KPCA(object):
 
       with totalTimer:
         # Get the new dimensionality, if it is necessary.
-        dimension = re.search('-d (\d+)', options)
-        if not dimension:
-          d = data.shape[1]
-        else:
-          d = int(dimension.group(1))
+        if "new_dimensionality" in options:
+          d = int(options.pop("new_dimensionality"))
           if (d > data.shape[1]):
             Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
               + "than existing dimensionality (" + str(data.shape[1]) + ")!")
             q.put(-1)
             return -1
+        else:
+          d = data.shape[1]
 
         # Get the kernel type and make sure it is valid.
-        kernel = re.search("-k ([^\s]+)", options)
-        try:
-          if not kernel:
-            Log.Fatal("Choose kernel type, valid choices are 'linear'," +
-                  " 'hyptan' and 'polynomial'.")
-            q.put(-1)
-            return -1
-          elif kernel.group(1) == "linear":
-            model = KernelPCA(n_components=d, kernel="linear")
-          elif kernel.group(1) == "hyptan":
-            model = KernelPCA(n_components=d, kernel="sigmoid")
-          elif kernel.group(1) == "polynomial":
-            degree = re.search('-D (\d+)', options)
-            degree = 1 if not degree else int(degree.group(1))
+        if not "kernel" in options:
+          Log.Fatal("Choose kernel type, valid choices are 'linear'," +
+                " 'hyptan' and 'polynomial'.")
+          q.put(-1)
+          return -1
 
+        kernel = options.pop("kernel")
+        if kernel == "polynomial" and "degree" in options:
+          degree = int(options.pop("degree"))
+
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
+
+        try:
+          if kernel == "linear":
+            model = KernelPCA(n_components=d, kernel="linear")
+          elif kernel == "hyptan":
+            model = KernelPCA(n_components=d, kernel="sigmoid")
+          elif kernel == "polynomial":
             model = KernelPCA(n_components=d, kernel="poly", degree=degree)
-          elif kernel.group(1) == "cosine":
+          elif kernel == "cosine":
             model = KernelPCA(n_components=d, kernel="cosine", degree=degree)
-          elif kernel.group(1) == "gaussian":
+          elif kernel == "gaussian":
             model = KernelPCA(n_components=d, kernel="rbf", degree=degree)
           else:
             Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +

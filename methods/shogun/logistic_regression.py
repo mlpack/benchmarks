@@ -86,8 +86,14 @@ class LogisticRegression(object):
         X, y = SplitTrainData(self.dataset)
 
         # Get the regularization value.
-        self.z = re.search("-l (\d+)", options)
-        self.z = 1 if not self.z else int(self.z.group(1))
+        if "lambda" in options:
+          self.z = float(options.pop("lambda"))
+        else:
+          self.z = 1
+
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
 
         with totalTimer:
           # Perform logistic regression.

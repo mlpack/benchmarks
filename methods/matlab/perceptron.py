@@ -73,12 +73,21 @@ class PERCEPTRON(object):
   def RunMetrics(self, options):
     Log.Info("Perform Perceptron prediction.", self.verbose)
 
+    # Parse options into string.
+    optionsStr = ""
+    if "max_iterations" in options:
+      optionsStr = "-n " + str(options.pop("max_iterations"))
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the test
     # file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " " + options
+      inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " " \
+          + optionsStr
     else:
-      inputCmd = "-t " + self.dataset + " " + options
+      inputCmd = "-t " + self.dataset + " " + optionsStr
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

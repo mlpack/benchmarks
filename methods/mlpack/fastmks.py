@@ -82,6 +82,35 @@ class FastMKS(object):
         os.remove(f)
 
   '''
+  Convert an options dict to a string that can be passed to the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' is missing!")
+      raise Exception("missing parameter")
+
+    if "kernel" in options:
+      optionsStr = optionsStr + " -K " + str(options.pop("kernel"))
+    else:
+      Log.Fatal("Required parameter 'kernel' is missing!")
+      raise Exception("missing parameter")
+
+    if "degree" in options:
+      optionsStr = optionsStr + " -d " + str(options.pop("degree"))
+    if "single_mode" in options:
+      optionsStr = optionsStr + " --single_mode"
+      options.pop("single_mode")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Fast Max-Kernel Search method. If the
   method has been successfully completed the report is saved in the specified
   file.
@@ -99,10 +128,10 @@ class FastMKS(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_fastmks -r " + self.dataset[0] +
-          " -q " + self.dataset[1] + " -v " + options)
+          " -q " + self.dataset[1] + " -v " + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_fastmks -r " + self.dataset +
-          " -v " + options)
+          " -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -121,10 +150,10 @@ class FastMKS(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_fastmks -r " + self.dataset[0] +
-          " -q " + self.dataset[1] + " -v " + options)
+          " -q " + self.dataset[1] + " -v " + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_fastmks -r " + self.dataset +
-          " -v " + options)
+          " -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

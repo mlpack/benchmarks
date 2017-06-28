@@ -73,6 +73,11 @@ class NBC(object):
   def RunMetrics(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
+    # No options accepted for this task.
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " " + options
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, NBC('"

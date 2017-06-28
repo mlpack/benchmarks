@@ -58,8 +58,13 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset, delimiter=',')
 
       # Gather parameters.
-      clusters = re.search("-c (\d+)", options)
-      maxIterations = re.search("-m (\d+)", options)
+      if "clusters" in options:
+        clusters = options.pop("clusters")
+      if "max_iterations" in options:
+        maxIterations = options.pop("max_iterations")
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       # Now do validation of options.
       if not clusters and len(self.dataset) != 2:
@@ -72,7 +77,7 @@ class KMEANS(object):
         q.put(-1)
         return -1
 
-      m = 1000 if not maxIterations else int(maxIterations.group(1))
+      m = 1000 if not maxIterations else int(maxIterations)
 
       try:
         # Create the KMeans object and perform K-Means clustering.
@@ -85,7 +90,7 @@ class KMEANS(object):
                                  return_centroids=False)
           else:
             assignments, centroids = kmeans(data,
-                                            int(clusters.group(1)),
+                                            int(clusters),
                                             max_iter=m)
 
       except Exception as e:

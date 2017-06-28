@@ -57,33 +57,28 @@ class NMF(object):
       try:
         with totalTimer:
           # Gather parameters.
-          seed = re.search("-s (\d+)", options)
-          maxIterations = re.search("-m (\d+)", options)
-          minResidue = re.search("-e ([^\s]+)", options)
-          updateRule = re.search("-u ([^\s]+)", options)
-          rank = re.search("-r (\d+)", options)
+          opts = {}
+          if "rank" in options:
+            opts["n_components"] = int(options.pop("rank"))
+          else:
+            Log.Fatal("Required parameter 'rank' not specified!")
+            raise Exception("missing parameter")
+          if "max_iterations" in options:
+            opts["max_iter"] = int(options.pop("max_iterations"))
+          if "tolerance" in options:
+            opts["tol"] = float(options.pop("tolerance"))
+          if "seed" in options:
+            opts["init"] = "random"
+            opts["random_state"] = int(options.pop("seed"))
+          else:
+            opts["init"] = "nndsvdar"
 
-          m = 10000 if not maxIterations else int(maxIterations.group(1))
-          e = 1e-05 if not maxIterations else int(minResidue.group(1))
-          rank = None if not rank else int(rank.group(1))
-
-          if rank:
-            if rank < 1:
-              Log.Fatal("The rank of the factorization cannot be less than 1.")
-
-          if updateRule:
-            u = updateRule.group(1)
-            if u != 'alspgrad':
-              Log.Fatal("Invalid update rules ('" + u + "'); must be 'alspgrad'.")
-              q.put(-1)
-              return -1
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
 
           # Perform NMF with the specified update rules.
-          if seed:
-            s = int(seed.group(1))
-            model = ScikitNMF(n_components=rank, init='random', max_iter=m, tol=e, random_state=s)
-          else:
-            model = ScikitNMF(n_components=rank, init='nndsvdar', max_iter=m, tol=e)
+          model = ScikitNMF(**opts)
 
           W = model.fit_transform(data)
           H = model.components_

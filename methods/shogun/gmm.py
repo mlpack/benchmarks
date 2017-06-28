@@ -58,12 +58,17 @@ class GMM(object):
         dataFeat = RealFeatures(dataPoints.T)
 
         # Get all the parameters.
-        g = re.search("-g (\d+)", options)
-        n = re.search("-n (\d+)", options)
-        s = re.search("-n (\d+)", options)
+        if "gaussians" in options:
+          g = int(options.pop("gaussians"))
+        else:
+          Log.Fatal("Required parameter 'gaussians' not specified!")
+          raise Exception("missing parameter")
+        if "max_iterations" in options:
+          n = int(options.pop("max_iterations"))
 
-        g = 1 if not g else int(g.group(1))
-        n = 250 if not n else int(n.group(1))
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
 
         # Create the Gaussian Mixture Model.
         model = SGMM(g)

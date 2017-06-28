@@ -71,6 +71,11 @@ class RANDOMFOREST(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
+      # TODO: must be able to specify number of trees in forest
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       try:
         self.model = self.BuildModel()
         with totalTimer:

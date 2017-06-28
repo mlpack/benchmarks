@@ -47,6 +47,10 @@ class ANN(object):
   successful.
   '''
   def AnnNearpy(self, options):
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     def RunAnnNearpy(q):
       totalTimer = Timer()
 
@@ -87,7 +91,7 @@ class ANN(object):
   def RunMetrics(self, options):
     Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
     results = None
-    if len(self.dataset)>=2:
+    if len(self.dataset) >= 2:
       results = self.AnnNearpy(options)
 
     if results < 0:

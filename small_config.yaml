@@ -17,7 +17,10 @@ methods:
         format: [csv, txt]
         datasets:
             - files: ['None']
-              options: '--input_size=50000 --hidden_size=5000 --output_size=100'
+              options:
+                input_size: 50000
+                hidden_size: 5000
+                output_size: 100
 
     MLP_BACKWARD:
         run: ['metric']
@@ -26,4 +29,7 @@ methods:
         format: [csv, txt]
         datasets:
             - files: ['None']
-              options: '--input_size=50000 --hidden_size=5000 --output_size=100'
+              options:
+                input_size: 50000
+                hidden_size: 5000
+                output_size: 100

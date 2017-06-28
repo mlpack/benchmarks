@@ -55,12 +55,31 @@ class ALLKNN(object):
   def RunMetrics(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
+    # Convert options dict to string.
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Number of neighbors to search for (k) required!")
+      raise Exception("missing option in YAML configuration")
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+    if "naive_mode" in options:
+      optionsStr = optionsStr + " -N"
+      options.pop("naive_mode")
+    if "leaf_size" in options:
+      optionsStr = optionsStr + " -l " + str(options.pop("leaf_size"))
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + options
+      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " \
+          + optionsStr
     else:
-      inputCmd = "-r " + self.dataset + " " + options
+      inputCmd = "-r " + self.dataset + " " + optionsStr
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

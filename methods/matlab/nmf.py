@@ -55,7 +55,26 @@ class NMF(object):
   def RunMetrics(self, options):
     Log.Info("Perform NMF.", self.verbose)
 
-    inputCmd = "-i " + self.dataset + " " + options
+    # Parse options into string.
+    optionsStr = ""
+    if "rank" in options:
+      optionsStr = "-r " + str(options.pop("rank"))
+    else:
+      Log.Fatal("Parameter 'rank' required but not specified!")
+      raise Exception("missing parameter")
+
+    if "update_rules" in options:
+      optionsStr = optionsStr + " -u " + str(options.pop("update_rules"))
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+    if "epsilon" in options:
+      optionsStr = optionsStr + " -e " + str(options.pop("epsilon"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    inputCmd = "-i " + self.dataset + " " + optionsStr
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, NMF('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")

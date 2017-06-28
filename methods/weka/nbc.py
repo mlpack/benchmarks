@@ -64,6 +64,10 @@ class NBC(object):
   def RunMetrics(self, options):
     Log.Info("Perform NBC.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     if len(self.dataset) < 2:
       Log.Fatal("This method requires two or more datasets.")
       return -1
@@ -71,7 +75,7 @@ class NBC(object):
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
         ":methods/weka" + " NBC -t " + self.dataset[0] + " -T " +
-        self.dataset[1] + " " + options)
+        self.dataset[1])
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

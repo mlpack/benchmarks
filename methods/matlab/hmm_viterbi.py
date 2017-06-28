@@ -104,7 +104,12 @@ class HMMVITERBI(object):
   def RunMetrics(self, options):
     Log.Info("Perform HMM VITERBI.", self.verbose)
 
-    inputCmd = "-i " + self.dataset[0] + " -e emis_tmp.csv -t trans_tmp.csv " + options
+    # No options accepted for this task.
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    inputCmd = "-i " + self.dataset[0] + " -e emis_tmp.csv -t trans_tmp.csv "
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
       "HMM_VITERBI('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")

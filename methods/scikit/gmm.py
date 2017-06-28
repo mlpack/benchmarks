@@ -54,25 +54,26 @@ class GMM(object):
       dataPoints = np.genfromtxt(self.dataset, delimiter=',')
 
       # Get all the parameters.
-      g = re.search("-g (\d+)", options)
-      s = re.search("-s (\d+)", options)
-      tol = re.search("-T (\d+)", options)
-      n_init = re.search("-t (\d+)", options)
-      max_iter = re.search("-n (\d+)", options)
-      g = 1 if not g else int(g.group(1))
-      s = 0 if not s else int(s.group(1))
-      tol = 0.001 if not tol else float(tol.group(1))
-      max_iter = 100 if not max_iter else int(max_iter.group(1))
-      n_init = 1 if not n_init else int(n_init.group(1))
+      opts = {}
+      if "gaussians" in options:
+        opts["n_components"] = int(options.pop("gaussians"))
+      if "seed" in options:
+        opts["random_state"] = int(options.pop("seed"))
+      if "num_init" in options:
+        opts["n_init"] = int(options.pop("n_init"))
+      if "tolerance" in options:
+        opts["tol"] = float(options.pop("tolerance"))
+      if "max_iterations" in options:
+        opts["max_iter"] = int(options.pop("max_iterations"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         # Create the Gaussian Mixture Model
-	      # Some params changed to match mlpack defaults.
-        model = mixture.GaussianMixture(n_components=g,
-                                        random_state=s,
-                                        n_init=n_init,
-                                        tol=tol,
-					max_iter = max_iter)
+        # Some params changed to match mlpack defaults.
+        model = mixture.GaussianMixture(**opts)
         with totalTimer:
           model.fit(dataPoints)
       except Exception as e:

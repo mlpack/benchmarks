@@ -82,6 +82,25 @@ class LARS(object):
         os.remove(f)
 
   '''
+  Given an options dict, convert to a string that can be passed to the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "lambda1" in options:
+      optionsStr = "-l " + str(options.pop("lambda1"))
+    if "lambda2" in options:
+      optionsStr = optionsStr + " -L " + str(options.pop("lambda2"))
+    if "use_cholesky" in options:
+      optionsStr = optionsStr + " --use_cholesky"
+      options.pop("use_cholesky")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Least Angle Regression method. If the
   method has been successfully completed the report is saved in the specified
   file.
@@ -101,7 +120,7 @@ class LARS(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_lars -i " + self.dataset[0] + " -r "
-        + self.dataset[1] + " -v " + options)
+        + self.dataset[1] + " -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -122,7 +141,7 @@ class LARS(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_lars -i " + self.dataset[0] + " -r " +
-        self.dataset[1] + " -v " + options)
+        self.dataset[1] + " -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

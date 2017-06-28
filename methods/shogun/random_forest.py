@@ -79,13 +79,19 @@ class RANDOMFOREST(object):
       labels = MulticlassLabels(labels)
       testData = RealFeatures(LoadDataset(self.dataset[1]).T)
 
-      # Number of Trees.
-      n = re.search("-n (\d+)", options)
-      # Number of attributes to be chosen randomly to select from.
-      f = re.search("-f (\d+)", options)
+      if "num_trees" in options:
+        self.numTrees = int(options.pop("num_trees"))
+      else:
+        Log.Fatal("Required parameter 'num_trees' not specified!")
+        raise Exception("missing parameter")
 
-      self.form = 1 if not f else int(f.group(1))
-      self.numTrees = 10 if not n else int(n.group(1))
+      self.form = 1
+      if "dimensions" in options:
+        self.form = int(options.pop("dimensions"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

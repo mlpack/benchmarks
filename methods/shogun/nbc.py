@@ -63,6 +63,10 @@ class NBC(object):
         trainData = np.genfromtxt(self.dataset[0], delimiter=',')
         testData = np.genfromtxt(self.dataset[1], delimiter=',')
 
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
+
         # Labels are the last row of the training set.
         labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
 

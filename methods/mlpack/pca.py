@@ -95,9 +95,13 @@ class PCA(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform PCA Memory Profiling.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_pca -i " + self.dataset +
-        " -o output.csv -v " + options)
+        " -o output.csv -v")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -112,9 +116,13 @@ class PCA(object):
   def RunMetrics(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_pca -i " + self.dataset +
-        " -o output.csv -v " + options)
+        " -o output.csv -v")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

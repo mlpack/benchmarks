@@ -50,7 +50,12 @@ class DECISIONTREE(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    DC = mlpy.ClassTree(stumps=self.stumps, minsize=self.minsize)
+    options = {}
+    if self.stumps:
+      options["stumps"] = self.stumps
+    if self.minsize:
+      options["minsize"] = self.minsize
+    DC = mlpy.ClassTree(**options)
     DC.learn(data, labels)
     return DC
 
@@ -69,11 +74,13 @@ class DECISIONTREE(object):
       testData = LoadDataset(self.dataset[1])
 
       # Get all the parameters.
-      s = re.search("--stumps (\d+)", options)
-      m = re.search("-m (\d+)", options)
-
-      self.stumps = 0 if not s else int(s.group(1))
-      self.minsize = 1 if not m else int(m.group(1))
+      if "stumps" in options:
+        self.stumps = options.pop("stumps")
+      if "minimum_leaf_size" in options:
+        self.minsize = options.pop("minimum_leaf_size")
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
