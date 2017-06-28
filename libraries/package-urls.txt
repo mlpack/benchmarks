@@ -2,7 +2,7 @@ ann https://www.cs.umd.edu/~mount/ANN/Files/1.1.2/ann_1.1.2.tar.gz
 flann https://github.com/mariusmuja/flann/archive/1.9.1.tar.gz
 HLearn https://github.com/mikeizbicki/HLearn/archive/2.0.0.0.tar.gz
 subhask https://github.com/mikeizbicki/subhask/archive/subhask-0.1.tar.gz
-mlpack http://www.mlpack.org/files/mlpack-2.2.2.tar.gz
+mlpack http://www.mlpack.org/files/mlpack-2.2.3.tar.gz
 mlpy http://freefr.dl.sourceforge.net/project/mlpy/mlpy%203.5.0/mlpy-3.5.0.tar.gz
 scikit https://github.com/scikit-learn/scikit-learn/archive/0.18.1.tar.gz
 shogun https://github.com/shogun-toolbox/shogun/archive/shogun_6.0.0.tar.gz
