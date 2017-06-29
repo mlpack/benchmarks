@@ -59,7 +59,7 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 9000
 
@@ -81,9 +81,11 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("")
     self.assertTrue(result["Runtime"] > 0)
-
-if __name__ == '__main__':
-  unittest.main()
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
+    self.assertTrue(result["MultiClass FMeasure"] >= 0)
+    self.assertTrue(result["Simple MSE"] > 0)
 
 '''
 Test the milk Decision Tree Prediction script.
@@ -116,4 +118,8 @@ class DecisionTree_Milk_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics("")
     self.assertTrue(result["Runtime"] > 0)
+    
+if __name__ == '__main__':
+  unittest.main()
+
 
