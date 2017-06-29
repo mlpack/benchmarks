@@ -84,7 +84,7 @@ class ALLKRANN(object):
   '''
   Convert options dict to string usable by programs.
   '''
-  def OptionsToStr(self):
+  def OptionsToStr(self, options):
     optionsStr = ""
     if "k" in options:
       optionsStr = "-k " + str(options.pop("k"))
@@ -110,6 +110,8 @@ class ALLKRANN(object):
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
+
+    return optionsStr
 
   '''
   Run valgrind massif profiler on the All K-Rank-Approximate-Nearest-Neighbors

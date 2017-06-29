@@ -77,10 +77,11 @@ class PCA(object):
             raise Exception("unknown parameters")
 
           # Perform PCA.
-          prep = mlpy.PCA(whiten=s)
+          prep = mlpy.PCA(**build_opts)
           prep.learn(data)
           out = prep.transform(data, k)
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

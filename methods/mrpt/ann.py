@@ -80,6 +80,8 @@ class ANN(object):
 
       if "depth" in options:
         build_dict["depth"] = int(options.pop("depth"))
+      else:
+        build_dict["depth"] = 2 # Not sure... just a default...
       if "votes_required" in options:
         run_dict["votes_required"] = int(options.pop("votes_required"))
 

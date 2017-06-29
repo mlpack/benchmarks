@@ -146,7 +146,7 @@ class lr_mlpack_test(unittest.TestCase):
   Test the RunMetrics() function.
   '''
   def testRunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result['Runtime'] > 0)
 
 if __name__ == '__main__':

@@ -64,7 +64,7 @@ class KPCA(object):
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
               q.put(-1)
               return -1
-          if not dimension:
+          else:
             d = data.shape[0]
 
           # Get the kernel type and make sure it is valid.
@@ -103,6 +103,7 @@ class KPCA(object):
           model.learn(kernel)
           out = model.transform(kernel, k=d)
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

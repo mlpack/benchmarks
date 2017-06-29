@@ -143,8 +143,8 @@ class LogisticRegression(object):
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_logistic_regression -t " +
-          self.dataset[0] + " -T " + self.dataset[1] + " -v " +
-          self.OptionsToStr(options))
+          self.dataset[0] + " -T " + self.dataset[1] + " -o predictions.csv " +
+          " -v " + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_logistic_regression -t " +
           self.dataset + " -v " + self.OptionsToStr(options))
@@ -168,15 +168,11 @@ class LogisticRegression(object):
     timer = self.parseTimer(s)
 
     if timer != -1:
-      metrics['Runtime'] = timer.total_time - timer.total_time - timer.saving_data
+      metrics['Runtime'] = timer.total_time - timer.loading_data - timer.saving_data
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
     if len(self.dataset) >= 3:
-
-      # Check if we need to build and run the model.
-      if not CheckFileAvailable('predictions.csv'):
-        self.RunTiming(options)
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
@@ -213,18 +209,25 @@ class LogisticRegression(object):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
     pattern = re.compile(br"""
-        .*?loading_data: (?P<loading_data>.*?)s.*?
         .*?saving_data: (?P<saving_data>.*?)s.*?
+        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+    pattern2 = re.compile(br"""
+        .*?loading_data: (?P<loading_data>.*?)s.*?
+        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
+    pattern3 = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
-    match = pattern.match(data)
-    if not match:
+    match1 = pattern.match(data)
+    match2 = pattern2.match(data)
+    match3 = pattern3.match(data)
+    if not (match1 and match2 and match3):
       Log.Fatal("Can't parse the data: wrong format")
       return -1
     else:
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple('timer', ["loading_data", "total_time", "saving_data"])
-      return timer(float(match.group("loading_data")),
-          float(match.group("total_time")), float(match.group("saving_data")))
+      return timer(float(match2.group("loading_data")),
+          float(match3.group("total_time")), float(match1.group("saving_data")))
+
 

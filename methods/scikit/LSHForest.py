@@ -77,7 +77,7 @@ class ANN(object):
       # Number of trees in the LSH Forest.
       self.build_opts = {}
       if "num_trees" in options:
-        self.build_opts["n_estimators"] = int(options.pop("n_estimators"))
+        self.build_opts["n_estimators"] = int(options.pop("num_trees"))
       # Number of neighbors to be returned from the query function.
       if "k" in options:
         n_neighbors = int(options.pop("k"))

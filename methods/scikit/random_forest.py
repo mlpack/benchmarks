@@ -58,7 +58,7 @@ class RANDOMFOREST(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    randomforest = RandomForestClassifier(**opts)
+    randomforest = RandomForestClassifier(**self.opts)
     randomforest.fit(data, labels)
     return randomforest
 
@@ -88,7 +88,7 @@ class RANDOMFOREST(object):
       if "seed" in options:
         self.opts["random_state"] = int(options.pop("seed"))
       if "minimum_samples_split" in options:
-        self.opts["min_samples_split"] =
+        self.opts["min_samples_split"] = \
             int(options.pop("minimum_samples_split"))
       if "minimum_leaf_size" in options:
         self.opts["min_samples_leaf"] = int(options.pop("minimum_leaf_size"))
@@ -105,6 +105,7 @@ class RANDOMFOREST(object):
           # Run Random Forest Classifier on the test dataset.
           self.model.predict(testData)
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

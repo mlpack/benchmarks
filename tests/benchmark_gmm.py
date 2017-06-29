@@ -80,7 +80,7 @@ class GMM_SCIKIT_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({ "gaussians": 5 })
-    # self.assertTrue(result > 0)
+    self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

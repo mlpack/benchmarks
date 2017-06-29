@@ -99,6 +99,8 @@ class RANGESEARCH(object):
       optionsStr = optionsStr + " --naive_mode"
       options.pop("naive_mode")
 
+    return optionsStr
+
   '''
   Run valgrind massif profiler on the Range Search method. If
   the method has been successfully completed the report is saved in the

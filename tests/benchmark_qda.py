@@ -47,7 +47,7 @@ class QDA_SHOGUN_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
-    self.assertTrue(result > 0)
+    self.assertTrue(result["Runtime"] > 0)
 
 '''
 Test the scikit QDA script.
@@ -78,8 +78,8 @@ class QDA_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunTiming' function.
   '''
   def test_RunTiming(self):
-    result = self.instance.RunTiming("")
-    self.assertTrue(result > 0)
+    result = self.instance.RunMetrics({})
+    self.assertTrue(result["Runtime"] > 0)
 
 
 if __name__ == '__main__':

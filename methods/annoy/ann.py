@@ -65,14 +65,14 @@ class ANN(object):
         if (k < 1 or k > referenceData.shape[0]):
           Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
               + " and less or equal than " + str(referenceData.shape[0]))
-        q.put(-1)
-        return -1
-      if not "trees" in options:
+          q.put(-1)
+          return -1
+      if not "num_trees" in options:
         Log.Fatal("Required option: Number of trees to build")
         q.put(-1)
         return -1
       else:
-        n = int(options.pop("trees"))
+        n = int(options.pop("num_trees"))
 
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))

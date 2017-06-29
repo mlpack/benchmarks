@@ -65,6 +65,8 @@ class GMM(object):
           raise Exception("missing parameter")
         if "max_iterations" in options:
           n = int(options.pop("max_iterations"))
+        else:
+          n = 0
 
         if len(options) > 0:
           Log.Fatal("Unknown parameters: " + str(options))
@@ -76,6 +78,7 @@ class GMM(object):
         with totalTimer:
           model.train_em(1e-9, n, 1e-9)
       except Exception as e:
+        Log.Info("Exception: " + str(e))
         q.put(-1)
         return -1
 
