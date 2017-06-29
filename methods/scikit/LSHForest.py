@@ -95,7 +95,7 @@ class ANN(object):
         self.build_options["radius"] = float(options.pop("radius"))
       # A value ranges from 0 to 1.
       if "radius_cutoff_ratio" in options:
-        self.build_options["radius_cutoff_ratio"] =
+        self.build_options["radius_cutoff_ratio"] = \
             float(options.pop("radius_cutoff_ratio"))
 
       if len(options) > 0:

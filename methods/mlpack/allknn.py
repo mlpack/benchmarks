@@ -111,6 +111,8 @@ class ALLKNN(object):
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
+    return optionsStr
+
   '''
   Run valgrind massif profiler on the All K-Nearest-Neighbors method. If
   the method has been successfully completed the report is saved in the

@@ -85,7 +85,7 @@ class DTC(object):
       if "split_strategy" in options:
         self.build_opts["splitter"] = str(options.pop("split_strategy"))
       if "minimum_samples_split" in options:
-        self.build_opts["min_samples_split"] =
+        self.build_opts["min_samples_split"] = \
             int(options.pop("minimum_samples_split"))
       if "minimum_leaf_size" in options:
         self.build_opts["min_samples_leaf"] = int(options.pop("minimum_leaf_size"))

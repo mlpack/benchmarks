@@ -77,16 +77,16 @@ class ALLKNN(object):
 
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
+    optionsStr = self.OptionsToStr(options)
     if len(self.dataset) == 2:
       inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + \
-          self.OptionsToStr(options)
+          optionsStr
     else:
-      inputCmd = "-r " + self.dataset + " " + self.OptionsToStr(options)
+      inputCmd = "-r " + self.dataset + " " + optionsStr
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " AllKnn " + inputCmd + " " +
-        self.OptionsToStr(options))
+        ":methods/weka" + " AllKnn " + inputCmd + " " + optionsStr)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

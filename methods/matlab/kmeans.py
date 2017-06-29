@@ -75,7 +75,7 @@ class KMEANS(object):
     # If the dataset contains two files then the second file is the centroids
     # file. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-i " + self.dataset[0] + " -I " + self.dataset[1] + " "
+      inputCmd = "-i " + self.dataset[0] + " -I " + self.dataset[1] + " " \
           + optionsStr
     else:
       inputCmd = "-i " + self.dataset[0] + " " + optionsStr

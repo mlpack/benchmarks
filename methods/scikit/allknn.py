@@ -87,9 +87,9 @@ class ALLKNN(object):
 
         if "tree_type" in options:
           build_opts["tree_type"] = str(options.pop("tree_type"))
-          if build_opts["tree_type"] != 'auto' or
-             build_opts["tree_type"] != 'ball_tree' or
-             build_opts["tree_type"] != 'kd_tree' or
+          if build_opts["tree_type"] != 'auto' or \
+             build_opts["tree_type"] != 'ball_tree' or \
+             build_opts["tree_type"] != 'kd_tree' or \
              build_opts["tree_type"] != 'brute':
             Log.Fatal("Invalid tree type: "+ build_opts["tree_type"]
                 + ". Must be either auto, ball_tree, kd_tree or brute.")

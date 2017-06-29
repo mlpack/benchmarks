@@ -72,7 +72,7 @@ class ANN(object):
       build_dict = {}
       run_dict = {}
       if "num_trees" in options:
-        build_dict["n_trees"] = int(options.pop("num_trees")
+        build_dict["n_trees"] = int(options.pop("num_trees"))
       else:
         Log.Fatal("Required option: Number of trees to build")
         q.put(-1)

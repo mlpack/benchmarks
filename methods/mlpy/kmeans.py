@@ -58,10 +58,11 @@ class KMEANS(object):
       if "clusters" in options:
         clusters = int(options.pop("clusters"))
 
-        Log.Fatal("Invalid number of clusters requested! Must be greater than or "
-            + "equal to 1.")
-        q.put(-1)
-        return -1
+        if clusters < 1:
+          Log.Fatal("Invalid number of clusters requested! Must be greater than or "
+              + "equal to 1.")
+          q.put(-1)
+          return -1
       else:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
         q.put(-1)
