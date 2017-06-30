@@ -53,7 +53,7 @@ class DTC(object):
   '''
   def BuildModel(self):
     # Create and train the classifier.
-    if min_split != -1:
+    if self.min_split != -1:
       dtc_learner = tree_learner(min_split=self.min_split)
     else:
       dtc_learner = tree_learner()

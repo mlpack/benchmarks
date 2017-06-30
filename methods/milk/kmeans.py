@@ -58,8 +58,10 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset, delimiter=',')
 
       # Gather parameters.
+      clusters = None
       if "clusters" in options:
         clusters = options.pop("clusters")
+      maxIterations = None
       if "max_iterations" in options:
         maxIterations = options.pop("max_iterations")
       if len(options) > 0:
@@ -71,7 +73,7 @@ class KMEANS(object):
         Log.Fatal("Required option: Number of clusters or cluster locations.")
         q.put(-1)
         return -1
-      elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
+      elif (not clusters or int(clusters) < 1) and len(self.dataset) != 2:
         Log.Fatal("Invalid number of clusters requested! Must be greater than"
             + " or equal to 1.")
         q.put(-1)
@@ -84,7 +86,7 @@ class KMEANS(object):
         with totalTimer:
           if len(self.dataset) == 2:
             assignments = kmeans(data,
-                                 int(clusters.group(1)),
+                                 int(clusters),
                                  max_iter=m,
                                  centroids=centroids,
                                  return_centroids=False)
@@ -94,6 +96,7 @@ class KMEANS(object):
                                             max_iter=m)
 
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

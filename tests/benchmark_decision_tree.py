@@ -82,9 +82,6 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
 
-if __name__ == '__main__':
-  unittest.main()
-
 '''
 Test the milk Decision Tree Prediction script.
 '''
@@ -117,3 +114,5 @@ class DecisionTree_Milk_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
 
+if __name__ == '__main__':
+  unittest.main()

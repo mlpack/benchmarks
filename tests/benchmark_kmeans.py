@@ -160,9 +160,6 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
-if __name__ == '__main__':
-  unittest.main()
-
 '''
 Test the milk K-Means clustering script.
 '''
@@ -195,3 +192,5 @@ class KMEANS_MILK_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({ "clusters": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
+if __name__ == '__main__':
+  unittest.main()

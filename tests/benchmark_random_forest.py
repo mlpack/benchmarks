@@ -82,9 +82,6 @@ class RandomForest_SHOGUN_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
-
-if __name__ == '__main__':
-  unittest.main()
 '''
 Test the Milk RandomForest script.
 '''
@@ -118,3 +115,5 @@ class RandomForest_Milk_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
+if __name__ == '__main__':
+  unittest.main()

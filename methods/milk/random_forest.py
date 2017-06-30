@@ -45,6 +45,8 @@ class RANDOMFOREST(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.opts = {}
+
   '''
   Build the model for the Random Forest Classifier.
   @param data - The train data.
@@ -53,7 +55,7 @@ class RANDOMFOREST(object):
   '''
   def BuildModel(self):
     # Create and train the classifier.
-    rf_learner = randomforest.rf_learner()
+    rf_learner = randomforest.rf_learner(**self.opts)
     learner = one_against_one(rf_learner)
     return learner
 
@@ -71,7 +73,9 @@ class RANDOMFOREST(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
-      # TODO: must be able to specify number of trees in forest
+      if "num_trees" in options:
+        self.opts["rf"] = options.pop("num_trees")
+
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))
         raise Exception("unknown parameters")
