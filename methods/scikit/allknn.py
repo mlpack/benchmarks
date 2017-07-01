@@ -62,77 +62,71 @@ class ALLKNN(object):
 
       with totalTimer:
         # Get all the parameters.
-        k = re.search("-k (\d+)", options)
-        leafSize = re.search("-l (\d+)", options)
-        radius = re.search("--radius (\d+)", options)
-        tree_type = re.search("-t (\s+)", options)
-        metric = re.search("--metric (\s+)", options)
-        # Parameter for the Minkowski metric. 
-        # When p=1 it is equivalent to using manhattan_distance and euclidean for p=2. 
-        # For arbitrary p, minkowski_distance is used.
-        p = re.search("-p (\d+)", options)
-        n_jobs = re.search("--n_jobs (\d+)", options)
-        if not k:
-          Log.Fatal("Required option: Number of furthest neighbors to find.")
-          q.put(-1)
-          return -1
-        else:
-          k = int(k.group(1))
-          if (k < 1 or k > referenceData.shape[0]):
-            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
+        build_opts = {}
+        if "k" in options:
+          build_opts["n_neighbors"] = int(options.pop("k"))
+          if (build_opts["n_neighbors"] < 1 or build_opts["n_neighbors"] > referenceData.shape[0]):
+            Log.Fatal("Invalid k: " + str(build_opts["n_neighbors"]) + "; must be greater than 0"
               + " and less or equal than " + str(referenceData.shape[0]))
             q.put(-1)
             return -1
+        else:
+          Log.Fatal("Required option: Number of furthest neighbors to find.")
+          q.put(-1)
+          return -1
 
-        if not leafSize:
-          leafSize = 20
-        elif int(leafSize.group(1)) < 0:
-          Log.Fatal("Invalid leaf size: " + str(leafSize.group(1)) + ". Must" +
-              " be greater than or equal to 0.")
+        if "leaf_size" in options:
+          build_opts["leaf_size"] = int(options.pop("leaf_size"))
+          if build_opts["leaf_size"] < 0:
+            Log.Fatal("Invalid leaf size: " + str(build_opts["leaf_size"]) + ". Must" +
+                " be greater than or equal to 0.")
           q.put(-1)
           return -1
         else:
-          leafSize = int(leafSize.group(1))
-        if not tree_type:
-            tree_type = 'kd_tree'
-        elif str(tree_type.group(1)):
-            tree_type = str(tree_type.group(1))
-            if tree_type !='auto' or tree_type !='ball_tree' or tree_type != 'kd_tree' or tree_type != 'brute':
-                Log.Fatal("Invalid tree type: "+ str(tree_type.group(1)) 
-                          + ". Must be either auto, ball_tree, kd_tree or brute.")
-                q.put(-1)
-                return -1
-        radius = 1.0 if not radius else float(radius.group(1))
-        p = 2 if not p else int(p.group(1))
-        if not metric:
-            metric = 'minkowski'
-        elif metric.group(1):
-            metric = str(metric.group(1))
-            if metric not in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']:
-                Log.Fatal("Invalid metric type: "+ str(metric.group(1))
-                          + ". Must be either cityblock, cosine, euclidean, l1, l2 or manhattan")
-                q.put(-1)
-                return -1
-        n_jobs = 1 if not n_jobs else int(n_jobs.group(1))
+          build_opts["leaf_size"] = 20
+
+        if "tree_type" in options:
+          build_opts["tree_type"] = str(options.pop("tree_type"))
+          if build_opts["tree_type"] != 'auto' or \
+             build_opts["tree_type"] != 'ball_tree' or \
+             build_opts["tree_type"] != 'kd_tree' or \
+             build_opts["tree_type"] != 'brute':
+            Log.Fatal("Invalid tree type: "+ build_opts["tree_type"]
+                + ". Must be either auto, ball_tree, kd_tree or brute.")
+            q.put(-1)
+            return -1
+
+        if "radius" in options:
+          build_opts["radius"] = float(options.pop("radius"))
+        if "metric" in options:
+          build_opts["metric"] = str(options.pop("metric"))
+          if build_opts["metric"] not in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']:
+            Log.Fatal("Invalid metric type: "+ build_opts["metric"]
+                + ". Must be either cityblock, cosine, euclidean, l1, l2 or manhattan")
+            q.put(-1)
+            return -1
+          if "p" in options:
+            build_opts["p"] = int(options.pop("p"))
+
+        if "num_jobs" in options:
+          build_opts["n_jobs"] = int(options.pop("num_jobs"))
+
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
 
         try:
           # Perform All K-Nearest-Neighbors.
-          model = NearestNeighbors(n_neighbors=k, 
-                                   algorithm=tree_type, 
-                                   leaf_size=leafSize, 
-                                   radius=radius, 
-                                   metric=metric, 
-                                   p=p, 
-                                   n_jobs=n_jobs)
+          model = NearestNeighbors(**build_opts)
           model.fit(referenceData)
 
           if len(self.dataset) == 2:
-            out = model.kneighbors(queryData, k, return_distance=True)
+            out = model.kneighbors(queryData, build_opts["n_neighbors"], return_distance=True)
           else:
             # We have to increment k by one because mlpack ignores the
             # self-neighbor, whereas scikit-learn will happily return the
             # nearest neighbor of point 0 as point 0.
-            out = model.kneighbors(referenceData, k + 1, return_distance=True)
+            out = model.kneighbors(referenceData, build_opts["n_neighbors"] + 1, return_distance=True)
         except Exception as e:
           q.put(-1)
           return -1

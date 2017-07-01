@@ -55,25 +55,28 @@ class ANN(object):
       queryData = np.genfromtxt(self.dataset[1], delimiter=',')
       train, label = SplitTrainData(self.dataset)
 
-      k = re.search("-k (\d+)", options)
-      n = re.search("-n (\d+)", options) # Number of trees.
-      if not k:
-          Log.Fatal("Required option: Number of furthest neighbors to find.")
+      # Parse options.
+      if not "k" in options:
+        Log.Fatal("Required option: Number of furthest neighbors to find.")
+        q.put(-1)
+        return -1
+      else:
+        k = int(options.pop("k"))
+        if (k < 1 or k > referenceData.shape[0]):
+          Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
+              + " and less or equal than " + str(referenceData.shape[0]))
           q.put(-1)
           return -1
+      if not "num_trees" in options:
+        Log.Fatal("Required option: Number of trees to build")
+        q.put(-1)
+        return -1
       else:
-          k = int(k.group(1))
-          if (k < 1 or k > referenceData.shape[0]):
-            Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
-              + " and less or equal than " + str(referenceData.shape[0]))
-            q.put(-1)
-            return -1
-      if not n:
-            Log.Fatal("Required option: Number of trees to build")
-            q.put(-1)
-            return -1
-      else:
-            n=int(n.group(1))
+        n = int(options.pop("num_trees"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       with totalTimer:
         # Get all the parameters.
@@ -107,7 +110,7 @@ class ANN(object):
   def RunMetrics(self, options):
     Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
     results = None
-    if len(self.dataset)>=2:
+    if len(self.dataset) >= 2:
       results = self.AnnAnnoy(options)
 
     if results < 0:

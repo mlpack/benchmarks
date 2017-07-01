@@ -57,34 +57,35 @@ class KPCA(object):
       try:
         with totalTimer:
           # Get the new dimensionality, if it is necessary.
-          dimension = re.search('-d (\d+)', options)
-          if not dimension:
-            d = data.shape[0]
-          else:
-            d = int(dimension.group(1))
+          if "new_dimensionality" in options:
+            d = int(options.pop("new_dimensionality"))
             if (d > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
               q.put(-1)
               return -1
+          else:
+            d = data.shape[0]
 
           # Get the kernel type and make sure it is valid.
-          kernel = re.search("-k ([^\s]+)", options)
-          if not kernel:
-              Log.Fatal("Choose kernel type, valid choices are 'polynomial', " +
-                    "'gaussian', 'linear' and 'hyptan'.")
-              q.put(-1)
-              return -1
-          elif kernel.group(1) == "polynomial":
-            degree = re.search('-D (\d+)', options)
-            degree = 1 if not degree else int(degree.group(1))
+          if not "kernel" in options:
+            Log.Fatal("Choose kernel type, valid choices are 'polynomial', " +
+                  "'gaussian', 'linear' and 'hyptan'.")
+            q.put(-1)
+            return -1
+
+          if options["kernel"] == "polynomial":
+            if "degree" in options:
+              degree = int(options.pop("degree"))
+            else:
+              degree = 1
 
             kernel = mlpy.kernel_polynomial(data, data, d=degree)
-          elif kernel.group(1) == "gaussian":
+          elif options["kernel"] == "gaussian":
             kernel = mlpy.kernel_gaussian(data, data, sigma=2)
-          elif kernel.group(1) == "linear":
+          elif options["kernel"] == "linear":
             kernel = mlpy.kernel_linear(data, data)
-          elif kernel.group(1) == "hyptan":
+          elif options["kernel"] == "hyptan":
             kernel = mlpy.kernel_sigmoid(data, data)
           else:
             Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
@@ -92,11 +93,17 @@ class KPCA(object):
             q.put(-1)
             return -1
 
+          options.pop("kernel")
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
+
           # Perform Kernel Principal Components Analysis.
           model = mlpy.KPCA()
           model.learn(kernel)
           out = model.transform(kernel, k=d)
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

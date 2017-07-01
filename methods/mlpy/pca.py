@@ -57,26 +57,31 @@ class PCA(object):
       try:
         with totalTimer:
           # Find out what dimension we want.
-          match = re.search('-d (\d+)', options)
-
-          if not match:
-            k = data.shape[1]
-          else:
-            k = int(match.group(1))
+          if "new_dimensionality" in options:
+            k = int(options.pop("new_dimensionality"))
             if (k > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
                   + "than existing dimensionality (" + str(data.shape[1]) + ")!")
               q.put(-1)
               return -1
+          else:
+            k = data.shape[1]
 
-          # Get the options for running PCA.
-          s = True if options.find("-s") > -1 else False
+          build_opts = {}
+          if "whiten" in options:
+            build_opts["whiten"] = True
+            options.pop("whiten")
+
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
 
           # Perform PCA.
-          prep = mlpy.PCA(whiten=s)
+          prep = mlpy.PCA(**build_opts)
           prep.learn(data)
           out = prep.transform(data, k)
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

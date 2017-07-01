@@ -49,7 +49,7 @@ class ALLKNN_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["ComputingNeighbors"] > 0)
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["TreeBuilding"] > 0)
@@ -99,7 +99,7 @@ class ALLKNN_MATLAB_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -131,7 +131,7 @@ class ALLKNN_MLPY_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -163,7 +163,7 @@ class ALLKNN_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     print(result)
     self.assertTrue(result["Runtime"] > 0)
 
@@ -196,7 +196,7 @@ class ALLKNN_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -228,7 +228,7 @@ class ALLKNN_WEKA_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -260,7 +260,7 @@ class ALLKNN_ANN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["ComputingNeighbors"] > 0)
     self.assertTrue(result["TreeBuilding"] > 0)
@@ -294,7 +294,7 @@ class ALLKNN_FLANN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 3")
+    result = self.instance.RunMetrics({ "k": 3 })
     self.assertTrue(result["TreeBuilding"] > 0)
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["ComputingNeighbors"] > 0)

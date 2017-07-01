@@ -69,6 +69,10 @@ class Golub(object):
   successful.
   '''
   def GolubMlpy(self, options):
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     def RunGolubMlpy(q):
       totalTimer = Timer()
 

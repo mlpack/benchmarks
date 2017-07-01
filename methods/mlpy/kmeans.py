@@ -55,27 +55,31 @@ class KMEANS(object):
       data = np.genfromtxt(self.dataset[0], delimiter=',')
 
       # Gather all parameters.
-      clusters = re.search('-c (\d+)', options)
-      seed = re.search("-s (\d+)", options)
+      if "clusters" in options:
+        clusters = int(options.pop("clusters"))
 
-      # Now do validation of options.
-      if not clusters:
+        if clusters < 1:
+          Log.Fatal("Invalid number of clusters requested! Must be greater than or "
+              + "equal to 1.")
+          q.put(-1)
+          return -1
+      else:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
         q.put(-1)
         return -1
-      elif int(clusters.group(1)) < 1:
-        Log.Fatal("Invalid number of clusters requested! Must be greater than or "
-            + "equal to 1.")
-        q.put(-1)
-        return -1
+
+      build_opts = {}
+      if "seed" in options:
+        build_opts["seed"] = int(options.pop("seed"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
           # Create the K-Means object and perform K-Means clustering.
-          if seed:
-            kmeans = mlpy.kmeans(data, int(clusters.group(1)), seed=int(seed.group(1)))
-          else:
-            kmeans = mlpy.kmeans(data, int(clusters.group(1)))
+          kmeans = mlpy.kmeans(data, clusters, **build_opts)
       except Exception as e:
         q.put(-1)
         return -1

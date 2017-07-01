@@ -82,6 +82,29 @@ class NMF(object):
         os.remove(f)
 
   '''
+  Given an input dict of options, convert them to a string that the program can
+  use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "rank" in options:
+      optionsStr = "-r " + str(options.pop("rank"))
+    else:
+      Log.Fatal("Required parameter 'rank' not specified!")
+      raise Exception("missing parameter")
+
+    if "update_rules" in options:
+      optionsStr = optionsStr + " -u " + str(options.pop("update_rules"))
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Non-negative Matrix Factorization method.
   If the method has been successfully completed the report is saved in the
   specified file.
@@ -97,7 +120,7 @@ class NMF(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_nmf -i " + self.dataset +
-        " -H H.csv -W W.csv -v " + options)
+        " -H H.csv -W W.csv -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -114,7 +137,7 @@ class NMF(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_nmf -i " + self.dataset +
-        " -H H.csv -W W.csv -v " + options)
+        " -H H.csv -W W.csv -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

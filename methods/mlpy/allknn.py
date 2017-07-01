@@ -67,18 +67,21 @@ class ALLKNN(object):
       try:
         with totalTimer:
           # Get all the parameters.
-          k = re.search("-k (\d+)", options)
-          if not k:
+          if not "k" in options:
             Log.Fatal("Required option: Number of furthest neighbors to find.")
             q.put(-1)
             return -1
           else:
-            k = int(k.group(1))
+            k = options.pop("k")
             if (k < 1 or k > referenceData.shape[0]):
-              Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0 "
+              Log.Fatal("Invalid k: " + k + "; must be greater than 0 "
                 + "and less or equal than " + str(referenceData.shape[0]))
               q.put(-1)
               return -1
+
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
 
           # Perform All K-Nearest-Neighbors.
           model = mlpy.KNN(k)

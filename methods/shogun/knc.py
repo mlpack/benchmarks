@@ -47,7 +47,6 @@ class KNC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n_neighbors = 5
 
   '''
   Build the model for the k-nearest neighbors Classifier.
@@ -58,14 +57,19 @@ class KNC(object):
   '''
   def BuildModel(self, data, labels, options):
     # Get all the parameters.
-    n = re.search("-n (\d+)", options)
+    if "k" in options:
+      n_neighbors = int(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' not specified!")
+      raise Exception("missing parameter")
 
-    self.n_neighbors = 5 if not n else int(n.group(1))
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
 
     distance = EuclideanDistance(data, data)
     from modshogun import KNN_KDTREE
-    knc = KNN(self.n_neighbors, distance, labels, KNN_KDTREE)
-    knc.set_leaf_size(30)
+    knc = KNN(n_neighbors, distance, labels, KNN_KDTREE)
     knc.train()
 
     return knc

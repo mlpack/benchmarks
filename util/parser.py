@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import json
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -41,7 +42,7 @@ class Parser(object):
     # Default values.
     self.RUN = []
     self.ITERATION = 3
-    self.OPTIONS = ''
+    self.OPTIONS = {}
     self.ALIAS = 'None'
     self.WATCH = ['None']
 
@@ -375,7 +376,7 @@ class Parser(object):
         streamData["general"] = libraryMapping.settings
 
       # Right now we distinguish between a general block and a library block. So
-      # if the block isn't a general bock its a library block.
+      # if the block isn't a general block its a library block.
       else:
         # Iterate through all methods. With the following line we get the first
         # method.
@@ -389,6 +390,14 @@ class Parser(object):
             # {'files': ['datasets/iris.csv', 'datasets/wine.csv'],
             # 'options': ''}.
             for dataset in methodMapping.datasets:
+              # Double-check for valid options: make sure there are not two
+              # sweep() calls in a single method.
+              sweeps = ["sweep" in str(v) for k, v in
+                  dataset["options"].items()].count(True)
+              if sweeps > 1:
+                Log.Fatal("Options " + str(dataset["options"]) + " invalid:" +
+                    " only one sweep allowed per method block!")
+                raise Exception("only one sweep allowed per method block")
 
               # Extract the information from every section and store the
               # information into the dictionary. First check if the 'streamData'
@@ -412,16 +421,16 @@ class Parser(object):
                 tempDict = streamData[methodMapping.methodName]
 
                 # We sort the libraries with the same method by the option which
-                # are specefied in the config file. So we check if the option is
+                # are specified in the config file. So we check if the option is
                 # already in the second dictionary.
-                if dataset["options"] in tempDict:
-                  # Append the information for the libary to the already defined
+                if json.dumps(dataset["options"]) in tempDict:
+                  # Append the information for the library to the already defined
                   # option.
                   t = (libraryMapping.libraryName, dataset["files"],
                     methodMapping.iteration, methodMapping.script,
                     methodMapping.format, methodMapping.run, dataset["alias"],
                     methodMapping.watch)
-                  tempDict[dataset["options"]].append(t)
+                  tempDict[json.dumps(dataset["options"])].append(t)
 
                 # This is are new options for the specified method name. So we
                 # create the new entry for the option.
@@ -432,7 +441,7 @@ class Parser(object):
                     methodMapping.iteration, methodMapping.script,
                     methodMapping.format, methodMapping.run, dataset["alias"],
                     methodMapping.watch)
-                  tempDict[dataset["options"]] = [t]
+                  tempDict[json.dumps(dataset["options"])] = [t]
 
               # Create the second dictionary if it doesn't exist.
               else:
@@ -444,10 +453,12 @@ class Parser(object):
                   methodMapping.watch)
 
                 # To access the method options we can use the options key.
-                d[dataset["options"]] = [t]
+                # Since the options is a dict, we'll just encode it as a string.
+                d[json.dumps(dataset["options"])] = [t]
                 # Store the initial second dictionary with the method name as
                 # key (e.g. KPCA) in the main key/value store.
                 streamData[methodMapping.methodName] = d
+                print(streamData)
 
           methodMapping = self.GetConfigMethod(libraryMapping.methods)
       libraryMapping = self.GetConfigLibraryMethods()

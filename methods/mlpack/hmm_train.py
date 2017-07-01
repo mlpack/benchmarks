@@ -82,6 +82,30 @@ class HMMTRAIN(object):
         os.remove(f)
 
   '''
+  Convert an options dict to a string that can be passed to the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "type" in options:
+      optionsStr = "-t " + str(options.pop("type"))
+    else:
+      Log.Fatal("Required parameter 'type' not specified!")
+      raise Exception("missing parameter")
+
+    if "states" in options:
+      optionsStr = optionsStr + " -n " + str(options.pop("states"))
+    if "seed" in options:
+      optionsStr = optionsStr + " --seed " + str(options.pop("seed"))
+    if "output" in options:
+      optionsStr = optionsStr + " -o " + str(options.pop("output"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Execption("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Hidden Markov Model Training method. If
   the method has been successfully completed the report is saved in the
   specified file.
@@ -99,10 +123,10 @@ class HMMTRAIN(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_hmm_train -i " + self.dataset[0] +
-          "-l " + self.dataset[1] + " -v " + options)
+          "-l " + self.dataset[1] + " -v " + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_hmm_train -i " + self.dataset +
-          " -v  " + options)
+          " -v  " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -121,10 +145,10 @@ class HMMTRAIN(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_hmm_train -i " + self.dataset[0] +
-          "-l " + self.dataset[1] + " -v " + options)
+          "-l " + self.dataset[1] + " -v " + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_hmm_train -i " + self.dataset +
-          " -v  " + options)
+          " -v  " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

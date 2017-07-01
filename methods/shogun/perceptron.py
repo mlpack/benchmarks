@@ -60,7 +60,8 @@ class PERCEPTRON(object):
   def BuildModel(self, data, responses):
     # Create and train the classifier.
     model = Perceptron(RealFeatures(data.T), MulticlassLabels(responses))
-    model.set_max_iter(self.iterations)
+    if self.iterations:
+      model.set_max_iter(self.iterations)
     model.train()
     return model
 
@@ -87,8 +88,13 @@ class PERCEPTRON(object):
           X, y = SplitTrainData(self.dataset)
 
           # Gather all parameters.
-          s = re.search('-n (\d+)', options)
-          self.iterations = 1000 if not s else int(s.group(1))
+          self.iterations = None
+          if "max_iterations" in options:
+            self.iterations = int(options.pop("max_iterations"))
+
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
 
           with totalTimer:
             # Perform perceptron classification.

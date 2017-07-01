@@ -90,6 +90,20 @@ class PERCEPTRON(object):
         os.remove(f)
 
   '''
+  Given an input dict of options, convert it to a string that the program can
+  use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "max_iterations" in options:
+      optionsStr = "-n " + str(options.pop("max_iterations"))
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters:" + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Perceptron Prediction
   method. If the method has been successfully completed the report is saved in
   the specified file.
@@ -107,7 +121,7 @@ class PERCEPTRON(object):
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "mlpack_perceptron -t " + self.dataset[0] +
-          " -T " + self.dataset[1] + " -v " + options)
+          " -T " + self.dataset[1] + " -v " + self.OptionsToStr(options))
     else:
       Log.Fatal("This method requires atleast two datasets.")
 
@@ -127,8 +141,9 @@ class PERCEPTRON(object):
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
-      cmd = shlex.split(self.path + "mlpack_perceptron -t " + self.dataset[0] +
-          " -T " + self.dataset[1] + " -v " + options + " -o output.csv")
+      cmd = shlex.split(self.path + "mlpack_perceptron -t " + self.dataset[0]
+          + " -T " + self.dataset[1] + " -v " + self.OptionsToStr(options)
+          + " -o output.csv")
     else:
       Log.Fatal("This method requires atleast two datasets.")
 

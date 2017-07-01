@@ -49,7 +49,7 @@ class RANGESEARCH_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-M 0.02")
+    result = self.instance.RunMetrics({ "max": 0.02 })
     self.assertTrue(result["Runtime"] > 0)
 
   '''
@@ -95,7 +95,7 @@ class RANGESEARCH_MATLAB_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-M 0.02")
+    result = self.instance.RunMetrics({ "max": 0.02 })
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':

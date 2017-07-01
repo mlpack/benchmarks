@@ -69,6 +69,11 @@ class LogisticRegression(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
+      # No options allowed.
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       try:
         self.model = self.BuildModel()
         with totalTimer:

@@ -68,8 +68,15 @@ class LinearRidgeRegression(object):
 
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
-      tau = re.search("-t (\d+)", options)
-      tau = 1.0 if not tau else int(tau.group(1))
+      if "alpha" in options:
+        tau = float(options.pop("alpha"))
+      else:
+        Log.Fatal("Required parameter 'alpha' not specified!")
+        raise Exception("missing parameter")
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
@@ -110,8 +117,15 @@ class LinearRidgeRegression(object):
     if len(self.dataset) >= 3:
 
       X, y = SplitTrainData(self.dataset)
-      tau = re.search("-t (\d+)", options)
-      tau = 1.0 if not tau else int(tau.group(1))
+      if "alpha" in options:
+        tau = float(options.pop("alpha"))
+      else:
+        Log.Fatal("Required parameter 'alpha' not specified!")
+        raise Exception("missing parameter")
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
       model = LRR(tau, RealFeatures(X.T), RegressionLabels(y))
       model.train()
 

@@ -82,6 +82,28 @@ class KPCA(object):
         os.remove(f)
 
   '''
+  Given an options dict, convert it to a string that can be used by the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "kernel" in options:
+      optionsStr = "-k " + str(options.pop("kernel"))
+    else:
+      Log.Fatal("Required parameter 'kernel' not specified!")
+      raise Exception("missing parameter")
+    if "nystroem" in options:
+      optionsStr = optionsStr + " --nystroem_method"
+      options.pop("nystroem")
+    if "sampling_scheme" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("sampling_scheme"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Kernel Principal Components Analysis
   method. If the method has been successfully completed the report is saved in
   the specified file.
@@ -97,7 +119,7 @@ class KPCA(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_kernel_pca -i " + self.dataset +
-        " -v -o output.csv " + options)
+        " -v -o output.csv " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -114,7 +136,7 @@ class KPCA(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_kernel_pca -i " + self.dataset +
-        " -v -o output.csv " + options)
+        " -v -o output.csv " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

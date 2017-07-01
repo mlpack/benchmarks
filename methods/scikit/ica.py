@@ -53,37 +53,31 @@ class ICA(object):
       # Load input dataset.
       data = np.genfromtxt(self.dataset, delimiter=',')
 
-      s = re.search('-s (\d+)', options)
-      n_components = re.search('--n_components (\d+)', options)
-      algorithm = re.search('--algorithm (\s+)', options)
-      fun = re.search('--fun (\s+)', options)
-      max_iter = re.search('--max_iter (\d+)', options)
-      tol = re.search('--tol (\d+)', options)
+      opts = {}
+      if "num_components" in options:
+        opts["n_components"] = int(options.pop("num_components"))
 
-      s = 0 if not s else int(s.group(1))
-      n_components = None if not n_components else int(n_components.group(1))
-      algorithm = 'parallel' if not algorithm else str(algorithm.group(1))
-      if algorithm not in ['parallel','deflation']:
+      if "algorithm" in options:
+        opts["algorithm"] = str(options.pop("algorithm"))
+        if opts["algorithm"] not in ['parallel', 'deflation']:
           Log.Fatal("Invalid value for algorithm: "+ str(algorithm.group(1))+" .Must be either parallel or deflation")
           q.put(-1)
           return -1
-      fun = 'logcosh' if not fun else str(fun.group(1))
-      if fun not in ['logcosh','exp','cube']:
+
+      if "function" in options:
+        opts["fun"] = str(options.pop("function"))
+        if opts["fun"] not in ['logcosh', 'exp', 'cube']:
           Log.Fatal("Invalid value for fun: "+ str(fun.group(1))+" .Must be either logcosh,exp or cube")
           q.put(-1)
           return -1
-      max_iter = 200 if not max_iter else int(max_iter.group(1))
-      tol = 0.0001 if not tol else float(tol.group(1))
+
+      if "tolerance" in options:
+        opts["tol"] = float(options.pop("tolerance"))
 
       try:
         # Perform ICA.
         with totalTimer:
-          model = FastICA(n_components = n_components,
-                          algorithm = algorithm,
-                          fun = fun,
-                          max_iter = max_iter,
-                          tol = tol,
-                          random_state = s)
+          model = FastICA(**opts)
           ic = model.fit(data).transform(data)
       except Exception as e:
         q.put(-1)

@@ -58,9 +58,7 @@ class PERCEPTRON(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    model = mlpy.Perceptron(alpha=0.1,
-                            thr=0.05,
-                            maxiters=self.iterations)
+    model = mlpy.Perceptron(**self.opts)
     model.learn(data, responses)
     return model
 
@@ -86,8 +84,15 @@ class PERCEPTRON(object):
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
 
-      i = re.search('-n (\d+)', options)
-      self.iterations = 1000 if not i else int(i.group(1))
+      self.opts = {}
+      self.opts["alpha"] = 0.1
+      self.opts["thr"] = 0.05
+      if "max_iterations" in options:
+        self.opts["maxiters"] = int(options.pop("max_iterations"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

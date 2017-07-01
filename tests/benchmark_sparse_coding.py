@@ -49,7 +49,7 @@ class SparseCoding_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 2")
+    result = self.instance.RunMetrics({ "atoms": 2 })
     self.assertTrue(result["Runtime"] > 0)
 
   '''

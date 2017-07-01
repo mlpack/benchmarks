@@ -103,7 +103,16 @@ class HMMGENERATE(object):
     if (self.error == -1):
       return -1
 
-    inputCmd = "-e emis_tmp.csv -t trans_tmp.csv " + options
+    if not "length" in options:
+      Log.Fatal("'length' parameter required for HMM generate task!")
+      raise Exception("missing option in configuration")
+
+    optionsStr = "-l " + str(options.pop("length"))
+    if len(options) > 1:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    inputCmd = "-e emis_tmp.csv -t trans_tmp.csv " + optionsStr
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
       "HMM_GENERATE('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")

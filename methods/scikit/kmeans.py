@@ -61,53 +61,35 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset, delimiter=',')
 
       # Gather parameters.
-      clusters = re.search("-c (\d+)", options)
-      maxIterations = re.search("-m (\d+)", options)
-      seed = re.search("-s (\d+)", options)
-      algorithm = re.search("-a (\s+)", options)
-
-      # Now do validation of options.
-      if not clusters and len(self.dataset) != 2:
+      opts = {}
+      if "clusters" in options:
+        opts["n_clusters"] = int(options.pop("clusters"))
+      elif len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
         q.put(-1)
         return -1
-      elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
-        Log.Fatal("Invalid number of clusters requested! Must be greater than"
-            + " or equal to 1.")
-        q.put(-1)
-        return -1
+      if "max_iterations" in options:
+        opts["max_iterations"] = int(options.pop("max_iterations"))
+      if "seed" in options:
+        opts["random_state"] = int(options.pop("seed"))
+        opts["init"] = "random"
+      if "algorithm" in options:
+        opts["algorithm"] = str(options.pop("algorithm"))
+        if "algorithm" not in ['naive', 'elkan', 'auto']:
+          Log.Fatal("Invalid value for algorithm: "+algorithm+" must be either elkan or naive")
+          q.put(-1)
+          return -1
 
-      m = 1000 if not maxIterations else int(maxIterations.group(1))
-      algorithm = 'auto' if not algorithm else str(algorithm.group(1))
-      
-      if algorithm not in ['naive','elkan','auto']:
-       Log.Fatal("Invalid value for algorithm: "+algorithm+" must be either elkan or naive")
-       q.put(-1)
-       return -1
-      if algorithm == 'naive':
-       algorithm = 'auto'
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       try:
         # Create the KMeans object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)),
-                            init=centroids,
-                            n_init=1,
-                            max_iter=m,
-                            algorithm=algorithm)
-          elif seed:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)),
-                            init='random',
-                            n_init=1,
-                            max_iter=m,
-                            random_state=int(seed.group(1)),
-                            algorithm=algorithm)
-          else:
-            kmeans = KMeans(n_clusters=int(clusters.group(1)),
-                            n_init=1,
-                            max_iter=m,
-                            algorithm=algorithm)
-
+            opts["init"] = centroids
+          kmeans = KMeans(**opts)
           kmeans.fit(data)
           labels = kmeans.labels_
           centers = kmeans.cluster_centers_

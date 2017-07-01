@@ -35,7 +35,7 @@ class HMMGENERATE_MLPACK_TEST(unittest.TestCase):
     module = Loader.ImportModuleFromPath("methods/mlpack/hmm_train.py")
     obj = getattr(module, "HMMTRAIN")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-    result = self.instance.RunMetrics("-t gaussian -n 2 -o datasets/iris_hmm.xml")
+    result = self.instance.RunMetrics({ "type": "gaussian", "states": 2, "output": "datasets/iris_hmm.xml" })
 
     self.dataset = 'datasets/iris_hmm.xml'
     module = Loader.ImportModuleFromPath("methods/mlpack/hmm_generate.py")
@@ -56,7 +56,7 @@ class HMMGENERATE_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-l 1")
+    result = self.instance.RunMetrics({ "length": 1 })
     self.assertTrue(result["Runtime"] > 0)
 
   '''

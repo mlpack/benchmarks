@@ -81,13 +81,24 @@ class SVM(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
-      k = re.search("-k (\s+)", options)
-      c = re.search("-c (\d+)", options)
-      g = re.search("-g (\d+)", options)
+      if "kernel" in options:
+        self.kernel = str(options.pop("kernel"))
+      else:
+        self.kernel = 'rbf'
 
-      self.kernel = 'rbf' if not k else str(k.group(1))
-      self.C = 1.0 if not c else float(c.group(1))
-      self.gamma = 0.0 if not g else float(g.group(1))
+      if "c" in options:
+        self.C = float(options.pop("c"))
+      else:
+        self.C = 1.0
+
+      if "gamma" in options:
+        self.gamma = float(options.pop("gamma"))
+      else:
+        self.gamma = 0.0
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

@@ -75,16 +75,20 @@ class LogisticRegression(object):
   def RunMetrics(self, options):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # Load input dataset.
     # If the dataset contains two files then the second file is the responses
     # file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
         ":methods/weka LogisticRegression -i " + self.dataset[0] + " -t " +
-        self.dataset[1] + " " + options)
+        self.dataset[1])
     else:
       cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-        " LogisticRegression -i " + self.dataset + " " + options)
+        " LogisticRegression -i " + self.dataset)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

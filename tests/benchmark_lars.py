@@ -49,7 +49,7 @@ class LARS_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
 
   '''
@@ -95,7 +95,7 @@ class LARS_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -127,7 +127,7 @@ class LARS_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
 
 if __name__ == '__main__':

@@ -82,6 +82,38 @@ class ALLKRANN(object):
         os.remove(f)
 
   '''
+  Convert options dict to string usable by programs.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' not specified!")
+      raise Exception("missing parameter")
+
+    if "tau" in options:
+      optionsStr = optionsStr + " -T " + str(options.pop("tau"))
+    if "naive_mode" in options:
+      optionsStr = optionsStr + " --naive"
+      options.pop("naive_mode")
+    if "single_mode" in options:
+      optionsStr = optionsStr + " --single_mode"
+      options.pop("single_mode")
+    if "sample_at_leaves" in options:
+      optionsStr = optionsStr + " -L"
+      options.pop("sample_at_leaves")
+    if "first_leaf_exact" in options:
+      optionsStr = optionsStr + " -X"
+      options.pop("first_leaf_exact")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the All K-Rank-Approximate-Nearest-Neighbors
   method. If the method has been successfully completed the report is saved in
   the specified file.
@@ -100,10 +132,10 @@ class ALLKRANN(object):
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_allkrann -r " + self.dataset[0] +
           " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
-          options)
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_allkrann -r " + self.dataset +
-          " -v -n neighbors.csv -d distances.csv " + options)
+          " -v -n neighbors.csv -d distances.csv " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -122,10 +154,10 @@ class ALLKRANN(object):
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_allkrann -r " + self.dataset[0] +
           " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
-          options)
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_allkrann -r " + self.dataset +
-          " -v -n neighbors.csv -d distances.csv " + options)
+          " -v -n neighbors.csv -d distances.csv " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

@@ -76,6 +76,10 @@ class NBC(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)

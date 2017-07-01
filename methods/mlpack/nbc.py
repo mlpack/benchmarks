@@ -90,6 +90,22 @@ class NBC(object):
         os.remove(f)
 
   '''
+  Given an input dict of options, convert it to a string that the program can
+  use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "incremental" in options:
+      optionsStr = "-I"
+      options.pop("incremental")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Parametric Naive Bayes Classifier method.
   If the method has been successfully completed the report is saved in the
   specified file.
@@ -109,7 +125,7 @@ class NBC(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_nbc -t " + self.dataset[0] + " -T "
-        + self.dataset[1] + " -v " + options)
+        + self.dataset[1] + " -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -130,7 +146,8 @@ class NBC(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "mlpack_nbc -t " + self.dataset[0] + " -T "
-        + self.dataset[1] + " -v " + options + " -o output.csv")
+        + self.dataset[1] + " -v " + self.OptionsToStr(options) + " -o "
+        + "output.csv")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

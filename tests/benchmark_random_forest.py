@@ -46,7 +46,7 @@ class RandomForest_SCIKIT_TEST(unittest.TestCase):
   Test the RunMetrics Function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
 '''
@@ -79,12 +79,9 @@ class RandomForest_SHOGUN_TEST(unittest.TestCase):
   Test the RunMetrics Function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
-
-if __name__ == '__main__':
-  unittest.main()
 '''
 Test the Milk RandomForest script.
 '''
@@ -115,6 +112,8 @@ class RandomForest_Milk_TEST(unittest.TestCase):
   Test the RunMetrics Function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
+if __name__ == '__main__':
+  unittest.main()

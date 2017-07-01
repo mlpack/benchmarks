@@ -55,12 +55,30 @@ class KMEANS(object):
   def RunMetrics(self, options):
     Log.Info("Perform K-Means.", self.verbose)
 
+    # Parse options into string.
+    optionsStr = ""
+    if "clusters" in options:
+      optionsStr = "-c " + str(options.pop("clusters"))
+    else:
+      Log.Fatal("Required parameter 'clusters' not specified in configuration!")
+      raise Exception("missing parameter")
+
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+    if "max_iterations" in options:
+      optionsStr = optionsStr + " -m " + str(options.pop("max_iterations"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the centroids
     # file. In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-i " + self.dataset[0] + " -I " + self.dataset[1] + " " + options
+      inputCmd = "-i " + self.dataset[0] + " -I " + self.dataset[1] + " " \
+          + optionsStr
     else:
-      inputCmd = "-i " + self.dataset[0] + " " + options
+      inputCmd = "-i " + self.dataset[0] + " " + optionsStr
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

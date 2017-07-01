@@ -61,21 +61,26 @@ class PCA(object):
         feat = RealFeatures(self.data.T)
 
         with totalTimer:
-          # Find out what dimension we want.
-          match = re.search('-d (\d+)', options)
-
-          if not match:
-            k = self.data.shape[1]
-          else:
-            k = int(match.group(1))
+          # Get the options for running PCA.
+          if "new_dimensionality" in options:
+            k = int(options.pop("new_dimensionality"))
             if (k > self.data.shape[1]):
               Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
                   + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
               q.put(-1)
               return -1
+          else:
+            k = self.data.shape[1]
 
-          # Get the options for running PCA.
-          s = True if options.find("-s") > -1 else False
+          if "whiten" in options:
+            s = True
+            options.pop("whiten")
+          else:
+            s = False
+
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
 
           # Perform PCA.
           prep = ShogunPCA(s)

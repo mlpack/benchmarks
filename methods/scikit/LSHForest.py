@@ -45,8 +45,7 @@ class ANN(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n_estimators = 10
-    self.n_neighbors = 5
+    self.build_opts = {}
 
   '''
   Build the model for the Approximate Nearest Neighbors.
@@ -57,12 +56,7 @@ class ANN(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    lshf = LSHForest(n_estimators = self.n_estimators,
-                     min_hash_match = self.min_hash_match,
-                     n_candidates = self.n_candidates,
-                     radius_cutoff_ratio = self.radius_cutoff_ratio,
-                     radius = self.radius,
-                     n_neighbors = self.n_neighbors)
+    lshf = LSHForest(**self.build_opts)
     lshf.fit(data)
     return lshf
 
@@ -80,30 +74,40 @@ class ANN(object):
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
-      #Number of trees in the LSH Forest.
-      n_estimators = re.search("-n (\d+)", options)
-      #Number of neighbors to be returned from the query function.
-      n_neighbors = re.search("-k (\d+)", options)
-      #Lowest hash length to be searched when candidate selection is performed.
-      min_hash_match = re.search("-H (\d+)", options)
-      #Minimum number of candidates evaluated per estimator.
-      n_candidates = re.search("--n_candidates (\d+)", options)
-      #Radius from data point to its neighbors.
-      radius = re.search("--radius (\d+)", options)
-      #A value ranges from 0 to 1.
-      radius_cutoff_ratio = re.search("--radius_cutoff_ratio (\d+)", options)
-      self.n_estimators = 10 if not n_estimators else int(n_estimators.group(1))
-      self.n_neighbors = 5 if not n_neighbors else int(n_neighbors.group(1))
-      self.min_hash_match = 4 if not min_hash_match else int(min_hash_match.group(1))
-      self.n_candidates = 10 if not n_candidates else int(n_candidates.group(1))
-      self.radius = 1.0 if not radius else float(radius.group(1))
-      self.radius_cutoff_ratio = 0.9 if not radius_cutoff_ratio else float(radius_cutoff_ratio.group(1))
+      # Number of trees in the LSH Forest.
+      self.build_opts = {}
+      if "num_trees" in options:
+        self.build_opts["n_estimators"] = int(options.pop("num_trees"))
+      # Number of neighbors to be returned from the query function.
+      if "k" in options:
+        n_neighbors = int(options.pop("k"))
+      else:
+        Log.Fatal("Required parameter 'k' not specified!")
+        raise Exception("missing parameter")
+      # Lowest hash length to be searched when candidate selection is performed.
+      if "min_hash_match" in options:
+        self.build_opts["min_hash_match"] = int(options.pop("min_hash_match"))
+      # Minimum number of candidates evaluated per estimator.
+      if "num_candidates" in options:
+        self.build_options["n_candidates"] = int(options.pop("n_candidates"))
+      # Radius from data point to its neighbors.
+      if "radius" in options:
+        self.build_options["radius"] = float(options.pop("radius"))
+      # A value ranges from 0 to 1.
+      if "radius_cutoff_ratio" in options:
+        self.build_options["radius_cutoff_ratio"] = \
+            float(options.pop("radius_cutoff_ratio"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
           # Run Approximate on the test dataset.
           distances,indices = self.model.kneighbors(testData,
-                                                    n_neighbors = self.n_neighbors)
+                                                    n_neighbors=n_neighbors)
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)

@@ -55,16 +55,22 @@ class SparseCoding(object):
       dictionary = np.genfromtxt(self.dataset[1], delimiter=',')
 
       # Get all the parameters.
-      l = re.search("-l (\d+)", options)
-      max_iter = re.search("-n (\d+)", options)
-      l = 0 if not l else int(l.group(1))
-      max_iter = 1000 if not max_iter else int(max_iter.group(1)) 
+      opts = {}
+      if "lambda" in options:
+        opts["transform_alpha"] = options.pop("lambda")
+      if "max_iterations" in options:
+        opts["max_iter"] = options.pop("max_iterations")
+      opts["transform_algorithm"] = "lars"
+      opts["dictionary"] = dictionary
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
           # Perform Sparse Coding.
-          model = SparseCoder(dictionary=dictionary, transform_algorithm='lars',
-              transform_alpha=l, max_iter = max_iter)
+          model = SparseCoder(**opts)
           code = model.transform(inputData)
       except Exception as e:
         q.put(-1)

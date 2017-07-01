@@ -47,10 +47,7 @@ class ADABOOST(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n_estimators = 50
-    self.learning_rate = 1.0
-    self.algorithm = 'SAMME.R'
-    self.seed = 0
+    self.build_opts = {}
 
   '''
   Build the model for the AdaBoost classifier.
@@ -61,10 +58,7 @@ class ADABOOST(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    adaboost = AdaBoostClassifier(n_estimators=self.n_estimators,
-                                  learning_rate=self.learning_rate,
-                                  algorithm=self.algorithm,
-                                  random_state=self.seed)
+    adaboost = AdaBoostClassifier(**self.build_opts)
     adaboost.fit(data, labels)
     return adaboost
 
@@ -84,15 +78,19 @@ class ADABOOST(object):
       testData = LoadDataset(self.dataset[1])
 
       # Get all the parameters.
-      e = re.search("-e (\d+)", options)
-      l = re.search("-l (\d+)", options)
-      a = re.search("-a (\s+)", options)
-      s = re.search("-n (\d+)", options)
+      self.build_opts = {}
+      if "num_estimators" in options:
+        self.build_opts["n_estimators"] = int(options.pop("num_estimators"))
+      if "learning_rate" in options:
+        self.build_opts["learning_rate"] = float(options.pop("learning_rate"))
+      if "algorithm" in options:
+        self.build_opts["algorithm"] = str(options.pop("algorithm"))
+      if "seed" in options:
+        self.build_opts["random_state"] = int(options.pop("seed"))
 
-      self.n_estimators = 50 if not e else int(e.group(1))
-      self.learning_rate = 1.0 if not l else float(l.group(1))
-      self.algorithm = 'SAMME.R' if not a else str(a.group(1))
-      self.seed = 0 if not s else int(s.group(1))
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

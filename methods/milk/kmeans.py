@@ -58,37 +58,45 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset, delimiter=',')
 
       # Gather parameters.
-      clusters = re.search("-c (\d+)", options)
-      maxIterations = re.search("-m (\d+)", options)
+      clusters = None
+      if "clusters" in options:
+        clusters = options.pop("clusters")
+      maxIterations = None
+      if "max_iterations" in options:
+        maxIterations = options.pop("max_iterations")
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       # Now do validation of options.
       if not clusters and len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
         q.put(-1)
         return -1
-      elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
+      elif (not clusters or int(clusters) < 1) and len(self.dataset) != 2:
         Log.Fatal("Invalid number of clusters requested! Must be greater than"
             + " or equal to 1.")
         q.put(-1)
         return -1
 
-      m = 1000 if not maxIterations else int(maxIterations.group(1))
+      m = 1000 if not maxIterations else int(maxIterations)
 
       try:
         # Create the KMeans object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
             assignments = kmeans(data,
-                                 int(clusters.group(1)),
+                                 int(clusters),
                                  max_iter=m,
                                  centroids=centroids,
                                  return_centroids=False)
           else:
             assignments, centroids = kmeans(data,
-                                            int(clusters.group(1)),
+                                            int(clusters),
                                             max_iter=m)
 
       except Exception as e:
+        Log.Fatal("Exception: " + str(e))
         q.put(-1)
         return -1
 

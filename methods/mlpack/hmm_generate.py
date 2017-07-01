@@ -82,6 +82,20 @@ class HMMGENERATE(object):
         os.remove(f)
 
   '''
+  Given an options dict, return a string that can be passed to the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "length" in options:
+      optionsStr = "-l " + str(options.pop("length"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Hidden Markov Model Sequence Generator
   method. If the method has been successfully completed the report is saved in
   the specified file.
@@ -96,7 +110,7 @@ class HMMGENERATE(object):
     Log.Info("Perform HMM Generate Memory Profiling.", self.verbose)
 
     cmd = shlex.split(self.debug + "mlpack_hmm_generate -m " + self.dataset +
-        " -v  " + options)
+        " -v  " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -112,7 +126,7 @@ class HMMGENERATE(object):
     Log.Info("Perform HMM Generate.", self.verbose)
 
     cmd = shlex.split(self.path + "mlpack_hmm_generate -m " + self.dataset +
-        " -v  " + options)
+        " -v  " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

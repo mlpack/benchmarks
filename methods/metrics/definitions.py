@@ -49,16 +49,16 @@ class Metrics(object):
   '''
   @staticmethod
   def AverageAccuracy(CM):
-    acc=0
+    acc=0.0
     Sum=0
     l=len(CM)
     for i in range(l):
         for j in range(l):
             Sum+=CM[i][j]
-        acc = acc + (CM[i][i]/Sum)*100
+        acc = acc + (float(CM[i][i])/float(Sum))*100.0
         Sum=0
     acc = acc/l
-    return acc/100
+    return acc/100.0
 
 
   '''
@@ -137,6 +137,7 @@ class Metrics(object):
   '''
   @staticmethod
   def FMeasureClass(class_i,CM):
+    l = len(CM)
     precClass = Metrics.PrecisionForAClass(class_i,CM)
     recClass = Metrics.RecallForAClass(class_i,CM)
     if (precClass + recClass) != 0:

@@ -82,6 +82,30 @@ class LocalCoordinateCoding(object):
         os.remove(f)
 
   '''
+  Convert an input dict of options to an output string that can be passed to the
+  program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "atoms" in options:
+      optionsStr = "-k " + str(options.pop("atoms"))
+    else:
+      Log.Fatal("Required parameter 'atoms' not specified!")
+      raise Exception("missing parameter")
+
+    if "normalize" in options:
+      optionsStr = optionsStr + " -N"
+      options.pop("normalize")
+    if "seed" in options:
+      optionsStr = optionsStr + " --seed " + str(options.pop("seed"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Local Coordinate Coding method. If the
   method has been successfully completed the report is saved in the specified
   file.
@@ -97,7 +121,7 @@ class LocalCoordinateCoding(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.debug + "mlpack_local_coordinate_coding -t " +
-        self.dataset + " -v " + options)
+        self.dataset + " -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -113,7 +137,7 @@ class LocalCoordinateCoding(object):
     Log.Info("Perform Local Coordinate Coding.", self.verbose)
 
     cmd = shlex.split(self.path + "mlpack_local_coordinate_coding -t " +
-        self.dataset + " -v " + options)
+        self.dataset + " -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

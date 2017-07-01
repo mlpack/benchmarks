@@ -57,23 +57,26 @@ class PCA(object):
       try:
         with totalTimer:
           # Find out what dimension we want.
-          match = re.search('-d (\d+)', options)
-
-          if not match:
-            k = data.shape[1]
-          else:
-            k = int(match.group(1))
-            if (k > data.shape[1]):
+          opts={}
+          if "new_dimensionality" in options:
+            opts["n_components"] = int(options.pop("new_dimensionality"))
+            if (opts["n_components"] > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
                   + "than existing dimensionality (" + str(data.shape[1]) + ")!")
               q.put(-1)
               return -1
+          else:
+            opts["n_components"] = data.shape[1]
+          if "whiten" in options:
+            opts["whiten"] = True
+            options.pop("whiten")
 
-          # Get the options for running PCA.
-          s = True if options.find("-s") > -1 else False
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
 
           # Perform PCA.
-          pca = decomposition.PCA(n_components=k, whiten=s)
+          pca = decomposition.PCA(**opts)
           pca.fit(data)
           score = pca.transform(data)
       except Exception as e:

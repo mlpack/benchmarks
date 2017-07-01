@@ -57,18 +57,23 @@ class SVR(object):
       X, y = SplitTrainData(self.dataset)
 
       # Get all the parameters.
-      c = re.search("-c (\d+\.\d+)", options)
-      e = re.search("-e (\d+\.\d+)", options)
-      g = re.search("-g (\d+\.\d+)", options)
+      opts = {}
+      if "c" in options:
+        opts["C"] = float(options.pop("c"))
+      if "epsilon" in options:
+        opts["epsilon"] = float(options.pop("epsilon"))
+      if "gamma" in options:
+        opts["gamma"] = float(options.pop("gamma"))
+      opts["kernel"] = "rbf"
 
-      C = 1.0 if not c else float(c.group(1))
-      epsilon = 1.0 if not e else float(e.group(1))
-      gamma = 0.1 if not g else float(g.group(1))
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
           # Perform SVR.
-          model = SSVR(kernel='rbf', C=C, epsilon=epsilon, gamma=gamma)
+          model = SSVR(**opts)
           model.fit(X, y)
       except Exception as e:
         q.put(-1)

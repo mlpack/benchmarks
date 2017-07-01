@@ -55,7 +55,18 @@ class PCA(object):
   def RunMetrics(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
-    inputCmd = "-i " + self.dataset + " " + options
+    # Parse options into string.
+    optionsStr = ""
+    if "new_dimensionality" in options:
+      optionsStr = "-d " + str(options.pop("new_dimensionality"))
+    if "scaling" in options:
+      optionsStr = optionsStr + " -s"
+      options.pop("scaling")
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    inputCmd = "-i " + self.dataset + " " + optionsStr
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, PCA('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")

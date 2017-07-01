@@ -49,7 +49,7 @@ class HMMTRAIN_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-t gaussian -n 2")
+    result = self.instance.RunMetrics({ "type": "gaussian", "states": 2 })
     self.assertTrue(result["Runtime"] > 0)
 
   '''

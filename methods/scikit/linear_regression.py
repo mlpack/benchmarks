@@ -72,6 +72,10 @@ class LinearRegression(object):
     def RunLinearRegressionScikit(q):
       totalTimer = Timer()
 
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       # Load input dataset.
       # If the dataset contains two files then the second file is the test file.
       Log.Info("Loading dataset", self.verbose)
