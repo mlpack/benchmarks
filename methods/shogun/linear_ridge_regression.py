@@ -132,7 +132,7 @@ class LinearRidgeRegression(object):
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = model.apply_regression(RealFeatures(testData.T)).get_labels()
+      predictedlabels = model.apply_regression(RealFeatures(testData.T))
 
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metrics['Simple MSE'] = SimpleMSE
