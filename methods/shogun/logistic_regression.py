@@ -98,11 +98,9 @@ class LogisticRegression(object):
         with totalTimer:
           # Perform logistic regression.
           self.model = self.BuildModel(X, y)
-          self.model.train()
 
           if len(self.dataset) > 1:
-            pred = self.model.apply(RealFeatures(testSet.T))
-            self.predictions = pred.get_labels()
+            self.predictions = self.model.apply_multiclass(RealFeatures(testSet.T))
 
       except Exception as e:
         q.put(-1)
@@ -126,39 +124,22 @@ class LogisticRegression(object):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
     results = self.LogisticRegressionShogun(options)
-    if results < 0:
-      return results
 
     metrics = {'Runtime' : results}
-
+    
     if len(self.dataset) >= 3:
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, responses = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, responses)
-
-      if self.predictions:
-        testData = LoadDataset(self.dataset[1])
-        truelabels = LoadDataset(self.dataset[2])
-
-        confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-        AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-        AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-        AvgRec = Metrics.AvgRecall(confusionMatrix)
-        AvgF = Metrics.AvgFMeasure(confusionMatrix)
-        AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-        AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-        AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-        SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-        metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-
-        metrics['Avg Accuracy'] = AvgAcc
-        metrics['MultiClass Precision'] = AvgPrec
-        metrics['MultiClass Recall'] = AvgRec
-        metrics['MultiClass FMeasure'] = AvgF
-        metrics['MultiClass Lift'] = AvgLift
-        metrics['MultiClass MCC'] = AvgMCC
-        metrics['MultiClass Information'] = AvgInformation
-        metrics['Simple MSE'] = SimpleMSE
+      trainData, labels = SplitTrainData(self.dataset)
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+      
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics

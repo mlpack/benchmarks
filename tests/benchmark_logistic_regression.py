@@ -80,7 +80,11 @@ class LR_SHOGUN_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
+    self.assertTrue(result["MultiClass FMeasure"] >= 0)
+    self.assertTrue(result["Simple MSE"] > 0)
 
 '''
 Test the Milk Logistic Regression Classifier script.
