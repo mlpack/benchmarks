@@ -48,9 +48,6 @@ class KNC(object):
     self.timeout = timeout
     self.model = None
     self.n_neighbors = 5
-    self.algorithm = 'kd_tree'
-    self.leaf_size = 30
-    self.metric = 'minkowski'
 
   '''
   Build the model for the k-nearest neighbors Classifier.
@@ -81,9 +78,15 @@ class KNC(object):
       testData = LoadDataset(self.dataset[1])
 
       # Get all the parameters.
-      n = re.search("-n (\d+)", options)
+      if "k" in options:
+        self.n_neighbors = int(options.pop("k"))
+      else:
+        Log.Fatal("Required parameter 'k' not specified!")
+        raise Exception("missing parameter")
 
-      self.n_neighbors = 5 if not n else int(n.group(1))
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

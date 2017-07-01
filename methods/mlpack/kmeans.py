@@ -82,6 +82,25 @@ class KMEANS(object):
         os.remove(f)
 
   '''
+  Convert an options dict to a string that can be passed to the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "clusters" in options:
+      optionsStr = "-c " + str(options.pop("clusters"))
+    else:
+      Log.Fatal("Required parameter 'clusters' not specified!")
+      raise Exception("missing parameter")
+    if "max_iterations" in options:
+      optionsStr = optionsStr + " -m " + str(options.pop("max_iterations"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the K-Means clustering method. If the method
   has been successfully completed the report is saved in the specified file.
 
@@ -98,10 +117,11 @@ class KMEANS(object):
     # file.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_kmeans -i " + self.dataset[0] +
-          " -I " + self.dataset[1] + " -o output.csv -v " + options)
+          " -I " + self.dataset[1] + " -o output.csv -v " +
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_kmeans -i " + self.dataset[0] +
-          " -o output.csv -v " + options)
+          " -o output.csv -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -120,10 +140,11 @@ class KMEANS(object):
     # file.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_kmeans -i " + self.dataset[0] +
-          " -I " + self.dataset[1] + " -o output.csv -v " + options)
+          " -I " + self.dataset[1] + " -o output.csv -v " +
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_kmeans -i " + self.dataset[0] +
-          " -o output.csv -v " + options)
+          " -o output.csv -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

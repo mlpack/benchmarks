@@ -47,7 +47,7 @@ class PERCEPTRON(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.iterations = 1000
+    self.opts = {}
 
   '''
   Build the model for the Perceptron.
@@ -58,7 +58,7 @@ class PERCEPTRON(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    p = Perceptron(n_iter=self.iterations)
+    p = Perceptron(**opts)
     p.fit(data, responses)
     return p
 
@@ -82,8 +82,13 @@ class PERCEPTRON(object):
         Log.Fatal("This method requires atleast two datasets.")
 
       # Gather all parameters.
-      s = re.search('-n (\d+)', options)
-      self.iterations = 1000 if not s else int(s.group(1))
+      self.opts = {}
+      if "max_iterations" in options:
+        self.opts["n_iter"] = int(options.pop("max_iterations"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
@@ -121,9 +126,7 @@ class PERCEPTRON(object):
 
     metrics = {'Runtime' : results}
 
-
     if len(self.dataset) >= 3:
-
       # Check if we need to create a model.
       if not self.model:
         trainData, labels = SplitTrainData(self.dataset)

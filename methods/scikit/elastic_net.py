@@ -47,18 +47,7 @@ class ElasticNet(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.rho = 1.0
-    self.alpha = 0.5
-    self.fit_intercept = True
-    self.normalize = False
-    self.precompute = False
-    self.max_iter = 1000
-    self.copy_X = True
-    self.tol = 0.0001
-    self.warm_start = False
-    self.positive = False
-    self.selection = 'cyclic'
-
+    self.build_opts = {}
 
   '''
   Build the model for the Elastic Net Classifier.
@@ -69,17 +58,7 @@ class ElasticNet(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    elasticNet = SElasticNet(alpha=self.rho,
-                             l1_ratio=self.alpha,
-                             fit_intercept = self.fit_intercept,
-                             normalize = self.normalize,
-                             precompute = self.precompute,
-                             max_iter = self.max_iter,
-                             copy_X = self.copy_X,
-                             tol = self.tol,
-                             warm_start = self.warm_start,
-                             positive = self.positive,
-                             selection = self.selection)
+    elasticNet = SElasticNet(**self.build_opts)
     elasticNet.fit(data, labels)
     return elasticNet
 
@@ -98,22 +77,26 @@ class ElasticNet(object):
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
 
-      r = re.search("-r (\d+)", options)
-      a = re.search("-a (\d+)", options)
-      max_iter = re.search("--max_iter (\d+)", options)
-      tol = re.search("--tol (\d+)", options)
-      selection = re.search("--selection (\s+)", options)
-
-      self.rho = 1.0 if not r else int(r.group(1))
-      self.alpha = 0.5 if not r else int(a.group(1))
-      self.max_iter = 1000 if not max_iter else int(max_iter.group(1))
-      self.tol = 0.0001 if not tol else float(tol.group(1))
-      self.selection = 'cyclic' if not selection else str(selection.group(1))
-      if self.selection not in ['cyclic','random']:
-          Log.Fatal("Invalid selection: " + str(selection.group(1)) 
+      self.build_opts = {}
+      if "rho" in options:
+        self.build_opts["rho"] = float(options.pop("rho"))
+      if "alpha" in options:
+        self.build_opts["alpha"] = float(options.pop("alpha"))
+      if "max_iterations" in options:
+        self.build_opts["max_iter"] = int(options.pop("max_iterations"))
+      if "tolerance" in options:
+        self.build_opts["tol"] = float(options.pop("tolerance"))
+      if "selection" in options:
+        self.build_opts["selection"] = str(options.pop("selection"))
+        if self.build_opts["selection"] not in ['cyclic','random']:
+          Log.Fatal("Invalid selection: " + self.build_opts["selection"]
                     + ". Must be either cyclic or random")
           q.put(-1)
           return -1
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

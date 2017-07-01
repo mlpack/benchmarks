@@ -47,10 +47,7 @@ class KNC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n_neighbors = 5
-    self.algorithm = 'kd_tree'
-    self.leaf_size = 30
-    self.metric = 'minkowski'
+    self.opts = {}
 
   '''
   Build the model for the k-nearest neighbors Classifier.
@@ -61,10 +58,7 @@ class KNC(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    knc = KNeighborsClassifier(n_neighbors=self.n_neighbors,
-                               algorithm=self.algorithm,
-                               leaf_size=self.leaf_size,
-                               metric=self.metric)
+    knc = KNeighborsClassifier(**self.opts)
     knc.fit(data, labels)
     return knc
 
@@ -84,15 +78,19 @@ class KNC(object):
       testData = LoadDataset(self.dataset[1])
 
       # Get all the parameters.
-      n = re.search("-n (\d+)", options)
-      a = re.search("-a (\s+)", options)
-      l = re.search("-l (\d+)", options)
-      m = re.search("-m (\s+)", options)
+      self.opts = {}
+      if "k" in options:
+        self.opts["n_neighbors"] = int(options.pop("k"))
+      if "algorithm" in options:
+        self.opts["algorithm"] = str(options.pop("algorithm"))
+      if "leaf_size" in options:
+        self.opts["leaf_size"] = int(options.pop("leaf_size"))
+      if "metric" in options:
+        self.opts["metric"] = str(options.pop("metric"))
 
-      self.n_neighbors = 5 if not n else int(n.group(1))
-      self.algorithm = 'kd_tree' if not a else str(a.group(1))
-      self.leaf_size = 30 if not l else int(l.group(1))
-      self.metric = 'minkowski' if not m else str(m.group(1))
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

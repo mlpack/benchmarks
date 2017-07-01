@@ -103,11 +103,15 @@ class DecisionStump(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform Memory Profiling.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the test file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "mlpack_decision_stump -t " +
-          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -T " + self.dataset[1] + " -v")
     else:
       Log.Fatal("This method requires atleast two datasets.")
 
@@ -124,11 +128,15 @@ class DecisionStump(object):
   def RunMetrics(self, options):
     Log.Info("Perform Decision Stump Prediction.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the labels file.
     # In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_decision_stump -t " +
-          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -T " + self.dataset[1] + " -v")
     else:
       Log.Fatal("This method requires atleast two datasets.")
 

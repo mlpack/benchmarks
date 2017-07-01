@@ -66,14 +66,22 @@ class ALLKNN(object):
   def RunMetrics(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
+    # This is not tested since HLearn has not worked in the current benchmarking
+    # setup, but, if you are trying to get it to work, this *should* work...
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options["k"])
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options["seed"])
+
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "hlearn-allknn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " " + options)
+          self.dataset[1] + " " + optionsStr)
     else:
       cmd = shlex.split(self.path + "hlearn-allknn -r " + self.dataset +
-          " " + options)
+          " " + optionsStr)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

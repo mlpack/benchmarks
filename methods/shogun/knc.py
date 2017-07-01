@@ -28,7 +28,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, KNN, EuclideanDistance
+from modshogun import RealFeatures, MulticlassLabels, KNN, EuclideanDistance, KNN_KDTREE
 
 '''
 This class implements the Support vector machines benchmark.
@@ -47,7 +47,7 @@ class KNC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.n_neighbors = 5
+    self.n_neighbors = 5 
 
   '''
   Build the model for the k-nearest neighbors Classifier.
@@ -58,14 +58,18 @@ class KNC(object):
   '''
   def BuildModel(self, data, labels, options):
     # Get all the parameters.
-    n = re.search("-n (\d+)", options)
+    if "k" in options:
+      n_neighbors = int(options.pop("k"))
+    else:
+      n_neighbors = 5
 
-    self.n_neighbors = 5 if not n else int(n.group(1))
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
 
     distance = EuclideanDistance(data, data)
-    from modshogun import KNN_KDTREE
+ 
     knc = KNN(self.n_neighbors, distance, labels, KNN_KDTREE)
-    knc.set_leaf_size(30)
     knc.train()
 
     return knc
@@ -91,7 +95,7 @@ class KNC(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
           # Run the k-nearest neighbors Classifier on the test dataset.
-          self.model.apply(testData).get_labels()
+          self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
@@ -136,13 +140,17 @@ class KNC(object):
 
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.apply(RealFeatures(testData.T)).get_labels()
+      predictedlabels = self.model.apply_multiclass(RealFeatures(testData.T)).get_labels()
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
 
     return metrics

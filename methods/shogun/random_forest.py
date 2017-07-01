@@ -44,6 +44,7 @@ class RANDOMFOREST(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
     self.model = None
     self.form = 1
     self.numTrees = 10
@@ -56,7 +57,7 @@ class RANDOMFOREST(object):
   '''
   def BuildModel(self, data, labels, options):
     mVote = MajorityVote()
-    randomForest = RandomForest(self.form,self.numTrees)
+    randomForest = RandomForest(self.form, self.numTrees)
     randomForest.set_combination_rule(mVote)
     randomForest.set_labels(labels)
     randomForest.train(data)
@@ -79,19 +80,25 @@ class RANDOMFOREST(object):
       labels = MulticlassLabels(labels)
       testData = RealFeatures(LoadDataset(self.dataset[1]).T)
 
-      # Number of Trees.
-      n = re.search("-n (\d+)", options)
-      # Number of attributes to be chosen randomly to select from.
-      f = re.search("-f (\d+)", options)
+      if "num_trees" in options:
+        self.numTrees = int(options.pop("num_trees"))
+      else:
+        Log.Fatal("Required parameter 'num_trees' not specified!")
+        raise Exception("missing parameter")
 
-      self.form = 1 if not f else int(f.group(1))
-      self.numTrees = 10 if not n else int(n.group(1))
+      self.form = 1
+      if "dimensions" in options:
+        self.form = int(options.pop("dimensions"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
           # Run the Random Forest Classifier on the test dataset.
-          self.model.apply_multiclass(testData).get_labels()
+          self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         q.put(-1)
         return -1
@@ -114,7 +121,32 @@ class RANDOMFOREST(object):
 
     if len(self.dataset) >= 2:
         results = self.RandomForestShogun(options)
+    
     else:
       Log.Fatal("This method requires at least two datasets.")
 
-    return {'Runtime' : results}
+    metrics = {'Runtime' : results}
+    if len(self.dataset) >= 3:
+      trainData, labels = SplitTrainData(self.dataset)
+      trainData = RealFeatures(trainData.T)
+      labels = MulticlassLabels(labels)
+      testData = RealFeatures(LoadDataset(self.dataset[1]).T)
+      self.numTrees = int(options.pop("num_trees"))
+      self.form = 1
+      if "dimensions" in options:
+        self.form = int(options.pop("dimensions"))
+      self.model = self.BuildModel(trainData, labels, options)
+      self.predictions = self.model.apply_multiclass(testData).get_labels()
+      truelabels = LoadDataset(self.dataset[2])
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+    return metrics

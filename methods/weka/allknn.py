@@ -45,6 +45,26 @@ class ALLKNN(object):
     self.timeout = timeout
 
   '''
+  Turn an input dict of options into a string we can pass to the program.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' not specified!")
+      raise Exception("missing parameter")
+
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   All K-Nearest-Neighbors. If the method has been successfully completed return
   the elapsed time in seconds.
 
@@ -57,15 +77,16 @@ class ALLKNN(object):
 
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
+    optionsStr = self.OptionsToStr(options)
     if len(self.dataset) == 2:
       inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + \
-          options
+          optionsStr
     else:
-      inputCmd = "-r " + self.dataset + " " + options
+      inputCmd = "-r " + self.dataset + " " + optionsStr
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " AllKnn " + inputCmd + " " + options)
+        ":methods/weka" + " AllKnn " + inputCmd + " " + optionsStr)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

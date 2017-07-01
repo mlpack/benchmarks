@@ -44,7 +44,7 @@ class DTC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.min_split = 4
+    self.min_split = -1
   '''
   Build the model for the Decision Tree Classifier.
   @param data - The train data.
@@ -53,7 +53,10 @@ class DTC(object):
   '''
   def BuildModel(self):
     # Create and train the classifier.
-    dtc_learner = tree_learner(min_split = self.min_split)
+    if self.min_split != -1:
+      dtc_learner = tree_learner(min_split=self.min_split)
+    else:
+      dtc_learner = tree_learner()
     return dtc_learner
 
   '''
@@ -69,9 +72,13 @@ class DTC(object):
       Log.Info("Loading dataset", self.verbose)
       trainData, labels = SplitTrainData(self.dataset)
       testData = LoadDataset(self.dataset[1])
-      
-      min_split = re.search("--minimum_leaf_size (\d+)", options)
-      self.min_split = 4 if not min_split else int(min_split.group(1))
+
+      # Parse options.
+      if "minimum_leaf_size" in options:
+        self.min_split = options.pop("minimum_leaf_size")
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         self.model = self.BuildModel()

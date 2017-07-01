@@ -95,9 +95,12 @@ class ICA(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform ICA Memory Profiling.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.debug + "mlpack_radical -i " + self.dataset + " -v "
-        + options)
+    cmd = shlex.split(self.debug + "mlpack_radical -i " + self.dataset + " -v")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -112,9 +115,13 @@ class ICA(object):
   def RunMetrics(self, options):
     Log.Info("Perform ICA.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "mlpack_radical -i " + self.dataset + " -v "
-        + options + " -o output_ic.csv -u output_unmixing.csv")
+    cmd = shlex.split(self.path + "mlpack_radical -i " + self.dataset + " -v"
+        + " -o output_ic.csv -u output_unmixing.csv")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

@@ -47,8 +47,7 @@ class LogisticRegression(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
-    self.e = 1e-4
-    self.n = 100
+    self.opts = {}
 
   '''
   Build the model for the Logistic Regression.
@@ -59,8 +58,7 @@ class LogisticRegression(object):
   '''
   def BuildModel(self, data, responses):
     # Create and train the classifier.
-    lr = SLogisticRegression(max_iter = self.n, 
-                             tol = self.e)
+    lr = SLogisticRegression(**self.opts)
     lr.fit(data, responses)
     return lr
 
@@ -83,10 +81,16 @@ class LogisticRegression(object):
 
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
-      e = re.search("-e (\d+)", options) #Tolerance
-      n = re.search("-n (\d+)", options) #Max_iterations
-      self.e = 1e-4 if not e else float(e.group(1))
-      self.n = 100 if not n else int(n.group(1))
+      if "algorithm" in options:
+        self.opts["algorithm"] = str(options.pop("algorithm"))
+      if "epsilon" in options:
+        self.opts["epsilon"] = float(options.pop("epsilon"))
+      if "max_iterations" in options:
+        self.opts["max_iter"] = int(options.pop("max_iter"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       try:
         with totalTimer:

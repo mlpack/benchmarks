@@ -61,14 +61,19 @@ class SVR(object):
       X, y = SplitTrainData(self.dataset)
 
       # Get all the parameters.
-      c = re.search("-c (\d+\.\d+)", options)
-      e = re.search("-e (\d+\.\d+)", options)
-      g = re.search("-g (\d+\.\d+)", options)
+      self.C = 1.0
+      self.epsilon = 1.0
+      self.width = 0.1
+      if "c" in options:
+        self.C = float(options.pop("c"))
+      if "epsilon" in options:
+        self.epsilon = float(options.pop("epsilon"))
+      if "gamma" in options:
+        self.width = np.true_divide(1, float(options.pop("gamma")))
 
-      self.C = 1.0 if not c else float(c.group(1))
-      self.epsilon = 1.0 if not e else float(e.group(1))
-      g = 10.0 if not g else float(g.group(1))
-      self.width = np.true_divide(1, g)
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       data = RealFeatures(X.T)
       labels_train = RegressionLabels(y)

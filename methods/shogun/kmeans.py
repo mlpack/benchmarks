@@ -66,26 +66,24 @@ class KMEANS(object):
         data = np.genfromtxt(self.dataset[0], delimiter=',')
 
       # Gather parameters.
-      clusters = re.search("-c (\d+)", options)
-      maxIterations = re.search("-m (\d+)", options)
-      seed = re.search("-s (\d+)", options)
-
-      # Now do validation of options.
-      if not clusters and len(self.dataset) != 2:
+      if "clusters" in options:
+        clusters = int(options.pop("clusters"))
+      elif len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
         q.put(-1)
         return -1
-      elif (not clusters or int(clusters.group(1)) < 1) and len(self.dataset) != 2:
-        Log.Fatal("Invalid number of clusters requested! Must be greater than"
-            + " or equal to 1.")
-        q.put(-1)
-        return -1
+      if "max_iterations" in options:
+        maxIterations = int(options.pop("max_iterations"))
+      seed = None
+      if "seed" in options:
+        seed = int(options.pop("seed"))
 
-      m = 1000 if not maxIterations else int(maxIterations.group(1))
-
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       if seed:
-        Math_init_random(seed.group(1))
+        Math_init_random(seed)
       try:
         dataFeat = RealFeatures(data.T)
         distance = EuclideanDistance(dataFeat, dataFeat)
@@ -93,9 +91,9 @@ class KMEANS(object):
         # Create the K-Means object and perform K-Means clustering.
         with totalTimer:
           if len(self.dataset) == 2:
-            model = KMeans(int(clusters.group(1)), distance, centroids.T)
+            model = KMeans(clusters, distance, centroids.T)
           else:
-            model = KMeans(int(clusters.group(1)), distance)
+            model = KMeans(clusters, distance)
 
           model.set_max_iter(m)
           model.train()

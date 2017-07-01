@@ -47,6 +47,10 @@ class LARS(object):
   successful.
   '''
   def LARSMlpy(self, options):
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     def RunLARSMlpy(q):
       totalTimer = Timer()
 

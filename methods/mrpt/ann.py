@@ -57,42 +57,48 @@ class ANN(object):
       train, label = SplitTrainData(self.dataset)
 
       # Get all the parameters.
-      k = re.search("-k (\d+)", options)
-      n = re.search("-n (\d+)", options) # Number of trees.
-      d = re.search("-d (\d+)", options) # The tree depth.
-      v = re.search("-v (\d+)", options) # Number of votes_required.
-
-      if not k:
-        Log.Fatal("Required option: Number of furthest neighbors to find.")
-        q.put(-1)
-        return -1
-      else:
-        k = int(k.group(1))
+      if "k" in options:
+        k = int(options.pop("k"))
         if (k < 1 or k > referenceData.shape[0]):
           Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
             + " and less or equal than " + str(referenceData.shape[0]))
           q.put(-1)
           return -1
-      if not n:
-          Log.Fatal("Required option: Number of trees to build")
-          q.put(-1)
-          return -1
       else:
-          n=int(n.group(1))
+        Log.Fatal("Required option: Number of furthest neighbors to find.")
+        q.put(-1)
+        return -1
 
-      d = 5 if not d else int(d.group(1))
-      v = 4 if not v else int(v.group(1))
+      build_dict = {}
+      run_dict = {}
+      if "num_trees" in options:
+        build_dict["n_trees"] = int(options.pop("num_trees"))
+      else:
+        Log.Fatal("Required option: Number of trees to build")
+        q.put(-1)
+        return -1
+
+      if "depth" in options:
+        build_dict["depth"] = int(options.pop("depth"))
+      else:
+        build_dict["depth"] = 2 # Not sure... just a default...
+      if "votes_required" in options:
+        run_dict["votes_required"] = int(options.pop("votes_required"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
 
       with totalTimer:
         try:
           # Perform Approximate Nearest-Neighbors.
           acc = 0
-          index = mrpt.MRPTIndex(np.float32(train), depth=d, n_trees=n)
+          index = mrpt.MRPTIndex(np.float32(train), **build_dict)
           index.build()
           approximate_neighbors = np.zeros((len(queryData), k))
           for i in range(len(queryData)):
               approximate_neighbors[i] = index.ann(np.float32(queryData[i]), k,
-                  votes_required=v)
+                  **run_dict)
         except Exception as e:
           Log.Info(e)
           q.put(-1)

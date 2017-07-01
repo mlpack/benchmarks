@@ -77,6 +77,10 @@ class DTC(object):
       labels = MulticlassLabels(labels)
       testData = RealFeatures(LoadDataset(self.dataset[1]).T)
 
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
       try:
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)

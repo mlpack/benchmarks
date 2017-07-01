@@ -56,14 +56,26 @@ class ALLKNN(object):
   def RunMetrics(self, options):
     Log.Info("Perform ALLKNN.", self.verbose)
 
+    # Convert options dict to string to use.
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+    if "epsilon" in options:
+      optionsStr = optionsStr + " -e " + str(options.pop("epsilon"))
+    if len(options) > 0:
+      Log.Fatal("Unknown options: " + str(options))
+      raise Exception("unknown options")
+
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "allknn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " -v " + options)
+          self.dataset[1] + " -v " + optionsStr)
     else:
       cmd = shlex.split(self.path + "allknn -r " + self.dataset +
-          " -v " + options)
+          " -v " + optionsStr)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

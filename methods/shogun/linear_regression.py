@@ -71,6 +71,10 @@ class LinearRegression(object):
         # Use the last row of the training set as the responses.
         X, y = SplitTrainData(self.dataset)
 
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
+
         with totalTimer:
           # Perform linear regression.
           model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))

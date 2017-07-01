@@ -69,6 +69,10 @@ class LinearRegression(object):
   successful.
   '''
   def LinearRegressionMlpy(self, options):
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     def RunLinearRegressionMlpy(q):
       totalTimer = Timer()
 

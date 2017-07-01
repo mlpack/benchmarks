@@ -82,6 +82,31 @@ class SparseCoding(object):
         os.remove(f)
 
   '''
+  Given an input dict of options, convert to a string that the program can use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "atoms" in options:
+      optionsStr = "-k " + str(options.pop("atoms"))
+    else:
+      Log.Fatal("Required parameter 'atoms' not specified!")
+      raise Exception("missing parameter")
+
+    if "seed" in options:
+      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
+    if "max_iterations" in options:
+      optionsStr = optionsStr + " -n " + str(options.pop("max_iterations"))
+    if "normalize" in options:
+      optionsStr = optionsStr + " -N"
+      options.pop("normalize")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Sparse Coding method. If the method has
   been successfully completed the report is saved in the specified file.
 
@@ -98,10 +123,11 @@ class SparseCoding(object):
     # dictionary. In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_sparse_coding -i " +
-          self.dataset[0] + " -D " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -D " + self.dataset[1] + " -v " +
+          self.OptionsToStr(options))
     else:
         cmd = shlex.split(self.debug + "mlpack_sparse_coding -i " + self.dataset
-            + " -v " + options)
+            + " -v " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -120,10 +146,10 @@ class SparseCoding(object):
     # dictionary. In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_sparse_coding -t " + self.dataset[0]
-          + " -i " + self.dataset[1] + " -v " + options)
+          + " -i " + self.dataset[1] + " -v " + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_sparse_coding -t " + self.dataset +
-          " -v " + options)
+          " -v " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

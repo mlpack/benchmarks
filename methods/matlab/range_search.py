@@ -55,12 +55,31 @@ class RANGESEARCH(object):
   def RunMetrics(self, options):
     Log.Info("Perform Range Search.", self.verbose)
 
+    # Parse options into string.
+    optionsStr = ""
+    if "max" in options:
+      optionsStr = "-M " + str(options.pop("max"))
+    else:
+      Log.Fatal("Parameter 'max' is required!")
+      raise Exception("missing parameter")
+
+    if "leaf_size" in options:
+      optionsStr = optionsStr + " -l " + str(options.pop("leaf_size"))
+    if "naive_mode" in options:
+      optionsStr = optionsStr + " -N"
+      options.pop("naive_mode")
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " + options
+      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " \
+          + optionsStr
     else:
-      inputCmd = "-r " + self.dataset + " " + options
+      inputCmd = "-r " + self.dataset + " " + optionsStr
 
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +

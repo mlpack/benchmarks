@@ -69,6 +69,10 @@ class LDA(object):
   successful.
   '''
   def LDAMlpy(self, options):
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     def RunLDAMlpy(q):
       totalTimer = Timer()
 

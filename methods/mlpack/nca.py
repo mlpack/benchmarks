@@ -82,6 +82,32 @@ class NCA(object):
         os.remove(f)
 
   '''
+  Given an input dict of options, return an output string that the program can
+  use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "optimizer" in options:
+      optionsStr = "-O " + str(options.pop("optimizer"))
+    if "max_iterations" in options:
+      optionsStr = optionsStr + " -n " + str(options.pop("max_iterations"))
+    if "num_basis" in options:
+      optionsStr = optionsStr + " -B " + str(options.pop("num_basis"))
+    if "wolfe" in options:
+      optionsStr = optionsStr + " -w " + str(options.pop("wolfe"))
+    if "normalize" in options:
+      optionsStr = optionsStr + " -N"
+      options.pop("normalize")
+    if "seed" in options:
+      optionsStr = optionsStr + " --seed " + str(options.pop("seed"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Neighborhood Components Analysis method.
   If the method has been successfully completed the report is saved in the
   specified file.
@@ -99,10 +125,11 @@ class NCA(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_nca -i " + self.dataset[0] + " -l "
-          + self.dataset[1] + " -v -o distance.csv " + options)
+          + self.dataset[1] + " -v -o distance.csv "
+          + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_nca -i " + self.dataset +
-          " -v -o distance.csv " + options)
+          " -v -o distance.csv " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -121,10 +148,11 @@ class NCA(object):
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_nca -i " + self.dataset[0] + " -l "
-          + self.dataset[1] + " -v -o distance.csv " + options)
+          + self.dataset[1] + " -v -o distance.csv "
+          + self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_nca -i " + self.dataset +
-          " -v -o distance.csv " + options)
+          " -v -o distance.csv " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

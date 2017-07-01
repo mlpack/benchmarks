@@ -41,7 +41,8 @@ methods:
                        ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-              options: '-n 10000'
+              options:
+                max_iterations: 10000
 
     DecisionStump:
         run: ['metric']
@@ -65,21 +66,30 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
                       'datasets/isolet.csv', 'datasets/mnist_all.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-r 6 -s 42 -u multdist'
+              options:
+                rank: 6
+                seed: 42
+                update_rules: multdist
 
             - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
                       'datasets/optdigits.csv', 'datasets/waveform.csv',
                       'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
                       'datasets/isolet.csv', 'datasets/mnist_all.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-r 6 -s 42 -u multdiv'
+              options:
+                rank: 6
+                seed: 42
+                update_rules: multdiv
 
             - files: ['datasets/ionosphere.csv', 'datasets/piano_magnitude_spectogram.csv',
                       'datasets/optdigits.csv', 'datasets/waveform.csv',
                       'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
                       'datasets/isolet.csv', 'datasets/mnist_all.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-r 6 -s 42 -u als'
+              options:
+                rank: 6
+                seed: 42
+                update_rules: als
     NBC:
         run: ['metric']
         script: methods/mlpack/nbc.py
@@ -92,7 +102,8 @@ methods:
             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
                        ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
-              options: '-I'
+              options:
+                incremental: True
     KPCA:
         run: ['metric']
         script: methods/mlpack/kernel_pca.py
@@ -104,7 +115,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k linear'
+              options:
+                kernel: linear
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -112,7 +124,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k gaussian'
+              options:
+                kernel: gaussian
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -120,7 +133,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k polynomial'
+              options:
+                kernel: polynomial
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -128,7 +142,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k hyptan'
+              options:
+                kernel: hyptan
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -136,7 +151,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k laplacian'
+              options:
+                kernel: laplacian
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -144,7 +160,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k cosine'
+              options:
+                kernel: cosine
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -152,7 +169,10 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k gaussian --nystroem_method -s kmeans'
+              options:
+                kernel: gaussian
+                nystroem: true
+                sampling_scheme: kmeans
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -160,7 +180,10 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k polynomial --nystroem_method -s kmeans'
+              options:
+                kernel: polynomial
+                nystroem: true
+                sampling_scheme: kmeans
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -168,7 +191,10 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k cosine --nystroem_method -s kmeans'
+              options:
+                kernel: cosine
+                nystroem: true
+                sampling_scheme: kmeans
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -176,7 +202,10 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k gaussian --nystroem_method -s random'
+              options:
+                kernel: gaussian
+                nystroem: true
+                sampling_scheme: random
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -184,7 +213,10 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k polynomial --nystroem_method -s random'
+              options:
+                kernel: polynomial
+                nystroem: true
+                sampling_scheme: random
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -192,7 +224,11 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k cosine --nystroem_method -s random'
+              options:
+                kernel: cosine
+                nystroem: true
+                sampling_scheme: random
+
     LARS:
           run: ['metric']
           script: methods/mlpack/lars.py
@@ -202,13 +238,17 @@ methods:
                          ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                          ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                          ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-                options: '-l 0.01'
+                options:
+                  lambda1: 0.01
 
               - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                          ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                          ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                          ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-                options: '--lambda1 0.01 --lambda2 0.005 --use_cholesky'
+                options:
+                  lambda1: 0.01
+                  lambda2: 0.005
+                  use_cholesky: True
 
     LSH:
         run: ['metric']
@@ -220,7 +260,9 @@ methods:
                    'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                    'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                    'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-           options: '-k 3 -s 42'
+           options:
+              k: 3
+              seed: 42
 
     KMEANS:
         run: ['metric']
@@ -228,31 +270,40 @@ methods:
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
                        ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
                        ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
-              options: '-c 75'
+              options:
+                clusters: 75
+
     ALLKNN:
         run: ['metric']
         script: methods/mlpack/allknn.py
@@ -263,84 +314,118 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3'
+              options:
+                k: 3
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 4'
+              options:
+                k: 4
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -e 0.0'
+              options:
+                k: 3
+                seed: 42
+                epsilon: 0.0
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -e 0.05'
+              options:
+                k: 3
+                seed: 42
+                epsilon: 0.05
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -e 0.10'
+              options:
+                k: 3
+                seed: 42
+                epsilon: 0.10
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -e 0.15'
+              options:
+                k: 3
+                seed: 42
+                epsilon: 0.15
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -e 0.20'
+              options:
+                k: 3
+                seed: 42
+                epsilon: 0.20
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -e 0.25'
+              options:
+                k: 3
+                seed: 42
+                epsilon: 0.25
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -S'
+              options:
+                k: 3
+                seed: 42
+                single_mode: True
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 --tree_type=cover'
+              options:
+                k: 3
+                seed: 42
+                tree_type: cover
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 --tree_type=cover -S'
+              options:
+                k: 3
+                seed: 42
+                tree_type: cover
+                single_mode: True
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -N'
+              options:
+                k: 3
+                seed: 42
+                naive_mode: True
+
     ALLKFN:
         run: ['metric']
         script: methods/mlpack/allkfn.py
@@ -351,21 +436,27 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3'
+              options:
+                k: 3
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s'
+              options:
+                k: 3
+                single_mode: True
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -N'
+              options:
+                k: 3
+                naive_mode: True
+
     ALLKRANN:
         run: ['metric']
         script: methods/mlpack/allkrann.py
@@ -376,35 +467,49 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -T 10'
+              options:
+                k: 3
+                tau: 10
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -T 10 -N'
+              options:
+                k: 3
+                tau: 10
+                naive_mode: True
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -T 10 -s'
+              options:
+                k: 3
+                tau: 10
+                single_mode: True
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -T 10 -L'
+              options:
+                k: 3
+                tau: 10
+                sample_at_leaves: True
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -T 10 -X'
+              options:
+                k: 3
+                tau: 10
+                first_leaf_exact: True
     RANGESEARCH:
         run: ['metric']
         script: methods/mlpack/range_search.py
@@ -415,21 +520,26 @@ methods:
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 0.02'
+              options:
+                max: 0.02
 
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/cloud.csv', 'datasets/vehicle.csv',
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 0.02 -N'
+              options:
+                max: 0.02
+                naive_mode: True
 
             - files: ['datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/cloud.csv', 'datasets/vehicle.csv',
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 0.02 -s'
+              options:
+                max: 0.02
+                single_mode: True
     GMM:
         run: ['metric']
         script: methods/mlpack/gmm.py
@@ -440,14 +550,19 @@ methods:
                       'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
                       'datasets/optdigits.csv', 'datasets/isolet.csv',
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
-              options: '-s 42'
+              options:
+                gaussians: 3
+                seed: 42
 
             - files: ['datasets/artificial_2DSignal.csv', 'datasets/artificial_5DSignal.csv',
                       'datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
                       'datasets/optdigits.csv', 'datasets/isolet.csv',
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
-              options: '-P -s 42'
+              options:
+                gaussians: 3
+                seed: 42
+                no_force_positive: True
     DET:
         run: ['metric']
         script: methods/mlpack/det.py
@@ -458,7 +573,9 @@ methods:
 
             - files: ['datasets/iris.csv', 'datasets/cloud.csv',
                      ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
-              options: '-f 20'
+              options:
+                folds: 20
+
     EMST:
         run: ['metric']
         script: methods/mlpack/emst.py
@@ -470,7 +587,8 @@ methods:
 
             - files: ['datasets/iris.csv', 'datasets/vehicle.csv',
                       'datasets/waveform.csv']
-              options: '-n'
+              options:
+                naive_mode: True
 
     LinearRegression:
         run: ['metric']
@@ -482,60 +600,95 @@ methods:
                         ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
+
     LocalCoordinateCoding:
         run: ['metric']
         script: methods/mlpack/local_coordinate_coding.py
         format: [csv, txt]
         datasets:
-             - files: ['datasets/pendigits.csv']
-               options: '-k 12 -s 42'
+            - files: ['datasets/pendigits.csv']
+              options:
+                atoms: 12
+                seed: 42
 
-             - files: ['datasets/pendigits.csv']
-               options: '-k 12 -s 42 -N'
+            - files: ['datasets/pendigits.csv']
+              options:
+                atoms: 12
+                seed: 42
+                normalize: True
     SparseCoding:
         run: ['metric']
         script: methods/mlpack/sparse_coding.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/pendigits.csv']
-              options: '-k 12 -s 42 -n 100'
+              options:
+                atoms: 12
+                seed: 42
+                max_iterations: 100
 
             - files: ['datasets/pendigits.csv']
-              options: '-k 12 -s 42'
+              options:
+                atoms: 12
+                seed: 42
 
             - files: ['datasets/pendigits.csv']
-              options: '-k 12 -s 42 -N'
+              options:
+                atoms: 12
+                seed: 42
+                normalize: True
     FastMKS:
         run: ['metric']
         script: methods/mlpack/fastmks.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/optdigits.csv']
-              options: '-k 1 -K linear'
+              options:
+                k: 1
+                kernel: linear
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K linear'
+              options:
+                k: 10
+                kernel: linear
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -S -K linear'
+              options:
+                k: 10
+                single_mode: True
+                kernel: linear
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K polynomial -d 10'
+              options:
+                k: 10
+                kernel: polynomial
+                degree: 10
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K hyptan'
+              options:
+                k: 10
+                kernel: hyptan
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K cosine'
+              options:
+                k: 10
+                kernel: cosine
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K gaussian'
+              options:
+                k: 10
+                kernel: gaussian
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K epanechnikov'
+              options:
+                k: 10
+                kernel: epanechnikov
 
             - files: ['datasets/optdigits.csv']
-              options: '-k 10 -K triangular'
+              options:
+                k: 10
+                kernel: triangular
+
     NCA:
         run: ['metric']
         script: methods/mlpack/nca.py
@@ -550,7 +703,10 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-n 2000 -O sgd -s 42'
+              options:
+                max_iterations: 2000
+                optimizer: sgd
+                seed: 42
 
             - files: ['datasets/iris_train.csv',
                       ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
@@ -561,7 +717,10 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-n 2000 -O lbfgs -s 42'
+              options:
+                max_iterations: 2000
+                optimizer: lbfgs
+                seed: 42
 
             - files: ['datasets/iris_train.csv',
                       ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
@@ -572,12 +731,21 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-n 2000 -O lbfgs -s 42 -w 0.5'
+              options:
+                max_iterations: 2000
+                optimizer: lbfgs
+                seed: 42
+                wolfe: 0.5
 
             - files: ['datasets/iris_train.csv', ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
                       'datasets/wine.csv', 'datasets/ionosphere.csv',
                       'datasets/shuttle_train.csv', 'datasets/madelon_train.csv']
-              options: '-n 2000 -O lbfgs -s 42 -w 0.5 -B 5'
+              options:
+                max_iterations: 2000
+                optimizer: lbfgs
+                seed: 42
+                wolfe: 0.5
+                num_basis: 5
 
             - files: ['datasets/iris_train.csv',
                       ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
@@ -588,7 +756,11 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-n 2000 -O lbfgs -s 42 -B 5'
+              options:
+                max_iterations: 2000
+                optimizer: lbfgs
+                seed: 42
+                num_basis: 5
 
             - files: ['datasets/iris_train.csv',
                       ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
@@ -599,30 +771,44 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-n 2000 -N -s 42'
+              options:
+                max_iterations: 2000
+                normalize: True
+                seed: 42
+
     HMMTRAIN:
         run: ['metric']
         script: methods/mlpack/hmm_train.py
         format: [csv, txt]
         datasets:
             - files: ['datasets/artificial_2DSignal.csv']
-              options: '-t gaussian -n 20 -s 42'
+              options:
+                type: gaussian
+                states: 20
+                seed: 42
 
             - files: ['datasets/artificial_1DSignal.csv']
-              options: '-t discrete -n 20 -s 42'
+              options:
+                type: discrete
+                states: 20
+                seed: 42
+
     HMMGENERATE:
         run: ['metric']
         script: methods/mlpack/hmm_generate.py
         format: [csv, txt, xml]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml']
-              options: '-l 10000'
+              options:
+                length: 10000
+
     HMMLOGLIK:
        run: ['metric']
        script: methods/mlpack/hmm_loglik.py
        format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
+
     HMMVITERBI:
        run: ['metric']
        iteration: 3
@@ -662,7 +848,8 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2'
+              options:
+                new_dimensionality: 2
 
             - files: ['datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/cities.csv', 'datasets/diabetes_X.csv',
@@ -674,7 +861,9 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2 -s'
+              options:
+                new_dimensionality: 2
+                scaled: True
 
     PERCEPTRON:
         run: ['metric']
@@ -693,7 +882,8 @@ methods:
                        ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-              options: '-n 10000'
+              options:
+                max_iterations: 10000
 
     NMF:
         run: ['metric']
@@ -706,7 +896,11 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
                       'datasets/isolet.csv', 'datasets/mnist_all.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-r 6 -s 42 -u multdist'
+              options:
+                rank: 6
+                seed: 42
+                update_rules: multdist
+
     KMEANS:
         run: ['metric']
         iteration: 3
@@ -714,31 +908,39 @@ methods:
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
                        ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
                        ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
-              options: '-c 75'
+              options:
+                clusters: 75
     NBC:
         run: ['metric']
         iteration: 3
@@ -759,14 +961,20 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42'
+              options:
+                k: 3
+                seed: 42
 
             - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                       'datasets/wine_qual.csv', 'datasets/isolet.csv',
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42 -N'
+              options:
+                k: 3
+                seed: 42
+                naive_mode: True
+
     RANGESEARCH:
         run: ['metric']
         iteration: 3
@@ -778,7 +986,9 @@ methods:
                       'datasets/madelon_X.csv', 'datasets/arcene_X.csv',
                       'datasets/corel-histogram.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv', 'datasets/Twitter.csv']
-              options: '-M 0.02'
+              options:
+                max: 0.02
+
     LinearRegression:
         run: ['metric']
         iteration: 3
@@ -797,7 +1007,26 @@ methods:
         format: [csv, txt, xml]
         datasets:
             - files: ['datasets/artificial_2DSignal_hmm.xml']
-              options: '-l 10000'
+              options:
+                length: 10000
+
+    LogisticRegression:
+            run: ['metric']
+            script: methods/matlab/logistic_regression.py
+            format: [csv, txt, arff]
+            datasets:
+                - files: [ ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
+                           ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
+                           ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
+                           ['datasets/isolet_train.csv', 'datasets/isolet_test.csv', 'datasets/isolet_labels.csv'],
+                           ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'],
+                           ['datasets/reuters_train.csv', 'datasets/reuters_test.csv', 'datasets/reuters_labels.csv'],
+                           ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
+                           ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
+                           ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+
     HMMVITERBI:
        run: ['metric']
        iteration: 3
@@ -817,7 +1046,7 @@ methods:
         datasets:
             - files: ['datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/cities.csv', 'datasets/diabetes_X.csv']
-                      
+
     PCA:
         run: ['metric']
         iteration: 3
@@ -845,7 +1074,8 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2'
+              options:
+                new_dimensionality: 2
 
             - files: ['datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/cities.csv', 'datasets/diabetes_X.csv',
@@ -857,7 +1087,9 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2 -s'
+              options:
+                new_dimensionality: 2
+                whiten: True
 
     PERCEPTRON:
         run: ['metric']
@@ -876,7 +1108,8 @@ methods:
                        ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-              options: '-n 10000'
+              options:
+                max_iterations: 10000
 
     ADABOOST:
             run: ['metric']
@@ -985,7 +1218,13 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-                  options: '-e 50 -c entropy -d 10 --min_samples_split 4 --min_samples_leaf 2 --n_jobs 2'
+                  options:
+                    num_trees: 50
+                    max_depth: 10
+                    fitness_function: entropy
+                    minimum_samples_split: 4
+                    minimum_leaf_size: 2
+                    num_jobs: 2
     SVM:
             run: ['metric']
             script: methods/scikit/svm.py
@@ -1034,8 +1273,8 @@ methods:
                       'datasets/TomsHardware.csv', 'datasets/pendigits.csv',
                       'datasets/isolet.csv', 'datasets/mnist_all.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-r 6 -u alspgrad'
-              
+              options:
+                rank: 6
 
     KMEANS:
         run: ['metric']
@@ -1044,31 +1283,39 @@ methods:
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
                        ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
                        ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
-              options: '-c 75'
+              options:
+                centroids: 75
     NBC:
         run: ['metric']
         iteration: 3
@@ -1090,7 +1337,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k linear'
+              options:
+                kernel: linear
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1098,7 +1346,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k polynomial'
+              options:
+                kernel: polynomial
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1106,7 +1355,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k hyptan'
+              options:
+                kernel: hyptan
     ANN:
         run: ['metric']
         script: methods/scikit/LSHForest.py
@@ -1134,7 +1384,8 @@ methods:
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-              options: '-l 0.01'
+              options:
+                lambda1: 0.01
 
     LASSO:
         run: ['metric']
@@ -1146,7 +1397,8 @@ methods:
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-              options: '-l 0.01'
+              # script does not accept any options currently
+              # options: '-l 0.01'
 
     SVR:
         run: ['metric']
@@ -1157,7 +1409,10 @@ methods:
             - files: [ ['datasets/diabetes.csv'],
                        ['datasets/cosExp.csv'],
                        ['datasets/TomsHardware.csv']]
-              options: '-c 1.0 -e 1.0 -g 0.1'
+              options:
+                c: 1.0
+                epsilon: 1.0
+                gamma: 0.1
 
     ALLKNN:
         run: ['metric']
@@ -1170,7 +1425,8 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42'
+              options:
+                k: 3 # random seed cannot be set
     GMM:
         run: ['metric']
         iteration: 3
@@ -1182,6 +1438,9 @@ methods:
                       'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
                       'datasets/optdigits.csv', 'datasets/isolet.csv',
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
+              options:
+                gaussians: 3
+
     LinearRegression:
         run: ['metric']
         iteration: 3
@@ -1200,28 +1459,41 @@ methods:
         format: [csv, txt]
         datasets:
             - files: ['datasets/pendigits.csv']
-              options: '-k 12 -s 42 -n 100'
+              options:
+                atoms: 12
+                seed: 42
+                max_iterations: 100
 
             - files: ['datasets/pendigits.csv']
-              options: '-k 12 -s 42'
+              options:
+                atoms: 12
+                seed: 42
 
             - files: ['datasets/pendigits.csv']
-              options: '-k 12 -s 42 -N'
+              options:
+                atoms: 12
+                seed: 42
+                normalize: True
+
     LinearRidgeRegression:
-        run: ['metric','metric']
+        run: ['metric']
         iteration: 3
         script: methods/scikit/linear_ridge_regression.py
         format: [csv, txt]
         datasets:
             - files: [ ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
                        ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'] ]
-              options: '-t 1.0'
+              options:
+                alpha: 1.0
             - files: [ ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'],
                        ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'] ]
-              options: '-t 5.0'
+              options:
+                alpha: 5.0
             - files: [ ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'] ]
-              options: '-t 50.0'
+              options:
+                alpha: 50.0
+
     LogisticRegression:
         run: ['metric']
         iteration: 3
@@ -1272,7 +1544,8 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2'
+              options:
+                new_dimensionality: 2
 
             - files: ['datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/cities.csv', 'datasets/diabetes_X.csv',
@@ -1284,7 +1557,9 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2 -s'
+              options:
+                new_dimensionality: 2
+                whiten: True
 
     KMEANS:
         run: ['metric']
@@ -1293,31 +1568,39 @@ methods:
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
                        ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
                        ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
-              options: '-c 75'
+              options:
+                clusters: 75
 
     ElasticNet:
             run: ['metric']
@@ -1363,7 +1646,9 @@ methods:
                 - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
                            ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
                            ['datasets/scene_train.csv','datasets/scene_test.csv','datasets/scene_labels.csv'] ]
-                  options: '--stumps 10 -m 10'
+                  options:
+                    stumps: 10
+                    minimum_leaf_size: 10
 
                 - files: [ ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv'],
                            ['datasets/oilspill_train.csv','datasets/oilspill_test.csv','datasets/oilspill_labels.csv'] ]
@@ -1403,7 +1688,8 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-                  options: '-n 10000'
+                  options:
+                    max_iterations: 10000
 
     SVM:
             run: ['metric']
@@ -1455,7 +1741,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k linear'
+              options:
+                kernel: linear
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1463,7 +1750,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k gaussian'
+              options:
+                kernel: gaussian
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1471,7 +1759,9 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k hyptan'
+              options:
+                kernel: hyptan
+
     LARS:
         run: ['metric']
         iteration: 3
@@ -1482,7 +1772,8 @@ methods:
                          ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                          ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                          ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]
-                options: '-l 0.01'
+                # TODO: add support for lambda to mlpy LARS
+                # options: '-l 0.01'
     ALLKNN:
         run: ['metric']
         iteration: 3
@@ -1494,7 +1785,8 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42'
+              options:
+                k: 3 # random seed cannot be specified
 
     LinearRegression:
         run: ['metric']
@@ -1537,7 +1829,8 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2'
+              options:
+                new_dimensionality: 2
 
             - files: ['datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/cities.csv', 'datasets/diabetes_X.csv',
@@ -1549,7 +1842,9 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2 -s'
+              options:
+                new_dimensionality: 2
+                whiten: True
     RANDOMFOREST:
         run: ['timing', 'metric']
         script: methods/shogun/random_forest.py
@@ -1567,6 +1862,8 @@ methods:
                        ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+              options:
+                num_trees: 50
 
     PERCEPTRON:
         run: ['metric']
@@ -1577,7 +1874,8 @@ methods:
                        ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv', 'datasets/optdigits_labels.csv'],
                        ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                        ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
-              options: '-n 10000'
+              options:
+                max_iterations: 10000
 
     KMEANS:
         run: ['metric']
@@ -1586,31 +1884,39 @@ methods:
         format: [arff, csv, txt]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
                        ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
                        ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
-              options: '-c 75'
+              options:
+                clusters: 75
     KPCA:
         run: ['metric']
         iteration: 3
@@ -1623,7 +1929,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k linear'
+              options:
+                kernel: linear
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1631,7 +1938,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k gaussian'
+              options:
+                kernel: linear
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1639,7 +1947,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k polynomial'
+              options:
+                kernel: polynomial
 
             - files: ['datasets/circle_data.csv', 'datasets/stock.csv',
                       'datasets/abalone.csv', 'datasets/bank8FM.csv',
@@ -1647,7 +1956,8 @@ methods:
                       'datasets/arcene_X.csv', 'datasets/madelon_X.csv',
                       'datasets/pendigits.csv', 'datasets/isolet.csv',
                       'datasets/covtype.csv']
-              options: '-k hyptan'
+              options:
+                kernel: hyptan
     NBC:
         run: ['metric']
         iteration: 3
@@ -1669,7 +1979,8 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42'
+              options:
+                k: 3
 
     GMM:
         run: ['metric']
@@ -1682,7 +1993,8 @@ methods:
                       'datasets/vehicle.csv', 'datasets/USCensus1990.csv',
                       'datasets/optdigits.csv', 'datasets/isolet.csv',
                       'datasets/TomsHardware.csv', 'datasets/covtype.csv']
-              options: '-s 42'
+              options:
+                gaussians: 3
 
     LinearRegression:
         run: ['metric']
@@ -1706,7 +2018,8 @@ methods:
                        ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
                        ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv']]
-              options: '-l 0.01'
+              options:
+                lambda1: 0.01
 
     QDA:
             run: ['metric','metric']
@@ -1750,13 +2063,16 @@ methods:
         datasets:
             - files: [ ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
                        ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'] ]
-              options: '-t 1.0'
+              options:
+                alpha: 1.0
             - files: [ ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'],
                        ['datasets/mammography_train.csv', 'datasets/mammography_test.csv', 'datasets/mammography_labels.csv'] ]
-              options: '-t 5.0'
+              options:
+                alpha: 5.0
             - files: [ ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'] ]
-              options: '-t 50.0'
+              options:
+                alpha: 50.0
 
     SVR:
         run: ['metric']
@@ -1767,7 +2083,10 @@ methods:
             - files: [ ['datasets/diabetes.csv'],
                        ['datasets/cosExp.csv'],
                        ['datasets/TomsHardware.csv']]
-              options: '-c 1.0 -e 1.0 -g 0.1'
+              options:
+                c: 1.0
+                epsilon: 1.0
+                gamma: 0.1
 
     KNC:
             run: ['timing', 'metric']
@@ -1835,7 +2154,8 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2'
+              options:
+                new_dimensionality: 2
 
             - files: ['datasets/iris.csv', 'datasets/wine.csv',
                       'datasets/cities.csv', 'datasets/diabetes_X.csv',
@@ -1847,7 +2167,9 @@ methods:
                       'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
                       'datasets/mnist_all.csv', 'datasets/Twitter.csv',
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
-              options: '-d 2 -s'
+              options:
+                new_dimensionality: 2
+                whiten: True
     NBC:
         run: ['metric']
         iteration: 3
@@ -1864,31 +2186,39 @@ methods:
         format: [arff]
         datasets:
             - files: [ ['datasets/waveform.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv'],
                        ['datasets/iris.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv'],
                        ['datasets/wine_qual.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv'],
                        ['datasets/corel-histogram.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
 
             - files: [ ['datasets/1000000-10-randu.csv'] ]
-              options: '-c 75'
+              options:
+                clusters: 75
     ALLKNN:
         run: ['metric']
         iteration: 3
@@ -1900,7 +2230,9 @@ methods:
                       'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                       'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                       'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-              options: '-k 3 -s 42'
+              options:
+                k: 3
+                seed: 42
 
     LinearRegression:
         run: ['metric']
@@ -1928,49 +2260,69 @@ methods:
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42'
+                options:
+                  k: 3
+                  seed: 42
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.0'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.05'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.05
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.10'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.10
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.15'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.15
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.20'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.20
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.25'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.25
 ---
 #  FLANN:
 #  A Library for Fast Library for Approximate Nearest Neighbors
@@ -1986,49 +2338,69 @@ methods:
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42'
+                options:
+                  k: 3
+                  seed: 42
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.0'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.05'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.10'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.15'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.20'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 
               - files: ['datasets/wine.csv', 'datasets/cloud.csv',
                         'datasets/wine_qual.csv', 'datasets/isolet.csv',
                         'datasets/corel-histogram.csv', 'datasets/covtype.csv',
                         'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
                         'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
-                options: '-k 3 -s 42 -e 0.25'
+                options:
+                  k: 3
+                  seed: 42
+                  epsilon: 0.0
 ---
 # MRPT: fast nearest neighbor search with random projection
 library: mrpt
@@ -2050,7 +2422,9 @@ methods:
                        ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-              options: '-k 10 -n 10'
+              options:
+                k: 10
+                num_trees: 10
 ---
 # Annoy: Approximate Nearest Neighbors Oh Yeah
 library: annoy
@@ -2072,7 +2446,9 @@ methods:
                        ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                        ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
-              options: '-k 10 -n 10'
+              options:
+                k: 10
+                trees: 10
 ---
 # Nearpy
 library: nearpy
@@ -2104,28 +2480,36 @@ methods:
         format: [csv, txt, arff]
         datasets:
             - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
-              options: '-c 2'
+              options:
+                clusters: 2
 
             - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
                        ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
-              options: '-c 3'
+              options:
+                clusters: 3
 
             - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
-              options: '-c 5'
+              options:
+                clusters: 5
 
             - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
-              options: '-c 6'
+              options:
+                clusters: 6
 
             - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
                        ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
-              options: '-c 7'
+              options:
+                clusters: 7
 
             - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
-              options: '-c 26'
+              options:
+                clusters: 26
 
             - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
                        ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
-              options: '-c 10'
+              options:
+                clusters: 10
+
     RANDOMFOREST:
         run: ['timing', 'metric']
         script: methods/milk/random_forest.py

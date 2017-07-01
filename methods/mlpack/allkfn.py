@@ -83,6 +83,32 @@ class ALLKFN(object):
         os.remove(f)
 
   '''
+  Convert a dict containing options into a string.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "k" in options:
+      optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' is missing!")
+      raise Exception("missing parameter")
+
+    if "single_mode" in options:
+      optionsStr = optionsStr + " --single_mode"
+      options.pop("single_mode")
+    if "naive_mode" in options:
+      optionsStr = optionsStr + " --naive"
+      options.pop("naive_mode")
+    if "leaf_size" in options:
+      optionsStr = optionsStr + " -l " + str(options.pop("leaf_size"))
+
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the All K-Furthest-Neighbors method. If
   the method has been successfully completed the report is saved in the
   specified file.
@@ -96,15 +122,17 @@ class ALLKFN(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform ALLKFN Memory Profiling.", self.verbose)
 
+    optionsStr = self.OptionsToStr(options)
+
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_allkfn -r " + self.dataset[0] +
           " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
-          options)
+          optionsStr)
     else:
       cmd = shlex.split(self.debug + "mlpack_allkfn -r " + self.dataset +
-          " -v -n neighbors.csv -d distances.csv " + options)
+          " -v -n neighbors.csv -d distances.csv " + optionsStr)
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -118,15 +146,17 @@ class ALLKFN(object):
   def RunMetrics(self, options):
     Log.Info("Perform ALLKFN.", self.verbose)
 
+    optionsStr = self.OptionsToStr(options)
+
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_allkfn -r " + self.dataset[0] +
           " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
-          options)
+          optionsStr)
     else:
       cmd = shlex.split(self.path + "mlpack_allkfn -r " + self.dataset +
-          " -v -n neighbors.csv -d distances.csv " + options)
+          " -v -n neighbors.csv -d distances.csv " + optionsStr)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

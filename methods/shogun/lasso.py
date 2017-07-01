@@ -68,16 +68,22 @@ class LASSO(object):
         if len(self.dataset) >= 2:
           testSet = np.genfromtxt(self.dataset[1], delimiter=',')
 
-          # Get all the parameters.
-          lambda1 = re.search("-l (\d+)", options)
-          lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+        # Get all the parameters.
+        lambda1 = None
+        if "lambda1" in options:
+          lambda1 = float(options.pop("lambda1"))
+
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
 
         # Use the last row of the training set as the responses.
         X, y = SplitTrainData(self.dataset)
 
         with totalTimer:
           model = LeastAngleRegression(lasso=True)
-          model.set_max_l1_norm(lambda1)
+          if lambda1:
+            model.set_max_l1_norm(lambda1)
           model.set_labels(RegressionLabels(y))
           model.train(RealFeatures(X.T))
 

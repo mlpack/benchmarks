@@ -49,7 +49,7 @@ class EMST_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("")
+    result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["TreeBuilding"] > 0)
 

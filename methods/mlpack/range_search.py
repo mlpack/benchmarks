@@ -82,6 +82,26 @@ class RANGESEARCH(object):
         os.remove(f)
 
   '''
+  Given an input dict of options, convert them to a string the program can use.
+  '''
+  def OptionsToStr(self, options):
+    optionsStr = ""
+    if "max" in options:
+      optionsStr = "-M " + str(options.pop("max"))
+    else:
+      Log.Fatal("Required parameter 'max' not specified!")
+      raise Exception("missing parameter")
+
+    if "single_mode" in options:
+      optionsStr = optionsStr + " --single_mode"
+      options.pop("single_mode")
+    if "naive_mode" in options:
+      optionsStr = optionsStr + " --naive_mode"
+      options.pop("naive_mode")
+
+    return optionsStr
+
+  '''
   Run valgrind massif profiler on the Range Search method. If
   the method has been successfully completed the report is saved in the
   specified file.
@@ -100,10 +120,10 @@ class RANGESEARCH(object):
     if len(self.dataset) == 2:
       cmd = shlex.split(self.debug + "mlpack_range_search -r " + self.dataset[0]
           + "-q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
-          options)
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.debug + "mlpack_range_search -r " + self.dataset +
-          " -v -n neighbors.csv -d distances.csv " + options)
+          " -v -n neighbors.csv -d distances.csv " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -123,10 +143,10 @@ class RANGESEARCH(object):
     if len(self.dataset) == 2:
       cmd = shlex.split(self.path + "mlpack_range_search -r " + self.dataset[0]
           + "-q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
-          options)
+          self.OptionsToStr(options))
     else:
       cmd = shlex.split(self.path + "mlpack_range_search -r " + self.dataset +
-          " -v -n neighbors.csv -d distances.csv " + options)
+          " -v -n neighbors.csv -d distances.csv " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

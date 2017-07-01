@@ -102,14 +102,18 @@ class LinearRegression(object):
   def RunMemory(self, options, fileName, massifOptions="--depth=2"):
     Log.Info("Perform Local Coordinate Coding Memory Profiling.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the test
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.debug + "mlpack_linear_regression -i " +
-          self.dataset[0] + " -t " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -t " + self.dataset[1] + " -v")
     else:
       cmd = shlex.split(self.debug + "mlpack_linear_regression -i " +
-          self.dataset[0] + " -v " + options)
+          self.dataset[0] + " -v")
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
 
@@ -124,14 +128,18 @@ class LinearRegression(object):
   def RunMetrics(self, options):
     Log.Info("Perform Simple Linear Regression.", self.verbose)
 
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+
     # If the dataset contains two files then the second file is the test
     # regressors file. In this case we add this to the command line.
     if len(self.dataset) >= 2:
       cmd = shlex.split(self.path + "mlpack_linear_regression -t " +
-          self.dataset[0] + " -T " + self.dataset[1] + " -v " + options)
+          self.dataset[0] + " -T " + self.dataset[1] + " -v")
     else:
       cmd = shlex.split(self.path + "mlpack_linear_regression -t " +
-          self.dataset[0] + " -v " + options)
+          self.dataset[0] + " -v")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

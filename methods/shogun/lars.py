@@ -60,13 +60,19 @@ class LARS(object):
         responsesFeat = RegressionLabels(responsesData)
 
         # Get all the parameters.
-        lambda1 = re.search("-l (\d+)", options)
-        lambda1 = 0.0 if not lambda1 else int(lambda1.group(1))
+        lambda1 = None
+        if "lambda1" in options:
+          lambda1 = float(options.pop("lambda1"))
+
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
 
         with totalTimer:
           # Perform LARS.
           model = LeastAngleRegression(False)
-          model.set_max_l1_norm(lambda1)
+          if lambda1:
+            model.set_max_l1_norm(lambda1)
           model.set_labels(responsesFeat)
           model.train(inputFeat)
           model.get_w_for_var(model.get_path_size() - 1)

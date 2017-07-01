@@ -59,34 +59,39 @@ class KPCA(object):
 
         with totalTimer:
           # Get the new dimensionality, if it is necessary.
-          dimension = re.search('-d (\d+)', options)
-          if not dimension:
-            d = data.shape[1]
-          else:
-            d = int(dimension.group(1))
+          if "new_dimensionality" in options:
+            d = int(options.pop("new_dimensionality"))
             if (d > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
               q.put(-1)
               return -1
+          else:
+            d = data.shape[1]
 
           # Get the kernel type and make sure it is valid.
-          kernel = re.search("-k ([^\s]+)", options)
-          if not kernel:
-              Log.Fatal("Choose kernel type, valid choices are 'linear'," +
-                    " 'hyptan', 'polynomial' and 'gaussian'.")
-              q.put(-1)
-              return -1
-          elif kernel.group(1) == "polynomial":
-            degree = re.search('-D (\d+)', options)
-            degree = 1 if not degree else int(degree.group(1))
+          if "kernel" in options:
+            kernel = str(options.pop("kernel"))
+          else:
+            Log.Fatal("Choose kernel type, valid choices are 'linear'," +
+                  " 'hyptan', 'polynomial' and 'gaussian'.")
+            q.put(-1)
+            return -1
 
+          if "degree" in options:
+            degree = int(options.pop("degree"))
+
+          if len(options) > 0:
+            Log.Fatal("Unknown parameters: " + str(options))
+            raise Exception("unknown parameters")
+
+          if kernel == "polynomial":
             kernel = PolyKernel(dataFeat, dataFeat, degree, True)
-          elif kernel.group(1) == "gaussian":
+          elif kernel == "gaussian":
             kernel = GaussianKernel(dataFeat, dataFeat, 2.0)
-          elif kernel.group(1) == "linear":
+          elif kernel == "linear":
             kernel = LinearKernel(dataFeat, dataFeat)
-          elif kernel.group(1) == "hyptan":
+          elif kernel == "hyptan":
             kernel = SigmoidKernel(dataFeat, dataFeat, 2, 1.0, 1.0)
           else:
             Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid "

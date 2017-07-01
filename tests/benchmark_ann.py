@@ -46,7 +46,7 @@ class ANN_ANNOY_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 10 -n 10")
+    result = self.instance.RunMetrics({ "k": 10, "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
 class ANN_MRPT_TEST(unittest.TestCase):
@@ -74,7 +74,7 @@ class ANN_MRPT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 5 -n 5")
+    result = self.instance.RunMetrics({ "k": 5, "num_trees": 5 })
     self.assertTrue(result["Runtime"] > 0)
 
 class ANN_SCIKIT_TEST(unittest.TestCase):
@@ -102,7 +102,7 @@ class ANN_SCIKIT_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics("-k 5 -n 5")
+    result = self.instance.RunMetrics({ "k": 5, "num_trees": 5 })
     self.assertTrue(result["Runtime"] > 0)
 
 
