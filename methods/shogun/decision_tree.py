@@ -1,7 +1,6 @@
 '''
-  @file decision_tree.py
+  file decision_tree.py
   @author Saurabh Mahindre
-
   Classifier implementing the CART (decision tree) classifier with shogun.
 '''
 
@@ -72,20 +71,21 @@ class DTC(object):
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
-      trainData, labels = SplitTrainData(self.dataset)
-      trainData = RealFeatures(trainData.T)
-      labels = MulticlassLabels(labels)
-      testData = RealFeatures(LoadDataset(self.dataset[1]).T)
-
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-
       try:
+        # Load train and test dataset.
+        trainData = np.genfromtxt(self.dataset[0], delimiter=',')
+        testData = np.genfromtxt(self.dataset[1], delimiter=',')
+        
+        # Labels are the last row of the training set.
+        labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
+
         with totalTimer:
+          trainFeat = RealFeatures(trainData[:,:-1].T)
+          testFeat = RealFeatures(testData.T)
+          
           self.model = self.BuildModel(trainData, labels, options)
           # Run the CARTree Classifier on the test dataset.
-          self.model.apply_multiclass(testData).get_labels()
+          self.predictions = self.model.apply_multiclass(testData)
       except Exception as e:
         q.put(-1)
         return -1
@@ -113,5 +113,27 @@ class DTC(object):
         results = self.DTCShogun(options)
     else:
       Log.Fatal("This method requires at least two datasets.")
+    
+    metrics = {'Runtime' : results}
 
-    return {'Runtime' : results}
+    if len(self.dataset) >= 3:
+      trainData, labels = SplitTrainData(self.dataset)
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+      trainFeat = RealFeatures(trainData[:,:-1].T)
+      testFeat = RealFeatures(testData.T)
+      self.model = self.BuildModel(trainData, labels, options)
+      self.predictions = self.model.apply_multiclass(testData).get_labels()
+  
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+
+    return metrics
