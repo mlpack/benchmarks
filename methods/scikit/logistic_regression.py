@@ -47,6 +47,7 @@ class LogisticRegression(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
     self.opts = {}
 
   '''
@@ -97,15 +98,21 @@ class LogisticRegression(object):
           # Perform logistic regression.
           self.model = self.BuildModel(X,y)
           b = self.model.coef_
+          self.predictions = self.model.predict(testSet)
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
       return time
 
-    return timeout(RunLogisticRegressionScikit, self.timeout)
+    result = timeout(RunLogisticRegressionScikit, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+       self.predictions = result[1]
+
+    return result[0]
 
   '''
   Perform Logistic Regression. If the method has been successfully completed
@@ -126,35 +133,18 @@ class LogisticRegression(object):
     metrics = {'Runtime' : results}
 
     if len(self.dataset) >= 3:
-
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
-
-      testData = LoadDataset(self.dataset[1])
+      
       truelabels = LoadDataset(self.dataset[2])
-      probabilities = self.model.predict_proba(testData)
-      predictedlabels = self.model.predict(testData)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-
-      metrics['Avg Accuracy'] = AvgAcc
-      metrics['MultiClass Precision'] = AvgPrec
-      metrics['MultiClass Recall'] = AvgRec
-      metrics['MultiClass FMeasure'] = AvgF
-      metrics['MultiClass Lift'] = AvgLift
-      metrics['MultiClass MCC'] = AvgMCC
-      metrics['MultiClass Information'] = AvgInformation
-      metrics['Simple MSE'] = SimpleMSE
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+      
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
