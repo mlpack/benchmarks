@@ -80,6 +80,9 @@ class QDA_SCIKIT_TEST(unittest.TestCase):
   def test_RunTiming(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ACC"] > 0)
+    self.assertTrue(result["Precision"] > 0)
+    self.assertTrue(result["Recall"] > 0)
 
 
 if __name__ == '__main__':

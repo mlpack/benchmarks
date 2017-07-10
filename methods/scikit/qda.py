@@ -46,6 +46,7 @@ class QDA(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
     self.model = None
 
   '''
@@ -84,18 +85,22 @@ class QDA(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
           # Run Quadratic Discriminant Analysis on the test dataset.
-          self.model.predict(testData)
+          self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
 
       return time
 
-    return timeout(RunQDAScikit, self.timeout)
+    result = timeout(RunQDAScikit, self.timeout)
+    if len(result) > 1:
+      self.predictions = result[1]
+      
+    return result[0]
 
   '''
   Perform the Quadratic Discriminant Analysis. If the method has been
@@ -122,19 +127,14 @@ class QDA(object):
     if len(self.dataset) >= 3:
 
       # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
-
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.predict(testData)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+      
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
