@@ -92,8 +92,7 @@ class SVM(object):
       if "max_iterations" in options:
         self.opts["max_iter"] = int(options.pop("max_iterations"))
       if "decision_function_shape" in options:
-        self.opts["decision_function_shape"] =
-            str(options.pop("decision_function_shape"))
+        self.opts["decision_function_shape"] = str(options.pop("decision_function_shape"))
 
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))
