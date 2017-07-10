@@ -109,10 +109,16 @@ class LogisticRegression(object):
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
       return time
 
-    return timeout(RunLogisticRegressionShogun, self.timeout)
+    result = timeout(RunLogisticRegressionShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+      self.predictions = result[1]
+   
+    return result[0]
+
 
   '''
   Perform Logistic Regression. If the method has been successfully completed
@@ -132,10 +138,7 @@ class LogisticRegression(object):
     metrics = {'Runtime' : results}
 
     if len(self.dataset) >= 3:
-       trainData, responses = SplitTrainData(self.dataset)
-       self.model = self.BuildModel(trainData, responses)
-       testSet = LoadDataset(self.dataset[1])
-       self.predictions = self.model.apply(RealFeatures(testSet.T)).get_labels()
+
        truelabels = LoadDataset(self.dataset[2])
 
        confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)

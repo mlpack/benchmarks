@@ -47,6 +47,7 @@ class KNC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
     self.n_neighbors = 5 
 
   '''
@@ -102,11 +103,15 @@ class KNC(object):
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
 
       return time
 
-    return timeout(RunKNCShogun, self.timeout)
+    result = timeout(RunKNCShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+      self.predictions = result[1]
+    return result[0]
 
   '''
   Perform the k-nearest neighbors Classifier. If the method has been
@@ -133,16 +138,9 @@ class KNC(object):
 
     if len(self.dataset) >= 3:
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels, options)
-
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.apply_multiclass(RealFeatures(testData.T)).get_labels()
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
 
       metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
@@ -150,7 +148,7 @@ class KNC(object):
       metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
       metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
       metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics

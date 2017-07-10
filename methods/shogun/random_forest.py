@@ -104,10 +104,15 @@ class RANDOMFOREST(object):
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
       return time
 
-    return timeout(RunRandomForestShogun, self.timeout)
+    result = timeout(RunRandomForestShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+       self.predictions = result[1]
+
+    return result[0]
 
   '''
   Perform the classification using Random Forest. If the method has been
@@ -127,16 +132,7 @@ class RANDOMFOREST(object):
 
     metrics = {'Runtime' : results}
     if len(self.dataset) >= 3:
-      trainData, labels = SplitTrainData(self.dataset)
-      trainData = RealFeatures(trainData.T)
-      labels = MulticlassLabels(labels)
-      testData = RealFeatures(LoadDataset(self.dataset[1]).T)
-      self.numTrees = int(options.pop("num_trees"))
-      self.form = 1
-      if "dimensions" in options:
-        self.form = int(options.pop("dimensions"))
-      self.model = self.BuildModel(trainData, labels, options)
-      self.predictions = self.model.apply_multiclass(testData).get_labels()
+
       truelabels = LoadDataset(self.dataset[2])
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)

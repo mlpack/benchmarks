@@ -44,6 +44,7 @@ class NBC(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
 
   '''
   Build the model for the NBC Classifier.
@@ -85,16 +86,23 @@ class NBC(object):
           self.model = self.BuildModel(trainFeat, labels, options)
 
           # Run Naive Bayes Classifier on the test dataset.
-          self.predictions = self.model.apply_multiclass(testFeat)
+          self.predictions = self.model.apply_multiclass(testFeat).get_labels()
          
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
+
       return time
-    return timeout(RunNBCShogun, self.timeout)
+
+    result =  timeout(RunNBCShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+       self.predictions = result[1]
+
+    return result[0]
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully completed
@@ -113,14 +121,9 @@ class NBC(object):
     metrics = {'Runtime' : results}
 
     if len(self.dataset) >= 3:
-      trainData = np.genfromtxt(self.dataset[0], delimiter=',')
-      testData = np.genfromtxt(self.dataset[1], delimiter=',')
+     
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
-      trainFeat = RealFeatures(trainData[:,:-1].T)
-      testFeat = RealFeatures(testData.T)
-      labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
-      self.model = self.BuildModel(trainFeat, labels, options)
-      self.predictions = self.model.apply_multiclass(testFeat).get_labels()
+      
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       
       metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
