@@ -129,12 +129,12 @@ class QDA(object):
       # Check if we need to create a model.
       truelabels = LoadDataset(self.dataset[2])
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
