@@ -48,6 +48,9 @@ class RandomForest_SCIKIT_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ACC"] > 0)
+    self.assertTrue(result["Precision"] > 0)
+    self.assertTrue(result["Recall"] > 0)
 
 '''
 Test the SHOGUN-learn RandomForest script.
