@@ -1,5 +1,5 @@
 '''
-  file decision_tree.py
+  @file decision_tree.py
   @author Saurabh Mahindre
   Classifier implementing the CART (decision tree) classifier with shogun.
 '''
@@ -45,6 +45,7 @@ class DTC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
 
   '''
   Build the model for the CARTree Classifier.
@@ -71,31 +72,34 @@ class DTC(object):
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
-      try:
-        # Load train and test dataset.
-        trainData = np.genfromtxt(self.dataset[0], delimiter=',')
-        testData = np.genfromtxt(self.dataset[1], delimiter=',')
-        
-        # Labels are the last row of the training set.
-        labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
+      trainData, labels = SplitTrainData(self.dataset)
+      trainData = RealFeatures(trainData.T)
+      labels = MulticlassLabels(labels)
+      testData = RealFeatures(LoadDataset(self.dataset[1]).T)
 
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
+      try:
         with totalTimer:
-          trainFeat = RealFeatures(trainData[:,:-1].T)
-          testFeat = RealFeatures(testData.T)
-          
           self.model = self.BuildModel(trainData, labels, options)
           # Run the CARTree Classifier on the test dataset.
-          self.predictions = self.model.apply_multiclass(testData)
+          self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
 
       return time
 
-    return timeout(RunDTCShogun, self.timeout)
+    result = timeout(RunDTCShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+      self.predictions = result[1]
+    return result[0]
 
   '''
   Perform the classification using CARTree. If the method has been
@@ -110,21 +114,15 @@ class DTC(object):
 
     results = None
     if len(self.dataset) >= 2:
-        results = self.DTCShogun(options)
+      results = self.DTCShogun(options)
     else:
       Log.Fatal("This method requires at least two datasets.")
-    
+
     metrics = {'Runtime' : results}
 
-    if len(self.dataset) >= 3:
-      trainData, labels = SplitTrainData(self.dataset)
-      testData = LoadDataset(self.dataset[1])
+    if len(self.dataset) >=3:
+
       truelabels = LoadDataset(self.dataset[2])
-      trainFeat = RealFeatures(trainData[:,:-1].T)
-      testFeat = RealFeatures(testData.T)
-      self.model = self.BuildModel(trainData, labels, options)
-      self.predictions = self.model.apply_multiclass(testData).get_labels()
-  
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
 
       metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
@@ -135,5 +133,5 @@ class DTC(object):
       metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
       metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-
+    
     return metrics
