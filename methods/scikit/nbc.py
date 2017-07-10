@@ -46,6 +46,7 @@ class NBC(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
     self.model = None
 
   '''
@@ -84,19 +85,23 @@ class NBC(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
           # Run Naive Bayes Classifier on the test dataset.
-          self.model.predict(testData)
+          self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
 
       return time
 
-    return timeout(RunNBCScikit, self.timeout)
+    result = timeout(RunNBCScikit, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+       self.predictions = result[1]
 
+    return result[0]
   '''
   Perform Naive Bayes Classifier. If the method has been successfully
   completed return the elapsed time in seconds.
@@ -122,20 +127,13 @@ class NBC(object):
 
     if len(self.dataset) >= 3:
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
-
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.predict(testData)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
