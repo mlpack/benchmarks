@@ -112,7 +112,7 @@ class DTC(object):
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
 
       return time
 
