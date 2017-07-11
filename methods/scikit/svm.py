@@ -59,7 +59,7 @@ class SVM(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    svm = ssvm.SVC()
+    svm = ssvm.SVC(**self.opts)
     svm.fit(data, labels)
     return svm
 
