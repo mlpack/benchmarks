@@ -947,9 +947,9 @@ methods:
         script: methods/matlab/nbc.py
         format: [csv, txt]
         datasets:
-            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv'],
-                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
-                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv', 'datasets/transfusion_labels.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv', 'datasets/madelon_labels.csv'] ]
     ALLKNN:
         run: ['metric']
         iteration: 3
