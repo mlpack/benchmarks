@@ -101,7 +101,7 @@ class NBC(object):
     # Parse data: runtime.
     timer = self.parseTimer(s)
     predictions = np.genfromtxt("predictions.csv", delimiter = ',')
-    truelables = np.genfromtxt(self.dataset[2], delimiter = ',')
+    truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
 
     if timer != -1:
       metrics['Runtime'] = timer.total_time
