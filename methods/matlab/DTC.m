@@ -29,11 +29,7 @@ total_time = tic;
 classifier = fitctree(TrainData, labels);
 % Run Decision Classifier on the test dataset.
 labels = predict(classifier, TestData);
-disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
-
 % Save prediction of each class for test data.
 csvwrite('predictions.csv', labels);
 
-% Save posterior probability of each class for test data.
-csvwrite('probability.csv', posterior(classifier, TestData));
 end
