@@ -111,7 +111,10 @@ class RANDOMFOREST(object):
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put((time, self.predictions))
+      if len(self.dataset) > 1:
+        q.put((time, self.predictions))
+      else:
+        q.put(time)
 
       return time
 
@@ -119,8 +122,9 @@ class RANDOMFOREST(object):
     # Check for error, in this case the tuple doesn't contain extra information.
     if len(result) > 1:
       self.predictions = result[1]
+      return result[0]
     
-    return result[0]
+    return result
 
   '''
   Perform the Random Forest Classifier. If the method has been
