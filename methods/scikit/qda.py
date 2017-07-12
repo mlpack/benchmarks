@@ -92,15 +92,19 @@ class QDA(object):
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put((time, self.predictions))
+      if len(self.dataset) > 1:
+        q.put((time, self.predictions))
+      else:
+        q.put(time)
 
       return time
 
     result = timeout(RunQDAScikit, self.timeout)
     if len(result) > 1:
       self.predictions = result[1]
-      
-    return result[0]
+      return result[0]
+    
+    return result
 
   '''
   Perform the Quadratic Discriminant Analysis. If the method has been
