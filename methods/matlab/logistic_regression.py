@@ -105,9 +105,17 @@ class LogisticRegression(object):
 
     # Parse data: runtime.
     timer = self.parseTimer(s)
-
+    predictions = np.genfromtxt("predictions.csv", delimiter = ',')
+    truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
+    
     if timer != -1:
       metrics['Runtime'] = timer.total_time
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
