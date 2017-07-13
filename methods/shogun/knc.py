@@ -28,7 +28,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, KNN, EuclideanDistance
+from modshogun import RealFeatures, MulticlassLabels, KNN, EuclideanDistance, KNN_KDTREE
 
 '''
 This class implements the Support vector machines benchmark.
@@ -47,6 +47,8 @@ class KNC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
+    self.n_neighbors = 5 
 
   '''
   Build the model for the k-nearest neighbors Classifier.
@@ -60,16 +62,15 @@ class KNC(object):
     if "k" in options:
       n_neighbors = int(options.pop("k"))
     else:
-      Log.Fatal("Required parameter 'k' not specified!")
-      raise Exception("missing parameter")
+      n_neighbors = 5
 
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
     distance = EuclideanDistance(data, data)
-    from modshogun import KNN_KDTREE
-    knc = KNN(n_neighbors, distance, labels, KNN_KDTREE)
+ 
+    knc = KNN(self.n_neighbors, distance, labels, KNN_KDTREE)
     knc.train()
 
     return knc
@@ -95,18 +96,27 @@ class KNC(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
           # Run the k-nearest neighbors Classifier on the test dataset.
-          self.model.apply(testData).get_labels()
+          self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      if len(self.dataset) > 1:
+        q.put((time, self.predictions))
+      else:
+        q.put(time)
 
       return time
 
-    return timeout(RunKNCShogun, self.timeout)
+    result = timeout(RunKNCShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+      self.predictions = result[1]
+      return result[0]
+    
+    return result
 
   '''
   Perform the k-nearest neighbors Classifier. If the method has been
@@ -133,20 +143,17 @@ class KNC(object):
 
     if len(self.dataset) >= 3:
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels, options)
-
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.apply(RealFeatures(testData.T)).get_labels()
+      
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics

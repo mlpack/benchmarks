@@ -1,7 +1,6 @@
 '''
   @file decision_tree.py
   @author Saurabh Mahindre
-
   Classifier implementing the CART (decision tree) classifier with shogun.
 '''
 
@@ -46,6 +45,7 @@ class DTC(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
 
   '''
   Build the model for the CARTree Classifier.
@@ -85,17 +85,26 @@ class DTC(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
           # Run the CARTree Classifier on the test dataset.
-          self.model.apply_multiclass(testData).get_labels()
+          self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      if len(self.dataset) > 1:
+        q.put((time, self.predictions))
+      else:
+        q.put(time)
 
       return time
 
-    return timeout(RunDTCShogun, self.timeout)
+    result = timeout(RunDTCShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+      self.predictions = result[1]
+      return result[0]
+    
+    return result
 
   '''
   Perform the classification using CARTree. If the method has been
@@ -110,8 +119,24 @@ class DTC(object):
 
     results = None
     if len(self.dataset) >= 2:
-        results = self.DTCShogun(options)
+      results = self.DTCShogun(options)
     else:
       Log.Fatal("This method requires at least two datasets.")
 
-    return {'Runtime' : results}
+    metrics = {'Runtime' : results}
+
+    if len(self.dataset) >=3:
+
+      truelabels = LoadDataset(self.dataset[2])
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+    
+    return metrics
