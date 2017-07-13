@@ -29,7 +29,7 @@ class LinearRidgeRegression_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/linear_ridge_regression.py")
     obj = getattr(module, "LinearRidgeRegression")
@@ -62,7 +62,7 @@ class LinearRidgeRegression_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/linear_ridge_regression.py")
     obj = getattr(module, "LinearRidgeRegression")

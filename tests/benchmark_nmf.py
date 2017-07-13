@@ -29,7 +29,7 @@ class NMF_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/nmf.py")
     obj = getattr(module, "NMF")
@@ -77,7 +77,7 @@ class NMF_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/nmf.py")
     obj = getattr(module, "NMF")
@@ -109,7 +109,7 @@ class NMF_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/matlab/nmf.py")
     obj = getattr(module, "NMF")

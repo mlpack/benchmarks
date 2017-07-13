@@ -29,7 +29,7 @@ class ANN_ANNOY_TEST(unittest.TestCase):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv',
         'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/annoy/ann.py")
     obj = getattr(module, "ANN")
@@ -57,7 +57,7 @@ class ANN_MRPT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mrpt/ann.py")
     obj = getattr(module, "ANN")
@@ -85,7 +85,7 @@ class ANN_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/optdigits_train.csv', 'datasets/optdigits_test.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/LSHForest.py")
     obj = getattr(module, "ANN")
@@ -118,7 +118,7 @@ class ANN_NEARPY_TEST(unittest.TestCase):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv',
         'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/nearpy/ann.py")
     obj = getattr(module, "ANN")

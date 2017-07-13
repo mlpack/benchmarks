@@ -29,7 +29,7 @@ class KPCA_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/iris.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/kernel_pca.py")
     obj = getattr(module, "KPCA")
@@ -77,7 +77,7 @@ class KPCA_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/iris.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/kernel_pca.py")
     obj = getattr(module, "KPCA")
@@ -109,7 +109,7 @@ class KPCA_MLPY_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/iris.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpy/kernel_pca.py")
     obj = getattr(module, "KPCA")
@@ -141,7 +141,7 @@ class KPCA_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/iris.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/kernel_pca.py")
     obj = getattr(module, "KPCA")

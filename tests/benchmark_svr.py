@@ -29,7 +29,7 @@ class SVR_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/svr.py")
     obj = getattr(module, "SVR")
@@ -61,7 +61,7 @@ class SVR_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/diabetes.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/svr.py")
     obj = getattr(module, "SVR")

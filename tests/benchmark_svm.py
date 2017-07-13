@@ -1,8 +1,6 @@
 '''
-  @file benchmark_lsh.py
-  @author Marcus Edel
-
-  Test for the All K-Approximate-Nearest-Neighbor Search scripts.
+  @file benchmark_svm.py
+  Test for the svm scripts.
 '''
 
 import unittest
@@ -19,20 +17,21 @@ if cmd_subfolder not in sys.path:
 from loader import *
 
 '''
-Test the mlpack All K-Approximate-Nearest-Neighbor Search script.
+Test the scikit svm script.
 '''
-class LSH_MLPACK_TEST(unittest.TestCase):
+
+class SVM_SCIKIT_TEST(unittest.TestCase):
 
   '''
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = 'datasets/iris.csv'
+    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
-    module = Loader.ImportModuleFromPath("methods/mlpack/lsh.py")
-    obj = getattr(module, "LSH")
+    module = Loader.ImportModuleFromPath("methods/scikit/svm.py")
+    obj = getattr(module, "SVM")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -47,23 +46,11 @@ class LSH_MLPACK_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics({ "k": 2 })
+    result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-    self.assertTrue(result["HashBuilding"] > 0)
-
-  '''
-  Test the destructor.
-  '''
-  def test_Destructor(self):
-    del self.instance
-
-    clean = True
-    filelist = ["gmon.out", "output.csv"]
-    for f in filelist:
-      if os.path.isfile(f):
-        clean = False
-
-    self.assertTrue(clean)
+    self.assertTrue(result["ACC"] > 0)
+    self.assertTrue(result["Precision"] > 0)
+    self.assertTrue(result["Recall"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

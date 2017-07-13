@@ -28,7 +28,7 @@ class LR_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/logistic_regression.py")
     obj = getattr(module, "LogisticRegression")
@@ -63,7 +63,7 @@ class LR_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/logistic_regression.py")
     obj = getattr(module, "LogisticRegression")
@@ -98,7 +98,7 @@ class LR_Milk_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/milk/logistic_regression.py")
     obj = getattr(module, "LogisticRegression")
@@ -131,7 +131,7 @@ class lr_mlpack_test(unittest.TestCase):
     self.dataset = ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv',
         'datasets/ecoli_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = \
         Loader.ImportModuleFromPath("methods/mlpack/logistic_regression.py")

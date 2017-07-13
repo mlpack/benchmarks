@@ -29,7 +29,7 @@ class NBC_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/nbc.py")
     obj = getattr(module, "NBC")
@@ -77,7 +77,7 @@ class NBC_WEKA_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/weka/nbc.py")
     obj = getattr(module, "NBC")
@@ -109,7 +109,7 @@ class NBC_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/nbc.py")
     obj = getattr(module, "NBC")
@@ -144,7 +144,7 @@ class NBC_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/nbc.py")
     obj = getattr(module, "NBC")
@@ -181,7 +181,7 @@ class NBC_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/matlab/nbc.py")
     obj = getattr(module, "NBC")

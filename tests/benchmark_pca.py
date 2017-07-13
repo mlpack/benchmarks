@@ -29,7 +29,7 @@ class PCA_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/pca.py")
     obj = getattr(module, "PCA")
@@ -77,7 +77,7 @@ class PCA_WEKA_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/weka/pca.py")
     obj = getattr(module, "PCA")
@@ -109,7 +109,7 @@ class PCA_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/pca.py")
     obj = getattr(module, "PCA")
@@ -141,7 +141,7 @@ class PCA_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/pca.py")
     obj = getattr(module, "PCA")
@@ -173,7 +173,7 @@ class PCA_MLPY_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpy/pca.py")
     obj = getattr(module, "PCA")
@@ -205,7 +205,7 @@ class PCA_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/matlab/pca.py")
     obj = getattr(module, "PCA")
