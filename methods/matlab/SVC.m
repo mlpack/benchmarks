@@ -1,7 +1,7 @@
 % @file SVC.m
 %
 % Support Vector Classifier with matlab.
-
+% Requires Statistics and Machine Learning toolbox installed.
 function svc(cmd)
 % This program trains the K-Nearest classifier on the given labeled
 % training set and then uses the trained classifier to classify the points
@@ -14,6 +14,8 @@ function svc(cmd)
 
 trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
+kernel = regexp(cmd, '.*?-k ([^\s]+)', 'tokens', 'once');
+max_iter = regexp(cmd, '.*?--max_iter ([^\d]+)', 'tokens', 'once'); 
 
 % Load input dataset.
 TrainData = csvread(trainFile{:});
@@ -26,7 +28,7 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-classifier = fitcsvm(TrainData, labels);
+classifier = fitcsvm(TrainData, labels, 'KernelFunction', kernel, 'NumPrint', max_iter);
 % Run Decision Classifier on the test dataset.
 labels = predict(classifier, TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
