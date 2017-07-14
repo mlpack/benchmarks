@@ -77,7 +77,7 @@ class DTC(object):
       self.build_opts["min_leaf_size"] = 1
 
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m" + self.build_opts["min_samples_leaf"]
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m " + self.build_opts["min_samples_leaf"]
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, DTC('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
