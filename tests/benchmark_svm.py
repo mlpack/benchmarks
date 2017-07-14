@@ -126,4 +126,4 @@ class SVC_MATLAB_TEST(unittest.TestCase):
     self.assertTrue(result["Recall"] > 0)
 
 if __name__ == '__main__':
-unittest.main()
+  unittest.main()
