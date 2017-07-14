@@ -94,17 +94,18 @@ class LinearRidgeRegression(object):
           model = self.BuildModel(X, y, **opts)
 
           if len(self.dataset) >= 2:
-            self.predictions = np.rint(self.BuildModel(trainData, labels, **opts).predict(testData))
+            self.predictions = np.rint(self.model.predict(testData))
 
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
+      
       if len(self.dataset) > 1:
         q.put((time, self.predictions))
       else:
-        q.put(time)
+        q.put((time))
         
       return time
 
