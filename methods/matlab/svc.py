@@ -85,7 +85,7 @@ class SVC(object):
     else:
       self.opts["max_iter"] = 1000
     inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " 
-             + self.opts["kernel"] + " --max_iter "+ self.opts["max_iter"]
+             + self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, SVC('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
