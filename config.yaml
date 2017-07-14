@@ -2,7 +2,7 @@
 library: general
 settings:
     # Time until a timeout in seconds.
-    timeout: 9000
+    timeout: 240 
     databaseHost: 'localhost'
     port: 3306
     database: 'benchmarks'
@@ -819,6 +819,7 @@ methods:
 ---
 # MATLAB:
 # Numerical computing environment and programming language.
+# Requires Machine Learning and statistics toolbox installed.
 library: matlab
 methods:
     PCA:
