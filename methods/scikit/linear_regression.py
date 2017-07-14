@@ -46,6 +46,7 @@ class LinearRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
     self.model = None
 
   '''
@@ -92,16 +93,24 @@ class LinearRegression(object):
           b = self.model.coef_
 
           if len(self.dataset) >= 2:
-            self.model.predict(testSet)
+            self.predictions = np.rint(self.model.predict(testSet))
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      if len(self.dataset) > 1:
+        q.put((time, self.predictions))
+      else
+        q.put(time)
       return time
 
-    return timeout(RunLinearRegressionScikit, self.timeout)
+    result = timeout(RunLinearRegressionScikit, self.timeout)
+    if len(result) > 1:
+      self.predictions = result[1]
+      return result[0]
+    
+    return result
 
   '''
   Perform Linear Regression. If the method has been successfully completed
@@ -123,34 +132,17 @@ class LinearRegression(object):
 
     if len(self.dataset) >= 3:
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
-
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = np.rint(self.model.predict(testData))
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-
-      metrics['Avg Accuracy'] = AvgAcc
-      metrics['MultiClass Precision'] = AvgPrec
-      metrics['MultiClass Recall'] = AvgRec
-      metrics['MultiClass FMeasure'] = AvgF
-      metrics['MultiClass Lift'] = AvgLift
-      metrics['MultiClass MCC'] = AvgMCC
-      metrics['MultiClass Information'] = AvgInformation
-      metrics['Simple MSE'] = SimpleMSE
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
