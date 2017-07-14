@@ -49,6 +49,7 @@ class DTC(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.build_opts = {}
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
@@ -70,12 +71,13 @@ class DTC(object):
   def RunMetrics(self, options):
     Log.Info("Perform DTC.", self.verbose)
 
-    # No options accepted for this task.
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameters")
+    if "minimum_leaf_size" in options:
+      self.build_opts["min_leaf_size"] = int(options.pop("minimum_leaf_size"))
+    else:
+      self.build_opts["min_leaf_size"] = 1
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] 
+
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m" + self.build_opts["min_samples_leaf"]
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, DTC('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
