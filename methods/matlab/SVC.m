@@ -15,7 +15,7 @@ function svc(cmd)
 trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
 kernel = regexp(cmd, '.*?-k ([^\s]+)', 'tokens', 'once');
-max_iter = regexp(cmd, '.*?--max_iter ([^\d]+)', 'tokens', 'once'); 
+max_iter = regexp(cmd, '.*?--max_iter ([^\s]+)', 'tokens', 'once'); 
 
 % Load input dataset.
 TrainData = csvread(trainFile{:});
@@ -28,7 +28,7 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-classifier = fitcsvm(TrainData, labels, 'KernelFunction', kernel, 'NumPrint', max_iter);
+classifier = fitcsvm(TrainData, labels, 'KernelFunction', kernel, 'NumPrint', str2num(max_iter{1}));
 % Run Decision Classifier on the test dataset.
 labels = predict(classifier, TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
