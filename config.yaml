@@ -2,7 +2,7 @@
 library: general
 settings:
     # Time until a timeout in seconds.
-    timeout: 240 
+    timeout: 9000
     databaseHost: 'localhost'
     port: 3306
     database: 'benchmarks'
