@@ -56,7 +56,7 @@ class SVC(object):
   '''
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
-    filelist = ["predictions.csv", "probability.csv"]
+    filelist = ["predictions.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
@@ -107,9 +107,10 @@ class SVC(object):
 
     # Parse data: runtime.
     timer = self.parseTimer(s)
-    predictions = np.genfromtxt("predictions.csv", delimiter = ',')
-    truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
+
     if timer != -1:
+      predictions = np.genfromtxt("predictions.csv", delimiter = ',')
+      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
