@@ -46,7 +46,6 @@ class LinearRidgeRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-    self.predictions = None
 
   '''
   Build the model for the Linear Ridge Regression.
@@ -94,27 +93,17 @@ class LinearRidgeRegression(object):
           model = self.BuildModel(X, y, **opts)
 
           if len(self.dataset) >= 2:
-            self.predictions = np.rint(model.predict(testData))
+            model.predict(testSet)
 
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      
-      if len(self.dataset) > 1:
-        q.put((time, self.predictions))
-      else:
-        q.put((time))
-        
+      q.put(time)
       return time
 
-    result = timeout(RunLinearRidgeRegressionScikit, self.timeout)
-    if len(result) > 1:
-      self.predictions = result[1]
-      return result[0]
-    
-    return result
+    return timeout(RunLinearRidgeRegressionScikit, self.timeout)
 
   '''
   Perform Linear Ridge Regression. If the method has been successfully completed
@@ -136,8 +125,21 @@ class LinearRidgeRegression(object):
 
     if len(self.dataset) >= 3:
 
-      truelabels = LoadDataset(self.dataset[2]) 
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+      trainData, labels = SplitTrainData(self.dataset)
+
+      testData = LoadDataset(self.dataset[1])
+      truelabels = LoadDataset(self.dataset[2])
+      opts = {}
+      if "alpha" in options:
+        opts["alpha"] = float(options.pop("alpha"))
+
+      if len(options) > 0:
+        Log.Fatal("Unknown parameters: " + str(options))
+        raise Exception("unknown parameters")
+
+      predictedlabels = np.rint(self.BuildModel(trainData, labels, **opts).predict(testData))
+
+      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metrics['Simple MSE'] = SimpleMSE
 
     return metrics
