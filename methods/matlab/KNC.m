@@ -1,6 +1,7 @@
 % @file KNC.m
 %
 % K-Nearest Classifier with matlab.
+% Requires Statistics and Machine Learning toolbox installed.
 
 function knc(cmd)
 % This program trains the K-Nearest classifier on the given labeled
