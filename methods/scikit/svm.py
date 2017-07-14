@@ -59,7 +59,7 @@ class SVM(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    svm = ssvm.SVC(**opts)
+    svm = ssvm.SVC(**self.opts)
     svm.fit(data, labels)
     return svm
 
@@ -92,8 +92,7 @@ class SVM(object):
       if "max_iterations" in options:
         self.opts["max_iter"] = int(options.pop("max_iterations"))
       if "decision_function_shape" in options:
-        self.opts["decision_function_shape"] =
-            str(options.pop("decision_function_shape"))
+        self.opts["decision_function_shape"] = str(options.pop("decision_function_shape"))
 
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))
@@ -118,10 +117,11 @@ class SVM(object):
       return time
 
     result = timeout(RunSVMScikit, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
     if len(result) > 1:
       self.predictions = result[1]
       return result[0]
-    
+   
     return result
 
   '''

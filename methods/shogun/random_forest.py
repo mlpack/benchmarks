@@ -44,6 +44,7 @@ class RANDOMFOREST(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.predictions = None
     self.model = None
     self.form = 1
     self.numTrees = 10
@@ -56,7 +57,7 @@ class RANDOMFOREST(object):
   '''
   def BuildModel(self, data, labels, options):
     mVote = MajorityVote()
-    randomForest = RandomForest(self.form,self.numTrees)
+    randomForest = RandomForest(self.form, self.numTrees)
     randomForest.set_combination_rule(mVote)
     randomForest.set_labels(labels)
     randomForest.train(data)
@@ -97,16 +98,21 @@ class RANDOMFOREST(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels, options)
           # Run the Random Forest Classifier on the test dataset.
-          self.model.apply_multiclass(testData).get_labels()
+          self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      q.put((time, self.predictions))
       return time
 
-    return timeout(RunRandomForestShogun, self.timeout)
+    result = timeout(RunRandomForestShogun, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+       self.predictions = result[1]
+
+    return result[0]
 
   '''
   Perform the classification using Random Forest. If the method has been
@@ -120,7 +126,23 @@ class RANDOMFOREST(object):
 
     if len(self.dataset) >= 2:
         results = self.RandomForestShogun(options)
+    
     else:
       Log.Fatal("This method requires at least two datasets.")
 
-    return {'Runtime' : results}
+    metrics = {'Runtime' : results}
+    if len(self.dataset) >= 3:
+
+      truelabels = LoadDataset(self.dataset[2])
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+    return metrics

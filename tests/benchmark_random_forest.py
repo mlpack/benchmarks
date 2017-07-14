@@ -84,6 +84,9 @@ class RandomForest_SHOGUN_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
 
 '''
 Test the Milk RandomForest script.
