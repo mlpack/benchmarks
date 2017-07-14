@@ -16,7 +16,7 @@ function knc(cmd)
 
 trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
-k = regexp(cmd, '.*?-k ([^\d]+)', 'tokens', 'once');
+k = regexp(cmd, '.*?-k ([^\s]+)', 'tokens', 'once');
 % Load input dataset.
 TrainData = csvread(trainFile{:});
 TestData = csvread(testFile{:});
@@ -28,7 +28,7 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-classifier = fitcknn(TrainData, labels, 'NumNeighbors', k);
+classifier = fitcknn(TrainData, labels, 'NumNeighbors', str2num(k{1}));
 % Run Decision Classifier on the test dataset.
 labels = predict(classifier, TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
