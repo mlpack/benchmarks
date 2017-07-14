@@ -47,6 +47,7 @@ class SVM(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
     self.opts = {}
 
   '''
@@ -58,7 +59,7 @@ class SVM(object):
   '''
   def BuildModel(self, data, labels):
     # Create and train the classifier.
-    svm = ssvm.SVC(**opts)
+    svm = ssvm.SVC(**self.opts)
     svm.fit(data, labels)
     return svm
 
@@ -91,8 +92,7 @@ class SVM(object):
       if "max_iterations" in options:
         self.opts["max_iter"] = int(options.pop("max_iterations"))
       if "decision_function_shape" in options:
-        self.opts["decision_function_shape"] =
-            str(options.pop("decision_function_shape"))
+        self.opts["decision_function_shape"] = str(options.pop("decision_function_shape"))
 
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))
@@ -102,18 +102,27 @@ class SVM(object):
         with totalTimer:
           self.model = self.BuildModel(trainData, labels)
           # Run Support vector machines on the test dataset.
-          self.model.predict(testData)
+          self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
         q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      if len(self.dataset) > 1:
+        q.put((time, self.predictions))
+      else:
+        q.put(time)
 
       return time
 
-    return timeout(RunSVMScikit, self.timeout)
+    result = timeout(RunSVMScikit, self.timeout)
+    # Check for error, in this case the tuple doesn't contain extra information.
+    if len(result) > 1:
+       self.predictions = result[1]
+       return result[0]
+    
+    return result
 
   '''
   Perform the Support vector machines. If the method has been
@@ -140,21 +149,14 @@ class SVM(object):
 
     if len(self.dataset) >= 3:
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
-
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.predict(testData)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
 

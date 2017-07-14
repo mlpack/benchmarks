@@ -1,7 +1,6 @@
 '''
-  @file benchmark_qda.py
-  @author Youssef Emad El-Din
-  Test for the QDA scripts.
+  file benchmark_knc.py
+  Test for the Parametric K Nearest Classifier scripts.
 '''
 
 import unittest
@@ -16,22 +15,21 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from loader import *
-
 '''
-Test the shogun QDA script.
+Test the shogun Parametric K Nearest Classifier script.
 '''
-class QDA_SHOGUN_TEST(unittest.TestCase):
+class KNC_SHOGUN_TEST(unittest.TestCase):
 
   '''
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/shogun/qda.py")
-    obj = getattr(module, "QDA")
+    module = Loader.ImportModuleFromPath("methods/shogun/knc.py")
+    obj = getattr(module, "KNC")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -53,20 +51,20 @@ class QDA_SHOGUN_TEST(unittest.TestCase):
     self.assertTrue(result["MultiClass Recall"] > 0)
 
 '''
-Test the scikit QDA script.
+Test the Scikit Parametric K Nearest Classifier script.
 '''
-class QDA_SCIKIT_TEST(unittest.TestCase):
+class KNC_SCIKIT_TEST(unittest.TestCase):
 
   '''
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 9000
 
-    module = Loader.ImportModuleFromPath("methods/scikit/qda.py")
-    obj = getattr(module, "QDA")
+    module = Loader.ImportModuleFromPath("methods/scikit/knc.py")
+    obj = getattr(module, "KNC")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -78,15 +76,11 @@ class QDA_SCIKIT_TEST(unittest.TestCase):
     self.assertEqual(self.instance.dataset, self.dataset)
 
   '''
-  Test the 'RunTiming' function.
+  Test the 'RunMetrics' function.
   '''
-  def test_RunTiming(self):
+  def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-    self.assertTrue(result["ACC"] > 0)
-    self.assertTrue(result["Precision"] > 0)
-    self.assertTrue(result["Recall"] > 0)
-
-
+    
 if __name__ == '__main__':
-  unittest.main()
+ unittest.main()

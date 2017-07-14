@@ -80,7 +80,7 @@ class QDA(object):
           model = modshogun.QDA(trainFeat, labels)
           model.train()
           if len(self.dataset) == 2:
-            model.apply(testFeat).get_labels()
+            model.apply_multiclass(testFeat).get_labels()
       except Exception as e:
         q.put(-1)
         return -1
@@ -115,13 +115,18 @@ class QDA(object):
 
       model = modshogun.QDA(modshogun.RealFeatures(trainData.T),modshogun.MulticlassLabels(labels))
       model.train()
-      predictions = model.apply(modshogun.RealFeatures(testData.T)).get_labels()
+      predictions = model.apply_multiclass(modshogun.RealFeatures(testData.T)).get_labels()
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+      
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
     return metrics
+
