@@ -103,7 +103,7 @@ class LinearRidgeRegression(object):
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
         q.put((time, self.predictions))
-      else
+      else:
         q.put(time)
         
       return time
