@@ -49,6 +49,7 @@ class SVC(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.opts = {}
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
@@ -74,8 +75,17 @@ class SVC(object):
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
-
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] 
+    self.opts = {}
+    if "kernel" in options:
+      self.opts["kernel"] = str(options.pop("kernel"))
+    else:
+      self.opts["kernel"] = 'rbf'
+    if "max_iterations" in options:
+      self.opts["max_iter"] = int(options.pop("max_iterations"))
+    else:
+      self.opts["max_iter"] = 1000
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " 
+             + self.opts["kernel"] + " --max_iter "+ self.opts["max_iter"]
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, SVC('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
