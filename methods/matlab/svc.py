@@ -84,11 +84,11 @@ class SVC(object):
       self.opts["max_iter"] = int(options.pop("max_iterations"))
     else:
       self.opts["max_iter"] = 1000
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " 
-             + self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " + \
+    self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, SVC('"
-        + inputCmd + "'), catch, exit(1), end, exit(0)\"")
+                      + inputCmd + "'), catch, exit(1), end, exit(0)\"")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
