@@ -81,7 +81,7 @@ class SVC_SHOGUN_TEST(unittest.TestCase):
   Test the 'RunMetrics' function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics({})
+    result = self.instance.RunMetrics({"kernel": "gaussian"})
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["ACC"] > 0)
     self.assertTrue(result["Precision"] > 0)
