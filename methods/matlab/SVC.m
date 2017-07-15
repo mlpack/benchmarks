@@ -28,7 +28,8 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-classifier = fitcsvm(TrainData, labels, 'KernelFunction', kernel, 'NumPrint', str2num(max_iter{1}));
+t = templateSVM('KernelFunction', char(kernel), 'NumPrint', str2num(max_iter{1}))
+classifier = fitcecoc(TrainData, labels, 'Learner', t);
 % Run Decision Classifier on the test dataset.
 labels = predict(classifier, TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
