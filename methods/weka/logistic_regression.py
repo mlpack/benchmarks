@@ -1,7 +1,6 @@
 '''
   @file logistic_regression.py
   @author Anand Soni
-
   Class to benchmark the weka Logistic Regression method.
 '''
 
@@ -26,6 +25,7 @@ from log import *
 from profiler import *
 from definitions import *
 from misc import *
+
 import shlex
 import subprocess
 import re
@@ -35,11 +35,10 @@ import numpy as np
 '''
 This class implements the Logistic Regression benchmark.
 '''
-class LogisticRegression(object):
+class LOGISTICREGRESSION(object):
 
   '''
   Create the Logistic Regression benchmark instance.
-
   @param dataset - Input dataset to perform Logistic Regression on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
@@ -53,21 +52,8 @@ class LogisticRegression(object):
     self.timeout = timeout
 
   '''
-  Destructor to clean up at the end. Use this method to remove created files.
-  '''
-  def __del__(self):
-    Log.Info("Clean up.", self.verbose)
-    filelist = ["weka_linreg_predictions.csv",
-                "weka_predicted.csv",
-                "weka_probabilities.csv"]
-    for f in filelist:
-      if os.path.isfile(f):
-        os.remove(f)
-
-  '''
   Logistic Regression. If the method has been successfully completed return
   the elapsed time in seconds.
-
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
@@ -79,16 +65,14 @@ class LogisticRegression(object):
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    # Load input dataset.
-    # If the dataset contains two files then the second file is the responses
-    # file. In this case we add this to the command line.
-    if len(self.dataset) >= 2:
-      cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka LogisticRegression -i " + self.dataset[0] + " -t " +
+    if len(self.dataset) < 2:
+      Log.Fatal("This method requires two or more datasets.")
+      return -1
+
+    # Split the command using shell-like syntax.
+    cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
+        ":methods/weka" + " LOGISTICREGRESSION -t " + self.dataset[0] + " -T " +
         self.dataset[1])
-    else:
-      cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-        " LogisticRegression -i " + self.dataset)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -109,7 +93,15 @@ class LogisticRegression(object):
     timer = self.parseTimer(s)
 
     if timer != -1:
+      predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
+      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
@@ -117,7 +109,6 @@ class LogisticRegression(object):
 
   '''
   Parse the timer data form a given string.
-
   @param data - String to parse timer data from.
   @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''

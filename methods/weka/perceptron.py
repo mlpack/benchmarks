@@ -1,7 +1,6 @@
 '''
-  @file nbc.py
-  @author Marcus Edel
-  Class to benchmark the weka Naive Bayes Classifier method.
+  @file perceptron.py
+  Class to benchmark the weka Perceptron method.
 '''
 
 import os
@@ -33,13 +32,13 @@ import collections
 import numpy as np
 
 '''
-This class implements the Naive Bayes Classifier benchmark.
+This class implements the Perceptron benchmark.
 '''
-class NBC(object):
+class PERCEPTRON(object):
 
   '''
-  Create the Naive Bayes Classifier benchmark instance.
-  @param dataset - Input dataset to perform NBC on.
+  Create the Perceptron benchmark instance.
+  @param dataset - Input dataset to perform Perceptron on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
@@ -52,14 +51,14 @@ class NBC(object):
     self.timeout = timeout
 
   '''
-  Naive Bayes Classifier. If the method has been successfully completed return
+  Perceptron. If the method has been successfully completed return
   the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform NBC.", self.verbose)
+    Log.Info("Perform Perceptron.", self.verbose)
 
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
@@ -71,7 +70,7 @@ class NBC(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " NBC -t " + self.dataset[0] + " -T " +
+        ":methods/weka" + " PERCEPTRON -t " + self.dataset[0] + " -T " +
         self.dataset[1])
 
     # Run command with the nessecary arguments and return its output as a byte
@@ -93,16 +92,15 @@ class NBC(object):
     timer = self.parseTimer(s)
 
     if timer != -1:
-      metrics['Runtime'] = timer.total_time
       predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
@@ -131,4 +129,4 @@ class NBC(object):
       if match.group("total_time").count(".") == 1:
         return timer(float(match.group("total_time")))
       else:
-        return timer(float(match.group("total_time").replace(",", ".")))
+    return timer(float(match.group("total_time").replace(",", ".")))

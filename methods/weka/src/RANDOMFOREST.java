@@ -1,17 +1,17 @@
 /**
- * @file NBC.java
+ * @file RandomForest.java
  *
- * Naive Bayes Classifier with weka.
+ * Random Forest with weka.
  */
 
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.RandomizableClassifier;
+import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -19,12 +19,12 @@ import weka.core.Attribute;
 import java.util.List;
 import java.util.ArrayList;
 /**
- * This class use the weka libary to implement Naive Bayes Classifier.
+ * This class use the weka libary to implement Random Forest.
  */
-public class NBC {
+public class RANDOMFOREST {
 
   private static final String USAGE = String
-      .format("This program trains the Naive Bayes classifier on the given\n"
+      .format("This program trains the Decision Tree classifier on the given\n"
       + "labeled training set and then uses the trained classifier to classify\n"
       + "the points in the given test set.\n\n"
       + "Required options:\n"
@@ -65,10 +65,10 @@ public class NBC {
 
       timer.StartTimer("total_time");
       // Create and train the classifier.
-      Classifier cModel = (Classifier)new NaiveBayes();
+      Classifier cModel = (Classifier)new RandomForest();
       cModel.buildClassifier(trainData);
 
-      // Run Naive Bayes Classifier on the test dataset.
+      // Run Random Forest on the test dataset.
       // Write predicted class values for each intance to
       // benchmarks/weka_predicted.csv.
       double prediction = 0;

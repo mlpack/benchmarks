@@ -1,7 +1,7 @@
 '''
-  @file nbc.py
-  @author Marcus Edel
-  Class to benchmark the weka Naive Bayes Classifier method.
+  @file svc.py
+
+  Class to benchmark the matlab Support Vector Classifier method.
 '''
 
 import os
@@ -30,49 +30,65 @@ import shlex
 import subprocess
 import re
 import collections
-import numpy as np
 
 '''
-This class implements the Naive Bayes Classifier benchmark.
+This class implements the Support Vector Classifier benchmark.
 '''
-class NBC(object):
+class SVC(object):
 
   '''
-  Create the Naive Bayes Classifier benchmark instance.
-  @param dataset - Input dataset to perform NBC on.
+  Create the Support Vector Classifier benchmark instance.
+  @param dataset - Input dataset to perform DTC on.
   @param timeout - The time until the timeout. Default no timeout.
-  @param path - Path to the mlpack executable.
+  @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["JAVAPATH"],
+  def __init__(self, dataset, timeout=0, path=os.environ["MATLAB_BIN"],
       verbose=True):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.opts = {}
 
   '''
-  Naive Bayes Classifier. If the method has been successfully completed return
+  Destructor to clean up at the end. Use this method to remove created files.
+  '''
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["predictions.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
+
+  '''
+  Support Vector Classifier. If the method has been successfully completed return
   the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform NBC.", self.verbose)
+    Log.Info("Perform SVC.", self.verbose)
 
+    # No options accepted for this task.
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
-
-    if len(self.dataset) < 2:
-      Log.Fatal("This method requires two or more datasets.")
-      return -1
-
+    self.opts = {}
+    if "kernel" in options:
+      self.opts["kernel"] = str(options.pop("kernel"))
+    else:
+      self.opts["kernel"] = 'rbf'
+    if "max_iterations" in options:
+      self.opts["max_iter"] = int(options.pop("max_iterations"))
+    else:
+      self.opts["max_iter"] = 1000
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " + \
+    self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " NBC -t " + self.dataset[0] + " -T " +
-        self.dataset[1])
+    cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, SVC('"
+                      + inputCmd + "'), catch, exit(1), end, exit(0)\"")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -93,8 +109,7 @@ class NBC(object):
     timer = self.parseTimer(s)
 
     if timer != -1:
-      metrics['Runtime'] = timer.total_time
-      predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
+      predictions = np.genfromtxt("predictions.csv", delimiter = ',')
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
@@ -116,11 +131,11 @@ class NBC(object):
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
-    pattern = re.compile(r"""
+    pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    match = pattern.match(data.decode())
+ 
+    match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
       return -1
@@ -128,7 +143,4 @@ class NBC(object):
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["total_time"])
 
-      if match.group("total_time").count(".") == 1:
-        return timer(float(match.group("total_time")))
-      else:
-        return timer(float(match.group("total_time").replace(",", ".")))
+    return timer(float(match.group("total_time")))
