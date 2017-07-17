@@ -119,6 +119,43 @@ class DecisionTree_Milk_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
+    
+'''
+Test the matlab Parametric Decision Tree Classifier script.
+'''
+class DTC_MATLAB_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    self.verbose = False
+    self.timeout = 9000
+
+    module = Loader.ImportModuleFromPath("methods/matlab/dtc.py")
+    obj = getattr(module, "DTC")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics({})
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ACC"] > 0)
+    self.assertTrue(result["Precision"] > 0)
+    self.assertTrue(result["Recall"] > 0)
+
+
 
 if __name__ == '__main__':
   unittest.main()

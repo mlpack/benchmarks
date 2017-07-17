@@ -1,8 +1,7 @@
 '''
-  @file logistic_regression.py
-  @author Marcus Edel
+  @file knc.py
 
-  Class to benchmark the matlab Logistic Regression method.
+  Class to benchmark the matlab K-Nearest Neighbors Classifier method.
 '''
 
 import os
@@ -25,6 +24,7 @@ if metrics_folder not in sys.path:
 from log import *
 from profiler import *
 from definitions import *
+from misc import *
 
 import shlex
 import subprocess
@@ -32,14 +32,13 @@ import re
 import collections
 
 '''
-This class implements the Logistic Regression benchmark.
+This class implements the K-Nearest Classifier benchmark.
 '''
-class LogisticRegression(object):
+class KNC(object):
 
   '''
-  Create the Logistic Regression benchmark instance.
-
-  @param dataset - Input dataset to perform Logistic Regression on.
+  Create the K-Nearest Classifier benchmark instance.
+  @param dataset - Input dataset to perform DTC on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the matlab binary.
   @param verbose - Display informational messages.
@@ -50,43 +49,39 @@ class LogisticRegression(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    self.opts = {}
 
   '''
   Destructor to clean up at the end. Use this method to remove created files.
   '''
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
-    filelist = ["predictions.csv", "matlab_lr_probs.csv"]
+    filelist = ["predictions.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
 
   '''
-  Logistic Regression benchmark instance. If the method has been successfully
-  completed return the elapsed time in seconds.
-
+  K-Nearest Classifier. If the method has been successfully completed return
+  the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform Logistic Regression.", self.verbose)
-
-    # No options accepted for this script.
+    Log.Info("Perform KNC.", self.verbose)
+    self.opts = {}
+    if "k" in options:
+      self.opts["n_neighbors"] = int(options.pop("k"))
+    # No options accepted for this task.
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    # If the dataset contains two files then the second file is the test
-    # file. In this case we add this to the command line.
-    if len(self.dataset) == 2:
-      inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1]
-    else:
-      inputCmd = "-i " + self.dataset[0]
-
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k" + str(self.opts["n_neighbors"]) 
     # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
-        "LOGISTIC_REGRESSION('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
+    cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, SVC('"
+        + inputCmd + "'), catch, exit(1), end, exit(0)\"")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -123,7 +118,6 @@ class LogisticRegression(object):
 
   '''
   Parse the timer data form a given string.
-
   @param data - String to parse timer data from.
   @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''
@@ -133,7 +127,7 @@ class LogisticRegression(object):
     pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
+ 
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
@@ -142,4 +136,4 @@ class LogisticRegression(object):
       # Create a namedtuple and return the timer data.
       timer = collections.namedtuple("timer", ["total_time"])
 
-      return timer(float(match.group("total_time")))
+    return timer(float(match.group("total_time")))
