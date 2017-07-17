@@ -94,7 +94,7 @@ class LinearRidgeRegression(object):
           model = self.BuildModel(X, y, **opts)
 
           if len(self.dataset) >= 2:
-            self.predictions = np.rint(model.predict(testSet))
+            self.predictions = model.predict(testSet)
 
       except Exception as e:
         q.put(-1)
