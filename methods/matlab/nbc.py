@@ -100,9 +100,17 @@ class NBC(object):
 
     # Parse data: runtime.
     timer = self.parseTimer(s)
-
+    
     if timer != -1:
+      predictions = np.genfromtxt("predictions.csv", delimiter = ',')
+      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 

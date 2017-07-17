@@ -1,6 +1,6 @@
 '''
-  @file benchmark_svm.py
-  Test for the svm scripts.
+  @file benchmark_lda.py
+  Test for the LDA scripts.
 '''
 
 import unittest
@@ -17,21 +17,20 @@ if cmd_subfolder not in sys.path:
 from loader import *
 
 '''
-Test the scikit svm script.
+Test the Scikit LDA script.
 '''
-
-class SVM_SCIKIT_TEST(unittest.TestCase):
+class LDA_SCIKIT_TEST(unittest.TestCase):
 
   '''
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
-    module = Loader.ImportModuleFromPath("methods/scikit/svm.py")
-    obj = getattr(module, "SVM")
+    module = Loader.ImportModuleFromPath("methods/scikit/lda.py")
+    obj = getattr(module, "LDA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -53,9 +52,9 @@ class SVM_SCIKIT_TEST(unittest.TestCase):
     self.assertTrue(result["Recall"] > 0)
 
 '''
-Test the matlab Parametric Support Vector Classifier script.
+Test the matlab LDA script.
 '''
-class SVC_MATLAB_TEST(unittest.TestCase):
+class LDA_MATLAB_TEST(unittest.TestCase):
 
   '''
   Test initialization.
@@ -65,8 +64,8 @@ class SVC_MATLAB_TEST(unittest.TestCase):
     self.verbose = False
     self.timeout = 240
 
-    module = Loader.ImportModuleFromPath("methods/matlab/svc.py")
-    obj = getattr(module, "SVC")
+    module = Loader.ImportModuleFromPath("methods/matlab/lda.py")
+    obj = getattr(module, "LDA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -88,4 +87,4 @@ class SVC_MATLAB_TEST(unittest.TestCase):
     self.assertTrue(result["Recall"] > 0)
 
 if __name__ == '__main__':
-  unittest.main()
+ unittest.main()

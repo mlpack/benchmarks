@@ -121,5 +121,43 @@ class RandomForest_Milk_TEST(unittest.TestCase):
     result = self.instance.RunMetrics({ "num_trees": 10 })
     self.assertTrue(result["Runtime"] > 0)
 
+'''
+Test the MATLAB RandomForest script.
+'''
+class RandomForest_MATLAB_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv',
+        'datasets/iris_labels.csv']
+
+    self.verbose = False
+    self.timeout = 240
+
+    module = Loader.ImportModuleFromPath("methods/matlab/random_forest.py")
+    obj = getattr(module, "RANDOMFOREST")
+    self.instance = obj(self.dataset, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the RunMetrics Function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics({ "num_trees": 10 })
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ACC"] > 0)
+    self.assertTrue(result["Precision"] > 0)
+    self.assertTrue(result["Recall"] > 0)
+
+
+
 if __name__ == '__main__':
   unittest.main()
