@@ -29,7 +29,7 @@ class KMEANS_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/kmeans.py")
     obj = getattr(module, "KMEANS")
@@ -75,7 +75,7 @@ class KMEANS_MLPY_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpy/kmeans.py")
     obj = getattr(module, "KMEANS")
@@ -107,7 +107,7 @@ class KMEANS_WEKA_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/weka/kmeans.py")
     obj = getattr(module, "KMEANS")
@@ -139,7 +139,7 @@ class KMEANS_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/matlab/kmeans.py")
     obj = getattr(module, "KMEANS")
@@ -171,7 +171,7 @@ class KMEANS_MILK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris.csv', 'datasets/iris_centroids.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/milk/kmeans.py")
     obj = getattr(module, "KMEANS")

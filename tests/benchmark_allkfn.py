@@ -29,7 +29,7 @@ class ALLKFN_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/allkfn.py")
     obj = getattr(module, "ALLKFN")

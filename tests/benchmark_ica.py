@@ -29,7 +29,7 @@ class ICA_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/ica.py")
     obj = getattr(module, "ICA")
@@ -77,7 +77,7 @@ class ICA_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/ica.py")
     obj = getattr(module, "ICA")
