@@ -29,7 +29,7 @@ class DecisionTree_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/dtc.py")
     obj = getattr(module, "DTC")
@@ -64,7 +64,7 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/decision_tree.py")
     obj = getattr(module, "DTC")
@@ -99,7 +99,7 @@ class DecisionTree_Milk_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/milk/dtc.py")
     obj = getattr(module, "DTC")

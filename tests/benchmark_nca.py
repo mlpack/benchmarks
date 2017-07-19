@@ -29,7 +29,7 @@ class NCA_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/iris_train.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/nca.py")
     obj = getattr(module, "NCA")

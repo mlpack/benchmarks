@@ -29,7 +29,7 @@ class RandomForest_SCIKIT_TEST(unittest.TestCase):
         'datasets/iris_labels.csv']
 
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/random_forest.py")
     obj = getattr(module, "RANDOMFOREST")
@@ -65,7 +65,7 @@ class RandomForest_SHOGUN_TEST(unittest.TestCase):
         'datasets/iris_labels.csv']
 
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/random_forest.py")
     obj = getattr(module, "RANDOMFOREST")
@@ -101,7 +101,7 @@ class RandomForest_Milk_TEST(unittest.TestCase):
         'datasets/iris_labels.csv']
 
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/milk/random_forest.py")
     obj = getattr(module, "RANDOMFOREST")

@@ -28,7 +28,7 @@ class LASSO_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 120
 
     module = Loader.ImportModuleFromPath("methods/shogun/lasso.py")
     obj = getattr(module, "LASSO")
@@ -60,7 +60,7 @@ class LASSO_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris.csv', 'datasets/iris_test.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 120
 
     module = Loader.ImportModuleFromPath("methods/scikit/lasso.py")
     obj = getattr(module, "LASSO")
@@ -80,6 +80,39 @@ class LASSO_SCIKIT_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
+
+'''
+Test the matlab Lasso Regression script.
+'''
+class LASSO_MATLAB_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    self.verbose = False
+    self.timeout = 120
+
+    module = Loader.ImportModuleFromPath("methods/matlab/lasso.py")
+    obj = getattr(module, "LASSO")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunTiming' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics({})
+    self.assertTrue(result["Runtime"] > 0)
+
 
 if __name__ == '__main__':
   unittest.main()

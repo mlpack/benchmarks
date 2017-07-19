@@ -29,7 +29,7 @@ class RANGESEARCH_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/range_search.py")
     obj = getattr(module, "RANGESEARCH")
@@ -77,7 +77,7 @@ class RANGESEARCH_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/wine.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/matlab/range_search.py")
     obj = getattr(module, "RANGESEARCH")

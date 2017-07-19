@@ -29,7 +29,7 @@ class LARS_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/lars.py")
     obj = getattr(module, "LARS")
@@ -77,7 +77,7 @@ class LARS_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/lars.py")
     obj = getattr(module, "LARS")
@@ -109,7 +109,7 @@ class LARS_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/lars.py")
     obj = getattr(module, "LARS")

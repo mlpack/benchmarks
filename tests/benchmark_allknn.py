@@ -29,7 +29,7 @@ class ALLKNN_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -81,7 +81,7 @@ class ALLKNN_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/matlab/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -113,7 +113,7 @@ class ALLKNN_MLPY_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpy/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -145,7 +145,7 @@ class ALLKNN_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -178,7 +178,7 @@ class ALLKNN_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -210,7 +210,7 @@ class ALLKNN_WEKA_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/weka/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -242,7 +242,7 @@ class ALLKNN_ANN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/ann/allknn.py")
     obj = getattr(module, "ALLKNN")
@@ -276,7 +276,7 @@ class ALLKNN_FLANN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/wine.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/flann/allknn.py")
     obj = getattr(module, "ALLKNN")
