@@ -100,14 +100,14 @@ class ADABOOST(object):
           self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
-        q.put(-1)
+        q.put([-1])
         return -1
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
+        q.put([time, self.predictions])
       else:
-        q.put(time)
+        q.put([time])
 
       return time
 
@@ -117,7 +117,7 @@ class ADABOOST(object):
        self.predictions = result[1]
        return result[0]
 
-    return result
+    return result[0]
 
   '''
   Perform the AdaBoost classifier. If the method has been
