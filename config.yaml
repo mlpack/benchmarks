@@ -1061,6 +1061,17 @@ methods:
        format: [csv, txt, xml]
        datasets:
            - files: [ ['datasets/artificial_2DSignal.csv', 'datasets/artificial_2DSignal_hmm.xml'] ]
+
+    LASSO:
+        run: ['metric']
+        iteration: 3
+        script: methods/matlab/lasso.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv'],
+                       ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv'],
+                       ['datasets/arcene_X.csv', 'datasets/arcene_y.csv'],
+                       ['datasets/madelon_X.csv', 'datasets/madelon_y.csv'] ]   
     DTC:
        run: ['metric']
        script: methods/matlab/dtc.py
@@ -1098,7 +1109,7 @@ methods:
              
              options:
                 k: 5             
-
+               
 ---
 # Scikit-Learn: machine learning in Python
 library: scikit
