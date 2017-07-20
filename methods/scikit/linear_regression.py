@@ -95,14 +95,14 @@ class LinearRegression(object):
           if len(self.dataset) >= 2:
             self.predictions = self.model.predict(testSet)
       except Exception as e:
-        q.put(-1)
+        q.put([-1])
         return -1
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
+        q.put([time, self.predictions])
       else:
-        q.put(time)
+        q.put([time])
       return time
 
     result = timeout(RunLinearRegressionScikit, self.timeout)
@@ -110,7 +110,7 @@ class LinearRegression(object):
       self.predictions = result[1]
       return result[0]
     
-    return result
+    return result[0]
 
   '''
   Perform Linear Regression. If the method has been successfully completed
