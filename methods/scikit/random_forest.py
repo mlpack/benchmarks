@@ -107,14 +107,14 @@ class RANDOMFOREST(object):
           self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Fatal("Exception: " + str(e))
-        q.put(-1)
+        q.put([-1])
         return -1
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
+        q.put([time, self.predictions])
       else:
-        q.put(time)
+        q.put([time])
 
       return time
 
@@ -124,7 +124,7 @@ class RANDOMFOREST(object):
       self.predictions = result[1]
       return result[0]
     
-    return result
+    return result[0]
 
   '''
   Perform the Random Forest Classifier. If the method has been
