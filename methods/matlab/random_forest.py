@@ -80,8 +80,8 @@ class RANDOMFOREST(object):
       self.build_opts["min_leaf_size"] = 1
 
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m " + str(self.build_opts["min_leaf_size"]) + \
-	" -n " + str(self.build_opts["n_estimators"])
+    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m " + \
+	str(self.build_opts["min_leaf_size"]) +" -n " + str(self.build_opts["n_estimators"])
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, RANDOMFOREST('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
