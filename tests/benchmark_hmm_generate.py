@@ -28,7 +28,7 @@ class HMMGENERATE_MLPACK_TEST(unittest.TestCase):
   '''
   def setUp(self):
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     # Create the hmm model file used to test the hmm generate method.
     self.dataset = 'datasets/iris.csv'

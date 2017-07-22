@@ -26,7 +26,7 @@ class KNC_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/shogun/knc.py")
     obj = getattr(module, "KNC")
@@ -61,7 +61,7 @@ class KNC_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/scikit/knc.py")
     obj = getattr(module, "KNC")

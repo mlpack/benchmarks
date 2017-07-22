@@ -27,7 +27,7 @@ class DecisionStump_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv','datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/decision_stump.py")
     obj = getattr(module, "DecisionStump")

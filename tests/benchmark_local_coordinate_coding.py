@@ -29,7 +29,7 @@ class LocalCoordinateCoding_MLPACK_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = 'datasets/iris.csv'
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/mlpack/local_coordinate_coding.py")
     obj = getattr(module, "LocalCoordinateCoding")
