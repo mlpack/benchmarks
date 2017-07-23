@@ -51,6 +51,13 @@ class LOGISTICREGRESSION(object):
     self.path = path
     self.timeout = timeout
 
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["weka_predicted.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
+
   '''
   Logistic Regression. If the method has been successfully completed return
   the elapsed time in seconds.
