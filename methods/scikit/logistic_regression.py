@@ -101,23 +101,22 @@ class LogisticRegression(object):
           if len(self.dataset) > 1:
             self.predictions = self.model.predict(testSet)
       except Exception as e:
-        q.put(-1)
+        q.put([-1])
         return -1
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
+        q.put([time, self.predictions])
       else:
-        q.put(time)
+        q.put([time])
       return time
 
     result = timeout(RunLogisticRegressionScikit, self.timeout)
-    # Check for error, in this case the tuple doesn't contain extra information.
+    # Check for error, in this case the list doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]
-       return result[0]
     
-    return result
+    return result[0]
 
   '''
   Perform Logistic Regression. If the method has been successfully completed
