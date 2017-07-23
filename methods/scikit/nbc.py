@@ -100,10 +100,9 @@ class NBC(object):
       return time
 
     result = timeout(RunNBCScikit, self.timeout)
-    # Check for error, in this case the tuple doesn't contain extra information.
+    # Check for error, in this case the list doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]
-       return result[0]
 
     return result[0]
   '''
