@@ -102,7 +102,6 @@ class QDA(object):
     result = timeout(RunQDAScikit, self.timeout)
     if len(result) > 1:
       self.predictions = result[1]
-      return result[0]
     
     return result[0]
 
