@@ -1,6 +1,7 @@
 '''
   @file logistic_regression.py
   @author Anand Soni
+
   Class to benchmark the weka Logistic Regression method.
 '''
 
@@ -35,7 +36,7 @@ import numpy as np
 '''
 This class implements the Logistic Regression benchmark.
 '''
-class LOGISTICREGRESSION(object):
+class LogisticRegression(object):
 
   '''
   Create the Logistic Regression benchmark instance.

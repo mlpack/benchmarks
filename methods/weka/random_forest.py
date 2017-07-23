@@ -49,6 +49,13 @@ class RANDOMFOREST(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+ 
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["weka_predicted.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
 
   '''
   Random Forest. If the method has been successfully completed return

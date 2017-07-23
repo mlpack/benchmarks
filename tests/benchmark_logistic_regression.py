@@ -168,7 +168,7 @@ class LR_WEKA_TEST(unittest.TestCase):
     self.timeout = 240
 
     module = Loader.ImportModuleFromPath("methods/weka/logistic_regression.py")
-    obj = getattr(module, "LOGISTICREGRESSION")
+    obj = getattr(module, "LogisicRegression")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''

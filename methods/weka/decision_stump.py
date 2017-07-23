@@ -80,7 +80,7 @@ class DECISIONSTUMP(object):
         ":methods/weka" + " DECISIONSTUMP -t " + self.dataset[0] + " -T " +
         self.dataset[1])
 
-    # Run command with the nessecary arguments and return its output as a byte
+    # Run command with the necessary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,

@@ -52,7 +52,7 @@ public class DTC {
       // Add pseudo class to the test set if no class information is provided.
       if (testData.numAttributes() < trainData.numAttributes()) {
         List<String> labelslist = new ArrayList<String>();
-        for (int i=0;i<trainData.classAttribute().numValues();i++) {
+        for (int i = 0; i < trainData.classAttribute().numValues(); i++) {
           labelslist.add(trainData.classAttribute().value(i));
         }
 
