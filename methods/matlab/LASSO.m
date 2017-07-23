@@ -8,6 +8,9 @@ function lasso(cmd)
 % Required options:
 %     (-T) [string]    A file containing the Y set.
 %     (-t) [string]    A file containing the X set.
+%     (-tol) [float]   Value for tolerance.
+%     (-m) [int] Maximum number of iterations.
+% Tolerance and MaxIter requires MATLAB 2017a.
 
 x = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 y = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');

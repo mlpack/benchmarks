@@ -11,6 +11,8 @@ function svr(cmd)
 % Required options:
 %     (-T) [string]    A file containing the test set.
 %     (-t) [string]    A file containing the training set.
+%     (-k) [string]    Name of the kernel.
+%     (--max_iter) [int] Maximum iterations.
 
 trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
@@ -28,7 +30,8 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-model = fitrsvm(TrainData, labels, 'KernelFunction', char(kernel), 'NumPrint', str2num(maxIter{1}));
+model = fitrsvm(TrainData, labels, 'KernelFunction', char(kernel),...
+ 'NumPrint', str2num(maxIter{1}));
 predictions = predict(model, TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)));
 

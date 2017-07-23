@@ -12,7 +12,8 @@ function randomforest(cmd)
 % Required options:
 %     (-T) [string]    A file containing the test set.
 %     (-t) [string]    A file containing the training set.
-
+%     (-m) [int]       Min Leaf Size.
+%     (-n) [int]       Number of Trees.
 
 trainFile = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 testFile = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
@@ -30,7 +31,8 @@ TrainData = TrainData(:,1:end-1);
 
 % Create and train the classifier.
 total_time = tic;
-classifier = TreeBagger(str2num(numTrees{1}), TrainData, labels, 'MinLeafSize', str2num(minLeafSize{1}), 'Method', 'classification');
+classifier = TreeBagger(str2num(numTrees{1}), TrainData, labels,... 
+'MinLeafSize', str2num(minLeafSize{1}), 'Method', 'classification');
 % Run Random Forest on the test dataset.
 labels = predict(classifier, TestData);
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
