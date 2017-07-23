@@ -102,7 +102,6 @@ class LDA(object):
     result = timeout(RunLDAScikit, self.timeout)
     if len(self.dataset) > 1:
       self.predictions = result[1]
-      return result[0]
     
     return result[0]
 
