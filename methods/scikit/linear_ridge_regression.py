@@ -110,7 +110,6 @@ class LinearRidgeRegression(object):
     result = timeout(RunLinearRidgeRegressionScikit, self.timeout)
     if len(result) > 1:
       self.predictions = result[1]
-      return result[0]
     
     return result[0]
 
