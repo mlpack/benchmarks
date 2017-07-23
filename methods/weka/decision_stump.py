@@ -34,7 +34,7 @@ import numpy as np
 '''
 This class implements the Decision Stump Classifier benchmark.
 '''
-class DTC(object):
+class DECISIONSTUMP(object):
 
   '''
   Create the Decision Stump Classifier benchmark instance.
@@ -50,6 +50,13 @@ class DTC(object):
     self.path = path
     self.timeout = timeout
 
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["weka_predicted.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
+  
   '''
   Decision Stump Classifier. If the method has been successfully completed return
   the elapsed time in seconds.
