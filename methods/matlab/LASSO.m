@@ -11,7 +11,7 @@ function lasso(cmd)
 %     (-tol) [float]   Value for tolerance.
 %     (-m) [int] Maximum number of iterations.
 %     (-a) [float] Alpha
-% Tolerance, MaxIter requires MATLAB 2017a.
+% Tolerance, MaxIter and Alpha requires MATLAB 2017a.
 
 x = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
 y = regexp(cmd, '.*?-T ([^\s]+)', 'tokens', 'once');
@@ -25,7 +25,7 @@ Y = csvread(y{:});
 
 % Create and train lasso
 total_time = tic;
-classifier = lasso(X, Y, 'Alpha', str2num(alpha));
+classifier = lasso(X, Y);
 
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
 
