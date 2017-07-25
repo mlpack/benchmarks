@@ -68,12 +68,17 @@ class LASSO(object):
       opts["max_iter"] = int(options.pop("max_iterations"))
     else:
       opts["max_iter"] = 1e5
+    if "alpha" in options:
+      opts["alpha"] = float(options.pop("alpha"))
+    else:
+      opts["alpha"] = 1
+      
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
     inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -m " + str(
-      opts["max_iter"]) + " -tol " + str(opts["tol"]) 
+      opts["max_iter"]) + " -tol " + str(opts["tol"]) + " -a " + str(opts["alpha"])
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, LASSO('"
         + inputCmd + "'), catch, exit(1), end, exit(0)\"")
