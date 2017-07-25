@@ -29,7 +29,8 @@ public class RANDOMFOREST {
       + "the points in the given test set.\n\n"
       + "Required options:\n"
       + "-T [string]     A file containing the test set.\n"
-      + "-t [string]     A file containing the training set.");
+      + "-t [string]     A file containing the training set.\n"
+      + "-M [int]        Minimum Instances per leaf");
 
   public static void main(String args[]) {
   Timers timer = new Timers();
@@ -37,6 +38,8 @@ public class RANDOMFOREST {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
       String testFile = Utils.getOption('T', args);
+      String minLeafSize = Utils.getOption('M', args);
+
       if (trainFile.length() == 0 || testFile.length() == 0)
         throw new IllegalArgumentException();
 
@@ -65,7 +68,8 @@ public class RANDOMFOREST {
 
       timer.StartTimer("total_time");
       // Create and train the classifier.
-      Classifier cModel = (Classifier)new RandomForest();
+      RandomForest cModel = new RandomForest();
+      cModel.setOptions(weka.core.Utils.splitOptions("-M " + minLeafSize));
       cModel.buildClassifier(trainData);
 
       // Run Random Forest on the test dataset.

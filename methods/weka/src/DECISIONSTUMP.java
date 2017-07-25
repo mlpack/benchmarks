@@ -32,7 +32,7 @@ public class DECISIONSTUMP {
       + "-t [string]     A file containing the training set.");
 
   public static void main(String args[]) {
-  Timers timer = new Timers();
+    Timers timer = new Timers();
     try {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);

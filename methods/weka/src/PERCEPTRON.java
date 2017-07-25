@@ -29,7 +29,8 @@ public class PERCEPTRON {
       + "the points in the given test set.\n\n"
       + "Required options:\n"
       + "-T [string]     A file containing the test set.\n"
-      + "-t [string]     A file containing the training set.");
+      + "-t [string]     A file containing the training set.\n"
+      + "-N [int]        Maximum number of iterations.");
 
   public static void main(String args[]) {
   Timers timer = new Timers();
@@ -37,6 +38,7 @@ public class PERCEPTRON {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
       String testFile = Utils.getOption('T', args);
+      String iterations = Utils.getOption('N', args);             
       if (trainFile.length() == 0 || testFile.length() == 0)
         throw new IllegalArgumentException();
 
@@ -65,7 +67,8 @@ public class PERCEPTRON {
 
       timer.StartTimer("total_time");
       // Create and train the classifier.
-      Classifier cModel = (Classifier)new MultilayerPerceptron();
+      MultilayerPerceptron cModel = new MultilayerPerceptron();
+      cModel.setOptions(weka.core.Utils.splitOptions("-N " + iterations));
       cModel.buildClassifier(trainData);
 
       // Run Decision Tree Classifier on the test dataset.
