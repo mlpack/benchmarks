@@ -66,7 +66,11 @@ class RANDOMFOREST(object):
   '''
   def RunMetrics(self, options):
     Log.Info("Perform RANDOMFOREST.", self.verbose)
-
+    opts = {}
+    if "minimum_leaf_size" in options:
+      opts["minimum_leaf_size"] = int(options.pop("minimum_leaf_size"));
+    else:
+      opts["minimum_leaf_size"] = 1
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -78,7 +82,7 @@ class RANDOMFOREST(object):
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
         ":methods/weka" + " RANDOMFOREST -t " + self.dataset[0] + " -T " +
-        self.dataset[1])
+        self.dataset[1] + " -M " + str(opts["minimum_leaf_size"]) )
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

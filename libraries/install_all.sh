@@ -20,11 +20,11 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing FLANN!";
   exit 1;
 fi
-#./hlearn_install.sh $1
-#if [ "$?" -ne "0" ]; then
-#  echo "Error installing HLearn!";
-#  exit 1;
-#fi
+./hlearn_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing HLearn!";
+  exit 1;
+fi
 ./matlab_install.sh $1
 if [ "$?" -ne "0" ]; then
   echo "Error checking for MATLAB!";
@@ -74,3 +74,9 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing Milk!";
   exit 1;
 fi
+./dlibml_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing dlib!";
+  exit 1;
+fi
+
