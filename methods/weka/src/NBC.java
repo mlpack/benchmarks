@@ -1,6 +1,7 @@
 /**
  * @file NBC.java
- *
+ * @author Marcus Edel
+ 
  * Naive Bayes Classifier with weka.
  */
 
