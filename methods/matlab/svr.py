@@ -70,10 +70,6 @@ class SVR(object):
   def RunMetrics(self, options):
     Log.Info("Perform SVR.", self.verbose)
 
-    # No options accepted for this task.
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameters")
     self.opts = {}
     if "kernel" in options:
       self.opts["kernel"] = str(options.pop("kernel"))
@@ -87,6 +83,12 @@ class SVR(object):
       self.opts["epsilon"] = float(options.pop("epsilon"))
     else:
       self.opts["epsilon"] = 1.0
+      
+    # No options accepted for this task.
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameters")
+    
     inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k " + \
     self.opts["kernel"] + " --max_iter "+ str(self.opts["max_iter"])
     # Split the command using shell-like syntax.
