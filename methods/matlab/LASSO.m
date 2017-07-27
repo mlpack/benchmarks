@@ -6,11 +6,11 @@ function lasso(cmd)
 % This program trains the lasso on the given dataset
 %
 % Required options:
-%     (-T) [string]    A file containing the Y set.
-%     (-t) [string]    A file containing the X set.
-%     (-tol) [float]   Value for tolerance.
-%     (-m) [int] Maximum number of iterations.
-%     (-a) [float] Alpha
+%     (-T)     [string]    A file containing the Y set.
+%     (-t)     [string]    A file containing the X set.
+%     (-tol)   [float]     Value for tolerance.
+%     (-m)     [int]       Maximum number of iterations.
+%     (-a)     [float]     Alpha
 % Tolerance, MaxIter and Alpha requires MATLAB 2017a.
 
 x = regexp(cmd, '.*?-t ([^\s]+)', 'tokens', 'once');
