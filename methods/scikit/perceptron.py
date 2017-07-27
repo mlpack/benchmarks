@@ -47,6 +47,7 @@ class PERCEPTRON(object):
     self.dataset = dataset
     self.timeout = timeout
     self.model = None
+    self.predictions = None
     self.opts = {}
 
   '''
@@ -98,16 +99,24 @@ class PERCEPTRON(object):
           # Perform perceptron classification.
           self.model = self.BuildModel(X, y)
           if len(self.dataset) >= 2:
-            predictedlabels = self.model.predict(testSet)
+            self.predictions = self.model.predict(testSet)
       except Exception as e:
-        q.put(-1)
+        q.put([-1])
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
+      if len(self.dataset) > 1:
+        q.put([time, self.predictions])
+      else:
+        q.put([time])
+        
       return time
 
-    return timeout(RunPerceptronScikit, self.timeout)
+    result = timeout(RunPerceptronScikit, self.timeout)
+    if len(result) > 1:
+      self.predictions = result[1]
+    
+    return result[0]
 
   '''
   Perform Perceptron Classification. If the method has been successfully completed
@@ -127,22 +136,16 @@ class PERCEPTRON(object):
     metrics = {'Runtime' : results}
 
     if len(self.dataset) >= 3:
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels)
 
-      testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.predict(testData)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       # metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
