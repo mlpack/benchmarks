@@ -1,18 +1,17 @@
 /**
- * @file NBC.java
- * @author Marcus Edel
- 
- * Naive Bayes Classifier with weka.
+ * @file PERCEPTRON.java
+ *
+ * Perceptron with weka.
  */
 
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.RandomizableClassifier;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instances;
 import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -20,17 +19,18 @@ import weka.core.Attribute;
 import java.util.List;
 import java.util.ArrayList;
 /**
- * This class use the weka libary to implement Naive Bayes Classifier.
+ * This class use the weka libary to implement Perceptron.
  */
-public class NBC {
+public class PERCEPTRON {
 
   private static final String USAGE = String
-      .format("This program trains the Naive Bayes classifier on the given\n"
+      .format("This program trains the Perceptron on the given\n"
       + "labeled training set and then uses the trained classifier to classify\n"
       + "the points in the given test set.\n\n"
       + "Required options:\n"
       + "-T [string]     A file containing the test set.\n"
-      + "-t [string]     A file containing the training set.");
+      + "-t [string]     A file containing the training set.\n"
+      + "-N [int]        Maximum number of iterations.");
 
   public static void main(String args[]) {
   Timers timer = new Timers();
@@ -38,6 +38,7 @@ public class NBC {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
       String testFile = Utils.getOption('T', args);
+      String iterations = Utils.getOption('N', args);             
       if (trainFile.length() == 0 || testFile.length() == 0)
         throw new IllegalArgumentException();
 
@@ -66,10 +67,11 @@ public class NBC {
 
       timer.StartTimer("total_time");
       // Create and train the classifier.
-      Classifier cModel = (Classifier)new NaiveBayes();
+      MultilayerPerceptron cModel = new MultilayerPerceptron();
+      cModel.setOptions(weka.core.Utils.splitOptions("-N " + iterations));
       cModel.buildClassifier(trainData);
 
-      // Run Naive Bayes Classifier on the test dataset.
+      // Run Decision Tree Classifier on the test dataset.
       // Write predicted class values for each intance to
       // benchmarks/weka_predicted.csv.
       double prediction = 0;
@@ -82,7 +84,7 @@ public class NBC {
 
         for (int i = 0; i < testData.numInstances(); i++) {
           prediction = cModel.classifyInstance(trainData.instance(i));
-          String pred = Double.toString(prediction+1);
+          String pred = Double.toString(prediction);
           writer.write(pred);
           writer.write("\n");
         }

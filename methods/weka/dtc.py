@@ -1,8 +1,6 @@
 '''
-  @file logistic_regression.py
-  @author Anand Soni
-
-  Class to benchmark the weka Logistic Regression method.
+  @file dtc.py
+  Class to benchmark the weka Decision Tree Classifier method.
 '''
 
 import os
@@ -34,13 +32,13 @@ import collections
 import numpy as np
 
 '''
-This class implements the Logistic Regression benchmark.
+This class implements the Decision Tree Classifier benchmark.
 '''
-class LogisticRegression(object):
+class DTC(object):
 
   '''
-  Create the Logistic Regression benchmark instance.
-  @param dataset - Input dataset to perform Logistic Regression on.
+  Create the Decision Tree Classifier benchmark instance.
+  @param dataset - Input dataset to perform DTC on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
@@ -51,7 +49,7 @@ class LogisticRegression(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
-
+    
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
     filelist = ["weka_predicted.csv"]
@@ -60,15 +58,19 @@ class LogisticRegression(object):
         os.remove(f)
 
   '''
-  Logistic Regression. If the method has been successfully completed return
+  Decision Tree Classifier. If the method has been successfully completed return
   the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform Logistic Regression.", self.verbose)
-
+    Log.Info("Perform DTC.", self.verbose)
+    opts = {}
+    if "minimum_leaf_size" in options:
+      opts["minimum_leaf_size"] = int(options.pop("minimum_leaf_size"))
+    else:
+      opts["minimum_leaf_size"] = 2
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -79,8 +81,8 @@ class LogisticRegression(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " LOGISTICREGRESSION -t " + self.dataset[0] + " -T " +
-        self.dataset[1])
+        ":methods/weka" + " DTC -t " + self.dataset[0] + " -T " +
+        self.dataset[1] + " -M " + str(opts["minimum_leaf_size"]))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -103,6 +105,7 @@ class LogisticRegression(object):
     if timer != -1:
       predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
+
       metrics['Runtime'] = timer.total_time
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
@@ -110,7 +113,6 @@ class LogisticRegression(object):
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
-
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
     return metrics

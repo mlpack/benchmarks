@@ -1,7 +1,6 @@
 '''
   @file nbc.py
   @author Marcus Edel
-
   Class to benchmark the weka Naive Bayes Classifier method.
 '''
 
@@ -40,7 +39,6 @@ class NBC(object):
 
   '''
   Create the Naive Bayes Classifier benchmark instance.
-
   @param dataset - Input dataset to perform NBC on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
@@ -52,11 +50,17 @@ class NBC(object):
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
+    
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["weka_predicted.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
 
   '''
   Naive Bayes Classifier. If the method has been successfully completed return
   the elapsed time in seconds.
-
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
@@ -97,6 +101,15 @@ class NBC(object):
 
     if timer != -1:
       metrics['Runtime'] = timer.total_time
+      predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
+      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
+      metrics['Runtime'] = timer.total_time
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
@@ -104,7 +117,6 @@ class NBC(object):
 
   '''
   Parse the timer data form a given string.
-
   @param data - String to parse timer data from.
   @return - Namedtuple that contains the timer data or -1 in case of an error.
   '''

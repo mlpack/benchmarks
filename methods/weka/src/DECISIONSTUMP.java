@@ -1,18 +1,17 @@
 /**
- * @file NBC.java
- * @author Marcus Edel
- 
- * Naive Bayes Classifier with weka.
+ * @file DECISIONSTUMP.java
+ *
+ * Decision Stump with weka.
  */
 
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.RandomizableClassifier;
+import weka.classifiers.trees.DecisionStump;
 import weka.core.Instances;
 import weka.core.Utils;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -20,12 +19,12 @@ import weka.core.Attribute;
 import java.util.List;
 import java.util.ArrayList;
 /**
- * This class use the weka libary to implement Naive Bayes Classifier.
+ * This class use the weka libary to implement Decision Stump.
  */
-public class NBC {
+public class DECISIONSTUMP {
 
   private static final String USAGE = String
-      .format("This program trains the Naive Bayes classifier on the given\n"
+      .format("This program trains the Decision Stump on the given\n"
       + "labeled training set and then uses the trained classifier to classify\n"
       + "the points in the given test set.\n\n"
       + "Required options:\n"
@@ -33,7 +32,7 @@ public class NBC {
       + "-t [string]     A file containing the training set.");
 
   public static void main(String args[]) {
-  Timers timer = new Timers();
+    Timers timer = new Timers();
     try {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
@@ -66,10 +65,10 @@ public class NBC {
 
       timer.StartTimer("total_time");
       // Create and train the classifier.
-      Classifier cModel = (Classifier)new NaiveBayes();
+      Classifier cModel = (Classifier)new DecisionStump();
       cModel.buildClassifier(trainData);
 
-      // Run Naive Bayes Classifier on the test dataset.
+      // Run Decision Stump on the test dataset.
       // Write predicted class values for each intance to
       // benchmarks/weka_predicted.csv.
       double prediction = 0;
@@ -82,7 +81,7 @@ public class NBC {
 
         for (int i = 0; i < testData.numInstances(); i++) {
           prediction = cModel.classifyInstance(trainData.instance(i));
-          String pred = Double.toString(prediction+1);
+          String pred = Double.toString(prediction);
           writer.write(pred);
           writer.write("\n");
         }

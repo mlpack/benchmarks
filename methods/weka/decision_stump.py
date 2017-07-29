@@ -1,8 +1,6 @@
 '''
-  @file logistic_regression.py
-  @author Anand Soni
-
-  Class to benchmark the weka Logistic Regression method.
+  @file dtc.py
+  Class to benchmark the weka Decision Stump Classifier method.
 '''
 
 import os
@@ -34,13 +32,13 @@ import collections
 import numpy as np
 
 '''
-This class implements the Logistic Regression benchmark.
+This class implements the Decision Stump Classifier benchmark.
 '''
-class LogisticRegression(object):
+class DECISIONSTUMP(object):
 
   '''
-  Create the Logistic Regression benchmark instance.
-  @param dataset - Input dataset to perform Logistic Regression on.
+  Create the Decision Stump Classifier benchmark instance.
+  @param dataset - Input dataset to perform DECISIONSTUMP on.
   @param timeout - The time until the timeout. Default no timeout.
   @param path - Path to the mlpack executable.
   @param verbose - Display informational messages.
@@ -58,16 +56,16 @@ class LogisticRegression(object):
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
-
+  
   '''
-  Logistic Regression. If the method has been successfully completed return
+  Decision Stump Classifier. If the method has been successfully completed return
   the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform Logistic Regression.", self.verbose)
+    Log.Info("Perform DECISIONSTUMP.", self.verbose)
 
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
@@ -79,10 +77,10 @@ class LogisticRegression(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " LOGISTICREGRESSION -t " + self.dataset[0] + " -T " +
+        ":methods/weka" + " DECISIONSTUMP -t " + self.dataset[0] + " -T " +
         self.dataset[1])
 
-    # Run command with the nessecary arguments and return its output as a byte
+    # Run command with the necessary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
@@ -104,12 +102,12 @@ class LogisticRegression(object):
       predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
       metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
@@ -138,4 +136,4 @@ class LogisticRegression(object):
       if match.group("total_time").count(".") == 1:
         return timer(float(match.group("total_time")))
       else:
-        return timer(float(match.group("total_time").replace(",", ".")))
+    return timer(float(match.group("total_time").replace(",", ".")))

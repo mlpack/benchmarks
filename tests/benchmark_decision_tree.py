@@ -155,6 +155,41 @@ class DTC_MATLAB_TEST(unittest.TestCase):
     self.assertTrue(result["Precision"] > 0)
     self.assertTrue(result["Recall"] > 0)
 
+'''
+Test the weka Decision Tree Prediction script.
+'''
+
+class DecisionTree_WEKA_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = ['datasets/iris_train.arff','datasets/iris_test.arff','datasets/iris_labels.csv']
+    self.verbose = False
+    self.timeout = 240
+
+    module = Loader.ImportModuleFromPath("methods/weka/dtc.py")
+    obj = getattr(module, "DTC")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics({})
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["ACC"] > 0)
+    self.assertTrue(result["Precision"] > 0)
+    self.assertTrue(result["Recall"] > 0)
 
 
 if __name__ == '__main__':
