@@ -132,7 +132,7 @@ class LinearRegression_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/diabetes.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -154,6 +154,7 @@ class LinearRegression_SCIKIT_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Simple MSE"] > 0)
 
 '''
 Test the mlpy Simple Linear Regression Prediction script.

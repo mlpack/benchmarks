@@ -107,16 +107,19 @@ class RANDOMFOREST(object):
           self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Fatal("Exception: " + str(e))
-        q.put(-1)
+        q.put([-1])
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put((time, self.predictions))
+      if len(self.dataset) > 1:
+        q.put([time, self.predictions])
+      else:
+        q.put([time])
 
       return time
 
     result = timeout(RunRANDOMFORESTScikit, self.timeout)
-    # Check for error, in this case the tuple doesn't contain extra information.
+    # Check for error, in this case the list doesn't contain extra information.
     if len(result) > 1:
       self.predictions = result[1]
     
