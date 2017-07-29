@@ -36,7 +36,8 @@ modules = [
 'benchmark_sparse_coding',
 'benchmark_svr',
 'benchmark_adaboost',
-'benchmark_svm'
+'benchmark_svm',
+'benchmark_lda'
 ]
 
 def load_tests(loader, tests, pattern):

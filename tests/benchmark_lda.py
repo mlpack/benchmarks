@@ -1,7 +1,6 @@
 '''
-  @file benchmark_qda.py
-  @author Youssef Emad El-Din
-  Test for the QDA scripts.
+  @file benchmark_lda.py
+  Test for the LDA scripts.
 '''
 
 import unittest
@@ -18,20 +17,20 @@ if cmd_subfolder not in sys.path:
 from loader import *
 
 '''
-Test the shogun QDA script.
+Test the Scikit LDA script.
 '''
-class QDA_SHOGUN_TEST(unittest.TestCase):
+class LDA_SCIKIT_TEST(unittest.TestCase):
 
   '''
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
-    module = Loader.ImportModuleFromPath("methods/shogun/qda.py")
-    obj = getattr(module, "QDA")
+    module = Loader.ImportModuleFromPath("methods/scikit/lda.py")
+    obj = getattr(module, "LDA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -48,49 +47,14 @@ class QDA_SHOGUN_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-    self.assertTrue(result["Avg Accuracy"] > 0)
-    self.assertTrue(result["MultiClass Precision"] > 0)
-    self.assertTrue(result["MultiClass Recall"] > 0)
-
-'''
-Test the scikit QDA script.
-'''
-class QDA_SCIKIT_TEST(unittest.TestCase):
-
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
-    self.verbose = False
-    self.timeout = 240
-
-    module = Loader.ImportModuleFromPath("methods/scikit/qda.py")
-    obj = getattr(module, "QDA")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
-
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
-
-  '''
-  Test the 'RunTiming' function.
-  '''
-  def test_RunTiming(self):
-    result = self.instance.RunMetrics({})
-    self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["ACC"] > 0)
     self.assertTrue(result["Precision"] > 0)
     self.assertTrue(result["Recall"] > 0)
 
 '''
-Test the matlab QDA script.
+Test the matlab LDA script.
 '''
-class QDA_MATLAB_TEST(unittest.TestCase):
+class LDA_MATLAB_TEST(unittest.TestCase):
 
   '''
   Test initialization.
@@ -100,8 +64,8 @@ class QDA_MATLAB_TEST(unittest.TestCase):
     self.verbose = False
     self.timeout = 240
 
-    module = Loader.ImportModuleFromPath("methods/matlab/qda.py")
-    obj = getattr(module, "QDA")
+    module = Loader.ImportModuleFromPath("methods/matlab/lda.py")
+    obj = getattr(module, "LDA")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
@@ -123,4 +87,4 @@ class QDA_MATLAB_TEST(unittest.TestCase):
     self.assertTrue(result["Recall"] > 0)
 
 if __name__ == '__main__':
-  unittest.main()
+ unittest.main()
