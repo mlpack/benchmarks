@@ -63,6 +63,8 @@ export VALGRIND_BIN=$(shell which valgrind)
 export FLANN_PATH=methods/flann/
 # Export the path to the ANN library.
 export ANN_PATH=methods/ann/
+# Export the path to the DLIBML library.
+export DLIBML_PATH=methods/dlibml
 
 # Set LD_LIBRARY_PATH correctly.
 export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))

@@ -74,3 +74,9 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing Milk!";
   exit 1;
 fi
+./dlibml_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing dlib!";
+  exit 1;
+fi
+
