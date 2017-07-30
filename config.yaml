@@ -9,8 +9,8 @@ settings:
     driver : 'mysql'
     keepReports: 20
     bootstrap: 10
-    libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann', 'annoy', 'mrpt']
-    version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2', '1.8.3', '0.1']
+    libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann', 'annoy', 'mrpt', 'dlibml']
+    version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2', '1.8.3', '0.1', '19.4']
 ---
 #  MLPACK:
 #  A Scalable C++  Machine Learning Library
@@ -2371,7 +2371,7 @@ methods:
         script: methods/weka/dtc.py
         format: [arff]
         datasets:
-             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'] 
+             - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'], 
                         ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv'],
                         ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv'],
                         ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv'],
@@ -2804,4 +2804,46 @@ methods:
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
-
+---
+# dlib-ml
+library: dlibml
+methods:
+    KMEANS:
+        run: ['metric']
+        script: methods/dlibml/KMEANS.py
+        format: [csv, txt, arff]
+        datasets:
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
+              options:
+                clusters: 2
+#
+#            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+#                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
+#              options:
+#                clusters: 3
+#
+#            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
+#              options:
+#                clusters: 5
+#
+#            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
+#              options:
+#                clusters: 6
+#
+#            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+#                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
+#              options:
+#                clusters: 7
+#
+#            - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
+#              options:
+#                clusters: 26
+#
+#            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+#                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
+#              options:
+#                clusters: 10
+#
+#            - files: [ ['datasets/1000000-10-randu.csv'] ]
+#              options:
+#                clusters: 75

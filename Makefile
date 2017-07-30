@@ -63,6 +63,8 @@ export VALGRIND_BIN=$(shell which valgrind)
 export FLANN_PATH=methods/flann/
 # Export the path to the ANN library.
 export ANN_PATH=methods/ann/
+# Export the path to the DLIBML library.
+export DLIBML_PATH=methods/dlibml/
 
 # Set LD_LIBRARY_PATH correctly.
 export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
@@ -182,6 +184,8 @@ endif
 	# Compile the mlpack scripts.  (Can't do this until ANN is released or a
 	# git version of mlpack is used.)
 	#cd methods/mlpack/src/ && ./build_scripts.sh
+	# Compile the DLIBML scripts.
+	g++ -O0 -std=c++11 methods/dlibml/src/KMEANS.cpp -o methods/dlibml/dlibml_kmeans -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack 
 
 .setup:
 	cd libraries/ && ./download_packages.sh && ./install_all.sh $(BUILD_CORES)
