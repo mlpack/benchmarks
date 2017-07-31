@@ -299,5 +299,39 @@ class ALLKNN_FLANN_TEST(unittest.TestCase):
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["ComputingNeighbors"] > 0)
 
+'''
+Test the dlibml All K-Nearest-Neighbors script.
+'''
+class ALLKNN_DLIBML_TEST(unittest.TestCase):
+
+  '''
+  Test initialization.
+  '''
+  def setUp(self):
+    self.dataset = "datasets/wine.csv"
+    self.verbose = False
+    self.timeout = 240
+
+    module = Loader.ImportModuleFromPath("methods/dlibml/ALLKNN.py")
+    obj = getattr(module, "ALLKNN")
+    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+
+  '''
+  Test the constructor.
+  '''
+  def test_Constructor(self):
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+
+  '''
+  Test the 'RunMetrics' function.
+  '''
+  def test_RunMetrics(self):
+    result = self.instance.RunMetrics({ "k": 3 })
+    print(result)
+    self.assertTrue(result["Runtime"] > 0)
+
+
 if __name__ == '__main__':
   unittest.main()
