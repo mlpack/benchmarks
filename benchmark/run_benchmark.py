@@ -417,7 +417,7 @@ def Main(configfile, blocks, log, methodBlocks, update, watchFiles, new,
 
                     for trial in range(trials):
                       try:
-                        currentMetric = instance.RunMetrics(run_options)
+                        currentMetric = instance.RunMetrics(copy(run_options))
 
                         if type(currentMetric) is not dict and currentMetric == -2:
                           # Timout failure.
