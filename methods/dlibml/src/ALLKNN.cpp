@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
   Timer::Start("Nearest_Neighbors");
   
-  find_k_nearest_neighbors(samples_train, squared_euclidean_distance(), 2, out);
+  find_k_nearest_neighbors(samples_train, squared_euclidean_distance(), k, out);
   
   Timer::Stop("Nearest_Neighbors");
   
