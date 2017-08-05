@@ -73,6 +73,9 @@ class KNC(object):
     self.opts = {}
     if "k" in options:
       self.opts["n_neighbors"] = int(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' not specified!")
+      raise Exception("missing parameter")
     # No options accepted for this task.
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))

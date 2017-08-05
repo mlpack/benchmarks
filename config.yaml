@@ -1312,6 +1312,8 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+                  options:
+                     k: 5
 
     QDA:
             run: ['metric']
@@ -1767,6 +1769,9 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+                  
+                  options:
+                     k: 5
 
     DECISIONTREE:
             run: ['metric']
@@ -2235,6 +2240,10 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+                   
+                  options:
+                     k: 5
+
     DTC:
             run: ['timing', 'metric']
             script: methods/shogun/decision_tree.py
