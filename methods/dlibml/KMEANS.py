@@ -43,6 +43,17 @@ class KMEANS(object):
     self.timeout = timeout
 
   '''
+  Destructor to clean up at the end. Use this method to remove created files.
+  '''
+  def __del__(self):
+    Log.Info("Clean up.", self.verbose)
+    filelist = ["assignments.csv"]
+    for f in filelist:
+      if os.path.isfile(f):
+        os.remove(f)
+
+
+  '''
   Perform KMEANS. If the method has been successfully completed
   return the elapsed time in seconds.
   @param options - Extra options for the method.
@@ -56,6 +67,10 @@ class KMEANS(object):
     optionsStr = ""
     if "clusters" in options:
       optionsStr = "-k " + str(options.pop("clusters"))
+    else:
+      Log.Fatal("Required parameter 'k' not specified!")
+      raise Exception("missing parameter")
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -105,7 +120,6 @@ class KMEANS(object):
     # parse the timer data.
     pattern = re.compile(r"""
         .*?clustering: (?P<clustering>.*?)s.*?
-        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data.decode())

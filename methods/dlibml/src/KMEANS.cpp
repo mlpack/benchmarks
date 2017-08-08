@@ -1,5 +1,4 @@
 #include <dlib/clustering.h>
-#include <dlib/rand.h>
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
 
@@ -52,6 +51,7 @@ int main(int argc, char** argv)
   
   sample_type m;
   m.set_size(referenceData.n_rows);
+
   for (size_t i = 0; i < referenceData.n_cols; ++i)
   {
     for (size_t j = 0; j < referenceData.n_rows; ++j)
@@ -72,16 +72,19 @@ int main(int argc, char** argv)
 
      initial_centers.push_back(centers);
    }
+
   }
 
   else
     pick_initial_centers(k, initial_centers, samples, linear_kernel<sample_type>());
+
 
   arma::mat assignments(1, samples.size());
 
   Timer::Start("clustering");
   
   find_clusters_using_kmeans(samples, initial_centers);
+
   for(size_t i = 0; i < samples.size(); i++)
   {
     assignments(i) = nearest_center(initial_centers, samples[i]);
@@ -90,6 +93,7 @@ int main(int argc, char** argv)
   Timer::Stop("clustering");
 
   data::Save("assignments.csv", assignments);
+
   return 0;
 }
 
