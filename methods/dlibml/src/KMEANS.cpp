@@ -65,13 +65,13 @@ int main(int argc, char** argv)
     sample_type centers;
     centers.set_size(referenceData.n_rows);
 
-   for (size_t i = 0; i < centroidsData.n_cols; ++i)
-   {
-     for (size_t j = 0; j < centroidsData.n_rows; ++j)
-       centers(j) = centroidsData(j, i);
+    for (size_t i = 0; i < centroidsData.n_cols; ++i)
+    {
+      for (size_t j = 0; j < centroidsData.n_rows; ++j)
+        centers(j) = centroidsData(j, i);
 
-     initial_centers.push_back(centers);
-   }
+      initial_centers.push_back(centers);
+    }
 
   }
 
