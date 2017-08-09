@@ -58,12 +58,23 @@ class SVM(object):
   def RunMetrics(self, options):
     Log.Info("Perform SVM.", self.verbose)
 
+    optionsStr = ""
+    if "kernel" in options:
+      optionsStr = "-k " + str(options.pop("kernel"))
+    else:
+      optionsStr = "-k " + "rbf"
+
+    if "C" in options:
+      optionsStr += " -c " + str(options.pop("C"))
+    else:
+      optionsStr += " -c " + "0.1"
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
     cmd = shlex.split(self.path + "dlibml_svm -t " + self.dataset[0] + " -T " +
-          self.dataset[1] + " -v ")
+          self.dataset[1] + " -v " + optionsStr)
 
 
     # Run command with the nessecary arguments and return its output as a byte

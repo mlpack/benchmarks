@@ -2,21 +2,23 @@
 #include <dlib/rand.h>
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
-#include <stdio.h>
+#include <string>
+
 using namespace mlpack;
 using namespace std;
 using namespace dlib;
 
 // Information about the program itself.
 PROGRAM_INFO("Support Vector Machines",
-    "This program will perform SVM with the DLib-ml "
-    "library.");
+    "This program will perform SVM with the DLib-ml library");
 
 // Define our input parameters that this program will take.
 PARAM_STRING_IN("training_file", "File containing the training dataset.",
     "t", "");
 PARAM_STRING_IN("test_file", "File containing the test dataset.",
     "T", "");
+PARAM_STRING_IN("kernel", "Name of the kernel to be used.", "k", "");
+PARAM_DOUBLE_IN("C", "Bandwidth", "c", 0);
 
 int main(int argc, char** argv)
 {
@@ -26,7 +28,9 @@ int main(int argc, char** argv)
   // Get all the parameters.
   const string trainFile = CLI::GetParam<string>("training_file");
   const string testFile = CLI::GetParam<string>("test_file");
-
+  
+  const string kernel = CLI::GetParam<string>("k");
+  size_t c = CLI::GetParam<double>("c");
 
   arma::mat trainData;
   arma::mat testData; // So it doesn't go out of scope.
@@ -55,12 +59,16 @@ int main(int argc, char** argv)
 
   krr_trainer<rbf_kernel> rbf_trainer;
   svm_nu_trainer<poly_kernel> poly_trainer;
-  poly_trainer.set_kernel(poly_kernel(0.1, 1, 2));
-  rbf_trainer.set_kernel(rbf_kernel(0.1));
-
-  trainer.set_trainer(rbf_trainer);
-  trainer.set_trainer(poly_trainer, 1, 2);
-
+  if (kernel.compare("polynomial") == 0)
+  { 
+     poly_trainer.set_kernel(poly_kernel(c, 1, 2));
+     trainer.set_trainer(poly_trainer, 1, 2);
+  }
+  else if (kernel.compare("rbf") == 0)
+  {  
+    rbf_trainer.set_kernel(rbf_kernel(c));
+    trainer.set_trainer(rbf_trainer);
+  }
 
   sample_type m;
   m.set_size(trainData.n_rows);
