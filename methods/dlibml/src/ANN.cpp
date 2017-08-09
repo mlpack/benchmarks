@@ -16,7 +16,41 @@ PROGRAM_INFO("K Nearest Neighbors",
 PARAM_STRING_IN("reference_file", "File containing the reference dataset.",
     "r", "");
 PARAM_INT_IN("k", "Value of K", "k", 0);
-PARAM_INT_IN("n", "Number of Trees", "n", 0);
+PARAM_INT_IN("n", "Value of N", "n", 0);
+PARAM_DOUBLE_IN("s", "Sample PCT", "s", 0);
+
+struct euclidean_distance
+{
+  euclidean_distance (
+  ) : 
+      lower(0),
+      upper(std::numeric_limits<double>::infinity())
+  {}
+
+  euclidean_distance (
+    const double l,
+    const double u
+    ) :
+        lower(l),
+        upper(u)
+  {}
+
+   const double lower;
+   const double upper;
+
+   template <typename sample_type>
+   double operator() (
+     const sample_type& a,
+     const sample_type& b
+     ) const
+        { 
+            const double len = std::sqrt(length_squared(a-b));
+            if (lower <= len && len <= upper)
+                return len;
+            else
+                return std::numeric_limits<double>::infinity();
+        }
+};
 
 int main(int argc, char** argv)
 {
@@ -28,6 +62,8 @@ int main(int argc, char** argv)
 
   size_t k = CLI::GetParam<int>("k");
   size_t n = CLI::GetParam<int>("n");
+  size_t s = CLI::GetParam<double>("s");
+  
   arma::mat referenceData;
   data::Load(referenceFile, referenceData, true);
 
@@ -51,7 +87,7 @@ int main(int argc, char** argv)
 
   Timer::Start("Nearest_Neighbors");
   
-  find_approximate_k_nearest_neighbors(samples_train, squared_euclidean_distance(), k, n, 42, out);
+  find_approximate_k_nearest_neighbors(samples_train, euclidean_distance(), k, size_t(s*n*n), 42, out);
   
   Timer::Stop("Nearest_Neighbors");
   

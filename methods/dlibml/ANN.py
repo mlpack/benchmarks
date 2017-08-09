@@ -56,8 +56,14 @@ class ANN(object):
     optionsStr = ""
     if "k" in options:
       optionsStr = "-k " + str(options.pop("k"))
-    if "num_trees" in options:
-      optionsStr += " -n " + str(options.pop("num_trees"))
+    else:
+      Log.Fatal("Required parameter 'k' is missing!")
+      raise Exception("missing parameter")
+    if "num" in options:
+      optionsStr += " -n " + str(options.pop("num")) 
+    if "sample_pct" in options:
+      optionsStr += " -s " + str(options.pop("sample_pct"))
+ 	
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -81,7 +87,6 @@ class ANN(object):
     metrics = {}
 
     # Parse data: runtime.
-    print(s)
     timer = self.parseTimer(s)
 
     if timer != -1:
@@ -101,7 +106,6 @@ class ANN(object):
     # parse the timer data.
     pattern = re.compile(r"""
         .*?Nearest_Neighbors: (?P<Nearest_Neighbors>.*?)s.*?
-        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data.decode())
