@@ -1,5 +1,4 @@
 #include <dlib/graph_utils.h>
-#include <dlib/rand.h>
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
 
@@ -17,6 +16,38 @@ PARAM_STRING_IN("reference_file", "File containing the reference dataset.",
     "r", "");
 PARAM_INT_IN("k", "Value of K", "k", 0);
 
+struct euclidean_distance
+{
+  euclidean_distance (
+  ) : 
+      lower(0),
+      upper(std::numeric_limits<double>::infinity())
+  {}
+
+  euclidean_distance (
+    const double l,
+    const double u
+    ) :
+        lower(l),
+        upper(u)
+  {}
+
+   const double lower;
+   const double upper;
+
+   template <typename sample_type>
+   double operator() (
+     const sample_type& a,
+     const sample_type& b
+     ) const
+        { 
+            const double len = std::sqrt(length_squared(a-b));
+            if (lower <= len && len <= upper)
+                return len;
+            else
+                return std::numeric_limits<double>::infinity();
+        }
+};
 int main(int argc, char** argv)
 {
   // Parse command line options.
@@ -34,11 +65,11 @@ int main(int argc, char** argv)
       << referenceData.n_rows << " x " << referenceData.n_cols << ")." << endl;
   
  
-  typedef matrix<double, 0, 1> sample_type; 
-  std::vector<sample_type> samples_train;
+  typedef matrix<double, 0, 1> sample_typ; 
+  std::vector<sample_typ> samples_train;
   std::vector<sample_pair> out;
   
-  sample_type m;
+  sample_typ m;
   m.set_size(referenceData.n_rows);
   for (size_t i = 0; i < referenceData.n_cols; ++i)
   {
@@ -50,7 +81,7 @@ int main(int argc, char** argv)
 
   Timer::Start("Nearest_Neighbors");
   
-  find_k_nearest_neighbors(samples_train, squared_euclidean_distance(), k, out);
+  find_k_nearest_neighbors(samples_train, euclidean_distance(), k, out);
   
   Timer::Stop("Nearest_Neighbors");
   

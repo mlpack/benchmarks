@@ -42,6 +42,7 @@ class ALLKNN(object):
     self.path = path
     self.timeout = timeout
 
+
   '''
   Perform ALLKNN. If the method has been successfully completed
   return the elapsed time in seconds.
@@ -56,6 +57,10 @@ class ALLKNN(object):
     optionsStr = ""
     if "k" in options:
       optionsStr = "-k " + str(options.pop("k"))
+    else:
+      Log.Fatal("Required parameter 'k' is missing!")
+      raise Exception("missing parameter")
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -79,7 +84,6 @@ class ALLKNN(object):
     metrics = {}
 
     # Parse data: runtime.
-    print(s)
     timer = self.parseTimer(s)
 
     if timer != -1:
@@ -99,7 +103,6 @@ class ALLKNN(object):
     # parse the timer data.
     pattern = re.compile(r"""
         .*?Nearest_Neighbors: (?P<Nearest_Neighbors>.*?)s.*?
-        .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     match = pattern.match(data.decode())
