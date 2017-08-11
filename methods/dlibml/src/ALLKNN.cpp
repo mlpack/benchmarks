@@ -18,16 +18,12 @@ PARAM_INT_IN("k", "Value of K", "k", 0);
 
 struct euclidean_distance
 {
-  euclidean_distance (
-  ) : 
+  euclidean_distance () : 
       lower(0),
       upper(std::numeric_limits<double>::infinity())
   {}
 
-  euclidean_distance (
-    const double l,
-    const double u
-    ) :
+  euclidean_distance ( const double l, const double u ) :
         lower(l),
         upper(u)
   {}
@@ -36,16 +32,14 @@ struct euclidean_distance
    const double upper;
 
    template <typename sample_type>
-   double operator() (
-     const sample_type& a,
-     const sample_type& b
-     ) const
-        { 
+   double operator() ( const sample_type& a, const sample_type& b ) 
+   const
+         { 
             const double len = std::sqrt(length_squared(a-b));
             if (lower <= len && len <= upper)
-                return len;
+              return len;
             else
-                return std::numeric_limits<double>::infinity();
+              return std::numeric_limits<double>::infinity();
         }
 };
 int main(int argc, char** argv)
