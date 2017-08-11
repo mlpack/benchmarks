@@ -68,7 +68,7 @@ class KMEANS(object):
     if "clusters" in options:
       optionsStr = "-k " + str(options.pop("clusters"))
     else:
-      Log.Fatal("Required parameter 'k' not specified!")
+      Log.Fatal("Required parameter 'clusters' not specified!")
       raise Exception("missing parameter")
 
     if len(options) > 0:
