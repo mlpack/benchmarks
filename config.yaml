@@ -2803,4 +2803,16 @@ methods:
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
                            ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
                            ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+---
+# R
+library: R
+methods:
+    NBC:
+        run: ['metric']
+        script: methods/R/nbc.py
+        format: [csv, txt, arff]
+        datasets:
+            - files: [ ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv'],
+                       ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv'],
+                       ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'] ]
 

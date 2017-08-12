@@ -19,6 +19,8 @@ mkdir R/
 tar -xzpf R.tar.gz --strip-components=1 -C R/
 
 cd R/
-./configure --prefix=../../ --enable-R-shlib
+prefix_path="$(readlink -m ../)"
+
+./configure --prefix=$prefix_path --enable-R-shlib
 make
 make install
