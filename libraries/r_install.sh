@@ -19,6 +19,6 @@ mkdir R/
 tar -xzpf R.tar.gz --strip-components=1 -C R/
 
 cd R/
-./configure --prefix=/opt/R/3.4.1 --enable-R-shlib
+./configure --prefix=../../ --enable-R-shlib
 make
 make install
