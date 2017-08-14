@@ -2801,12 +2801,27 @@ methods:
                            ['datasets/abalone19_train.csv', 'datasets/abalone19_test.csv', 'datasets/abalone19_labels.csv'],
                            ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv'],
                            ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv'],
-                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
-                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'] ]
 ---
-# dlib-ml
+# dlibml
 library: dlibml
 methods:
+    ANN:
+          run: ['metric']
+          script: methods/dlibml/ANN.py
+          format: [csv, txt]
+          datasets:
+              - files: ['datasets/wine.csv', 'datasets/cloud.csv',
+                        'datasets/wine_qual.csv', 'datasets/isolet.csv',
+                        'datasets/corel-histogram.csv', 'datasets/covtype.csv',
+                        'datasets/1000000-10-randu.csv', 'datasets/mnist_all.csv',
+                        'datasets/Twitter.csv', 'datasets/tinyImages100k.csv']
+                options:
+                  k: 3
+                  num: 10000
+                  sample_pct: 0.5
+                           ['datasets/satellite_train.csv', 'datasets/satellite_test.csv', 'datasets/satellite_labels.csv'],
+                           ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
     ALLKNN:
             run: ['metric']
             iteration: 3
@@ -2821,10 +2836,6 @@ methods:
                   options:
                      k: 3
 
----
-# dlib-ml
-library: dlibml
-methods:
     KMEANS:
         run: ['metric']
         script: methods/dlibml/KMEANS.py
