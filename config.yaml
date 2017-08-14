@@ -9,8 +9,8 @@ settings:
     driver : 'mysql'
     keepReports: 20
     bootstrap: 10
-    libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann', 'annoy', 'mrpt']
-    version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2', '1.8.3', '0.1']
+    libraries: ['mlpack', 'shogun', 'weka', 'scikit', 'mlpy', 'flann', 'ann', 'annoy', 'mrpt', 'dlibml']
+    version: ['HEAD', '3.2.0', '3.6.11', '0.15.1', '3.5.0', '1.8.4', '1.1.2', '1.8.3', '0.1', '19.4']
 ---
 #  MLPACK:
 #  A Scalable C++  Machine Learning Library
@@ -2821,4 +2821,46 @@ methods:
                   options:
                      k: 3
 
+---
+# dlib-ml
+library: dlibml
+methods:
+    KMEANS:
+        run: ['metric']
+        script: methods/dlibml/KMEANS.py
+        format: [csv, txt, arff]
+        datasets:
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
+              options:
+                clusters: 2
 
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
+              options:
+                clusters: 3
+
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
+              options:
+                clusters: 5
+
+            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
+              options:
+                clusters: 6
+
+            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
+              options:
+                clusters: 7
+
+            - files: [ ['datasets/isolet.csv', 'datasets/isolet_centroids.csv'] ]
+              options:
+                clusters: 26
+
+            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
+              options:
+                clusters: 10
+
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
+              options:
+                clusters: 75
