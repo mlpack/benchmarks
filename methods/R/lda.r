@@ -27,8 +27,8 @@ tic()
 trainTask <- makeClassifTask(data = trainData, target = tar)
 testTask <- makeClassifTask(data = testData, target = tar)
 
-qda.learner <- makeLearner("classif.qda", predict.type = "response")
-fmodel <- train(qda.learner,trainTask)
+lda.learner <- makeLearner("classif.lda", predict.type = "response")
+fmodel <- train(lda.learner, trainTask)
 fpmodel <- predict(fmodel, testTask)
 toc(log = TRUE)
 

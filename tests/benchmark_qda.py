@@ -133,7 +133,7 @@ class QDA_R_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 9000 # Changed because installing Packages might take time.
+    self.timeout = 500 # Changed because installing Packages might take time.
 
     module = Loader.ImportModuleFromPath("methods/R/qda.py")
     obj = getattr(module, "QDA")
