@@ -8,7 +8,7 @@ export JAVAPATH := $(shell echo $(ROOTPATH))/libraries/share/
 export DEBUGBINPATH := $(shell echo $(ROOTPATH))/libraries/debug/bin/
 export DEBUGINCLUDEPATH := $(shell echo $(ROOTPATH))/libraries/debug/include/
 export DEBUGLIBPATH := $(shell echo $(ROOTPATH))/libraries/debug/lib/
-
+ 
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.3)
 ifndef PYTHON_BIN
@@ -65,6 +65,8 @@ export FLANN_PATH=methods/flann/
 export ANN_PATH=methods/ann/
 # Export the path to the DLIBML library.
 export DLIBML_PATH=methods/dlibml/
+# Export the path to R.
+export R_PATH = methods/R/
 
 # Set LD_LIBRARY_PATH correctly.
 export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
@@ -188,6 +190,7 @@ endif
 	g++ -O2 -std=c++11 methods/dlibml/src/ANN.cpp -o methods/dlibml/dlibml_ann -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack
 	g++ -O2 -std=c++11 methods/dlibml/src/ALLKNN.cpp -o methods/dlibml/dlibml_allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack
 	g++ -O2 -std=c++11 methods/dlibml/src/KMEANS.cpp -o methods/dlibml/dlibml_kmeans -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack 
+
 
 .setup:
 	cd libraries/ && ./download_packages.sh && ./install_all.sh $(BUILD_CORES)
