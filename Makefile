@@ -8,7 +8,7 @@ export JAVAPATH := $(shell echo $(ROOTPATH))/libraries/share/
 export DEBUGBINPATH := $(shell echo $(ROOTPATH))/libraries/debug/bin/
 export DEBUGINCLUDEPATH := $(shell echo $(ROOTPATH))/libraries/debug/include/
 export DEBUGLIBPATH := $(shell echo $(ROOTPATH))/libraries/debug/lib/
-
+ 
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.3)
 ifndef PYTHON_BIN
@@ -65,6 +65,11 @@ export FLANN_PATH=methods/flann/
 export ANN_PATH=methods/ann/
 # Export the path to the DLIBML library.
 export DLIBML_PATH=methods/dlibml/
+<<<<<<< HEAD
+=======
+# Export the path to R.
+export R_PATH = methods/R/
+>>>>>>> b3d2477451c5e1ec0e1ead3d828cd367bbf5b3cd
 
 # Set LD_LIBRARY_PATH correctly.
 export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
@@ -178,15 +183,14 @@ endif
 	# Compile the java files for the weka methods.
 	javac -cp "$(JAVAPATH)"weka.jar -d methods/weka methods/weka/src/*.java
 	# Compile the ann scripts.
-	g++ -O0 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -lANN -lmlpack -lboost_program_options
+	g++ -O2 -std=c++11 methods/ann/src/allknn.cpp -o methods/ann/allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -lANN -lmlpack -lboost_program_options
 	# Compile the FLANN scripts.
-	g++ -O0 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -lmlpack -lboost_program_options -llz4
+	g++ -O2 -std=c++11 methods/flann/src/allknn.cpp -o methods/flann/allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -lmlpack -lboost_program_options -llz4
 	# Compile the mlpack scripts.  (Can't do this until ANN is released or a
 	# git version of mlpack is used.)
 	#cd methods/mlpack/src/ && ./build_scripts.sh
-       	# Compile the DLIBML scripts.
-	g++ -O0 -std=c++11 methods/dlibml/src/SVM.cpp -o methods/dlibml/dlibml_svm -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack 
-
+	# Compile the DLIBML scripts.
+	cd methods/dlibml/src/ && ./build_scripts.sh
 
 .setup:
 	cd libraries/ && ./download_packages.sh && ./install_all.sh $(BUILD_CORES)

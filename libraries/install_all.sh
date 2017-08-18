@@ -48,6 +48,7 @@ fi
 ./nearpy_install.sh $1
 if [ "$?" -ne "0" ]; then
   echo "Error installing nearpy!";
+  exit 1;
 fi
 ./annoy_install.sh $1
 if [ "$?" -ne "0" ]; then
@@ -79,4 +80,8 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing dlib!";
   exit 1;
 fi
-
+./r_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing R!";
+  exit 1;
+fi
