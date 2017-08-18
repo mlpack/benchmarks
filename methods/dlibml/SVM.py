@@ -69,6 +69,17 @@ class SVM(object):
     else:
       optionsStr += " -c " + "0.1"
 
+    if "coef" in options:
+      optionsStr += " -g " + str(options.pop("coef"))
+    else:
+      optionsStr += " -g " + "1"
+
+    if "degree" in options:
+      optionsStr += " -d " + str(options.pop("degree"))
+    else:
+      optionsStr += " -d " + "2"
+
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")

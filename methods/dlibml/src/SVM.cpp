@@ -19,6 +19,8 @@ PARAM_STRING_IN("test_file", "File containing the test dataset.",
     "T", "");
 PARAM_STRING_IN("kernel", "Name of the kernel to be used.", "k", "");
 PARAM_DOUBLE_IN("C", "Bandwidth", "c", 0);
+PARAM_DOUBLE_IN("g", "Coef", "g", 0);
+PARAM_DOUBLE_IN("d", "Degree", "d", 0);
 
 int main(int argc, char** argv)
 {
@@ -31,6 +33,8 @@ int main(int argc, char** argv)
   
   const string kernel = CLI::GetParam<string>("k");
   size_t c = CLI::GetParam<double>("c");
+  size_t g = CLI::GetParam<double>("g");
+  size_t d = CLI::GetParam<double>("d");
 
   arma::mat trainData;
   arma::mat testData; // So it doesn't go out of scope.
@@ -61,7 +65,7 @@ int main(int argc, char** argv)
   svm_nu_trainer<poly_kernel> poly_trainer;
   if (kernel.compare("polynomial") == 0)
   { 
-     poly_trainer.set_kernel(poly_kernel(c, 1, 2));
+     poly_trainer.set_kernel(poly_kernel(c, g, d));
      trainer.set_trainer(poly_trainer, 1, 2);
   }
   else if (kernel.compare("rbf") == 0)
@@ -81,7 +85,7 @@ int main(int argc, char** argv)
   }
   sample_type m2;
   m2.set_size(1);
-  for (size_t j = 0; j< trainData.n_cols; ++j)
+  for (size_t j = 0; j < trainData.n_cols; ++j)
   {
     labels.push_back(trainData(trainData.n_rows - 1, j));
   }
@@ -112,6 +116,5 @@ int main(int argc, char** argv)
 
   data::Save("predictions.csv", predictions);
 
-  return 0;
 }
 
