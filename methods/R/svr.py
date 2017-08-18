@@ -70,6 +70,11 @@ class SVR(object):
 
     # Get all the parameters.
     opts = {}
+    if "kernel" in options:
+      opts["kernel"] = str(options.pop("kernel"))
+    else:
+      opts["kernel"] = 'radial'
+
     if "c" in options:
       opts["C"] = float(options.pop("c"))
     else:
@@ -89,8 +94,9 @@ class SVR(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("libraries/bin/Rscript " + self.path + "svr.r" +
-        " -t " + self.dataset[0] + " -c " + str(opts["C"]) + " -e " + 
-	str(opts["epsilon"]) + " -g " + str(opts["gamma"]))
+        " -t " + self.dataset[0] + " -k " + opts['kernel'] + 
+	" -c " + str(opts["C"]) + " -e " + str(opts["epsilon"]) + 
+	" -g " + str(opts["gamma"]))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
