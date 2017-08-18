@@ -66,6 +66,13 @@ class ADABOOST(object):
   '''
   def RunMetrics(self, options):
     Log.Info("Perform Adaboost.", self.verbose)
+    
+    opts = {}
+    
+    if "max_iterations" in options:
+      opts["max_iterations"] = int(options.pop("max_iterations"))
+    else:
+      opts["max_iterations"] = 100
 
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
@@ -77,7 +84,8 @@ class ADABOOST(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("libraries/bin/Rscript " + self.path + "adaboost.r" +
-        " -t " + self.dataset[0] + " -T " + self.dataset[1])
+        " -t " + self.dataset[0] + " -T " + self.dataset[1] + " -m " + 
+	str(opts["max_iterations"]))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
