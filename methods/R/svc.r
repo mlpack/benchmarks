@@ -10,6 +10,7 @@ myArgs <- commandArgs(trailingOnly = TRUE)
 trainFile <- myArgs[2]
 testFile <- myArgs[4]
 cost <- as.numeric(myArgs[6])
+epsilon <- as.numeric(myArgs[8])
 
 trainData <- read.csv(trainFile, header = FALSE, sep = ",")
 testData <- read.csv(testFile, header = FALSE, sep = ",")
@@ -28,7 +29,9 @@ tic()
 trainTask <- makeClassifTask(data = trainData, target = tar)
 testTask <- makeClassifTask(data = testData, target = tar)
 
-randomForest.learner <- makeLearner("classif.LiblineaRMultiClassSVC", par.vals = list(cost = cost), predict.type = "response")
+randomForest.learner <- makeLearner("classif.LiblineaRMultiClassSVC", 
+			par.vals = list(cost = cost, epsilon = epsilon), 
+			predict.type = "response")
 fmodel <- train(randomForest.learner, trainTask)
 fpmodel <- predict(fmodel, testTask)
 toc(log = TRUE)

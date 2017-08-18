@@ -75,6 +75,12 @@ class SVC(object):
     else:
       self.build_opts["C"] = 1
 
+    if "epsilon" in options:
+      self.build_opts["epsilon"] = float(options.pop("epsilon"))
+    else:
+      self.build_opts["epsilon"] = 0.1
+
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -86,7 +92,8 @@ class SVC(object):
     # Split the command using shell-like syntax.
     cmd = shlex.split("libraries/bin/Rscript " + self.path + "svc.r" +
         " -t " + self.dataset[0] + " -T " +
-        self.dataset[1] + " -c " + str(self.build_opts["C"]))
+        self.dataset[1] + " -c " + str(self.build_opts["C"]) + 
+	" -e " + str(self.build_opts["epsilon"]))
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
