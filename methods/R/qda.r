@@ -1,6 +1,3 @@
-install.packages('mlr', repos='http://cran.us.r-project.org')
-install.packages('tictoc', repos='http://cran.us.r-project.org')
-
 # Read the command line arguments in a vector.
 library(mlr)
 library(tictoc)

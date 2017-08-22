@@ -24,3 +24,4 @@ prefix_path="$(readlink -m ../)"
 ./configure --prefix=$prefix_path --enable-R-shlib
 make
 make install
+bin/Rscript install_r_packages.r
