@@ -1,3 +1,4 @@
+
 # Read the command line arguments in a vector.
 library(mlr)
 library(tictoc)
@@ -5,6 +6,7 @@ myArgs <- commandArgs(trailingOnly = TRUE)
 
 trainFile <- myArgs[2]
 testFile <- myArgs[4]
+k <- as.numeric(myArgs[6])
 
 trainData <- read.csv(trainFile, header = FALSE, sep = ",")
 testData <- read.csv(testFile, header = FALSE, sep = ",")
@@ -17,15 +19,14 @@ for ( i in 1:ncol(trainData) )
 names(trainData) = names
 testData[, ncol(trainData)] = sample(0:1, size = nrow(testData), replace = T)
 names(testData) = names
-
 tar = paste("V", toString(ncol(trainData)), sep = "")
 
 tic()
 trainTask <- makeClassifTask(data = trainData, target = tar)
 testTask <- makeClassifTask(data = testData, target = tar)
 
-qda.learner <- makeLearner("classif.qda", predict.type = "response")
-fmodel <- train(qda.learner,trainTask)
+knc.learner <- makeLearner("classif.knn", par.vals = list(k = k) ,predict.type = "response")
+fmodel <- train(knc.learner, trainTask)
 fpmodel <- predict(fmodel, testTask)
 toc(log = TRUE)
 

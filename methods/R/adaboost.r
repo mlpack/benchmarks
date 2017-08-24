@@ -5,6 +5,7 @@ myArgs <- commandArgs(trailingOnly = TRUE)
 
 trainFile <- myArgs[2]
 testFile <- myArgs[4]
+maxiter <- as.integer(myArgs[6])
 
 trainData <- read.csv(trainFile, header = FALSE, sep = ",")
 testData <- read.csv(testFile, header = FALSE, sep = ",")
@@ -23,9 +24,10 @@ tar = paste("V", toString(ncol(trainData)), sep = "")
 tic()
 trainTask <- makeClassifTask(data = trainData, target = tar)
 testTask <- makeClassifTask(data = testData, target = tar)
-
-qda.learner <- makeLearner("classif.qda", predict.type = "response")
-fmodel <- train(qda.learner,trainTask)
+adaboost.learner <- makeLearner("classif.boosting", 
+				par.vals = list(mfinal = maxiter), 
+				predict.type = "response")
+fmodel <- train(adaboost.learner, trainTask)
 fpmodel <- predict(fmodel, testTask)
 toc(log = TRUE)
 
