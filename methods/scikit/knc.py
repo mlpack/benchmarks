@@ -82,6 +82,9 @@ class KNC(object):
       self.opts = {}
       if "k" in options:
         self.opts["n_neighbors"] = int(options.pop("k"))
+      else:
+        Log.Fatal("Required parameter 'k' not specified!")
+        raise Exception("missing parameter")
       if "algorithm" in options:
         self.opts["algorithm"] = str(options.pop("algorithm"))
       if "leaf_size" in options:

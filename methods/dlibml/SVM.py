@@ -1,7 +1,6 @@
 '''
-  @file knc.py
-
-  Class to benchmark the matlab K-Nearest Neighbors Classifier method.
+  @file SVM.py
+  Class to benchmark the SVM method with dlib-ml.
 '''
 
 import os
@@ -15,76 +14,79 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
 from profiler import *
-from definitions import *
-from misc import *
 
 import shlex
 import subprocess
 import re
 import collections
 
+from log import *
+from timer import *
+from definitions import *
+from misc import *
+
+import numpy as np
+
 '''
-This class implements the K-Nearest Classifier benchmark.
+This class implements the SVM benchmark.
 '''
-class KNC(object):
+class SVM(object):
 
   '''
-  Create the K-Nearest Classifier benchmark instance.
-  @param dataset - Input dataset to perform DTC on.
+  Create the SVM benchmark instance, show some informations
+  and return the instance.
+  @param dataset - Input dataset to perform SVM on.
   @param timeout - The time until the timeout. Default no timeout.
-  @param path - Path to the matlab binary.
+  @param path - Path to the dlib executable.
   @param verbose - Display informational messages.
   '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MATLAB_BIN"],
-      verbose=True):
+  def __init__(self, dataset, timeout=0, path=os.environ["DLIBML_PATH"],
+        verbose = True):
     self.verbose = verbose
     self.dataset = dataset
     self.path = path
     self.timeout = timeout
-    self.opts = {}
 
   '''
-  Destructor to clean up at the end. Use this method to remove created files.
-  '''
-  def __del__(self):
-    Log.Info("Clean up.", self.verbose)
-    filelist = ["predictions.csv"]
-    for f in filelist:
-      if os.path.isfile(f):
-        os.remove(f)
-
-  '''
-  K-Nearest Classifier. If the method has been successfully completed return
-  the elapsed time in seconds.
+  Perform SVM. If the method has been successfully completed
+  return the elapsed time in seconds.
   @param options - Extra options for the method.
   @return - Elapsed time in seconds or a negative value if the method was not
   successful.
   '''
   def RunMetrics(self, options):
-    Log.Info("Perform KNC.", self.verbose)
-    self.opts = {}
-    if "k" in options:
-      self.opts["n_neighbors"] = int(options.pop("k"))
+    Log.Info("Perform SVM.", self.verbose)
+
+    optionsStr = ""
+    if "kernel" in options:
+      optionsStr = "-k " + str(options.pop("kernel"))
     else:
-      Log.Fatal("Required parameter 'k' not specified!")
-      raise Exception("missing parameter")
-    # No options accepted for this task.
+      optionsStr = "-k " + "rbf"
+
+    if "C" in options:
+      optionsStr += " -c " + str(options.pop("C"))
+    else:
+      optionsStr += " -c " + "0.1"
+
+    if "coef" in options:
+      optionsStr += " -g " + str(options.pop("coef"))
+    else:
+      optionsStr += " -g " + "1"
+
+    if "degree" in options:
+      optionsStr += " -d " + str(options.pop("degree"))
+    else:
+      optionsStr += " -d " + "2"
+
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    inputCmd = "-t " + self.dataset[0] + " -T " + self.dataset[1] + " -k" + str(self.opts["n_neighbors"]) 
-    # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, SVC('"
-        + inputCmd + "'), catch, exit(1), end, exit(0)\"")
+    cmd = shlex.split(self.path + "dlibml_svm -t " + self.dataset[0] + " -T " +
+          self.dataset[1] + " -v " + optionsStr)
+
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -102,12 +104,12 @@ class KNC(object):
     metrics = {}
 
     # Parse data: runtime.
+    predictions = np.genfromtxt("predictions.csv", delimiter = ',')
+    truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
     timer = self.parseTimer(s)
-    
+
     if timer != -1:
-      predictions = np.genfromtxt("predictions.csv", delimiter = ',')
-      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
-      metrics['Runtime'] = timer.total_time
+      metrics['Runtime'] = timer.runtime
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
       metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
@@ -115,6 +117,7 @@ class KNC(object):
       metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
+      
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
     return metrics
@@ -127,16 +130,15 @@ class KNC(object):
   def parseTimer(self, data):
     # Compile the regular expression pattern into a regular expression object to
     # parse the timer data.
-    pattern = re.compile(br"""
-        .*?total_time: (?P<total_time>.*?)s.*?
+    pattern = re.compile(r"""
+        .*?runtime: (?P<runtime>.*?)s.*
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
- 
-    match = pattern.match(data)
+
+    match = pattern.match(data.decode())
     if not match:
       Log.Fatal("Can't parse the data: wrong format")
       return -1
     else:
       # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["total_time"])
-
-    return timer(float(match.group("total_time")))
+      timer = collections.namedtuple("timer", ["runtime"])
+      return timer(float(match.group("runtime")))

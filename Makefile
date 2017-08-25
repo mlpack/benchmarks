@@ -187,6 +187,7 @@ endif
 	# git version of mlpack is used.)
 	#cd methods/mlpack/src/ && ./build_scripts.sh
 	# Compile the DLIBML scripts.
+	g++ -O2 -std=c++11 methods/dlibml/src/SVM.cpp -o methods/dlibml/dlibml_svm -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack 
 	g++ -O2 -std=c++11 methods/dlibml/src/ANN.cpp -o methods/dlibml/dlibml_ann -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack
 	g++ -O2 -std=c++11 methods/dlibml/src/ALLKNN.cpp -o methods/dlibml/dlibml_allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack
 	g++ -O2 -std=c++11 methods/dlibml/src/KMEANS.cpp -o methods/dlibml/dlibml_kmeans -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack 
