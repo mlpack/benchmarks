@@ -5,6 +5,8 @@ myArgs <- commandArgs(trailingOnly = TRUE)
 
 trainFile <- myArgs[2]
 testFile <- myArgs[4]
+maxDepth <- as.integer(myArgs[6])
+minSamplesSplit <- as.integer(myArgs[8])
 
 trainData <- read.csv(trainFile, header = FALSE, sep = ",")
 testData <- read.csv(testFile, header = FALSE, sep = ",")
@@ -17,15 +19,16 @@ for ( i in 1:ncol(trainData) )
 names(trainData) = names
 testData[, ncol(trainData)] = sample(0:1, size = nrow(testData), replace = T)
 names(testData) = names
-
 tar = paste("V", toString(ncol(trainData)), sep = "")
 
 tic()
 trainTask <- makeClassifTask(data = trainData, target = tar)
 testTask <- makeClassifTask(data = testData, target = tar)
 
-qda.learner <- makeLearner("classif.qda", predict.type = "response")
-fmodel <- train(qda.learner,trainTask)
+dtc.learner <- makeLearner("classif.rpart", 
+	par.vals = list(minsplit = minSamplesSplit, maxdepth = maxDepth), 
+	predict.type = "response")
+fmodel <- train(dtc.learner, trainTask)
 fpmodel <- predict(fmodel, testTask)
 toc(log = TRUE)
 
