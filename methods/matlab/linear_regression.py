@@ -82,9 +82,6 @@ class LinearRegression(object):
     else:
       inputCmd = "-i " + self.dataset[0] + " "
 
-    print(self.path + "matlab -nodisplay -nosplash -r \"try, " +
-        "LINEAR_REGRESSION('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
-
     # Split the command using shell-like syntax.
     cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
         "LINEAR_REGRESSION('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")

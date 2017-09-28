@@ -88,7 +88,6 @@ class LASSO(object):
           model.train(RealFeatures(X.T))
 
       except Exception as e:
-        print(e)
         q.put(-1)
         return -1
 

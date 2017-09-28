@@ -100,7 +100,6 @@ class KMEANS(object):
     metrics = {}
 
     # Parse data: runtime.
-    print(s)
     timer = self.parseTimer(s)
 
     if timer != -1:

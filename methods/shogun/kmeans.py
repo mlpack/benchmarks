@@ -101,7 +101,6 @@ class KMEANS(object):
           labels = model.apply().get_labels()
           centers = model.get_cluster_centers()
       except Exception as e:
-        print(e)
         q.put(-1)
         return -1
 
