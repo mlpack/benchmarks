@@ -26,7 +26,7 @@ class ADABOOST_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -51,8 +51,6 @@ class ADABOOST_SCIKIT_TEST(unittest.TestCase):
     self.assertTrue(result["ACC"] > 0)
     self.assertTrue(result["Precision"] > 0)
     self.assertTrue(result["Recall"] > 0)
-
-    
 
 '''
 Test the milk Adaboost script.

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -70,7 +71,8 @@ class PERCEPTRON(object):
   successful.
   '''
   def PerceptronMlpy(self, options):
-    def RunPerceptronMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunPerceptronMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -103,15 +105,14 @@ class PERCEPTRON(object):
             #prediction on the test data.
             pred = model.pred(testSet)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
+      return totalTimer.ElapsedTime()
 
-      return time
-
-    return timeout(RunPerceptronMlpy, self.timeout)
+    try:
+      return RunPerceptronMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the Perceptron Classifier. If the method has been successfully

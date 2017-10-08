@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -48,7 +49,8 @@ class LARS(object):
   successful.
   '''
   def LARSShogun(self, options):
-    def RunLARSShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLARSShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -77,14 +79,14 @@ class LARS(object):
           model.train(inputFeat)
           model.get_w_for_var(model.get_path_size() - 1)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunLARSShogun, self.timeout)
+    try:
+      return RunLARSShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Least Angle Regression. If the method has been successfully

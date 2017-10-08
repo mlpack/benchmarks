@@ -116,6 +116,6 @@ class KNC_R_TEST(unittest.TestCase):
     self.assertTrue(result["ACC"] > 0)
     self.assertTrue(result["Precision"] > 0)
     self.assertTrue(result["Recall"] > 0)
-    
+
 if __name__ == '__main__':
  unittest.main()

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -73,7 +74,8 @@ class PERCEPTRON(object):
   successful.
   '''
   def PerceptronShogun(self, options):
-    def RunPerceptronShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunPerceptronShogun():
       totalTimer = Timer()
       # Load input dataset.
       # If the dataset contains two files then the second file is the test file.
@@ -104,14 +106,14 @@ class PERCEPTRON(object):
               pred = self.model.apply(RealFeatures(testSet.T))
               self.predictions = pred.get_labels()
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunPerceptronShogun, self.timeout)
+    try:
+      return RunPerceptronShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Perceptron classification. If the method has been successfully completed

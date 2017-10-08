@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class ALLKNN(object):
   successful.
   '''
   def AllKnnScikit(self, options):
-    def RunAllKnnScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunAllKnnScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -68,11 +70,9 @@ class ALLKNN(object):
           if (build_opts["n_neighbors"] < 1 or build_opts["n_neighbors"] > referenceData.shape[0]):
             Log.Fatal("Invalid k: " + str(build_opts["n_neighbors"]) + "; must be greater than 0"
               + " and less or equal than " + str(referenceData.shape[0]))
-            q.put(-1)
             return -1
         else:
           Log.Fatal("Required option: Number of furthest neighbors to find.")
-          q.put(-1)
           return -1
 
         if "leaf_size" in options:
@@ -80,7 +80,6 @@ class ALLKNN(object):
           if build_opts["leaf_size"] < 0:
             Log.Fatal("Invalid leaf size: " + str(build_opts["leaf_size"]) + ". Must" +
                 " be greater than or equal to 0.")
-          q.put(-1)
           return -1
         else:
           build_opts["leaf_size"] = 20
@@ -93,7 +92,6 @@ class ALLKNN(object):
              build_opts["tree_type"] != 'brute':
             Log.Fatal("Invalid tree type: "+ build_opts["tree_type"]
                 + ". Must be either auto, ball_tree, kd_tree or brute.")
-            q.put(-1)
             return -1
 
         if "radius" in options:
@@ -103,7 +101,6 @@ class ALLKNN(object):
           if build_opts["metric"] not in ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']:
             Log.Fatal("Invalid metric type: "+ build_opts["metric"]
                 + ". Must be either cityblock, cosine, euclidean, l1, l2 or manhattan")
-            q.put(-1)
             return -1
           if "p" in options:
             build_opts["p"] = int(options.pop("p"))
@@ -128,14 +125,14 @@ class ALLKNN(object):
             # nearest neighbor of point 0 as point 0.
             out = model.kneighbors(referenceData, build_opts["n_neighbors"] + 1, return_distance=True)
         except Exception as e:
-          q.put(-1)
           return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunAllKnnScikit, self.timeout)
+    try:
+      return RunAllKnnScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform All K-Nearest-Neighbors. If the method has been successfully completed

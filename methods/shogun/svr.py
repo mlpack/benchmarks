@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -53,7 +54,8 @@ class SVR(object):
   successful.
   '''
   def SVRShogun(self, options):
-    def RunSVRShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunSVRShogun():
       totalTimer = Timer()
       # Load input dataset.
       Log.Info("Loading dataset", self.verbose)
@@ -85,14 +87,14 @@ class SVR(object):
           model = LibSVR(self.C, self.epsilon, self.kernel, labels_train)
           model.train()
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunSVRShogun, self.timeout)
+    try:
+      return RunSVRShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform SVR Regression. If the method has been successfully completed

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -74,7 +75,8 @@ class SVM(object):
   successful.
   '''
   def SVMMlpy(self, options):
-    def RunSVMMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunSVMMlpy():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -106,16 +108,14 @@ class SVM(object):
           # Run Support vector machines on the test dataset.
           self.model.pred(testData)
       except Exception as e:
-        Log.Debug(str(e))
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
+      return totalTimer.ElapsedTime()
 
-      return time
-
-    return timeout(RunSVMMlpy, self.timeout)
+    try:
+      return RunSVMMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the Support vector machines. If the method has been

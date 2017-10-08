@@ -172,8 +172,6 @@ class NBC_SCIKIT_TEST(unittest.TestCase):
     self.assertTrue(result["Precision"] > 0)
     self.assertTrue(result["Recall"] > 0)
 
-    
-
 '''
 Test the matlab Parametric Naive Bayes Classifier script.
 '''

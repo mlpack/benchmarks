@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -71,7 +72,8 @@ class RANDOMFOREST(object):
   successful.
   '''
   def RandomForestShogun(self, options):
-    def RunRandomForestShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunRandomForestShogun():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -100,14 +102,16 @@ class RANDOMFOREST(object):
           # Run the Random Forest Classifier on the test dataset.
           self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
-        q.put(-1)
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
-      q.put((time, self.predictions))
-      return time
+      return [time, self.predictions]
 
-    result = timeout(RunRandomForestShogun, self.timeout)
+    try:
+      result = RunRandomForestShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     # Check for error, in this case the tuple doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]

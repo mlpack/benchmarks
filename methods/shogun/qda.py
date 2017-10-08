@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -55,7 +56,8 @@ class QDA(object):
   successful.
   '''
   def QDAShogun(self, options):
-    def RunQDAShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunQDAShogun():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -82,14 +84,14 @@ class QDA(object):
           if len(self.dataset) == 2:
             model.apply_multiclass(testFeat).get_labels()
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunQDAShogun, self.timeout)
+    try:
+      return RunQDAShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform QDA Classifier. If the method has been successfully completed

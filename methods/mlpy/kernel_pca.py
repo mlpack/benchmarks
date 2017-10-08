@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class KPCA(object):
   successful.
   '''
   def KPCAMlpy(self, options):
-    def RunKPCAMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKPCAMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -62,7 +64,6 @@ class KPCA(object):
             if (d > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-              q.put(-1)
               return -1
           else:
             d = data.shape[0]
@@ -71,7 +72,6 @@ class KPCA(object):
           if not "kernel" in options:
             Log.Fatal("Choose kernel type, valid choices are 'polynomial', " +
                   "'gaussian', 'linear' and 'hyptan'.")
-            q.put(-1)
             return -1
 
           if options["kernel"] == "polynomial":
@@ -90,7 +90,6 @@ class KPCA(object):
           else:
             Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
                     "choices are 'polynomial', 'gaussian', 'linear' and 'hyptan'.")
-            q.put(-1)
             return -1
 
           options.pop("kernel")
@@ -104,14 +103,14 @@ class KPCA(object):
           out = model.transform(kernel, k=d)
       except Exception as e:
         Log.Fatal("Exception: " + str(e))
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunKPCAMlpy, self.timeout)
+    try:
+      return RunKPCAMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Kernel Principal Components Analysis. If the method has been

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -48,7 +49,8 @@ class KPCA(object):
   successful.
   '''
   def KPCAShogun(self, options):
-    def RunKPCAShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKPCAShogun():
       totalTimer = Timer()
 
       try:
@@ -64,7 +66,6 @@ class KPCA(object):
             if (d > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
                 + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-              q.put(-1)
               return -1
           else:
             d = data.shape[1]
@@ -75,7 +76,6 @@ class KPCA(object):
           else:
             Log.Fatal("Choose kernel type, valid choices are 'linear'," +
                   " 'hyptan', 'polynomial' and 'gaussian'.")
-            q.put(-1)
             return -1
 
           if "degree" in options:
@@ -96,7 +96,6 @@ class KPCA(object):
           else:
             Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid "
               + "choices are 'linear', 'hyptan', 'polynomial' and 'gaussian'.")
-            q.put(-1)
             return -1
 
           # Perform Kernel Principal Components Analysis.
@@ -105,14 +104,14 @@ class KPCA(object):
           model.init(dataFeat)
           model.apply_to_feature_matrix(dataFeat)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunKPCAShogun, self.timeout)
+    try:
+      return RunKPCAShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Kernel Principal Components Analysis. If the method has been

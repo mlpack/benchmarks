@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -46,7 +47,8 @@ class ANN(object):
   successful.
   '''
   def AnnAnnoy(self, options):
-    def RunAnnAnnoy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunAnnAnnoy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -58,18 +60,15 @@ class ANN(object):
       # Parse options.
       if not "k" in options:
         Log.Fatal("Required option: Number of furthest neighbors to find.")
-        q.put(-1)
         return -1
       else:
         k = int(options.pop("k"))
         if (k < 1 or k > referenceData.shape[0]):
           Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
               + " and less or equal than " + str(referenceData.shape[0]))
-          q.put(-1)
           return -1
       if not "num_trees" in options:
         Log.Fatal("Required option: Number of trees to build")
-        q.put(-1)
         return -1
       else:
         n = int(options.pop("num_trees"))
@@ -91,13 +90,14 @@ class ANN(object):
               v = t.get_nns_by_vector(queryData[i],k)
         except Exception as e:
           Log.Info(e)
-          q.put(e)
           return -1
       time = totalTimer.ElapsedTime()
-      q.put(time)
       return time
 
-    return timeout(RunAnnAnnoy, self.timeout)
+    try:
+      return RunAnnAnnoy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform All K-Nearest-Neighbors. If the method has been successfully completed

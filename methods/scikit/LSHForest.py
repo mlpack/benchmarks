@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -68,7 +69,8 @@ class ANN(object):
   successful.
   '''
   def AnnScikit(self, options):
-    def RunAnnScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunAnnScikit():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -109,16 +111,14 @@ class ANN(object):
           distances,indices = self.model.kneighbors(testData,
                                                     n_neighbors=n_neighbors)
       except Exception as e:
-        Log.Debug(str(e))
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
+      return totalTimer.ElapsedTime()
 
-      return time
-
-    return timeout(RunAnnScikit, self.timeout)
+    try:
+      return RunAnnScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Approximate Nearest Neighbors. If the method has been successfully
@@ -142,6 +142,4 @@ class ANN(object):
 
     # Datastructure to store the results.
     metrics = {'Runtime' : results}
-    
     return metrics
-

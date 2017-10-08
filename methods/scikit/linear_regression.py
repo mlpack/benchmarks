@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -70,7 +71,8 @@ class LinearRegression(object):
   successful.
   '''
   def LinearRegressionScikit(self, options):
-    def RunLinearRegressionScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLinearRegressionScikit():
       totalTimer = Timer()
 
       if len(options) > 0:
@@ -95,20 +97,21 @@ class LinearRegression(object):
           if len(self.dataset) >= 2:
             self.predictions = self.model.predict(testSet)
       except Exception as e:
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
-      return time
+        return [time, self.predictions]
+      return [time]
 
-    result = timeout(RunLinearRegressionScikit, self.timeout)
+    try:
+      result = RunLinearRegressionScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     if len(result) > 1:
       self.predictions = result[1]
-    
+
     return result[0]
 
   '''

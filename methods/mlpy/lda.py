@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -73,7 +74,8 @@ class LDA(object):
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    def RunLDAMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLDAMlpy():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -86,16 +88,14 @@ class LDA(object):
           # Run Linear Discriminant Analysis on the test dataset.
           self.model.pred(testData)
       except Exception as e:
-        Log.Debug(str(e))
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
+      return totalTimer.ElapsedTime()
 
-      return time
-
-    return timeout(RunLDAMlpy, self.timeout)
+    try:
+      return RunLDAMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the Linear Discriminant Analysis. If the method has been

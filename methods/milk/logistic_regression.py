@@ -6,6 +6,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -62,7 +63,8 @@ class LogisticRegression(object):
   successful.
   '''
   def LogisticRegressionMilk(self, options):
-    def RunLogisticRegressionMilk(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLogisticRegressionMilk():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -79,14 +81,15 @@ class LogisticRegression(object):
         with totalTimer:
           self.model = self.model.train(trainData, labels)
       except Exception as e:
-        q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
       return time
 
-    return timeout(RunLogisticRegressionMilk, self.timeout)
+    try:
+      return RunLogisticRegressionMilk()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the Logistic Regression Classifier. If the method has been

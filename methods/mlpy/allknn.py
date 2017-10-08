@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class ALLKNN(object):
   successful.
   '''
   def AllKnnMlpy(self, options):
-    def RunAllKnnMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunAllKnnMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -69,14 +71,12 @@ class ALLKNN(object):
           # Get all the parameters.
           if not "k" in options:
             Log.Fatal("Required option: Number of furthest neighbors to find.")
-            q.put(-1)
             return -1
           else:
             k = options.pop("k")
             if (k < 1 or k > referenceData.shape[0]):
               Log.Fatal("Invalid k: " + k + "; must be greater than 0 "
                 + "and less or equal than " + str(referenceData.shape[0]))
-              q.put(-1)
               return -1
 
           if len(options) > 0:
@@ -92,14 +92,14 @@ class ALLKNN(object):
           else:
             out = model.pred(referenceData)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunAllKnnMlpy, self.timeout)
+    try:
+      return RunAllKnnMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
 
   '''

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class PCA(object):
   successful.
   '''
   def PCAMlpy(self, options):
-    def RunPCAMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunPCAMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -62,7 +64,6 @@ class PCA(object):
             if (k > data.shape[1]):
               Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
                   + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-              q.put(-1)
               return -1
           else:
             k = data.shape[1]
@@ -82,14 +83,14 @@ class PCA(object):
           out = prep.transform(data, k)
       except Exception as e:
         Log.Fatal("Exception: " + str(e))
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunPCAMlpy, self.timeout)
+    try:
+      return RunPCAMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Principal Components Analysis. If the method has been successfully

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -69,7 +70,8 @@ class LinearRidgeRegression(object):
   successful.
   '''
   def LinearRidgeRegressionScikit(self, options):
-    def RunLinearRidgeRegressionScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLinearRidgeRegressionScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -97,20 +99,21 @@ class LinearRidgeRegression(object):
             self.predictions = model.predict(testSet)
 
       except Exception as e:
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
-      return time
+        return [time, self.predictions]
+      return [time]
 
-    result = timeout(RunLinearRidgeRegressionScikit, self.timeout)
+    try:
+      result = RunLinearRidgeRegressionScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     if len(result) > 1:
       self.predictions = result[1]
-    
+
     return result[0]
 
   '''

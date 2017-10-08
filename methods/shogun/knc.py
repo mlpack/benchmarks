@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -48,7 +49,7 @@ class KNC(object):
     self.timeout = timeout
     self.model = None
     self.predictions = None
-    self.n_neighbors = 5 
+    self.n_neighbors = 5
 
   '''
   Build the model for the k-nearest neighbors Classifier.
@@ -70,7 +71,6 @@ class KNC(object):
       raise Exception("unknown parameters")
 
     distance = EuclideanDistance(data, data)
- 
     knc = KNN(self.n_neighbors, distance, labels, KNN_KDTREE)
     knc.train()
 
@@ -84,7 +84,8 @@ class KNC(object):
   successful.
   '''
   def KNCShogun(self, options):
-    def RunKNCShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKNCShogun():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -99,25 +100,25 @@ class KNC(object):
           # Run the k-nearest neighbors Classifier on the test dataset.
           self.predictions = self.model.apply_multiclass(testData).get_labels()
       except Exception as e:
-        Log.Debug(str(e))
-        q.put(-1)
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
-      else:
-        q.put(time)
+        return [time, self.predictions]
 
-      return time
+      return [time]
 
-    result = timeout(RunKNCShogun, self.timeout)
+    try:
+      result = RunKNCShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     # Check for error, in this case the tuple doesn't contain extra information.
     if len(result) > 1:
       self.predictions = result[1]
       return result[0]
-    
-    return result
+
+    return result[0]
 
   '''
   Perform the k-nearest neighbors Classifier. If the method has been

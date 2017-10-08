@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -51,7 +52,8 @@ class LARS(object):
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    def RunLARSMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLARSMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -66,14 +68,14 @@ class LARS(object):
           model.learn(inputData, responsesData)
           out = model.beta()
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunLARSMlpy, self.timeout)
+    try:
+      return RunLARSMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Least Angle Regression. If the method has been successfully completed

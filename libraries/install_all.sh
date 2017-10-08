@@ -85,3 +85,9 @@ if [ "$?" -ne "0" ]; then
   echo "Error installing R!";
   exit 1;
 fi
+
+./dtimeout_install.sh $1
+if [ "$?" -ne "0" ]; then
+  echo "Error installing R!";
+  exit 1;
+fi

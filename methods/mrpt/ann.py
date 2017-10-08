@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class ANN(object):
   successful.
   '''
   def AnnMrpt(self, options):
-    def RunAnnMrpt(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunAnnMrpt():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -62,11 +64,9 @@ class ANN(object):
         if (k < 1 or k > referenceData.shape[0]):
           Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
             + " and less or equal than " + str(referenceData.shape[0]))
-          q.put(-1)
           return -1
       else:
         Log.Fatal("Required option: Number of furthest neighbors to find.")
-        q.put(-1)
         return -1
 
       build_dict = {}
@@ -75,7 +75,6 @@ class ANN(object):
         build_dict["n_trees"] = int(options.pop("num_trees"))
       else:
         Log.Fatal("Required option: Number of trees to build")
-        q.put(-1)
         return -1
 
       if "depth" in options:
@@ -100,15 +99,14 @@ class ANN(object):
               approximate_neighbors[i] = index.ann(np.float32(queryData[i]), k,
                   **run_dict)
         except Exception as e:
-          Log.Info(e)
-          q.put(-1)
           return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunAnnMrpt, self.timeout)
+    try:
+      return RunAnnMrpt()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Approximate K-Nearest-Neighbors. If the method has been successfully

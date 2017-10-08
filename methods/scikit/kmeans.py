@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class KMEANS(object):
   successful.
   '''
   def KMeansScikit(self, options):
-    def RunKMeansScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKMeansScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -66,7 +68,6 @@ class KMEANS(object):
         opts["n_clusters"] = int(options.pop("clusters"))
       elif len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
-        q.put(-1)
         return -1
       if "max_iterations" in options:
         opts["max_iterations"] = int(options.pop("max_iterations"))
@@ -77,7 +78,6 @@ class KMEANS(object):
         opts["algorithm"] = str(options.pop("algorithm"))
         if "algorithm" not in ['naive', 'elkan', 'auto']:
           Log.Fatal("Invalid value for algorithm: "+algorithm+" must be either elkan or naive")
-          q.put(-1)
           return -1
 
       if len(options) > 0:
@@ -94,14 +94,14 @@ class KMEANS(object):
           labels = kmeans.labels_
           centers = kmeans.cluster_centers_
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunKMeansScikit, self.timeout)
+    try:
+      return RunKMeansScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed

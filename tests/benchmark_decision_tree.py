@@ -27,7 +27,7 @@ class DecisionTree_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -119,7 +119,7 @@ class DecisionTree_Milk_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-    
+
 '''
 Test the matlab Parametric Decision Tree Classifier script.
 '''

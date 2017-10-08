@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -70,7 +71,8 @@ class QDA(object):
   successful.
   '''
   def QDAScikit(self, options):
-    def RunQDAScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunQDAScikit():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -88,21 +90,21 @@ class QDA(object):
           self.predictions = self.model.predict(testData)
       except Exception as e:
         Log.Debug(str(e))
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
+        return [time, self.predictions]
+      return [time]
 
-      return time
+    try:
+      result = RunQDAScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
-    result = timeout(RunQDAScikit, self.timeout)
     if len(result) > 1:
       self.predictions = result[1]
-    
+
     return result[0]
 
   '''
