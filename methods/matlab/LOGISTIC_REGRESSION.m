@@ -26,7 +26,7 @@ estimatesFile = regexp(cmd, '.*?-o ([^\s]+)', 'tokens', 'once');
 X = csvread(regressorsFile{:});
 
 if isempty(responsesFile)
-  y = X(:,end);
+  y = X(:,end) + 1; % We have to increment because labels must be positive.
   X = X(:,1:end-1);
 else
   y = csvread(responsesFile{:});
@@ -47,7 +47,7 @@ end
 disp(sprintf('[INFO ]   total_time: %fs', toc(total_time)))
 
 if ~isempty(testFile)
-    csvwrite('predictions.csv', idx);
+    csvwrite('predictions.csv', idx - 1); % Subtract extra label bit.
     csvwrite('matlab_lr_probs.csv', predictions);
 end
 

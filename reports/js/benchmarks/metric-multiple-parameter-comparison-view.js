@@ -97,11 +97,13 @@ mmpc.listOptions = function()
                  "AND methods.name = '" + mmpc.method_name + "' " +
                  "AND datasets.name = '" + mmpc.dataset_name + "';";
   var results = dbExec(sqlstr);
+  console.log(JSON.stringify(results));
   results = dbType === "sqlite" ? results[0].values : results;
 
   var addOption = function(p, c) {
     var options = mmpc.getOptionList(dbType === "sqlite" ? c.toString() : c.parameter);
 
+    console.log(JSON.stringify(options));
     for (i = 0; i < options.length; i++)
       if(p.indexOf(options[i]) < 0) p.push(options[i]);
     return p;
@@ -131,6 +133,7 @@ mmpc.listMetrics = function()
                  "AND datasets.name = '" + mmpc.dataset_name + "';";
   var results = dbExec(sqlstr);
   results = dbType === "sqlite" ? results[0].values : results;
+  console.log(results);
 
   addMetric = function(p, c) {
     var json = jQuery.parseJSON(dbType === "sqlite" ? c : c.metric);
@@ -198,9 +201,10 @@ mmpc.metricSelect = function()
                  "AND methods.name = '" + mmpc.method_name + "' " +
                  "AND datasets.name = '" + mmpc.dataset_name + "';";
   mmpc.results = dbExec(sqlstr);
+  console.log(sqlstr);
   mmpc.results = dbType === "sqlite" ? mmpc.results[0].values : mmpc.results;
 
-  console.log(mmpc.results)
+  console.log(JSON.stringify(mmpc.results));
 
   var filterAndSet = function(p, d) {
     var metrics = jQuery.parseJSON(dbType === "sqlite" ? d[0] : d.metric);
@@ -358,13 +362,15 @@ mmpc.clearChart = function()
 // Return a param's value from a list of parameters.
 mmpc.getOptionValue = function(str, opt)
 {
-  var list = str.split("-" + opt)
-  if (list.length < 2)
-    return "";
-  list = list[1].split(/[\s=]+/);
-  if (list.length < 2)
-    return "";
-  return list[1];
+  var options = JSON.parse(str);
+  console.log("getOptionValue: " + str);
+  if (opt in options)
+  {
+    // Then we know the value.
+    return options[opt];
+  }
+  
+  return "";
 }
 
 // Remove a parameter from the list of parameters.
@@ -376,11 +382,12 @@ mmpc.removeOption = function(str, opt)
 // Returns a list of parameters.
 mmpc.getOptionList = function(str)
 {
-  optList = str.split(/-+/)
-      .map(function (d) {return d.replace(/^\s+|\s+$/g, '').split(/[\s=]+/); })
-      .filter(function (d) {return (d.length >= 1);})
-      .map(function (d) {return d[0];});
-  optList.shift();
+  var opts = JSON.parse(str);
+  var optList = [];
+  for (var k in opts)
+  {
+    optList.push(k);
+  }
   return optList;
 }
 

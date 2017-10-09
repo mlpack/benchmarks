@@ -51,6 +51,7 @@ class LogisticRegression(object):
     self.predictions = None
     self.z = 1
     self.model = None
+    self.max_iter = None
 
   '''
   Build the model for the Logistic Regression.
@@ -63,6 +64,8 @@ class LogisticRegression(object):
     # Create and train the classifier.
     model = MulticlassLogisticRegression(self.z, RealFeatures(data.T),
         MulticlassLabels(responses))
+    if self.max_iter is not None:
+      model.set_max_iter(self.max_iter);
     model.train()
     return model
 
@@ -86,6 +89,10 @@ class LogisticRegression(object):
 
         # Use the last row of the training set as the responses.
         X, y = SplitTrainData(self.dataset)
+
+        # Get the maximum number of iterations.
+        if "max_iterations" in options:
+          self.max_iter = int(options.pop("max_iterations"))
 
         # Get the regularization value.
         if "lambda" in options:

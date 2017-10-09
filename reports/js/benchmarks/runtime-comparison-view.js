@@ -19,22 +19,22 @@ rc.onTypeSelect = function()
       .attr("for", "method_select")
       .attr("class", "method-select-label")
       .text("Select method:");
-    selectHolder.append("select")
+  selectHolder.append("select")
       .attr("id", "method_select")
       .attr("onchange", "rc.methodSelect()");
-    selectHolder.append("label")
+  selectHolder.append("label")
       .attr("for", "param_select")
       .attr("class", "param-select-label")
       .text("Select parameters:");
-    selectHolder.append("select")
+  selectHolder.append("select")
       .attr("id", "param_select")
       .attr("onchange", "rc.paramSelect()");
-    selectHolder.append("br");
-    selectHolder.append("label")
+  selectHolder.append("br");
+  selectHolder.append("label")
         .attr("for", "main_dataset_select")
         .attr("class", "main-dataset-select-label")
         .text("Sort results by:");
-    selectHolder.append("select")
+  selectHolder.append("select")
         .attr("id", "main_dataset_select")
         .attr("onchange", "rc.orderSelect()");
 
@@ -94,8 +94,9 @@ rc.methodSelect = function()
   var method_select_box = document.getElementById("method_select");
   rc.method_name = method_select_box.options[method_select_box.selectedIndex].text; // At higher scope.
 
-  var sqlstr = "SELECT DISTINCT methods.parameters, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) AS count FROM methods, metrics WHERE methods.name = '" + rc.method_name + "' AND methods.id = metrics.method_id GROUP BY methods.parameters;";
+  var sqlstr = "SELECT DISTINCT methods.parameters, methods.sweep_id, metrics.libary_id, COUNT(DISTINCT metrics.libary_id) AS count FROM methods, metrics WHERE methods.name = '" + rc.method_name + "' AND methods.id = metrics.method_id GROUP BY methods.parameters;";
   var params = dbExec(sqlstr);
+  console.log(JSON.stringify(params));
 
   // Loop through results and fill the second list box.
   var param_select_box = document.getElementById("param_select");
@@ -113,7 +114,8 @@ rc.methodSelect = function()
       var new_option = document.createElement("option");
 
       var parameters = dbType === "sqlite" ? params[0].values[i][0] : params[i].parameters;
-      var libraries = dbType === "sqlite" ? params[0].values[i][2] : params[i].count;
+      var sweepId = dbType === "sqlite" ? params[0].values[i][1] : params[i].sweep_id;
+      var libraries = dbType === "sqlite" ? params[0].values[i][3] : params[i].count;
 
       if (parameters)
       {
@@ -123,6 +125,13 @@ rc.methodSelect = function()
       {
         new_option.text = "[no parameters] (" + libraries + " libraries)";
       }
+
+      if (sweepId !== -1)
+      {
+        new_option.text += " [sweep]";
+      }
+      new_option.id = sweepId;
+
       param_select_box.add(new_option);
     }
   }
@@ -139,9 +148,142 @@ rc.paramSelect = function()
   rc.method_name = method_select_box.options[method_select_box.selectedIndex].text;
   var param_select_box = document.getElementById("param_select");
   var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
+  var sweep_id = param_select_box.options[param_select_box.selectedIndex].id;
+
+  // Remove the sweep box.
+  var ss = document.getElementById("sweep_select")
+  if (ss !== null)
+  {
+    ss.parentNode.removeChild(ss);
+  }
+  ss = document.getElementById("sweep_select_label")
+  if (ss !== null)
+  {
+    ss.parentNode.removeChild(ss);
+  }
 
   // Parse out actual parameters.
-  rc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  rc.param_name = param_name_full.split("(").slice(0, -1).join("(").replace(/^\s+|\s+$/g, ''); // At higher scope.
+  if (rc.param_name == "[no parameters]")
+  {
+    rc.param_name = "";
+  }
+
+  // If the user selected a sweep, we can't actually plot anything yet.
+  if (sweep_id !== -1)
+  {
+    // Instead we have to create an extra selector to know what element of the
+    // sweep they want to look at.
+    var selectHolder = d3.select(".selectholder");
+    selectHolder.insert("label", "#param_select + *")
+        .attr("for", "sweep_select")
+        .attr("class", "sweep-select-label")
+        .attr("id", "sweep_select_label")
+        .text("Select sweep element:");
+    selectHolder.insert("select", "#sweep_select_label + *")
+        .attr("id", "sweep_select")
+        .attr("onchange", "rc.sweepSelect()");
+
+    // Now populate the sweep elements.
+    var sweepsql = "SELECT type, begin, step, end FROM sweeps where id = " + sweep_id;
+    rc.results = dbExec(sweepsql);
+    console.log(sweepsql);
+    rc.results = dbType === "sqlite" ? rc.results[0].values : rc.results;
+
+    // Get the parameter name we are sweeping.
+    var params = JSON.parse(rc.param_name);
+    var name = "";
+    for (var i in params)
+    {
+      if (params[i].search(/sweep\(/) !== -1)
+      {
+        name = i;
+        break;
+      }
+    }
+
+    // sweep_info: [start, step, end]
+    var sweepSelectBox = document.getElementById("sweep_select");
+    sweepSelectBox.add(document.createElement("option"));
+    var func = (dbType === "sqlite" ? rc.results[0][0] : rc.results[0].type) === "int" ? parseInt : parseFloat;
+    var start = func(dbType === "sqlite" ? rc.results[0][1] : rc.results[0].start);
+    var step = func(dbType === "sqlite" ? rc.results[0][2] : rc.results[0].step);
+    var end = func(dbType === "sqlite" ? rc.results[0][3] : rc.results[0].end);
+    var elem = 0;
+    for (var i = start; i <= end; i += step, elem++)
+    {
+      var new_option = document.createElement("option");
+      new_option.text = name + ": " + i;
+      new_option.id = elem;
+      sweepSelectBox.add(new_option);
+    }
+    sweepSelectBox.selectedIndex = 0;
+
+    return;
+  }
+
+  // Extract the name of the method we selected.
+  var order_select_box = document.getElementById("main_dataset_select");
+  rc.groupBy = "datasets." + order_select_box.options[order_select_box.selectedIndex].text; // At higher scope.
+
+  if (rc.groupBy == "datasets.instances")
+  {
+    rc.groupBy = "di";
+  }
+  else if (rc.groupBy == "datasets.attributes")
+  {
+    rc.groupBy = "da";
+  }
+  else
+  {
+    rc.groupBy = "ds";
+  }
+
+  var sqlstr = "SELECT DISTINCT * FROM " +
+      "(SELECT results.time as time, results.var as var, libraries.id, libraries.name as lib, datasets.name as dataset, datasets.id as did, libraries.id as lid, results.build_id as bid, datasets.instances as di, datasets.attributes as da, datasets.size as ds " +
+      "FROM results, datasets, methods, libraries WHERE " +
+      "results.dataset_id = datasets.id AND results.method_id = methods.id AND methods.name = '" + rc.method_name + "' AND methods.parameters = '" + rc.param_name + "' AND libraries.id = results.libary_id ORDER BY bid DESC " +
+      ") tmp GROUP BY lid, " + rc.groupBy + ", did;";
+  console.log(sqlstr);
+  rc.results = dbExec(sqlstr);
+  console.log(JSON.stringify(rc.results));
+  rc.results = dbType === "sqlite" ? rc.results[0].values : rc.results;
+
+  // Obtain unique list of datasets.
+  rc.datasets = rc.results.map(function(d) { return dbType === "sqlite" ? d[4] : d.dataset; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+  // Obtain unique list of libraries.
+  rc.libraries = rc.results.map(function(d) { return dbType === "sqlite" ? d[3] : d.lib; }).reduce(function(p, c) { if(p.indexOf(c) < 0) p.push(c); return p; }, []);
+
+  // By default, everything is active.
+  rc.active_datasets = {};
+  for (i = 0; i < rc.datasets.length; i++)
+  {
+    rc.active_datasets[rc.datasets[i]] = true;
+  }
+
+  rc.active_libraries = {};
+  for (i = 0; i < rc.libraries.length; i++)
+  {
+    rc.active_libraries[rc.libraries[i]] = true;
+  }
+
+  clearChart();
+  buildChart();
+}
+
+rc.sweepSelect = function()
+{
+  // Now we have selected a sweep ID and we can plot it.
+  var method_select_box = document.getElementById("method_select");
+  rc.method_name = method_select_box.options[method_select_box.selectedIndex].text;
+  var param_select_box = document.getElementById("param_select");
+  var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
+  var sweep_id = param_select_box.options[param_select_box.selectedIndex].id;
+  var sweep_select_box = document.getElementById("sweep_select");
+  var sweep_element_id = sweep_select_box.options[sweep_select_box.selectedIndex].id;
+
+  // Parse out actual parameters.
+  rc.param_name = param_name_full.split("(").slice(0, -1).join("(").replace(/^\s+|\s+$/g, ''); // At higher scope.
   if (rc.param_name == "[no parameters]")
   {
     rc.param_name = "";
@@ -167,9 +309,11 @@ rc.paramSelect = function()
   var sqlstr = "SELECT DISTINCT * FROM " +
       "(SELECT results.time as time, results.var as var, libraries.id, libraries.name as lib, datasets.name as dataset, datasets.id as did, libraries.id as lid, results.build_id as bid, datasets.instances as di, datasets.attributes as da, datasets.size as ds " +
       "FROM results, datasets, methods, libraries WHERE " +
-      "results.dataset_id = datasets.id AND results.method_id = methods.id AND methods.name = '" + rc.method_name + "' AND methods.parameters = '" + rc.param_name + "' AND libraries.id = results.libary_id ORDER BY bid DESC " +
+      "results.dataset_id = datasets.id AND results.method_id = methods.id AND methods.name = '" + rc.method_name + "' AND methods.parameters = '" + rc.param_name + "' AND libraries.id = results.libary_id AND results.sweep_elem_id = " + sweep_element_id + " ORDER BY bid DESC " +
       ") tmp GROUP BY lid, " + rc.groupBy + ", did;";
+  console.log(sqlstr);
   rc.results = dbExec(sqlstr);
+  console.log(JSON.stringify(rc.results));
   rc.results = dbType === "sqlite" ? rc.results[0].values : rc.results;
 
   // Obtain unique list of datasets.

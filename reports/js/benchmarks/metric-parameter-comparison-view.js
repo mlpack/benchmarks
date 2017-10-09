@@ -113,7 +113,7 @@ mpc.paramSelect = function()
   var param_select_box = document.getElementById("param_select");
   var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
   // Parse out actual parameters.
-  mpc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  mpc.param_name = param_name_full.split("(").slice(0, -1).join("(").replace(/^\s+|\s+$/g, ''); // At higher scope.
   if (mpc.param_name == "[no parameters]") { mpc.param_name = ""; }
 
   if (mpc.param_name == "-")
