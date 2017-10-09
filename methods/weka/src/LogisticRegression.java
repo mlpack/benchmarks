@@ -8,6 +8,7 @@
 import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.core.converters.CSVLoader;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
@@ -29,7 +30,8 @@ public class LogisticRegression {
           + "                the last row of the input file.\n\n"
           + "Options:\n\n"
           + "-t [string]   Optional file containing containing\n"
-          + "              test dataset");
+          + "              test dataset\n"
+          + "-m [int]      Maximum number of iterations\n");
 
   public static HashMap<Integer, Double> createClassMap(Instances Data) {
    HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
@@ -69,6 +71,8 @@ public class LogisticRegression {
 
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
+      if (source.getLoader() instanceof CSVLoader)
+        ((CSVLoader) source.getLoader()).setNoHeaderRowPresent(true);
       Instances data = source.getDataSet();
 
       // Transform numeric class to nominal class because the
@@ -81,12 +85,19 @@ public class LogisticRegression {
       nm.setInputFormat(data);
       data = Filter.useFilter(data, nm);
 
+      boolean hasMaxIters = false;
+      int maxIter = Integer.parseInt(Utils.getOption('m', args));
+      if (maxIter != 0)
+        hasMaxIters = true;
+
       // Did the user pass a test file?
       String testFile = Utils.getOption('t', args);
       Instances testData = null;
       if (testFile.length() != 0)
       {
         source = new DataSource(testFile);
+        if (source.getLoader() instanceof CSVLoader)
+          ((CSVLoader) source.getLoader()).setNoHeaderRowPresent(true);
         testData = source.getDataSet();
 
         // Weka makes the assumption that the structure of the training and test
@@ -122,6 +133,8 @@ public class LogisticRegression {
       // Perform Logistic Regression.
       timer.StartTimer("total_time");
       weka.classifiers.functions.Logistic model = new weka.classifiers.functions.Logistic();
+      if (hasMaxIters)
+        model.setMaxIts(maxIter);
       model.buildClassifier(data);
 
       // Use the testdata to evaluate the modell.
@@ -140,7 +153,7 @@ public class LogisticRegression {
           }
           FileWriter writer = new FileWriter(probabs.getName(), false);
 
-          File predictions = new File("weka_lr_predictions.csv");
+          File predictions = new File("weka_predicted.csv");
           if(!predictions.exists()) {
             predictions.createNewFile();
           }

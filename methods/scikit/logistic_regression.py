@@ -85,7 +85,7 @@ class LogisticRegression(object):
       # Use the last row of the training set as the responses.
       X, y = SplitTrainData(self.dataset)
       if "algorithm" in options:
-        self.opts["algorithm"] = str(options.pop("algorithm"))
+        self.opts["solver"] = str(options.pop("algorithm"))
       if "epsilon" in options:
         self.opts["epsilon"] = float(options.pop("epsilon"))
       if "max_iterations" in options:

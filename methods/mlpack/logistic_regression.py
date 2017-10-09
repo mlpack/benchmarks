@@ -98,7 +98,7 @@ class LogisticRegression(object):
       optionsStr = "-e " + str(options.pop("epsilon"))
     if "max_iterations" in options:
       optionsStr = optionsStr + " -n " + str(options.pop("max_iterations"))
-    if "optimizer" in options:
+    if "algorithm" in options:
       optionsStr = optionsStr + " -O " + str(options.pop("optimizer"))
     if "step_size" in options:
       optionsStr = optionsStr + " -s " + str(options.pop("step_size"))
