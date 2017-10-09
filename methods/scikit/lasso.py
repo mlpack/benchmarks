@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class LASSO(object):
   successful.
   '''
   def LASSOScikit(self, options):
-    def RunLASSOScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLASSOScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -67,14 +69,14 @@ class LASSO(object):
           model.fit(inputData, responsesData)
           out = model.coef_
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunLASSOScikit, self.timeout)
+    try:
+      return RunLASSOScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Lasso Regression. If the method has been successfully completed

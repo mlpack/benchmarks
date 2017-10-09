@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,6 +48,7 @@ class LinearRidgeRegression(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
+    self.model = None
 
   '''
   Use the shogun libary to implement Linear Ridge Regression.
@@ -56,7 +58,8 @@ class LinearRidgeRegression(object):
   successful.
   '''
   def LinearRidgeRegressionShogun(self, options):
-    def RunLinearRidgeRegressionShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLinearRidgeRegressionShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -88,14 +91,20 @@ class LinearRidgeRegression(object):
             model.apply_regression(RealFeatures(testSet.T))
 
       except Exception as e:
-        q.put(-1)
-        return -1
+        return [-1]
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return [totalTimer.ElapsedTime(), model]
 
-    return timeout(RunLinearRidgeRegressionShogun, self.timeout)
+    try:
+      result = RunLinearRidgeRegressionShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
+
+    if len(result) > 1:
+      self.model = result[1]
+      return result[0]
+
+    return result[0]
 
   '''
   Perform Linear Ridge Regression. If the method has been successfully completed
@@ -115,24 +124,10 @@ class LinearRidgeRegression(object):
     metrics = {'Runtime' : results}
 
     if len(self.dataset) >= 3:
-
-      X, y = SplitTrainData(self.dataset)
-      if "alpha" in options:
-        tau = float(options.pop("alpha"))
-      else:
-        Log.Fatal("Required parameter 'alpha' not specified!")
-        raise Exception("missing parameter")
-
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-      model = LRR(tau, RealFeatures(X.T), RegressionLabels(y))
-      model.train()
-
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      predictedlabels = model.apply_regression(RealFeatures(testData.T)).get_labels()
+      predictedlabels = self.model.apply_regression(RealFeatures(testData.T)).get_labels()
 
       SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
       metrics['Simple MSE'] = SimpleMSE

@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class ICA(object):
   successful.
   '''
   def ICAScikit(self, options):
-    def RunICAScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunICAScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -61,14 +63,12 @@ class ICA(object):
         opts["algorithm"] = str(options.pop("algorithm"))
         if opts["algorithm"] not in ['parallel', 'deflation']:
           Log.Fatal("Invalid value for algorithm: "+ str(algorithm.group(1))+" .Must be either parallel or deflation")
-          q.put(-1)
           return -1
 
       if "function" in options:
         opts["fun"] = str(options.pop("function"))
         if opts["fun"] not in ['logcosh', 'exp', 'cube']:
           Log.Fatal("Invalid value for fun: "+ str(fun.group(1))+" .Must be either logcosh,exp or cube")
-          q.put(-1)
           return -1
 
       if "tolerance" in options:
@@ -80,14 +80,14 @@ class ICA(object):
           model = FastICA(**opts)
           ic = model.fit(data).transform(data)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunICAScikit, self.timeout)
+    try:
+      return RunICAScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform independent component analysis. If the method has been successfully

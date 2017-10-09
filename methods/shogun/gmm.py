@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -48,7 +49,8 @@ class GMM(object):
   successful.
   '''
   def GMMShogun(self, options):
-    def RunGMMShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunGMMShogun():
       totalTimer = Timer()
 
       try:
@@ -79,14 +81,14 @@ class GMM(object):
           model.train_em(1e-9, n, 1e-9)
       except Exception as e:
         Log.Info("Exception: " + str(e))
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunGMMShogun, self.timeout)
+    try:
+      return RunGMMShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully

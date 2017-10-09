@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -73,7 +74,8 @@ class LogisticRegression(object):
   successful.
   '''
   def LogisticRegressionShogun(self, options):
-    def RunLogisticRegressionShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLogisticRegressionShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -105,23 +107,24 @@ class LogisticRegression(object):
             self.predictions = pred.get_labels()
 
       except Exception as e:
-        q.put(-1)
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
-      else:
-        q.put(time)
-      return time
+        return [time, self.predictions]
+      return [time]
 
-    result = timeout(RunLogisticRegressionShogun, self.timeout)
+    try:
+      result = RunLogisticRegressionShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     # Check for error, in this case the tuple doesn't contain extra information.
     if len(result) > 1:
       self.predictions = result[1]
       return result[0]
-   
-    return result
+
+    return result[0]
 
 
   '''

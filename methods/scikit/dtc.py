@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -70,7 +71,8 @@ class DTC(object):
   successful.
   '''
   def DTCScikit(self, options):
-    def RunDTCScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunDTCScikit():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -107,19 +109,18 @@ class DTC(object):
           # Run Decision Tree Classifier on the test dataset.
           self.predictions = self.model.predict(testData)
       except Exception as e:
-        Log.Debug(str(e))
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
+        return [time, self.predictions]
+      return [time]
 
-      return time
+    try:
+      result = RunDTCScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
-    result = timeout(RunDTCScikit, self.timeout)
     # Check for error, in this case the list doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]

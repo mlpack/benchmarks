@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -71,7 +72,8 @@ class LogisticRegression(object):
   successful.
   '''
   def LogisticRegressionScikit(self, options):
-    def RunLogisticRegressionScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLogisticRegressionScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -101,21 +103,23 @@ class LogisticRegression(object):
           if len(self.dataset) > 1:
             self.predictions = self.model.predict(testSet)
       except Exception as e:
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
-      return time
+        return [time, self.predictions]
 
-    result = timeout(RunLogisticRegressionScikit, self.timeout)
+      return [time]
+
+    try:
+      result = RunLogisticRegressionScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     # Check for error, in this case the list doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]
-    
+
     return result[0]
 
   '''
@@ -137,11 +141,8 @@ class LogisticRegression(object):
     metrics = {'Runtime' : results}
 
     if len(self.dataset) >= 3:
-      
       truelabels = LoadDataset(self.dataset[2])
-
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      
       metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
       metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
       metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)

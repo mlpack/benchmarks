@@ -5,6 +5,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -65,7 +66,8 @@ class ADABOOST(object):
   successful.
   '''
   def ADABOOSTMilk(self, options):
-    def RunADABOOSTMilk(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunADABOOSTMilk():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -75,19 +77,18 @@ class ADABOOST(object):
       try:
         self.model = self.BuildModel()
         with totalTimer:
-         self.model = self.model.train(trainData, labels)
-          
+          self.model = self.model.train(trainData, labels)
+
       except Exception as e:
-        Log.Debug(str(e))
-        q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
-
       return time
 
-    return timeout(RunADABOOSTMilk, self.timeout)
+    try:
+      return RunADABOOSTMilk()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the AdaBoost classifier. If the method has been

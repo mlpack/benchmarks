@@ -40,7 +40,7 @@ class DecisionStump_MLPACK_TEST(unittest.TestCase):
     self.assertEqual(self.instance.verbose, self.verbose)
     self.assertEqual(self.instance.timeout, self.timeout)
     self.assertEqual(self.instance.dataset, self.dataset)
-  
+
   '''
   Test the 'RunMetrics' function.
   '''
@@ -83,6 +83,6 @@ class DecisionStump_WEKA_TEST(unittest.TestCase):
     self.assertTrue(result["ACC"] > 0)
     self.assertTrue(result["Precision"] > 0)
     self.assertTrue(result["Recall"] > 0)
-    
+
 if __name__ == '__main__':
   unittest.main()

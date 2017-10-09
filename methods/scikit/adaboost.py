@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -71,7 +72,8 @@ class ADABOOST(object):
   successful.
   '''
   def ADABOOSTScikit(self, options):
-    def RunADABOOSTScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunADABOOSTScikit():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -99,19 +101,18 @@ class ADABOOST(object):
           # Run AdaBoost classifier on the test dataset.
           self.predictions = self.model.predict(testData)
       except Exception as e:
-        Log.Debug(str(e))
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
+        return [time, self.predictions]
+      return [time]
 
-      return time
+    try:
+      result = RunADABOOSTScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
-    result = timeout(RunADABOOSTScikit, self.timeout)
     # Check for error, in this case the list returned doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]

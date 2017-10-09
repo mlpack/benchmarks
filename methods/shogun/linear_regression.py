@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -57,7 +58,8 @@ class LinearRegression(object):
   successful.
   '''
   def LinearRegressionShogun(self, options):
-    def RunLinearRegressionShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLinearRegressionShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -86,14 +88,14 @@ class LinearRegression(object):
             self.predictions = pred.get_labels()
 
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunLinearRegressionShogun, self.timeout)
+    try:
+      return RunLinearRegressionShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Linear Regression. If the method has been successfully completed

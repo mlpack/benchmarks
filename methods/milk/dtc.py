@@ -6,6 +6,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -66,7 +67,8 @@ class DTC(object):
   successful.
   '''
   def DTCMilk(self, options):
-    def RunDTCMilk(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunDTCMilk():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -85,15 +87,15 @@ class DTC(object):
         with totalTimer:
           self.model = self.model.train(trainData, labels)
       except Exception as e:
-        Log.Debug(e)
-        q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
       return time
 
-    return timeout(RunDTCMilk, self.timeout)
+    try:
+      return RunDTCMilk()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the Decision Tree Classifier. If the method has been

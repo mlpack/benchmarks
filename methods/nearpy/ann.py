@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -51,7 +52,8 @@ class ANN(object):
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    def RunAnnNearpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunAnnNearpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -71,14 +73,13 @@ class ANN(object):
           for i in range(len(queryData)):
               v = engine.neighbours(queryData[i])
         except Exception as e:
-          Log.Info(e)
-          q.put(e)
           return -1
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunAnnNearpy, self.timeout)
+    try:
+      return RunAnnNearpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform All K-Nearest-Neighbors. If the method has been successfully completed

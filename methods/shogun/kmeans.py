@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -52,7 +53,8 @@ class KMEANS(object):
   successful.
   '''
   def KMeansShogun(self, options):
-    def RunKMeansShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKMeansShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -70,7 +72,6 @@ class KMEANS(object):
         clusters = int(options.pop("clusters"))
       elif len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
-        q.put(-1)
         return -1
       if "max_iterations" in options:
         maxIterations = int(options.pop("max_iterations"))
@@ -101,14 +102,14 @@ class KMEANS(object):
           labels = model.apply().get_labels()
           centers = model.get_cluster_centers()
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunKMeansShogun, self.timeout)
+    try:
+      return RunKMeansShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform K-Means Clustering. If the method has been successfully

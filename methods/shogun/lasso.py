@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -57,7 +58,8 @@ class LASSO(object):
   successful.
   '''
   def LASSOShogun(self, options):
-    def RunLASSOShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLASSOShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -88,14 +90,14 @@ class LASSO(object):
           model.train(RealFeatures(X.T))
 
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunLASSOShogun, self.timeout)
+    try:
+      return RunLASSOShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Lasso Regression. If the method has been successfully completed

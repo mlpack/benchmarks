@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -28,7 +29,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from sklearn.lda import LDA as SLDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as SLDA
 
 '''
 This class implements the Linear Discriminant Analysis benchmark.
@@ -70,7 +71,8 @@ class LDA(object):
   successful.
   '''
   def LDAScikit(self, options):
-    def RunLDAScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLDAScikit():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -87,22 +89,21 @@ class LDA(object):
           # Run Linear Discriminant Analysis on the test dataset.
           self.predictions = self.model.predict(testData)
       except Exception as e:
-        Log.Debug(str(e))
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
+        return [time, self.predictions]
+      return [time]
 
-      return time
+    try:
+      result = RunLDAScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
-    result = timeout(RunLDAScikit, self.timeout)
     if len(self.dataset) > 1:
       self.predictions = result[1]
-    
+
     return result[0]
 
   '''

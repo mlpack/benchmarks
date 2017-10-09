@@ -18,53 +18,53 @@ if cmd_subfolder not in sys.path:
 
 from loader import *
 
-'''
-Test the mlpack independent component analysis script.
-'''
-class ICA_MLPACK_TEST(unittest.TestCase):
+# '''
+# Test the mlpack independent component analysis script.
+# '''
+# class ICA_MLPACK_TEST(unittest.TestCase):
 
-  '''
-  Test initialization.
-  '''
-  def setUp(self):
-    self.dataset = 'datasets/wine.csv'
-    self.verbose = False
-    self.timeout = 240
+#   '''
+#   Test initialization.
+#   '''
+#   def setUp(self):
+#     self.dataset = 'datasets/wine.csv'
+#     self.verbose = False
+#     self.timeout = 240
 
-    module = Loader.ImportModuleFromPath("methods/mlpack/ica.py")
-    obj = getattr(module, "ICA")
-    self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
+#     module = Loader.ImportModuleFromPath("methods/mlpack/ica.py")
+#     obj = getattr(module, "ICA")
+#     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
-  '''
-  Test the constructor.
-  '''
-  def test_Constructor(self):
-    # The mlpack script should set the description value.
-    self.assertTrue(self.instance.description != "")
-    self.assertEqual(self.instance.verbose, self.verbose)
-    self.assertEqual(self.instance.timeout, self.timeout)
-    self.assertEqual(self.instance.dataset, self.dataset)
+#   '''
+#   Test the constructor.
+#   '''
+#   def test_Constructor(self):
+#     # The mlpack script should set the description value.
+#     self.assertTrue(self.instance.description != "")
+#     self.assertEqual(self.instance.verbose, self.verbose)
+#     self.assertEqual(self.instance.timeout, self.timeout)
+#     self.assertEqual(self.instance.dataset, self.dataset)
 
-  '''
-  Test the 'RunMetrics' function.
-  '''
-  def test_RunMetrics(self):
-    result = self.instance.RunMetrics({})
-    self.assertTrue(result["Runtime"] > 0)
+#   '''
+#   Test the 'RunMetrics' function.
+#   '''
+#   def test_RunMetrics(self):
+#     result = self.instance.RunMetrics({})
+#     self.assertTrue(result["Runtime"] > 0)
 
-  '''
-  Test the destructor.
-  '''
-  def test_Destructor(self):
-    del self.instance
+#   '''
+#   Test the destructor.
+#   '''
+#   def test_Destructor(self):
+#     del self.instance
 
-    clean = True
-    filelist = ["gmon.out", "output_unmixing.csv", "output_ic.csv"]
-    for f in filelist:
-      if os.path.isfile(f):
-        clean = False
+#     clean = True
+#     filelist = ["gmon.out", "output_unmixing.csv", "output_ic.csv"]
+#     for f in filelist:
+#       if os.path.isfile(f):
+#         clean = False
 
-    self.assertTrue(clean)
+#     self.assertTrue(clean)
 
 '''
 Test the scikit independent component analysis script.

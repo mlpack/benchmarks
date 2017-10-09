@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class GMM(object):
   successful.
   '''
   def GMMScikit(self, options):
-    def RunGMMScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunGMMScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -77,14 +79,14 @@ class GMM(object):
         with totalTimer:
           model.fit(dataPoints)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunGMMScikit, self.timeout)
+    try:
+      return RunGMMScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Gaussian Mixture Model. If the method has been successfully completed

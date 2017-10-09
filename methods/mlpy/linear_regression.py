@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -73,7 +74,8 @@ class LinearRegression(object):
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    def RunLinearRegressionMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLinearRegressionMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -96,18 +98,19 @@ class LinearRegression(object):
             #prediction on the test data.
             pred = model.pred(test_data)
       except Exception as e:
-        q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
 
       if len(self.dataset) >= 2:
         np.savetxt("mlpy_lr_predictions.csv", pred, delimiter="\n")
 
       return time
 
-    return timeout(RunLinearRegressionMlpy, self.timeout)
+    try:
+      return RunLinearRegressionMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Linear Regression. If the method has been successfully completed

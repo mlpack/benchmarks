@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -47,7 +48,8 @@ class KMEANS(object):
   successful.
   '''
   def KMeansMlpy(self, options):
-    def RunKMeansMlpy(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKMeansMlpy():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -61,11 +63,9 @@ class KMEANS(object):
         if clusters < 1:
           Log.Fatal("Invalid number of clusters requested! Must be greater than or "
               + "equal to 1.")
-          q.put(-1)
           return -1
       else:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
-        q.put(-1)
         return -1
 
       build_opts = {}
@@ -81,14 +81,14 @@ class KMEANS(object):
           # Create the K-Means object and perform K-Means clustering.
           kmeans = mlpy.kmeans(data, clusters, **build_opts)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunKMeansMlpy, self.timeout)
+    try:
+      return RunKMeansMlpy()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed

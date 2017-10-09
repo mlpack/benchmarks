@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -38,7 +39,7 @@ class LARS(object):
     self.verbose = verbose
     self.dataset = dataset
     self.timeout = timeout
-    
+
   '''
   Use the scikit libary to implement Least Angle Regression.
 
@@ -47,7 +48,8 @@ class LARS(object):
   successful.
   '''
   def LARSScikit(self, options):
-    def RunLARSScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunLARSScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -74,14 +76,14 @@ class LARS(object):
           model.fit(inputData, responsesData)
           out = model.coef_
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunLARSScikit, self.timeout)
+    try:
+      return RunLARSScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Least Angle Regression. If the method has been successfully completed

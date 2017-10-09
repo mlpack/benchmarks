@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -52,7 +53,8 @@ class PCA(object):
   successful.
   '''
   def PCAShogun(self, options):
-    def RunPCAShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunPCAShogun():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -67,7 +69,6 @@ class PCA(object):
             if (k > self.data.shape[1]):
               Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
                   + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
-              q.put(-1)
               return -1
           else:
             k = self.data.shape[1]
@@ -88,14 +89,14 @@ class PCA(object):
           prep.init(feat)
           prep.apply_to_feature_matrix(feat)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunPCAShogun, self.timeout)
+    try:
+      return RunPCAShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform Principal Components Analysis. If the method has been successfully

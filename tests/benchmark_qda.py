@@ -28,7 +28,7 @@ class QDA_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
     self.verbose = False
-    self.timeout = 240
+    self.timeout = 540
 
     module = Loader.ImportModuleFromPath("methods/shogun/qda.py")
     obj = getattr(module, "QDA")
@@ -63,7 +63,7 @@ class QDA_SCIKIT_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/abalone7_train.csv', 'datasets/abalone7_test.csv', 'datasets/abalone7_labels.csv']
     self.verbose = False
-    self.timeout = 240
+    self.timeout = 540
 
     module = Loader.ImportModuleFromPath("methods/scikit/qda.py")
     obj = getattr(module, "QDA")
@@ -98,7 +98,7 @@ class QDA_MATLAB_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 240
+    self.timeout = 540
 
     module = Loader.ImportModuleFromPath("methods/matlab/qda.py")
     obj = getattr(module, "QDA")
@@ -133,7 +133,7 @@ class QDA_R_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
-    self.timeout = 500 # Changed because installing Packages might take time.
+    self.timeout = 700 # Changed because installing Packages might take time.
 
     module = Loader.ImportModuleFromPath("methods/R/qda.py")
     obj = getattr(module, "QDA")

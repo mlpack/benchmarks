@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -44,7 +45,8 @@ class KMEANS(object):
   successful.
   '''
   def KMeansMilk(self, options):
-    def RunKMeansMilk(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunKMeansMilk():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -71,12 +73,10 @@ class KMEANS(object):
       # Now do validation of options.
       if not clusters and len(self.dataset) != 2:
         Log.Fatal("Required option: Number of clusters or cluster locations.")
-        q.put(-1)
         return -1
       elif (not clusters or int(clusters) < 1) and len(self.dataset) != 2:
         Log.Fatal("Invalid number of clusters requested! Must be greater than"
             + " or equal to 1.")
-        q.put(-1)
         return -1
 
       m = 1000 if not maxIterations else int(maxIterations)
@@ -97,14 +97,15 @@ class KMEANS(object):
 
       except Exception as e:
         Log.Fatal("Exception: " + str(e))
-        q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
       return time
 
-    return timeout(RunKMeansMilk, self.timeout)
+    try:
+      return RunKMeansMilk()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform K-Means Clustering. If the method has been successfully completed

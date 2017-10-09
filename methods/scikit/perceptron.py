@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -71,7 +72,8 @@ class PERCEPTRON(object):
   successful.
   '''
   def PerceptronScikit(self, options):
-    def RunPerceptronScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunPerceptronScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -101,21 +103,22 @@ class PERCEPTRON(object):
           if len(self.dataset) >= 2:
             self.predictions = self.model.predict(testSet)
       except Exception as e:
-        q.put([-1])
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put([time, self.predictions])
-      else:
-        q.put([time])
-        
-      return time
+        return [time, self.predictions]
 
-    result = timeout(RunPerceptronScikit, self.timeout)
+      return [time]
+
+    try:
+      result = RunPerceptronScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     if len(result) > 1:
       self.predictions = result[1]
-    
+
     return result[0]
 
   '''

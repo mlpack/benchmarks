@@ -126,7 +126,7 @@ class DTC(object):
     pattern = re.compile(br"""
         .*?total_time: (?P<total_time>.*?)s.*?
         """, re.VERBOSE|re.MULTILINE|re.DOTALL)
- 
+
     match = pattern.match(data)
     if not match:
       Log.Fatal("Can't parse the data: wrong format")

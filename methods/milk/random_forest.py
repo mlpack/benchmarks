@@ -6,6 +6,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -66,7 +67,8 @@ class RANDOMFOREST(object):
   successful.
   '''
   def RANDOMFORESTMilk(self, options):
-    def RunRANDOMFORESTMilk(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunRANDOMFORESTMilk():
       totalTimer = Timer()
 
       Log.Info("Loading dataset", self.verbose)
@@ -85,14 +87,15 @@ class RANDOMFOREST(object):
         with totalTimer:
           self.model = self.model.train(trainData, labels)
       except Exception as e:
-        q.put(-1)
         return -1
 
       time = totalTimer.ElapsedTime()
-      q.put(time)
       return time
 
-    return timeout(RunRANDOMFORESTMilk, self.timeout)
+    try:
+      return RunRANDOMFORESTMilk()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform the Random Forest Classifier. If the method has been

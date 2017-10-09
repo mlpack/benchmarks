@@ -7,6 +7,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -65,7 +66,8 @@ class NBC(object):
   successful.
   '''
   def NBCShogun(self, options):
-    def RunNBCShogun(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunNBCShogun():
       totalTimer = Timer()
       self.predictions = None
       Log.Info("Loading dataset", self.verbose)
@@ -87,26 +89,27 @@ class NBC(object):
 
           # Run Naive Bayes Classifier on the test dataset.
           self.predictions = self.model.apply_multiclass(testFeat).get_labels()
-         
+
       except Exception as e:
-        q.put(-1)
-        return -1
+        return [-1]
 
       time = totalTimer.ElapsedTime()
       if len(self.dataset) > 1:
-        q.put((time, self.predictions))
-      else:
-        q.put(time)
+        return [time, self.predictions]
 
-      return time
+      return [time]
 
-    result =  timeout(RunNBCShogun, self.timeout)
+    try:
+      result = RunNBCShogun()
+    except timeout_decorator.TimeoutError:
+      return -1
+
     # Check for error, in this case the tuple doesn't contain extra information.
     if len(result) > 1:
        self.predictions = result[1]
        return result[0]
 
-    return result
+    return result[0]
 
   '''
   Perform Naive Bayes Classifier. If the method has been successfully completed

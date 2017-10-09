@@ -8,6 +8,7 @@
 import os
 import sys
 import inspect
+import timeout_decorator
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -48,7 +49,8 @@ class SVR(object):
   successful.
   '''
   def SVRScikit(self, options):
-    def RunSVRScikit(q):
+    @timeout_decorator.timeout(self.timeout)
+    def RunSVRScikit():
       totalTimer = Timer()
 
       # Load input dataset.
@@ -76,14 +78,14 @@ class SVR(object):
           model = SSVR(**opts)
           model.fit(X, y)
       except Exception as e:
-        q.put(-1)
         return -1
 
-      time = totalTimer.ElapsedTime()
-      q.put(time)
-      return time
+      return totalTimer.ElapsedTime()
 
-    return timeout(RunSVRScikit, self.timeout)
+    try:
+      return RunSVRScikit()
+    except timeout_decorator.TimeoutError:
+      return -1
 
   '''
   Perform SVR Regression. If the method has been successfully completed

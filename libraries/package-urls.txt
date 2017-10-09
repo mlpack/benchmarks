@@ -1,3 +1,4 @@
+dtimeout https://github.com/pnpnpn/timeout-decorator/archive/master.tar.gz
 ann https://www.cs.umd.edu/~mount/ANN/Files/1.1.2/ann_1.1.2.tar.gz
 flann https://github.com/mariusmuja/flann/archive/1.9.1.tar.gz
 HLearn https://github.com/mikeizbicki/HLearn/archive/2.0.0.0.tar.gz
