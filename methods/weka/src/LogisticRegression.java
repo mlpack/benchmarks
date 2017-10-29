@@ -25,11 +25,11 @@ public class LogisticRegression {
   private static final String USAGE = String
   .format("Logistic Regression.\n\n"
           + "Required options:\n"
-          + "-i [string]     File containing X (regressors).\n"
+          + "-t [string]     File containing X (regressors).\n"
           + "                The responses are assumed to be\n"
           + "                the last row of the input file.\n\n"
           + "Options:\n\n"
-          + "-t [string]   Optional file containing containing\n"
+          + "-T [string]   Optional file containing containing\n"
           + "              test dataset\n"
           + "-m [int]      Maximum number of iterations\n");
 
@@ -64,7 +64,7 @@ public class LogisticRegression {
     Timers timer = new Timers();
     try {
       // Get the data set path.
-      String regressorsFile = Utils.getOption('i', args);
+      String regressorsFile = Utils.getOption('t', args);
       if (regressorsFile.length() == 0)
         throw new IllegalArgumentException("Required option: File containing" +
             " the regressors.");
@@ -91,7 +91,7 @@ public class LogisticRegression {
         hasMaxIters = true;
 
       // Did the user pass a test file?
-      String testFile = Utils.getOption('t', args);
+      String testFile = Utils.getOption('T', args);
       Instances testData = null;
       if (testFile.length() != 0)
       {
