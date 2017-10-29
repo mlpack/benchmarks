@@ -8,7 +8,7 @@ export JAVAPATH := $(shell echo $(ROOTPATH))/libraries/share/
 export DEBUGBINPATH := $(shell echo $(ROOTPATH))/libraries/debug/bin/
 export DEBUGINCLUDEPATH := $(shell echo $(ROOTPATH))/libraries/debug/include/
 export DEBUGLIBPATH := $(shell echo $(ROOTPATH))/libraries/debug/lib/
- 
+
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.3)
 ifndef PYTHON_BIN
@@ -89,6 +89,7 @@ run: .check .run
 memory: .check .check_memory .memory
 scripts: .scripts
 setup: .check .setup
+datasets: .check .datasets
 checks: .check .checks
 
 .help:
@@ -123,6 +124,7 @@ checks: .check .checks
 	@echo "  memory [parameters]    Get memory profiling information with the given config."
 	@echo "  scripts                Compile any benchmarking scripts."
 	@echo "  setup                  Download packages and install into libraries/."
+	@echo "  datasets               Download datasets into datasets/."
 	@echo "  help                   Show this info."
 	@echo "  checks                 Run unit tests for benchmarking scripts."
 	@echo ""
@@ -195,6 +197,9 @@ endif
 
 .setup:
 	cd libraries/ && ./download_packages.sh && ./install_all.sh $(BUILD_CORES)
+
+.datasets:
+	cd datasets/ && ./download_datasets.sh
 
 .checks:
 	$(PYTHON_BIN) tests/tests.py
