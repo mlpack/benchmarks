@@ -153,6 +153,9 @@ class lr_mlpack_test(unittest.TestCase):
   def testRunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result['Runtime'] > 0)
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
 
 '''
 Test the Weka Logistic Regression Classifier script.
@@ -185,9 +188,9 @@ class LR_WEKA_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-    self.assertTrue(result["ACC"] > 0)
-    self.assertTrue(result["Precision"] > 0)
-    self.assertTrue(result["Recall"] > 0)
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

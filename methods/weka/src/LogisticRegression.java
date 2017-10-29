@@ -33,21 +33,6 @@ public class LogisticRegression {
           + "              test dataset\n"
           + "-m [int]      Maximum number of iterations\n");
 
-  public static HashMap<Integer, Double> createClassMap(Instances Data) {
-   HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
-   int index = 0;
-   for(int i = 0; i < Data.numInstances(); i++) {
-    double cl = Data.instance(i).classValue();
-    Double class_i = new Double(cl);
-    if(!classMap.containsValue(class_i)) {
-      Integer ind = new Integer(index);
-      classMap.put(ind,class_i);
-      index++;
-    }
-   }
-   return classMap;
-  }
-
   public static int maxProb(double[] probs) {
     double prediction = 0;
     int index = 0;
@@ -86,9 +71,9 @@ public class LogisticRegression {
       data = Filter.useFilter(data, nm);
 
       boolean hasMaxIters = false;
-      int maxIter = Integer.parseInt(Utils.getOption('m', args));
-      if (maxIter != 0)
-        hasMaxIters = true;
+      int maxIter = 0;
+      if (Utils.getOptionPos('m', args) != -1)
+        maxIter = Integer.parseInt(Utils.getOption('m', args));
 
       // Did the user pass a test file?
       String testFile = Utils.getOption('T', args);
@@ -129,7 +114,6 @@ public class LogisticRegression {
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
-      HashMap<Integer, Double> classMap = createClassMap(data);
       // Perform Logistic Regression.
       timer.StartTimer("total_time");
       weka.classifiers.functions.Logistic model = new weka.classifiers.functions.Logistic();
@@ -164,16 +148,17 @@ public class LogisticRegression {
             double[] probabilities = probabilityList.get(i);
             String fdata = "";
             String predict = "";
-            for(int k=0; k<probabilities.length; k++) {
+            for(int k=0; k<probabilities.length - 1; k++) {
               fdata = fdata.concat(String.valueOf(probabilities[k]));
               fdata = fdata.concat(",");
             }
+            fdata = fdata.concat(
+                String.valueOf(probabilities[probabilities.length - 1]));
+            fdata = fdata.concat("\n");
 
             int predictionForInstance = maxProb(probabilities);
-            Integer c_index = new Integer(predictionForInstance);
-            Double predictedClass = classMap.get(c_index);
             writer.write(fdata);
-            writer_predict.write(String.valueOf(predictedClass.doubleValue()) + "\n");
+            writer_predict.write(String.valueOf(predictionForInstance) + "\n");
           }
           writer.close();
           writer_predict.close();

@@ -54,7 +54,7 @@ class LogisticRegression(object):
 
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
-    filelist = ["weka_predicted.csv"]
+    filelist = ["weka_predicted.csv", "weka_lr_probabilities.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
