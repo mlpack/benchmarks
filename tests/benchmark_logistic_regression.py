@@ -96,7 +96,8 @@ class LR_Milk_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv',
+        'datasets/ecoli_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -166,7 +167,8 @@ class LR_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.arff', 'datasets/iris_test.arff', 'datasets/iris_labels.csv']
+    self.dataset = ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv',
+        'datasets/ecoli_labels.csv']
     self.verbose = False
     self.timeout = 240
 
