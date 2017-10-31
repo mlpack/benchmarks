@@ -36,6 +36,7 @@ Benchmarks are run with the `make` command.
 * `make memory`     -- Get memory profiling information.
 * `make test`       -- Test the configuration file. Check for correct syntax and then try to open files referred in the configuration file.
 * `make setup`      -- Download and set up all of the libraries to compare against.
+* `make datasets`   -- Download datasets into the datasets/ folder.
 * `make scripts`    -- Make additional scripts.
 
 
@@ -100,11 +101,11 @@ Working directories
 
 ## Getting the datasets
 
-The datasets are kept in a separate repository as a git submodule. You can get the datasets by updating the submodule from within your working directory.
+You can get the datasets by running:
 
-    $ git submodule update --init
+    $ make datasets
 
-This will checkout the datasets from the benchmark-datasets repository and place them in your working directory.
+from within your working directory. This will download the datasets listed in ``datasets/dataset-urls.txt``.
 
 ## Configuration
 The benchmark script requires several parameters that specify the benchmark runs, the parameters of the graph to be generated, etc.
