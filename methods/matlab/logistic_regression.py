@@ -79,7 +79,7 @@ class LogisticRegression(object):
 
     # If the dataset contains two files then the second file is the test
     # file. In this case we add this to the command line.
-    if len(self.dataset) == 2:
+    if len(self.dataset) >= 2:
       inputCmd = "-i " + self.dataset[0] + " -t " + self.dataset[1]
     else:
       inputCmd = "-i " + self.dataset[0]
@@ -111,11 +111,15 @@ class LogisticRegression(object):
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 

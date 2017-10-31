@@ -54,7 +54,7 @@ class LogisticRegression(object):
 
   def __del__(self):
     Log.Info("Clean up.", self.verbose)
-    filelist = ["weka_predicted.csv"]
+    filelist = ["weka_predicted.csv", "weka_lr_probabilities.csv"]
     for f in filelist:
       if os.path.isfile(f):
         os.remove(f)
@@ -69,6 +69,11 @@ class LogisticRegression(object):
   def RunMetrics(self, options):
     Log.Info("Perform Logistic Regression.", self.verbose)
 
+    maxIterStr = ""
+    if 'max_iterations' in options:
+      maxIterStr = " -m " + str(options['max_iterations']) + " "
+      options.pop('max_iterations')
+
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
@@ -79,8 +84,8 @@ class LogisticRegression(object):
 
     # Split the command using shell-like syntax.
     cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
-        ":methods/weka" + " LOGISTICREGRESSION -t " + self.dataset[0] + " -T " +
-        self.dataset[1])
+        ":methods/weka" + " LogisticRegression -t " + self.dataset[0] + " -T " +
+        self.dataset[1] + maxIterStr)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
@@ -105,11 +110,14 @@ class LogisticRegression(object):
       truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
       metrics['Runtime'] = timer.total_time
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 

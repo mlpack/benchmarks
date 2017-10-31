@@ -96,7 +96,8 @@ class LR_Milk_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv',
+        'datasets/ecoli_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -153,6 +154,9 @@ class lr_mlpack_test(unittest.TestCase):
   def testRunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result['Runtime'] > 0)
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
 
 '''
 Test the Weka Logistic Regression Classifier script.
@@ -163,7 +167,8 @@ class LR_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.arff', 'datasets/iris_test.arff', 'datasets/iris_labels.csv']
+    self.dataset = ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv',
+        'datasets/ecoli_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -185,9 +190,9 @@ class LR_WEKA_TEST(unittest.TestCase):
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
     self.assertTrue(result["Runtime"] > 0)
-    self.assertTrue(result["ACC"] > 0)
-    self.assertTrue(result["Precision"] > 0)
-    self.assertTrue(result["Recall"] > 0)
+    self.assertTrue(result["Avg Accuracy"] > 0)
+    self.assertTrue(result["MultiClass Precision"] > 0)
+    self.assertTrue(result["MultiClass Recall"] > 0)
 
 if __name__ == '__main__':
   unittest.main()

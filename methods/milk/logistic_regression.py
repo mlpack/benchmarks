@@ -80,6 +80,9 @@ class LogisticRegression(object):
         self.model = self.BuildModel()
         with totalTimer:
           self.model = self.model.train(trainData, labels)
+          if len(self.dataset) > 1:
+            # We get back probabilities; cast these to classes.
+            self.predictions = np.greater(self.model.apply(testData), 0.5)
       except Exception as e:
         return -1
 
@@ -112,4 +115,19 @@ class LogisticRegression(object):
 
     # Datastructure to store the results.
     metrics = {'Runtime' : results}
+
+    if len(self.dataset) >= 3:
+      truelabels = LoadDataset(self.dataset[2])
+
+      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+
+      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
+      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+
     return metrics

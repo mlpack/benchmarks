@@ -8,6 +8,7 @@
 import java.io.IOException;
 import weka.core.*;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.core.converters.CSVLoader;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 
@@ -24,27 +25,13 @@ public class LogisticRegression {
   private static final String USAGE = String
   .format("Logistic Regression.\n\n"
           + "Required options:\n"
-          + "-i [string]     File containing X (regressors).\n"
+          + "-t [string]     File containing X (regressors).\n"
           + "                The responses are assumed to be\n"
           + "                the last row of the input file.\n\n"
           + "Options:\n\n"
-          + "-t [string]   Optional file containing containing\n"
-          + "              test dataset");
-
-  public static HashMap<Integer, Double> createClassMap(Instances Data) {
-   HashMap<Integer, Double> classMap = new HashMap<Integer, Double>();
-   int index = 0;
-   for(int i = 0; i < Data.numInstances(); i++) {
-    double cl = Data.instance(i).classValue();
-    Double class_i = new Double(cl);
-    if(!classMap.containsValue(class_i)) {
-      Integer ind = new Integer(index);
-      classMap.put(ind,class_i);
-      index++;
-    }
-   }
-   return classMap;
-  }
+          + "-T [string]   Optional file containing containing\n"
+          + "              test dataset\n"
+          + "-m [int]      Maximum number of iterations\n");
 
   public static int maxProb(double[] probs) {
     double prediction = 0;
@@ -62,13 +49,15 @@ public class LogisticRegression {
     Timers timer = new Timers();
     try {
       // Get the data set path.
-      String regressorsFile = Utils.getOption('i', args);
+      String regressorsFile = Utils.getOption('t', args);
       if (regressorsFile.length() == 0)
         throw new IllegalArgumentException("Required option: File containing" +
             " the regressors.");
 
       // Load input dataset.
       DataSource source = new DataSource(regressorsFile);
+      if (source.getLoader() instanceof CSVLoader)
+        ((CSVLoader) source.getLoader()).setNoHeaderRowPresent(true);
       Instances data = source.getDataSet();
 
       // Transform numeric class to nominal class because the
@@ -81,12 +70,19 @@ public class LogisticRegression {
       nm.setInputFormat(data);
       data = Filter.useFilter(data, nm);
 
+      boolean hasMaxIters = false;
+      int maxIter = 0;
+      if (Utils.getOptionPos('m', args) != -1)
+        maxIter = Integer.parseInt(Utils.getOption('m', args));
+
       // Did the user pass a test file?
-      String testFile = Utils.getOption('t', args);
+      String testFile = Utils.getOption('T', args);
       Instances testData = null;
       if (testFile.length() != 0)
       {
         source = new DataSource(testFile);
+        if (source.getLoader() instanceof CSVLoader)
+          ((CSVLoader) source.getLoader()).setNoHeaderRowPresent(true);
         testData = source.getDataSet();
 
         // Weka makes the assumption that the structure of the training and test
@@ -118,10 +114,11 @@ public class LogisticRegression {
       if (data.classIndex() == -1)
         data.setClassIndex((data.numAttributes() - 1));
 
-      HashMap<Integer, Double> classMap = createClassMap(data);
       // Perform Logistic Regression.
       timer.StartTimer("total_time");
       weka.classifiers.functions.Logistic model = new weka.classifiers.functions.Logistic();
+      if (hasMaxIters)
+        model.setMaxIts(maxIter);
       model.buildClassifier(data);
 
       // Use the testdata to evaluate the modell.
@@ -140,7 +137,7 @@ public class LogisticRegression {
           }
           FileWriter writer = new FileWriter(probabs.getName(), false);
 
-          File predictions = new File("weka_lr_predictions.csv");
+          File predictions = new File("weka_predicted.csv");
           if(!predictions.exists()) {
             predictions.createNewFile();
           }
@@ -151,16 +148,17 @@ public class LogisticRegression {
             double[] probabilities = probabilityList.get(i);
             String fdata = "";
             String predict = "";
-            for(int k=0; k<probabilities.length; k++) {
+            for(int k=0; k<probabilities.length - 1; k++) {
               fdata = fdata.concat(String.valueOf(probabilities[k]));
               fdata = fdata.concat(",");
             }
+            fdata = fdata.concat(
+                String.valueOf(probabilities[probabilities.length - 1]));
+            fdata = fdata.concat("\n");
 
             int predictionForInstance = maxProb(probabilities);
-            Integer c_index = new Integer(predictionForInstance);
-            Double predictedClass = classMap.get(c_index);
             writer.write(fdata);
-            writer_predict.write(String.valueOf(predictedClass.doubleValue()) + "\n");
+            writer_predict.write(String.valueOf(predictionForInstance) + "\n");
           }
           writer.close();
           writer_predict.close();
