@@ -48,15 +48,38 @@ class Database:
     self.driver = driver
     self.error = 0
 
-    if driver == "mysql":
-      self.con = mdb.connect(host=host, port=port, user=user, db=database, passwd=password)
-      self.cur = self.con.cursor()
-      self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
+    self.Connect()
 
-    elif driver == "sqlite":
-      self.con = sqlite3.connect(database)
+  '''
+  Create to database.
+  '''
+  def Connect(self):
+    if self.driver == "mysql":
+      self.con = mdb.connect(host=self.host, port=self.port, user=self.user, db=self.database, passwd=self.password)
+      self.cur = self.con.cursor()
+      self.Execute('SET FOREIGN_KEY_CHECKS = 0')
+
+    elif self.driver == "sqlite":
+      self.con = sqlite3.connect(self.database)
       self.con.execute('pragma foreign_keys = on')
       self.cur = self.con.cursor()
+
+  '''
+  Execute the given command.
+  '''
+  def Execute(self, command, parameter=None):
+    try:
+      if parameter is None:
+        return self.Execute(command)
+      else:
+        return self.Execute(command, parameter)
+    except (AttributeError, mdb.OperationalError):
+      self.Connect()
+
+      if parameter is None:
+        return self.Execute(command)
+      else:
+        return self.Execute(command, parameter)
 
   '''
   Create a new build table.
@@ -73,7 +96,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -89,7 +112,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -109,7 +132,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -127,15 +150,15 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
       # Update methods table schema.
       try:
-        self.cur.execute("SELECT alias FROM methods")
+        self.Execute("SELECT alias FROM methods")
         self.cur.fetchall()
       except sqlite3.OperationalError as e:
-        self.cur.execute("ALTER TABLE methods ADD COLUMN alias TEXT");
+        self.Execute("ALTER TABLE methods ADD COLUMN alias TEXT");
         self.cur.fetchall()
 
   '''
@@ -162,7 +185,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -189,7 +212,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -216,7 +239,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -243,7 +266,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -262,7 +285,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(comand % "AUTO_INCREMENT")
+      self.Execute(comand % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(comand % "AUTOINCREMENT")
 
@@ -281,7 +304,7 @@ class Database:
         """
 
     if self.driver == "mysql":
-      self.cur.execute(command % "AUTO_INCREMENT")
+      self.Execute(command % "AUTO_INCREMENT")
     elif self.driver == "sqlite":
       self.con.executescript(command % "AUTOINCREMENT")
 
@@ -311,14 +334,14 @@ class Database:
       command = "INSERT INTO builds VALUES (NULL,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command, (datetime.datetime.now(), libaryId))
-        self.cur.execute("SELECT LAST_INSERT_ID()")
+        self.Execute(command, (datetime.datetime.now(), libaryId))
+        self.Execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?'),
+        self.Execute(command % ('?', '?'),
             (datetime.datetime.now(), libaryId))
 
-        self.cur.execute("SELECT last_insert_rowid()")
+        self.Execute("SELECT last_insert_rowid()")
 
       return self.cur.fetchall()[0][0]
 
@@ -339,12 +362,12 @@ class Database:
         command = "INSERT INTO metrics VALUES (NULL,%s,%s,%s,%s,%s,%s,%s)"
 
         if self.driver == "mysql":
-          self.cur.execute(command,
+          self.Execute(command,
               (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
                sweepElementId))
 
         elif self.driver == "sqlite":
-          self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?'),
+          self.Execute(command % ('?', '?', '?', '?', '?', '?', '?'),
               (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
                sweepElementId))
 
@@ -354,7 +377,7 @@ class Database:
         self.error = 1
         self.con = mdb.connect(host=self.host, port=self.port, user=self.user, db=self.database, passwd=self.password)
         self.cur = self.con.cursor()
-        self.cur.execute('SET FOREIGN_KEY_CHECKS = 0')
+        self.Execute('SET FOREIGN_KEY_CHECKS = 0')
 
         self.NewMetricResult(buildId, libaryId, metric, datasetId, methodId,
                              sweepId, sweepElementId)
@@ -375,12 +398,12 @@ class Database:
       command = "INSERT INTO bootstrap VALUES (NULL,%s,%s,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command,
+        self.Execute(command,
             (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
              sweepElementId))
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?'),
+        self.Execute(command % ('?', '?', '?', '?', '?', '?', '?'),
             (buildId, libaryId, str(metric), datasetId, methodId, sweepId,
              sweepElementId))
 
@@ -397,12 +420,12 @@ class Database:
       command = "INSERT INTO sweeps VALUES (NULL, %s, %s, %s, %s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command, (sweepType, sweepBegin, sweepStep, sweepEnd))
-        self.cur.execute("SELECT LAST_INSERT_ID()")
+        self.Execute(command, (sweepType, sweepBegin, sweepStep, sweepEnd))
+        self.Execute("SELECT LAST_INSERT_ID()")
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?'),
+        self.Execute(command % ('?', '?', '?', '?'),
             (sweepType, sweepBegin, sweepStep, sweepEnd))
-        self.cur.execute("SELECT last_insert_rowid()")
+        self.Execute("SELECT last_insert_rowid()")
 
       return self.cur.fetchall()[0][0]
 
@@ -412,12 +435,12 @@ class Database:
       if self.GetMetricResult(buildId, libaryId, datasetId, methodId, sweepId,
                               sweepElementId):
         if sweepId != -1:
-          self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
+          self.Execute("UPDATE metrics SET metric='" + str(metric) + "'"
               + " WHERE build_id=" + str(buildId) + " AND libary_id="
               + str(libaryId) + " AND dataset_id=" + str(datasetId)
               + " AND method_id=" + str(methodId))
         else:
-          self.cur.execute("UPDATE metrics SET metric='" + str(metric) + "'"
+          self.Execute("UPDATE metrics SET metric='" + str(metric) + "'"
               + " WHERE build_id=" + str(buildId) + " AND libary_id="
               + str(libaryId) + " AND dataset_id=" + str(datasetId)
               + " AND method_id=" + str(methodId) + " AND sweep_id="
@@ -432,12 +455,12 @@ class Database:
       if self.GetBootstrapResult(buildId, libaryId, datasetId, methodId,
                                  sweepId, sweepElementId):
         if sweepId == -1:
-          self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
+          self.Execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
               + " WHERE build_id=" + str(buildId) + " AND libary_id="
               + str(libaryId) + " AND dataset_id=" + str(datasetId)
               + " AND method_id=" + str(methodId))
         else:
-          self.cur.execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
+          self.Execute("UPDATE bootstrap SET metric='" + str(metric) + "'"
               + " WHERE build_id=" + str(buildId) + " AND libary_id="
               + str(libaryId) + " AND dataset_id=" + str(datasetId)
               + " AND method_id=" + str(methodId) + " AND sweepId="
@@ -450,11 +473,11 @@ class Database:
     try:
       with self.con:
         if sweepId == -1:
-          self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
+          self.Execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
               + " AND libary_id=" + str(libaryId) + " AND dataset_id="
               + str(datasetId) + " AND method_id=" + str(methodId))
         else:
-          self.cur.execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
+          self.Execute("SELECT * FROM metrics WHERE build_id=" + str(buildId)
               + " AND libary_id=" + str(libaryId) + " AND dataset_id="
               + str(datasetId) + " AND method_id=" + str(methodId)
               + " AND sweepId=" + str(sweepId) + " AND sweepElementId="
@@ -467,11 +490,11 @@ class Database:
                          sweepId=-1, sweepElementId=-1):
     with self.con:
       if sweepId == -1:
-        self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
+        self.Execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
             + " AND libary_id=" + str(libaryId) + " AND dataset_id="
             + str(datasetId) + " AND method_id=" + str(methodId))
       else:
-        self.cur.execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
+        self.Execute("SELECT * FROM bootstrap WHERE build_id=" + str(buildId)
             + " AND libary_id=" + str(libaryId) + " AND dataset_id="
             + str(datasetId) + " AND method_id=" + str(methodId)
             + " AND sweep_id=" + str(sweepId) + " AND sweep_element_id="
@@ -493,14 +516,14 @@ class Database:
       command = "INSERT INTO datasets VALUES (NULL,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command,
+        self.Execute(command,
             (name, size, attributes, instances, datasetType))
-        self.cur.execute("SELECT LAST_INSERT_ID()")
+        self.Execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?'),
+        self.Execute(command % ('?', '?', '?', '?', '?'),
             (name, size, attributes, instances, datasetType))
-        self.cur.execute("SELECT last_insert_rowid()")
+        self.Execute("SELECT last_insert_rowid()")
 
       return self.cur.fetchall()[0][0]
 
@@ -512,7 +535,7 @@ class Database:
   '''
   def GetDataset(self, name):
     with self.con:
-      self.cur.execute("SELECT id FROM datasets WHERE name='" + name  + "'")
+      self.Execute("SELECT id FROM datasets WHERE name='" + name  + "'")
       return self.cur.fetchall()
 
   '''
@@ -523,7 +546,7 @@ class Database:
   '''
   def GetBuild(self, id):
     with self.con:
-      self.cur.execute("SELECT * FROM results WHERE build_id=" + str(id))
+      self.Execute("SELECT * FROM results WHERE build_id=" + str(id))
       return self.cur.fetchall()
 
   '''
@@ -534,7 +557,7 @@ class Database:
   '''
   def GetLibrary(self, name):
     with self.con:
-      self.cur.execute("SELECT id FROM libraries WHERE name='" + name + "'")
+      self.Execute("SELECT id FROM libraries WHERE name='" + name + "'")
       return self.cur.fetchall()
 
   '''
@@ -548,12 +571,12 @@ class Database:
       command = "INSERT INTO libraries VALUES (NULL, %s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command, (name,))
-        self.cur.execute("SELECT LAST_INSERT_ID()")
+        self.Execute(command, (name,))
+        self.Execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?'), (name,))
-        self.cur.execute("SELECT last_insert_rowid()")
+        self.Execute(command % ('?'), (name,))
+        self.Execute("SELECT last_insert_rowid()")
 
       return self.cur.fetchall()[0][0]
 
@@ -575,16 +598,16 @@ class Database:
       command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command,
+        self.Execute(command,
             (buildId, libaryId, time, var, datasetId, methodId, sweepId,
              sweepElementId))
-        self.cur.execute("SELECT LAST_INSERT_ID()")
+        self.Execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?', '?'),
+        self.Execute(command % ('?', '?', '?', '?', '?', '?', '?', '?'),
             (buildId, libaryId, time, var, datasetId, methodId, sweepId,
              sweepElementId))
-        self.cur.execute("SELECT last_insert_rowid()")
+        self.Execute("SELECT last_insert_rowid()")
 
   '''
   Get the specified result from the results table.
@@ -601,13 +624,13 @@ class Database:
                 sweepElementId=-1):
     with self.con:
       if sweepId != -1:
-        self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId)
+        self.Execute("SELECT * FROM results WHERE build_id=" + str(buildId)
             + " AND libary_id=" + str(libaryId) + " AND dataset_id="
             + str(datasetId) + " AND method_id=" + str(methodId)
             + " AND sweep_id=" + str(sweepId) + " AND sweep_element_id="
             + str(sweepElementId))
       else:
-        self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId)
+        self.Execute("SELECT * FROM results WHERE build_id=" + str(buildId)
             + " AND libary_id=" + str(libaryId) + " AND dataset_id="
             + str(datasetId) + " AND method_id=" + str(methodId))
       return self.cur.fetchall()
@@ -631,13 +654,13 @@ class Database:
       if self.GetResult(buildId, libaryId, datasetId, methodId, sweepId,
                         sweepElementId):
         if sweepId != -1:
-          self.cur.execute("UPDATE results SET time=" + str(time) + ",var="
+          self.Execute("UPDATE results SET time=" + str(time) + ",var="
               + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id="
               + str(libaryId) + " AND dataset_id=" + str(datasetId)
               + " AND method_id=" + str(methodId) + " AND sweepId="
               + str(sweepId) + " AND sweepElementId=" + str(sweepElementId))
         else:
-          self.cur.execute("UPDATE results SET time=" + str(time) + ",var="
+          self.Execute("UPDATE results SET time=" + str(time) + ",var="
               + str(var) + " WHERE build_id=" + str(buildId) + " AND libary_id="
               + str(libaryId) + " AND dataset_id=" + str(datasetId)
               + " AND method_id=" + str(methodId))
@@ -654,7 +677,7 @@ class Database:
   '''
   def GetMethod(self, name, parameters):
      with self.con:
-      self.cur.execute("SELECT id FROM methods WHERE name='" + name +
+      self.Execute("SELECT id FROM methods WHERE name='" + name +
           "' AND parameters='" + json.dumps(parameters) + "'")
       return self.cur.fetchall()
 
@@ -671,18 +694,18 @@ class Database:
       command = "INSERT INTO methods VALUES (NULL,%s,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command, (name, json.dumps(parameters), alias))
-        self.cur.execute("SELECT LAST_INSERT_ID()")
+        self.Execute(command, (name, json.dumps(parameters), alias))
+        self.Execute("SELECT LAST_INSERT_ID()")
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?'), (name,
+        self.Execute(command % ('?', '?', '?'), (name,
             json.dumps(parameters), alias))
-        self.cur.execute("SELECT last_insert_rowid()")
+        self.Execute("SELECT last_insert_rowid()")
 
       return self.cur.fetchall()[0][0]
 
   def UpdateMethod(self, methodId, alias):
-    self.cur.execute("UPDATE methods SET alias=\'" + alias + "\' WHERE id="
+    self.Execute("UPDATE methods SET alias=\'" + alias + "\' WHERE id="
         + str(methodId))
 
   '''
@@ -699,12 +722,12 @@ class Database:
       return None
 
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
+      self.Execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
           + " ORDER BY build ASC")
       timeSummed = []
       res = self.cur.fetchall()
       for buildId in res:
-        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" +
+        self.Execute("SELECT SUM(time) FROM results WHERE build_id=" +
            str(buildId[0]))
         timeSummed.append(self.cur.fetchall()[0][0])
     if res:
@@ -719,7 +742,7 @@ class Database:
   '''
   def GetLibraryIds(self):
     with self.con:
-      self.cur.execute("SELECT * FROM libraries")
+      self.Execute("SELECT * FROM libraries")
       return self.cur.fetchall()
 
   '''
@@ -730,7 +753,7 @@ class Database:
   '''
   def GetLatestBuildFromLibary(self, libaryId):
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
+      self.Execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
           + " ORDER BY build DESC")
       res = self.cur.fetchall()
       if res:
@@ -739,18 +762,18 @@ class Database:
         return [(-1,)]
 
   def CopyLatestBuildFromLibary(self, buildId, newBuildId):
-    self.cur.execute("SELECT * FROM results WHERE build_id=" + str(buildId))
+    self.Execute("SELECT * FROM results WHERE build_id=" + str(buildId))
     results = self.cur.fetchall()
     with self.con:
       for res in results:
         command = "INSERT INTO results VALUES (NULL,%s,%s,%s,%s,%s,%s)"
 
         if self.driver == "mysql":
-          self.cur.execute(command,
+          self.Execute(command,
               (newBuildId, res[2], res[3], res[4], res[5], res[6]))
 
         elif self.driver == "sqlite":
-          self.cur.execute(command % ('?', '?', '?', '?', '?', '?'),
+          self.Execute(command % ('?', '?', '?', '?', '?', '?'),
               (newBuildId, res[2], res[3], res[4], res[5], res[6]))
 
   '''
@@ -760,7 +783,7 @@ class Database:
   '''
   def GetAllMethods(self):
     with self.con:
-      self.cur.execute("SELECT * FROM methods ORDER BY name ASC")
+      self.Execute("SELECT * FROM methods ORDER BY name ASC")
       return self.cur.fetchall()
 
   '''
@@ -772,7 +795,7 @@ class Database:
   '''
   def GetMethodResultsForLibary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM results JOIN datasets ON" +
+      self.Execute("SELECT * FROM results JOIN datasets ON" +
           " results.dataset_id = datasets.id WHERE build_id=" + str(buildId) +
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
@@ -786,7 +809,7 @@ class Database:
   '''
   def GetMethodMetricResultsForLibrary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM metrics JOIN datasets ON" +
+      self.Execute("SELECT * FROM metrics JOIN datasets ON" +
           " metrics.dataset_id = datasets.id WHERE build_id=" + str(buildId) +
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
@@ -800,7 +823,7 @@ class Database:
   '''
   def GetMethodBootstrapResultsForLibrary(self, buildId, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM bootstrap JOIN datasets ON" +
+      self.Execute("SELECT * FROM bootstrap JOIN datasets ON" +
           " bootstrap.dataset_id = datasets.id WHERE build_id=" + str(buildId) +
           " AND method_id=" + str(methodId) + " ORDER BY datasets.name")
       return self.cur.fetchall()
@@ -815,12 +838,12 @@ class Database:
   def GetResultsMethodSum(self, name, methodId):
     libaryId = self.GetLibrary(name)[0][0]
     with self.con:
-      self.cur.execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
+      self.Execute("SELECT id FROM builds WHERE libary_id=" + str(libaryId)
           + " ORDER BY build ASC")
       timeSummed = []
       res = self.cur.fetchall()
       for buildId in res:
-        self.cur.execute("SELECT SUM(time) FROM results WHERE build_id=" +
+        self.Execute("SELECT SUM(time) FROM results WHERE build_id=" +
            str(buildId[0]) + " AND method_id=" + str(methodId))
         timeSummed.append(self.cur.fetchall()[0][0])
     if res:
@@ -846,12 +869,12 @@ class Database:
       command = "INSERT INTO memory VALUES (NULL,%s,%s,%s,%s,%s,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command,
+        self.Execute(command,
             (buildId, libaryId, methodId, datasetId, sweepId, sweepElementId,
              memoryInfo))
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?', '?', '?', '?', '?', '?'),
+        self.Execute(command % ('?', '?', '?', '?', '?', '?', '?'),
             (buildId, libaryId, methodId, datasetId, sweepId, sweepElementId,
              memoryInfo))
 
@@ -874,7 +897,7 @@ class Database:
       if sweepId != -1:
         if self.GetMemoryResults(buildId, libaryId, methodId, sweepId,
             sweepElementId):
-          self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
+          self.Execute("UPDATE memory SET memory_info=\'" + memoryInfo
             + "\' WHERE build_id=" + str(buildId) + " AND libary_id="
             + str(libaryId) + " AND dataset_id=" + str(datasetId)
             + " AND method_id=" + str(methodId) + " AND sweepId="
@@ -885,7 +908,7 @@ class Database:
 
       else:
         if self.GetMemoryResults(buildId, libaryId, methodId):
-          self.cur.execute("UPDATE memory SET memory_info=\'" + memoryInfo
+          self.Execute("UPDATE memory SET memory_info=\'" + memoryInfo
             + "\' WHERE build_id=" + str(buildId) + " AND libary_id="
             + str(libaryId) + " AND dataset_id=" + str(datasetId)
             + " AND method_id=" + str(methodId))
@@ -907,11 +930,11 @@ class Database:
       sweepElementId=-1):
     with self.con:
       if sweepId == -1:
-        self.cur.execute("SELECT * FROM memory JOIN datasets ON " +
+        self.Execute("SELECT * FROM memory JOIN datasets ON " +
           "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) +
           " AND build_id="+ str(buildId) + " AND method_id=" + str(methodId))
       else:
-        self.cur.execute("SELECT * FROM memory JOIN datasets ON " +
+        self.Execute("SELECT * FROM memory JOIN datasets ON " +
             "memory.dataset_id = datasets.id WHERE libary_id=" + str(libaryId) +
             " AND build_id=" + str(buildId) + " AND method_id=" +
             str(methodId) + " AND sweepId=" + str(sweepId) +
@@ -926,7 +949,7 @@ class Database:
   '''
   def GetMethodInfo(self, methodId):
     with self.con:
-      self.cur.execute("SELECT * FROM method_info WHERE method_id=" +
+      self.Execute("SELECT * FROM method_info WHERE method_id=" +
           str(methodId))
       return self.cur.fetchall()
 
@@ -941,10 +964,10 @@ class Database:
       command = "INSERT INTO method_info VALUES (NULL,%s,%s)"
 
       if self.driver == "mysql":
-        self.cur.execute(command, (methodId, info))
+        self.Execute(command, (methodId, info))
 
       elif self.driver == "sqlite":
-        self.cur.execute(command % ('?', '?'), (methodId, info))
+        self.Execute(command % ('?', '?'), (methodId, info))
 
   '''
   Get the parameters of a given method.
@@ -954,7 +977,7 @@ class Database:
   '''
   def GetMethodParameters(self, methodId):
     with self.con:
-      self.cur.execute("SELECT parameters FROM methods WHERE id=" +
+      self.Execute("SELECT parameters FROM methods WHERE id=" +
           str(methodId))
       return json.loads(self.cur.fetchall())
 
@@ -968,7 +991,7 @@ class Database:
   '''
   def GetSweep(self, sweepType, sweepBegin, sweepStep, sweepEnd):
     with self.con:
-      self.cur.execute("SELECT id FROM sweeps WHERE type='"
+      self.Execute("SELECT id FROM sweeps WHERE type='"
           + sweepType + "' AND begin='" + str(sweepBegin)
           + "' AND step='" + str(sweepStep) + "' AND end='"
           + str(sweepEnd) + "'")
