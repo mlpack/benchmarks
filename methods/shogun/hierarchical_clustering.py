@@ -121,4 +121,4 @@ class HierarchicalClustering(object):
 
     return {"Runtime" : results[0],
             "Merge distances between clusters" : results[1],
-            "CLuster pairings" : results[2]}
+            "Cluster pairings" : results[2]}
