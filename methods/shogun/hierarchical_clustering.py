@@ -117,7 +117,7 @@ class HierarchicalClustering(object):
     Log.Info("Perform Hierarchical clustering.", self.verbose)
     results = self.HierarchicalShogun(options)
     if results[0] < 0:
-      return {"Runtime" : "failed"}
+      return {"Runtime" : -1}
 
     return {"Runtime" : results[0],
             "Merge distances between clusters" : results[1],
