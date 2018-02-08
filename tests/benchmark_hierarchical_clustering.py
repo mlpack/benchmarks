@@ -45,7 +45,7 @@ class HIERARCHICAL_CLUSTERING_SHOGUN_TEST(unittest.TestCase):
   Test the RunMetrics function.
   '''
   def test_RunMetrics(self):
-    result = self.instance.RunMetrics({ "merges" : 3 , "distance" : "euclaidean" })
+    result = self.instance.RunMetrics({ "merges" : 3 , "distance" : "euclidean" })
     self.assertTrue(result["Runtime"] > 0)
 
 
