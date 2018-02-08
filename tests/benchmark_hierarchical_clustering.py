@@ -51,15 +51,4 @@ class HIERARCHICAL_CLUSTERING_SHOGUN_TEST(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
-
-
-
-
-
-
-
-
-
-
-
-
+  
