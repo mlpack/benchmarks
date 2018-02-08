@@ -19,34 +19,34 @@ if cmd_subfolder not in sys.path:
 from loader import *
 
 '''
-  Test the Shogun Hierarchical clustering script
+Test the Shogun Hierarchical clustering script
 '''
 class HIERARCHICAL_CLUSTERING_SHOGUN_TEST(unittest.TestCase):
   '''
-     Test initialization.
+  Test initialization.
   '''
   def setUp(self):
     self.dataset = "../datasets/iris.csv"
     self.verbose = False
     self.timeout = 9000
-    module = Loader.ImportModuleFromPath("../methods/shogun/hierarchical_clustering.py")
+    module = Loader.ImportModuleFromPath("methods/shogun/hierarchical_clustering.py")
     obj = getattr(module, "HierarchicalClustering")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
 
   '''
-    Test the constructor
+  Test the constructor
   '''
   def test_Constructor(self):
-  	self.assertEqual(self.instance.dataset, self.dataset)
-  	self.assertEqual(self.instance.verbose, self.verbose)
-  	self.assertEqual(self.instance.timeout, self.timeout)
+    self.assertEqual(self.instance.dataset, self.dataset)
+    self.assertEqual(self.instance.verbose, self.verbose)
+    self.assertEqual(self.instance.timeout, self.timeout)
 
   '''
-    Test the RunMetrics function.
+  Test the RunMetrics function.
   '''
   def test_RunMetrics(self):
-  	result = self.instance.RunMetrics({ "merges" : 3 })
-  	self.assertTrue(result["Runtime"] > 0)
+    result = self.instance.RunMetrics({ "merges" : 3 , "distance" : "euclidean" })
+    self.assertTrue(result["Runtime"] > 0)
 
 
 if __name__ == "__main__":
