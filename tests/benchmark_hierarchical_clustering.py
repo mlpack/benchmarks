@@ -28,7 +28,7 @@ class HIERARCHICAL_CLUSTERING_SHOGUN_TEST(unittest.TestCase):
   def setUp(self):
     self.dataset = "datasets/iris.csv"
     self.verbose = False
-    self.timeout = 9000
+    self.timeout = 250
     module = Loader.ImportModuleFromPath("methods/shogun/hierarchical_clustering.py")
     obj = getattr(module, "HierarchicalClustering")
     self.instance = obj(self.dataset, verbose=self.verbose, timeout=self.timeout)
