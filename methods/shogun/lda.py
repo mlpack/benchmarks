@@ -149,8 +149,3 @@ class LDA(object):
       metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
 
     return metrics
-
-
-            	
-
-
