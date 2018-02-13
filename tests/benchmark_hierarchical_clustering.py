@@ -49,7 +49,18 @@ class HIERARCHICAL_CLUSTERING_SHOGUN_TEST(unittest.TestCase):
     self.assertTrue(result["Runtime"] > 0)
     self.assertTrue(result["Merge distances between clusters"] is not None)
     self.assertTrue(result["Cluster pairings"] is not None)
-
+    result = self.instance.RunMetrics({ "merges" : 3 , "distance" : "manhattan" })
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Merge distances between clusters"] is not None)
+    self.assertTrue(result["Cluster pairings"] is not None)
+    result = self.instance.RunMetrics({ "merges" : 3 , "distance" : "cosine" })
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Merge distances between clusters"] is not None)
+    self.assertTrue(result["Cluster pairings"] is not None)
+    result = self.instance.RunMetrics({ "merges" : 3 , "distance" : "chebyshev" })
+    self.assertTrue(result["Runtime"] > 0)
+    self.assertTrue(result["Merge distances between clusters"] is not None)
+    self.assertTrue(result["Cluster pairings"] is not None)    
 
 if __name__ == "__main__":
   unittest.main()
