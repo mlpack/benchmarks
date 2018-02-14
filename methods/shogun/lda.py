@@ -92,7 +92,7 @@ class LDA(object):
         if "store" in options:
           self.store = bool(options.pop("store"))
 
-        if(len(options) > 0):
+        if (len(options) > 0):
           Log.Fatal("Unknown parameters: " + str(options))
           raise Exception("unknown parameters")
 
@@ -100,19 +100,19 @@ class LDA(object):
           self.model = MCLDA(trainFeat, trainLabels, self.tolerance, self.store)
           self.model.train()
 
-          if(len(self.dataset) > 0):
-            self.predictions = self.model.apply_multiclass(RealFeatures(testSet.T))
-            self.predictions = self.predictions.get_labels()
-            # reverse map the predicted labels to actual labels
-            for i in range(len(self.predictions)):
-              self.predictions[i] = reverseMapping[self.predictions[i]]
+        if (len(self.dataset) > 0):
+          self.predictions = self.model.apply_multiclass(RealFeatures(testSet.T))
+          self.predictions = self.predictions.get_labels()
+          # reverse map the predicted labels to actual labels
+          for i in range(len(self.predictions)):
+            self.predictions[i] = reverseMapping[self.predictions[i]]
 
       except Exception as e:
         Log.Info("Exception: " + str(e))
         return [-1]
 
       time = totalTimer.ElapsedTime()
-      if(len(self.dataset) > 1):
+      if (len(self.dataset) > 1):
         return [time, self.predictions]
       return [time]
 
