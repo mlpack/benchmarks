@@ -109,18 +109,16 @@ class LDA(object):
 
       except Exception as e:
         Log.Info("Exception: " + str(e))
-        return [-1]
+        return -1
 
-      time = totalTimer.ElapsedTime()
-      if (len(self.dataset) > 1):
-        return [time, self.predictions]
-      return [time]
+      time = totalTimer.ElapsedTime() 
+      return time
 
     try:
       return RunLDAShogun()
     except timeout_decorator.TimeoutError:
       Log.Info("Timeout error")
-      return [-1]
+      return -1
 
   '''
   Perform LDA. If the method has been successfully completed return the elapsed time in seconds.
@@ -132,10 +130,10 @@ class LDA(object):
     Log.Info("Perform LDA.", self.verbose)
 
     results = self.LDAShogun(options)
-    if results[0] < 0:
+    if results < 0:
       return {"Runtime" : -1}
 
-    metrics = {"Runtime" : results[0]}
+    metrics = {"Runtime" : results}
     if len(self.dataset) >= 3:
       truelabels = LoadDataset(self.dataset[2])
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
