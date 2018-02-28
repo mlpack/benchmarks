@@ -37,7 +37,8 @@ modules = [
 'benchmark_svr',
 'benchmark_adaboost',
 'benchmark_svm',
-'benchmark_lda'
+'benchmark_lda',
+'benchmark_hierarchical_clustering'
 ]
 
 def load_tests(loader, tests, pattern):
