@@ -135,7 +135,7 @@ class LDA(object):
     if results[0] < 0:
       return {"Runtime" : -1}
 
-    metrics = {"Runtime" : results}
+    metrics = {"Runtime" : results[0]}
     if len(self.dataset) >= 3:
       truelabels = LoadDataset(self.dataset[2])
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
