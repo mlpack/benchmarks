@@ -1,5 +1,7 @@
 .idea
+.ipynb_checkpoints/
 *.pyc
 reports/graphs
 reports/index*.html
 reports/benchmark.db
+datasets/*
