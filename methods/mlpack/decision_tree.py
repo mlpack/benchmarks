@@ -29,7 +29,6 @@ if metrics_folder not in sys.path:
     sys.path.insert(0, metrics_folder)
 
 from util.log import *
-from util.profiler import *
 from definitions import Metrics
 from util.misc import *
 import shlex
@@ -52,7 +51,8 @@ class DTC(object):
         """
         Create the Decision Tree Classifier benchmark instance.
 
-        @param dataset - Input dataset to perform DTC on.
+        @param dataset - Input dataset to perform DTC on. Attention: usually, 
+        `dataset` is composed of training_set, testing_set, and labels set of the latter.
         @param timeout - The time until the timeout. Default no timeout.
         @param verbose - Display informational messages.
         """
@@ -82,7 +82,6 @@ class DTC(object):
     def __del__(self):
         """
         Destructor to clean up model and output file at the end.
-        There is no extra file created.
         :return: 
         """
         files = ['mlpack_dct_predict.csv']
@@ -93,7 +92,7 @@ class DTC(object):
     def RunMetrics(self, options):
         """
         Perform decision tree prediction. 
-        mlpack_decision_tree -t dataset[0] -l dataset[1] -T dataset[2] -L dataset[3]
+        mlpack_decision_tree -t dataset[0] -T dataset[1]
         If the method has been successfully completed, it returns the elapsed time in seconds
         :param options: extra options for the method
         :return: elapsedtime in seconds or a negative value if the method failed
@@ -109,11 +108,11 @@ class DTC(object):
         if len(self.dataset) >= 2:
 
             cmd = shlex.split(self.path + "mlpack_decision_tree -t " +
-                              self.dataset[0] + " -T " + self.dataset[2] +
+                              self.dataset[0] + " -T " + self.dataset[1] +
                               " -v " + " -p " + " mlpack_dct_predict.csv")
         else:
-            Log.Fatal("This benchmarking logical is using at least 2 files including training set(last column as labels)\
-             testing set, (optional)labels of testing set ")
+            Log.Fatal("This benchmarking logic is using at least 2 files including training set(last column as labels)\
+             testing set. And labels of testing set is optional.")
         try:
             s = subprocess.check_output(cmd, stderr=subprocess.STDOUT,shell=False,
                                         timeout=self.timeout)
@@ -121,13 +120,12 @@ class DTC(object):
             Log.Warn(str(e))
             return -2
         except Exception as e:
-            Log.Fatal("Could not execute command: " + str(cmd))
+            Log.Fatal("Could not execute command: " + str(cmd) + " The error is: " + str(e))
             return -1
         metrics = {}
         timer = self.parseTimer(s)
-
         if timer != -1:
-            metrics["Runtime"] = timer.total_time - timer.loading_data
+            metrics["Runtime"] = timer.total_time - timer.loading_data - timer.saving_data
             Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
         if len(self.dataset) >= 3:
             truelabels = LoadDataset(self.dataset[2])
@@ -139,10 +137,6 @@ class DTC(object):
             metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
             metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
         return metrics
-
-
-    def run_memory(self):
-        pass
 
     def parseTimer(self, data):
         """
