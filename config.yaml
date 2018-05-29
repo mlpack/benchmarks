@@ -2500,6 +2500,94 @@ methods:
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
 
 ---
+# ELKI: Index accelerated data mining in Java
+# TODO: also add ALLKNN, ANN
+library: elki
+methods:
+    PCA:
+        run: ['metric']
+        iteration: 3
+        script: methods/elki/pca.py
+        format: [csv, txt, arff]
+        datasets:
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/Twitter.csv',
+                      'datasets/yearpredictionmsd.csv']
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/Twitter.csv',
+                      'datasets/yearpredictionmsd.csv']
+              options:
+                new_dimensionality: 2
+
+            - files: ['datasets/iris.csv', 'datasets/wine.csv',
+                      'datasets/cities.csv', 'datasets/diabetes_X.csv',
+                      'datasets/artificial_data.csv', 'datasets/ionosphere.csv',
+                      'datasets/bank8FM.csv', 'datasets/faces.csv',
+                      'datasets/shuttle_train.csv', 'datasets/dexter_test.csv',
+                      'datasets/madelon_X.csv',
+                      'datasets/corel-histogram.csv', 'datasets/isolet.csv',
+                      'datasets/covtype.csv', 'datasets/1000000-10-randu.csv',
+                      'datasets/Twitter.csv',
+                      'datasets/yearpredictionmsd.csv']
+              options:
+                new_dimensionality: 2
+                whiten: True
+    KMEANS:
+        run: ['metric']
+        iteration: 3
+        script: methods/elki/kmeans.py
+        format: [csv, txt, arff]
+        datasets:
+            - files: [ ['datasets/waveform.csv'] ]
+              options:
+                clusters: 2
+
+            - files: [ ['datasets/wine.csv'],
+                       ['datasets/iris.csv'] ]
+              options:
+                clusters: 3
+
+            - files: [ ['datasets/cloud.csv'] ]
+              options:
+                clusters: 5
+
+            - files: [ ['datasets/USCensus1990.csv'] ]
+              options:
+                clusters: 6
+
+            - files: [ ['datasets/covtype.csv'],
+                       ['datasets/wine_qual.csv'] ]
+              options:
+                clusters: 7
+
+            - files: [ ['datasets/isolet.csv'] ]
+              options:
+                clusters: 26
+
+            - files: [ ['datasets/mnist_all.csv'],
+                       ['datasets/corel-histogram.csv'] ]
+              options:
+                clusters: 10
+
+            - files: [ ['datasets/1000000-10-randu.csv'] ]
+              options:
+                clusters: 75
+---
 #  ANN:
 #  A Library for Approximate Nearest Neighbor Searching
 library: ann
