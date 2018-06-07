@@ -2553,34 +2553,34 @@ methods:
         script: methods/elki/kmeans.py
         format: [csv, txt, arff]
         datasets:
-            - files: [ ['datasets/waveform.csv'] ]
+            - files: [ ['datasets/waveform.csv', 'datasets/waveform_centroids.csv'] ]
               options:
                 clusters: 2
 
-            - files: [ ['datasets/wine.csv'],
-                       ['datasets/iris.csv'] ]
+            - files: [ ['datasets/wine.csv', 'datasets/wine_centroids.csv'],
+                       ['datasets/iris.csv', 'datasets/iris_centroids.csv'] ]
               options:
                 clusters: 3
 
-            - files: [ ['datasets/cloud.csv'] ]
+            - files: [ ['datasets/cloud.csv', 'datasets/cloud_centroids.csv'] ]
               options:
                 clusters: 5
 
-            - files: [ ['datasets/USCensus1990.csv'] ]
+            - files: [ ['datasets/USCensus1990.csv', 'datasets/USCensus1990_centroids.csv'] ]
               options:
                 clusters: 6
 
-            - files: [ ['datasets/covtype.csv'],
-                       ['datasets/wine_qual.csv'] ]
+            - files: [ ['datasets/covtype.csv', 'datasets/covtype_centroids.csv'],
+                       ['datasets/wine_qual.csv', 'datasets/wine_qual_centroids.csv'] ]
               options:
                 clusters: 7
 
-            - files: [ ['datasets/isolet.csv'] ]
+            - files: [ ['datasets/isolet.csv'] ] # too large for command line? , 'datasets/isolet_centroids.csv'] ]
               options:
                 clusters: 26
 
-            - files: [ ['datasets/mnist_all.csv'],
-                       ['datasets/corel-histogram.csv'] ]
+            - files: [ ['datasets/mnist_all.csv', 'datasets/mnist_all_centroids.csv'],
+                       ['datasets/corel-histogram.csv', 'datasets/corel-histogram_centroids.csv'] ]
               options:
                 clusters: 10
 

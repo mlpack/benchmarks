@@ -20,7 +20,6 @@ if cmd_subfolder not in sys.path:
 from log import *
 from profiler import *
 
-import shlex
 import subprocess
 import re
 import collections
@@ -46,23 +45,6 @@ class KMEANS(object):
     self.timeout = timeout
 
   '''
-  Given an input dict of options, convert them to strings.
-  '''
-  def OptionsToStr(self, options):
-    optionsStr = ""
-    if "clusters" in options:
-      optionsStr = "-kmeans.k " + str(options.pop("clusters"))
-    else:
-      Log.Fatal("Required parameter 'clusters' not specified!")
-      raise Exception("missing parameter")
-
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameter")
-
-    return optionsStr
-
-  '''
   K-Means Clustering benchmark instance. If the method has been successfully
   completed return the elapsed time in seconds.
 
@@ -73,11 +55,30 @@ class KMEANS(object):
   def RunMetrics(self, options):
     Log.Info("Perform K-Means.", self.verbose)
 
+    centroids = None
+    if len(self.dataset) == 2:
+        import numpy
+        centroids = numpy.genfromtxt(self.dataset[1], delimiter=',')
+        centroids = ";".join(map(lambda x:",".join(map(str,x)), centroids))
+
     # Split the command using shell-like syntax.
-    cmd = shlex.split("java -jar " + self.path +
-        "../elki.jar cli -time -dbc.in " + self.dataset[0] +
-        " -algorithm clustering.kmeans.KMeansSort -resulthandler DiscardResultHandler " +
-        self.OptionsToStr(options))
+    cmd = ["java", "-jar", self.path + "elki.jar", "cli", "-time",
+        "-dbc.in", self.dataset[0],
+        "-algorithm", "clustering.kmeans.KMeansSort",
+        "-resulthandler", "DiscardResultHandler" ]
+    if centroids:
+        cmd += ["-kmeans.initialization", "PredefinedInitialMeans",
+            "-kmeans.means", centroids ]
+    else:
+        cmd += ["-kmeans.initialization", "KMeansPlusPlusInitialMeans"]
+    if "clusters" in options:
+      cmd += ["-kmeans.k", str(options.pop("clusters"))]
+    else:
+      Log.Fatal("Required parameter 'clusters' not specified!")
+      raise Exception("missing parameter")
+    if len(options) > 0:
+      Log.Fatal("Unknown parameters: " + str(options))
+      raise Exception("unknown parameter")
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.

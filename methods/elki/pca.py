@@ -23,7 +23,6 @@ if cmd_subfolder not in sys.path:
 from log import *
 from profiler import *
 
-import shlex
 import subprocess
 import re
 import collections
@@ -52,21 +51,21 @@ class PCA(object):
   Given an input dict of options, return a string that can be given to the
   program.
   '''
-  def OptionsToStr(self, options):
-    optionsStr = None
+  def process_options(self, options):
+    opts = []
     if "whiten" in options:
-      optionsStr = "-dbc.filter normalization.columnwise.AttributeWiseVarianceNormalization,transform.GlobalPrincipalComponentAnalysisTransform"
+      opts += ["-dbc.filter", "normalization.columnwise.AttributeWiseVarianceNormalization,transform.GlobalPrincipalComponentAnalysisTransform"]
       options.pop("whiten")
     else:
-      optionsStr = "-dbc.filter transform.GlobalPrincipalComponentAnalysisTransform"
+      opts += ["-dbc.filter", "transform.GlobalPrincipalComponentAnalysisTransform"]
     if "new_dimensionality" in options:
-      optionsStr = optionsStr + " -globalpca.filter FirstNEigenPairFilter -pca.filter.n " + str(options.pop("new_dimensionality"))
+      opts += ["-globalpca.filter", "FirstNEigenPairFilter", "-pca.filter.n", str(options.pop("new_dimensionality"))]
 
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
       raise Exception("unknown parameters")
 
-    return optionsStr
+    return opts
 
   '''
   Perform Principal Components Analysis. If the method has been successfully 
@@ -79,11 +78,8 @@ class PCA(object):
   def RunMetrics(self, options):
     Log.Info("Perform PCA.", self.verbose)
 
-    # Split the command using shell-like syntax.
-    cmd = shlex.split("java -jar " + self.path +
-        "../elki.jar cli -time -dbc.in " + self.dataset +
-        " -algorithm NullAlgorithm -resulthandler DiscardResultHandler " +
-        self.OptionsToStr(options))
+    cmd = ["java", "-jar", self.path + "elki.jar", "cli", "-time", "-dbc.in", self.dataset,
+        "-algorithm", "NullAlgorithm", "-resulthandler", "DiscardResultHandler"] + self.process_options(options)
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
