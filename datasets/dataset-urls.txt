@@ -45,6 +45,6 @@ transfusion*.csv mlpack.org/datasets/transfusion.tar.gz
 vehicle.csv mlpack.org/datasets/vehicle.tar.gz
 waveform*.csv mlpack.org/datasets/waveform.tar.gz
 webpage*.csv mlpack.org/datasets/webpage.tar.gz
-wine_qual*.csv mlpack.org/datasets/wine_qual.tar.gz
 wine*.csv mlpack.org/datasets/wine.tar.gz
+wine_qual*.csv mlpack.org/datasets/wine_qual.tar.gz
 yearpredictionmsd.csv mlpack.org/datasets/yearpredictionmsd.tar.gz
