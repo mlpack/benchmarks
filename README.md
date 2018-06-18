@@ -240,6 +240,7 @@ In this case we benchmark the pca method located in methods/mlpack/pca.py with t
 * http://mathworks.com
 * http://shogun-toolbox.org
 * http://cs.waikato.ac.nz/ml/weka/
+* https://elki-project.github.io/
 * http://scikit-learn.org
 * http://mlpy.sourceforge.net
 * http://www.cs.umd.edu/~mount/ANN/
