@@ -1,3 +1,4 @@
+install.packages('XML', repos='http://cran.us.r-project.org')
 install.packages('mlr', repos='http://cran.us.r-project.org')
 install.packages('tictoc', repos='http://cran.us.r-project.org')
 install.packages('LiblineaR', repos='http://cran.us.r-project.org')
