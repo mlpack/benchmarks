@@ -52,7 +52,7 @@ class ALLKRANN(object):
     self.debug = debug
 
     # Get description from executable.
-    cmd = shlex.split(self.path + "mlpack_allkrann -h")
+    cmd = shlex.split(self.path + "mlpack_krann -h")
     try:
       s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
     except Exception as e:
@@ -130,11 +130,11 @@ class ALLKRANN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.debug + "mlpack_allkrann -r " + self.dataset[0] +
+      cmd = shlex.split(self.debug + "mlpack_krann -r " + self.dataset[0] +
           " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
           self.OptionsToStr(options))
     else:
-      cmd = shlex.split(self.debug + "mlpack_allkrann -r " + self.dataset +
+      cmd = shlex.split(self.debug + "mlpack_krann -r " + self.dataset +
           " -v -n neighbors.csv -d distances.csv " + self.OptionsToStr(options))
 
     return Profiler.MassifMemoryUsage(cmd, fileName, self.timeout, massifOptions)
@@ -152,11 +152,11 @@ class ALLKRANN(object):
     # If the dataset contains two files then the second file is the query file.
     # In this case we add this to the command line.
     if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "mlpack_allkrann -r " + self.dataset[0] +
+      cmd = shlex.split(self.path + "mlpack_krann -r " + self.dataset[0] +
           " -q " + self.dataset[1] + " -v -n neighbors.csv -d distances.csv " +
           self.OptionsToStr(options))
     else:
-      cmd = shlex.split(self.path + "mlpack_allkrann -r " + self.dataset +
+      cmd = shlex.split(self.path + "mlpack_krann -r " + self.dataset +
           " -v -n neighbors.csv -d distances.csv " + self.OptionsToStr(options))
 
     # Run command with the nessecary arguments and return its output as a byte

@@ -97,7 +97,7 @@ class HMMTRAIN(object):
     if "seed" in options:
       optionsStr = optionsStr + " --seed " + str(options.pop("seed"))
     if "output" in options:
-      optionsStr = optionsStr + " -o " + str(options.pop("output"))
+      optionsStr = optionsStr + " -M " + str(options.pop("output"))
 
     if len(options) > 0:
       Log.Fatal("Unknown parameters: " + str(options))
