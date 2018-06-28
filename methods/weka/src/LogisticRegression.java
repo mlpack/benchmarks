@@ -73,7 +73,10 @@ public class LogisticRegression {
       boolean hasMaxIters = false;
       int maxIter = 0;
       if (Utils.getOptionPos('m', args) != -1)
+      {
+        hasMaxIters = true;
         maxIter = Integer.parseInt(Utils.getOption('m', args));
+      }
 
       // Did the user pass a test file?
       String testFile = Utils.getOption('T', args);

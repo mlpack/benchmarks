@@ -7,6 +7,8 @@
 
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
+#define BINDING_TYPE BINDING_TYPE_CLI
+#include <mlpack/core/util/mlpack_main.hpp>
 #include <ANN/ANN.h>
 
 using namespace mlpack;
@@ -29,11 +31,8 @@ PARAM_INT_IN("seed", "Random seed (if 0, std::time(NULL) is used).", "s", 0);
 PARAM_DOUBLE_IN("epsilon", "If specified, will do approximate nearest neighbor "
     "search with given relative error.", "e", 0);
 
-int main(int argc, char **argv)
+void mlpackMain()
 {
-  // Parse command line options.
-  CLI::ParseCommandLine(argc, argv);
-
   // Get all the parameters.
   const string referenceFile = CLI::GetParam<string>("reference_file");
   const string queryFile = CLI::GetParam<string>("query_file");
@@ -146,5 +145,4 @@ int main(int argc, char **argv)
   delete [] dists;
   delete kdTree;
   annClose();
-  return 0;
 }

@@ -89,7 +89,7 @@ class LogisticRegression(object):
       if "epsilon" in options:
         self.opts["epsilon"] = float(options.pop("epsilon"))
       if "max_iterations" in options:
-        self.opts["max_iter"] = int(options.pop("max_iter"))
+        self.opts["max_iter"] = int(options.pop("max_iterations"))
 
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))

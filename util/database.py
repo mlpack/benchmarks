@@ -70,9 +70,9 @@ class Database:
   def Execute(self, command, parameter=None):
     try:
       if parameter is None:
-        return self.Execute(command)
+        return self.cur.execute(command)
       else:
-        return self.Execute(command, parameter)
+        return self.cur.execute(command, parameter)
     except (AttributeError, mdb.OperationalError):
       self.Connect()
 

@@ -2,6 +2,8 @@
 #include <dlib/rand.h>
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
+#define BINDING_TYPE BINDING_TYPE_CLI
+#include <mlpack/core/util/mlpack_main.hpp>
 #include <string>
 
 using namespace mlpack;
@@ -22,11 +24,8 @@ PARAM_DOUBLE_IN("C", "Bandwidth", "c", 0);
 PARAM_DOUBLE_IN("g", "Coef", "g", 0);
 PARAM_DOUBLE_IN("d", "Degree", "d", 0);
 
-int main(int argc, char** argv)
+void mlpackMain()
 {
-  // Parse command line options.
-  CLI::ParseCommandLine(argc, argv);
-
   // Get all the parameters.
   const string trainFile = CLI::GetParam<string>("training_file");
   const string testFile = CLI::GetParam<string>("test_file");
@@ -93,7 +92,6 @@ int main(int argc, char** argv)
   sample_type te;
   te.set_size(testData.n_rows);
 
-                                                                                                                             
   for (size_t i = 0; i < testData.n_cols; ++i)
   {
     for (size_t j = 0; j < testData.n_rows; ++j)
@@ -115,6 +113,4 @@ int main(int argc, char** argv)
   Timer::Stop("runtime");
 
   data::Save("predictions.csv", predictions);
-
 }
-

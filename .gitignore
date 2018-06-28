@@ -7,3 +7,12 @@ reports/benchmark.db
 datasets/*
 !datasets/download_datasets.sh
 !datasets/dataset-urls.txt
+libraries/*.tar.gz
+libraries/*/
+methods/ann/allknn
+methods/flann/allknn
+methods/dlibml/dlibml_allknn
+methods/dlibml/dlibml_ann
+methods/dlibml/dlibml_kmeans
+methods/dlibml/dlibml_svm
+methods/weka/*.class

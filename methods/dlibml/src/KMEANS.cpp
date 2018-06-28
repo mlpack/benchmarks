@@ -1,6 +1,8 @@
 #include <dlib/clustering.h>
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
+#define BINDING_TYPE BINDING_TYPE_CLI
+#include <mlpack/core/util/mlpack_main.hpp>
 
 using namespace mlpack;
 using namespace std;
@@ -17,11 +19,8 @@ PARAM_STRING_IN("reference_file", "File containing the reference dataset.",
 PARAM_INT_IN("k", "Value of K", "k", 0);
 PARAM_STRING_IN("centroids_file", "File containing centroids points (optional).", "c", "");
 
-int main(int argc, char** argv)
+void mlpackMain()
 {
-  // Parse command line options.
-  CLI::ParseCommandLine(argc, argv);
-
   // Get all the parameters.
   const string referenceFile = CLI::GetParam<string>("reference_file");
   const string centroidsFile = CLI::GetParam<string>("centroids_file");
@@ -93,8 +92,6 @@ int main(int argc, char** argv)
   Timer::Stop("clustering");
 
   data::Save("assignments.csv", assignments);
-
-  return 0;
 }
 
 

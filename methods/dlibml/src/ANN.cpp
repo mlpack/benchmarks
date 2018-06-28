@@ -2,6 +2,8 @@
 #include <dlib/rand.h>
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/timers.hpp>
+#define BINDING_TYPE BINDING_TYPE_CLI
+#include <mlpack/core/util/mlpack_main.hpp>
 
 using namespace mlpack;
 using namespace std;
@@ -52,11 +54,8 @@ struct euclidean_distance
         }
 };
 
-int main(int argc, char** argv)
+void mlpackMain()
 {
-  // Parse command line options.
-  CLI::ParseCommandLine(argc, argv);
-
   // Get all the parameters.
   const string referenceFile = CLI::GetParam<string>("reference_file");
 
@@ -90,6 +89,4 @@ int main(int argc, char** argv)
   find_approximate_k_nearest_neighbors(samples_train, euclidean_distance(), k, size_t(s*n*n), 42, out);
   
   Timer::Stop("Nearest_Neighbors");
-  
-  return 0;
 }
