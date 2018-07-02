@@ -50,6 +50,7 @@ class NMF_MLPACK_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({ "rank": 6, "update_rules": "multdist" })
+    print(result)
     self.assertTrue(result["Runtime"] > 0)
 
   '''

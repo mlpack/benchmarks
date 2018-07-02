@@ -161,6 +161,8 @@ class NMF(object):
       metrics['Runtime'] = timer.total_time - timer.saving_time - timer.loading_time
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+    else:
+      Log.Warn("Could not parse timer output:\n" + str(s))
 
     return metrics
 
