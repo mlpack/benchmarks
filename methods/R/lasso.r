@@ -20,7 +20,8 @@ tar = paste("V", toString(ncol(trainData)), sep = "")
 tic()
 trainTask <- makeRegrTask(data = trainData, target = tar)
 
-lasso.learner <- makeLearner("regr.penalized.lasso", par.vals = list(lambda1 = lambda1))
+# regr.penalized.lasso was changed to regr.penalized.
+lasso.learner <- makeLearner("regr.penalized", par.vals = list(lambda1 = lambda1))
 fmodel <- train(lasso.learner, trainTask)
 fpmodel <- predict(fmodel, trainTask)
 toc(log = TRUE)
