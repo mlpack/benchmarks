@@ -141,8 +141,10 @@ class PCA(object):
 
     # Parse data: runtime.
     timer = self.parseTimer(s)
+    Log.Info(str(s))
 
     if timer != -1:
+      Log.Info(str(timer))
       metrics['Runtime'] = timer.total_time - timer.saving_time - timer.loading_time
 
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
