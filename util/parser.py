@@ -458,7 +458,7 @@ class Parser(object):
                 # Store the initial second dictionary with the method name as
                 # key (e.g. KPCA) in the main key/value store.
                 streamData[methodMapping.methodName] = d
-                print(streamData)
+
 
           methodMapping = self.GetConfigMethod(libraryMapping.methods)
       libraryMapping = self.GetConfigLibraryMethods()
