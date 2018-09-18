@@ -22,9 +22,9 @@ from timer import *
 from misc import *
 
 import numpy as np
-from modshogun import RegressionLabels, RealFeatures
-from modshogun import LibSVR
-from modshogun import GaussianKernel
+from shogun import RegressionLabels, RealFeatures
+from shogun import LibSVR
+from shogun import GaussianKernel
 
 '''
 This class implements the SVR Regression benchmark.

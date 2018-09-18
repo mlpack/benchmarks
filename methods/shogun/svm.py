@@ -29,8 +29,8 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, LibSVM
-from modshogun import GaussianKernel, PolyKernel, LinearKernel, SigmoidKernel
+from shogun import RealFeatures, MulticlassLabels, LibSVM
+from shogun import GaussianKernel, PolyKernel, LinearKernel, SigmoidKernel
 
 '''
 This class implements the Support vector machines benchmark.

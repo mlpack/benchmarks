@@ -29,8 +29,8 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import Perceptron
-from modshogun import RealFeatures, MulticlassLabels
+from shogun import Perceptron
+from shogun import RealFeatures, MulticlassLabels
 
 '''
 This class implements the Perceptron benchmark.

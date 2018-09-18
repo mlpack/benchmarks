@@ -29,8 +29,8 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RegressionLabels, RealFeatures
-from modshogun import LeastSquaresRegression
+from shogun import RegressionLabels, RealFeatures
+from shogun import LeastSquaresRegression
 
 '''
 This class implements the Linear Regression benchmark.

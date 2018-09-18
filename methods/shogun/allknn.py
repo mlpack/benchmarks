@@ -21,8 +21,8 @@ from log import *
 from timer import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, EuclideanDistance
-from modshogun import KNN as SKNN
+from shogun import RealFeatures, MulticlassLabels, EuclideanDistance
+from shogun import KNN as SKNN
 
 '''
 This class implements the All K-Nearest-Neighbors benchmark.
