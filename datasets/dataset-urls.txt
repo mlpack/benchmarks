@@ -2,6 +2,7 @@
 TomsHardware.csv mlpack.org/datasets/TomsHardware.tar.gz
 Twitter.csv mlpack.org/datasets/Twitter.tar.gz
 USCensus1990*.csv mlpack.org/datasets/USCensus1990.tar.gz
+abalone.csv mlpack.org/datasets/abalone.tar.gz
 abalone19*.csv mlpack.org/datasets/abalone19.tar.gz
 abalone7*.csv mlpack.org/datasets/abalone7.tar.gz
 arcene*.csv mlpack.org/datasets/arcene.tar.gz
