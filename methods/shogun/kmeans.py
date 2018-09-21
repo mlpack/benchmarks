@@ -75,6 +75,8 @@ class KMEANS(object):
         return -1
       if "max_iterations" in options:
         maxIterations = int(options.pop("max_iterations"))
+      else:
+        maxIterations = None
       seed = None
       if "seed" in options:
         seed = int(options.pop("seed"))
@@ -95,8 +97,10 @@ class KMEANS(object):
             model = KMeans(clusters, distance, centroids.T)
           else:
             model = KMeans(clusters, distance)
-
-          model.set_max_iter(m)
+         
+          if maxIterations:
+            model.set_max_iter(maxIterations)
+          
           model.train()
 
           labels = model.apply().get_labels()
