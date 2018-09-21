@@ -186,7 +186,6 @@ class LinearRegression_MLPY_TEST(unittest.TestCase):
   '''
   def test_RunMetrics(self):
     result = self.instance.RunMetrics({})
-    print(result)
     self.assertTrue(result["Runtime"] > 0)
 
 '''

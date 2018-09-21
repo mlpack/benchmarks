@@ -29,7 +29,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from sklearn.qda import QDA as SQDA
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as SQDA
 
 '''
 This class implements the Quadratic Discriminant Analysis benchmark.
