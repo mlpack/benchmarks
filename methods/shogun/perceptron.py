@@ -105,10 +105,9 @@ class PERCEPTRON(object):
             if len(self.dataset) == 2:
               pred = self.model.apply(RealFeatures(testSet.T))
               self.predictions = pred.get_labels()
+          return totalTimer.ElapsedTime()
       except Exception as e:
         return -1
-
-      return totalTimer.ElapsedTime()
 
     try:
       return RunPerceptronShogun()
