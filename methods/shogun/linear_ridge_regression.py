@@ -29,8 +29,8 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RegressionLabels, RealFeatures
-from modshogun import LinearRidgeRegression as LRR
+from shogun import RegressionLabels, RealFeatures
+from shogun import LinearRidgeRegression as LRR
 
 '''
 This class implements the Linear Ridge Regression benchmark.

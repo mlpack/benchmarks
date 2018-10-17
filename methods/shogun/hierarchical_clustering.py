@@ -20,7 +20,7 @@ if cmd_subfolder not in sys.path:
 from log import *
 from timer import *
 
-from modshogun import Hierarchical, EuclideanDistance, RealFeatures, ManhattanMetric, CosineDistance, ChebyshewMetric
+from shogun import Hierarchical, EuclideanDistance, RealFeatures, ManhattanMetric, CosineDistance, ChebyshewMetric
 
 '''
 This class implements the Hierarchical Clustering benchmark.

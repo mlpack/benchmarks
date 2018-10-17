@@ -26,7 +26,7 @@ import re
 import collections
 
 import numpy as np
-from modshogun import EuclideanDistance, RealFeatures, KMeans, Math_init_random
+from shogun import EuclideanDistance, RealFeatures, KMeans, Math_init_random
 
 '''
 This class implements the K-Means Clustering benchmark.

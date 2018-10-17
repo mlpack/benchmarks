@@ -28,7 +28,7 @@ from timer import *
 from definitions import *
 from misc import *
 
-from modshogun import MCLDA, RealFeatures, MulticlassLabels
+from shogun import MCLDA, RealFeatures, MulticlassLabels
 
 '''
 This class implements the Linear Discriminant Analysis benchmark.

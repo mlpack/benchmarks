@@ -21,8 +21,8 @@ from log import *
 from timer import *
 
 import numpy as np
-from modshogun import RealFeatures
-from modshogun import GMM as SGMM
+from shogun import RealFeatures
+from shogun import GMM as SGMM
 
 '''
 This class implements the Gaussian Mixture Model benchmark.

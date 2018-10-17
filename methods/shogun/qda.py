@@ -29,7 +29,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-import modshogun
+import shogun
 
 '''
 This class implements the QDA Classifier benchmark.
@@ -64,22 +64,22 @@ class QDA(object):
       try:
         # Load train and test dataset.
         trainData = np.genfromtxt(self.dataset[0], delimiter=',')
-        trainFeat = modshogun.RealFeatures(trainData[:,:-1].T)
+        trainFeat = shogun.RealFeatures(trainData[:,:-1].T)
 
         if len(self.dataset) == 2:
           testSet = np.genfromtxt(self.dataset[1], delimiter=',')
-          testFeat = modshogun.RealFeatures(testData.T)
+          testFeat = shogun.RealFeatures(testData.T)
 
         if len(options) > 0:
           Log.Fatal("Unknown parameters: " + str(options))
           raise Exception("unknown parameters")
 
         # Labels are the last row of the training set.
-        labels = modshogun.MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
+        labels = shogun.MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
 
         with totalTimer:
 
-          model = modshogun.QDA(trainFeat, labels)
+          model = shogun.QDA(trainFeat, labels)
           model.train()
           if len(self.dataset) == 2:
             model.apply_multiclass(testFeat).get_labels()
@@ -115,9 +115,9 @@ class QDA(object):
       testData = LoadDataset(self.dataset[1])
       truelabels = LoadDataset(self.dataset[2])
 
-      model = modshogun.QDA(modshogun.RealFeatures(trainData.T),modshogun.MulticlassLabels(labels))
+      model = shogun.QDA(shogun.RealFeatures(trainData.T),shogun.MulticlassLabels(labels))
       model.train()
-      predictions = model.apply_multiclass(modshogun.RealFeatures(testData.T)).get_labels()
+      predictions = model.apply_multiclass(shogun.RealFeatures(testData.T)).get_labels()
 
       confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
       

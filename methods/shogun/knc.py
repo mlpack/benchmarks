@@ -29,7 +29,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, KNN, EuclideanDistance, KNN_KDTREE
+from shogun import RealFeatures, MulticlassLabels, KNN, EuclideanDistance, KNN_KDTREE
 
 '''
 This class implements the Support vector machines benchmark.

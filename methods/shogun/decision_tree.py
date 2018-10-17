@@ -28,7 +28,7 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels, CARTree, EuclideanDistance
+from shogun import RealFeatures, MulticlassLabels, CARTree, EuclideanDistance
 
 '''
 This class implements the decision tree benchmark.

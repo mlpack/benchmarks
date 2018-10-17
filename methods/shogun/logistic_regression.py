@@ -29,8 +29,8 @@ from definitions import *
 from misc import *
 
 import numpy as np
-from modshogun import RealFeatures, MulticlassLabels
-from modshogun import MulticlassLogisticRegression
+from shogun import RealFeatures, MulticlassLabels
+from shogun import MulticlassLogisticRegression
 
 '''
 This class implements the Logistic Regression benchmark.

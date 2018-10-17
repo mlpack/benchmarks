@@ -20,10 +20,20 @@ then
   exit 1
 fi
 
+gpl_tars=`ls shogun-gpl.tar.gz | wc -l`;
+if [ "$gpl_tars" -eq "0" ];
+then
+    echo "No gpl source shogun-gpl.tar.gz found in libraries/!"
+    exit 1
+fi
+
 # Remove any old directory.
 rm -rf shogun/
 mkdir shogun/
 tar -xzpf shogun.tar.gz --strip-components=1 -C shogun/
+
+# Add the gpl package
+tar -xzpf shogun-gpl.tar.gz --strip-components=1 -C shogun/src/gpl
 
 cd shogun/
 mkdir build/
@@ -31,7 +41,7 @@ cd build/
 cmake -DPYTHON_INCLUDE_DIR=/usr/include/python3.5 \
     -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 \
     -DPYTHON_PACKAGES_PATH=../../lib/python3.5/dist-packages \
-    -DPythonModular=ON \
+    -DINTERFACE_PYTHON=ON \
     -DBUILD_META_EXAMPLES=OFF \
     -DCMAKE_BUILD_TYPE=Release \
     -DENABLE_TESTING=OFF \
