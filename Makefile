@@ -69,7 +69,11 @@ export DLIBML_PATH=methods/dlibml/
 export R_PATH = methods/R/
 
 # Set LD_LIBRARY_PATH correctly.
-export LD_LIBRARY_PATH=$(shell echo $(LIBPATH))
+# Preserve a previously set LD_LIBRARY_PATH in case
+# the user has already installed the libraries in a custom
+# location and he does not need/want to install them again
+# through this benchmarking system.
+export LD_LIBRARY_PATH=$(shell printenv LD_LIBRARY_PATH):$(shell echo $(LIBPATH))
 # Set PYTHONPATH correctly.
 PYVERSION=$(shell python3 -c 'import sys; print("python" + sys.version[0:3])')
 export PYTHONPATH=$(shell printenv PYTHONPATH):$(shell echo $(ROOTPATH))/libraries/lib/$(shell echo $(PYVERSION))/dist-packages:$(shell echo $(ROOTPATH))/libraries/lib/$(shell echo $(PYVERSION))/site-packages
