@@ -139,7 +139,7 @@ settings:
 
 ### Library Block
 
-The libary block contains some settings that control the specified benchmark scripts.
+The library block contains some settings that control the specified benchmark scripts.
 
 ```yaml
 library: mlpack
