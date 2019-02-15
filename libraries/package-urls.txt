@@ -12,7 +12,7 @@ weka http://prdownloads.sourceforge.net/weka/weka-3-8-1.zip
 elki https://elki-project.github.io/releases/release0.7.1/elki-bundle-0.7.1.jar
 nearpy https://github.com/pixelogik/NearPy/archive/1.0.0.tar.gz
 annoy https://pypi.python.org/packages/3a/14/e733caa00f20544d4f3685434073a6911f4712e7316b140537a750cceb37/annoy-1.8.3.tar.gz
-mrpt https://github.com/teemupitkanen/mrpt/archive/master.tar.gz
+mrpt https://github.com/vioshyvo/mrpt/archive/release-1.1.1.tar.gz
 milk https://github.com/luispedro/milk/archive/release-0.6.1.tar.gz
 dlibml https://github.com/davisking/dlib/archive/v19.4.tar.gz
 R https://cran.r-project.org/src/base/R-3/R-3.4.1.tar.gz
