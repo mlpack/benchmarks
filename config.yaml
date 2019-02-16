@@ -2792,7 +2792,7 @@ methods:
                        ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv', 'datasets/ecoli_labels.csv'] ]
               options:
                 k: 10
-                trees: 10
+                num_trees: 10
 ---
 # Nearpy
 library: nearpy
