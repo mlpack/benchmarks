@@ -83,6 +83,8 @@ class ANN(object):
         build_dict["depth"] = 2 # Not sure... just a default...
       if "votes_required" in options:
         run_dict["votes_required"] = int(options.pop("votes_required"))
+      else:
+        run_dict["votes_required"] = 1
 
       if len(options) > 0:
         Log.Fatal("Unknown parameters: " + str(options))
@@ -92,8 +94,8 @@ class ANN(object):
         try:
           # Perform Approximate Nearest-Neighbors.
           acc = 0
-          index = mrpt.MRPTIndex(np.float32(train), **build_dict)
-          index.build()
+          index = mrpt.MRPTIndex(np.float32(train))
+          index.build(**build_dict)
           approximate_neighbors = np.zeros((len(queryData), k))
           for i in range(len(queryData)):
               approximate_neighbors[i] = index.ann(np.float32(queryData[i]), k,
