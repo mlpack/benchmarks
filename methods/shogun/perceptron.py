@@ -86,26 +86,26 @@ class PERCEPTRON(object):
         else:
           Log.Fatal("This method requires atleast two datasets.")
 
-          # Use the last row of the training set as the responses.
-          X, y = SplitTrainData(self.dataset)
+        # Use the last row of the training set as the responses.
+        X, y = SplitTrainData(self.dataset)
 
-          # Gather all parameters.
-          self.iterations = None
-          if "max_iterations" in options:
-            self.iterations = int(options.pop("max_iterations"))
+        # Gather all parameters.
+        self.iterations = None
+        if "max_iterations" in options:
+          self.iterations = int(options.pop("max_iterations"))
 
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
+        if len(options) > 0:
+          Log.Fatal("Unknown parameters: " + str(options))
+          raise Exception("unknown parameters")
 
-          with totalTimer:
-            # Perform perceptron classification.
-            self.model = BuildModel(X, y)
+        with totalTimer:
+          # Perform perceptron classification.
+          self.model = BuildModel(X, y)
 
-            if len(self.dataset) == 2:
-              pred = self.model.apply(RealFeatures(testSet.T))
-              self.predictions = pred.get_labels()
-          return totalTimer.ElapsedTime()
+          if len(self.dataset) == 2:
+            pred = self.model.apply(RealFeatures(testSet.T))
+            self.predictions = pred.get_labels()
+        return totalTimer.ElapsedTime()
       except Exception as e:
         return -1
 
