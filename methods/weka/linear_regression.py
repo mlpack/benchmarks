@@ -87,8 +87,8 @@ class LinearRegression(object):
         ":methods/weka" + " LinearRegression -i " + self.dataset[0] + " -t " +
         self.dataset[1])
     else:
-      cmd = shlex.split("java -classpath " + self.path + ":methods/weka" +
-        " LinearRegression -i " + self.dataset[0])
+      cmd = shlex.split("java -classpath " + self.path + "/weka.jar" +
+        ":methods/weka" + " LinearRegression -i " + self.dataset[0])
 
     # Run command with the nessecary arguments and return its output as a byte
     # string. We have untrusted input so we disable all shell based features.
