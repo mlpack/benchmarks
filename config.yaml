@@ -882,7 +882,7 @@ methods:
                       'datasets/tinyImages100k.csv', 'datasets/yearpredictionmsd.csv']
               options:
                 new_dimensionality: 2
-                scaled: True
+                scaling: True
 
     PERCEPTRON:
         run: ['metric']
@@ -1045,16 +1045,6 @@ methods:
                         ['datasets/ticdata2000.csv'], ['datasets/TomsHardware.csv'],
                         ['datasets/madelon_train.csv', 'datasets/madelon_test.csv'],
                         ['datasets/arcene_train.csv', 'datasets/arcene_test.csv'] ]
-    HMMGENERATE:
-        run: ['metric']
-        iteration: 3
-        script: methods/matlab/hmm_generate.py
-        format: [csv, txt, xml]
-        datasets:
-            - files: ['datasets/artificial_2DSignal_hmm.xml']
-              options:
-                length: 10000
-
     LogisticRegression:
             run: ['metric']
             script: methods/matlab/logistic_regression.py
