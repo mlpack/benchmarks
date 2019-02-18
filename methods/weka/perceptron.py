@@ -30,6 +30,9 @@ import subprocess
 import re
 import collections
 import numpy as np
+from scipy.io import arff
+from functools import reduce
+import operator
 
 '''
 This class implements the Perceptron benchmark.
@@ -104,15 +107,19 @@ class PERCEPTRON(object):
 
     if timer != -1:
       predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
-      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
+      truelabels = np.asarray(
+        reduce(operator.concat, data.tolist()), dtype=np.float32)
       metrics['Runtime'] = timer.total_time
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-
+      try:
+        confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
+        metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+        metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+        metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+        metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
+        metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+      except Exception as e:
+        # The confusion matrix can't mix binary and continuous data.
+        pass
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
     return metrics

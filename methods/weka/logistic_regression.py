@@ -32,6 +32,9 @@ import subprocess
 import re
 import collections
 import numpy as np
+from scipy.io import arff
+from functools import reduce
+import operator
 
 '''
 This class implements the Logistic Regression benchmark.
@@ -107,18 +110,22 @@ class LogisticRegression(object):
 
     if timer != -1:
       predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
-      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
+      truelabels = np.asarray(
+        reduce(operator.concat, data.tolist()), dtype=np.float32)
       metrics['Runtime'] = timer.total_time
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
-      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
-      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
-      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictions)
-      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
-
+      try:
+        confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
+        metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
+        metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
+        metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
+        metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
+        metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
+        metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+        metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictions)
+        metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+      except Exception as e:
+        # The confusion matrix can't mix binary and continuous data.
+        pass
       Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
 
     return metrics
