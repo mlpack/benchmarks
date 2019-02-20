@@ -103,6 +103,7 @@ class DECISIONSTUMP(object):
 
     if timer != -1:
       predictions = np.genfromtxt("weka_predicted.csv", delimiter=',')
+      data, meta = arff.loadarff(self.dataset[2])
       truelabels = np.asarray(
         reduce(operator.concat, data.tolist()), dtype=np.float32)
       metrics['Runtime'] = timer.total_time
