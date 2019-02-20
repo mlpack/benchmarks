@@ -17,6 +17,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from loader import *
+from convert import *
 
 '''
 Test the mlpack Parametric Naive Bayes Classifier script.
@@ -75,7 +76,10 @@ class NBC_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.arff', 'datasets/iris_test.arff', 'datasets/iris_labels.csv']
+    if not os.path.isfile('datasets/iris_labels.arff'):
+      Convert('datasets/iris_labels.csv', 'arff')
+
+    self.dataset = ['datasets/iris_train.arff', 'datasets/iris_test.arff', 'datasets/iris_labels.arff']
     self.verbose = False
     self.timeout = 240
 
@@ -146,7 +150,7 @@ class NBC_SCIKIT_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 

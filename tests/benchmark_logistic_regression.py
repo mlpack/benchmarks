@@ -16,6 +16,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from loader import *
+from convert import *
 
 '''
 Test the Scikit Logistic Regression Classifier script.
@@ -61,7 +62,7 @@ class LR_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -167,8 +168,11 @@ class LR_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
+    if not os.path.isfile('datasets/ecoli_labels.arff'):
+      Convert('datasets/ecoli_labels.csv', 'arff')
+
     self.dataset = ['datasets/ecoli_train.csv', 'datasets/ecoli_test.csv',
-        'datasets/ecoli_labels.csv']
+        'datasets/ecoli_labels.arff']
     self.verbose = False
     self.timeout = 240
 

@@ -16,6 +16,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from util.loader import *
+from convert import *
 
 '''
 Test the scikit Decision Tree Prediction script.
@@ -62,7 +63,7 @@ class DecisionTree_SHOGUN_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -97,7 +98,7 @@ class DecisionTree_Milk_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 240
 
@@ -165,7 +166,10 @@ class DecisionTree_WEKA_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.arff','datasets/iris_test.arff','datasets/iris_labels.csv']
+    if not os.path.isfile('datasets/iris_labels.arff'):
+      Convert('datasets/iris_labels.csv', 'arff')
+
+    self.dataset = ['datasets/iris_train.arff', 'datasets/iris_test.arff', 'datasets/iris_labels.arff']
     self.verbose = False
     self.timeout = 240
 
@@ -201,7 +205,7 @@ class DecisionTree_R_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = ['datasets/iris_train.csv','datasets/iris_test.csv','datasets/iris_labels.csv']
+    self.dataset = ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
     self.verbose = False
     self.timeout = 500 # Changed because installing Packages might take time.
 
