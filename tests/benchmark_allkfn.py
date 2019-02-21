@@ -27,7 +27,7 @@ class ALLKFN_MLPACK_TEST(unittest.TestCase):
   Test initialization.
   '''
   def setUp(self):
-    self.dataset = "datasets/wine.csv"
+    self.dataset = "datasets/cosExp.csv"
     self.verbose = False
     self.timeout = 240
 
