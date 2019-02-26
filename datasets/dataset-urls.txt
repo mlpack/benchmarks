@@ -11,6 +11,7 @@ artificial_1DSignal*.csv mlpack.org/datasets/artificial_1DSignal.tar.gz
 artificial_2DSignal*.csv mlpack.org/datasets/artificial_2DSignal.tar.gz
 artificial_40D*.csv mlpack.org/datasets/artificial_40D.tar.gz
 artificial_5DSignal*.csv mlpack.org/datasets/artificial_5DSignal.tar.gz
+balance_scale*.csv mlpack.org/datasets/balance_scale.tar.gz
 bank8FM.csv mlpack.org/datasets/bank8FM.tar.gz
 cal_housing.csv mlpack.org/datasets/cal_housing.tar.gz
 circle_data.csv mlpack.org/datasets/circle.tar.gz
@@ -26,6 +27,7 @@ faces.csv mlpack.org/datasets/faces.tar.gz
 ionosphere.csv mlpack.org/datasets/ionosphere.tar.gz
 iris*.csv mlpack.org/datasets/iris.tar.gz
 isolet*.csv mlpack.org/datasets/isolet.tar.gz
+letter_recognition*.csv http://www.mlpack.org/datasets/letter_recognition.tar.gz
 madelon*.csv mlpack.org/datasets/madelon.tar.gz
 mammography*.csv mlpack.org/datasets/mammography.tar.gz
 mnist*.csv mlpack.org/datasets/mnist.tar.gz

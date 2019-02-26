@@ -794,6 +794,74 @@ methods:
                 normalize: True
                 seed: 42
 
+    LMNN:
+        run: ['metric']
+        script: methods/mlpack/lmnn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris_train.csv',
+                      'datasets/satellite_train.csv', 'datasets/ionosphere.csv',
+                      'datasets/balance_scale.csv', 'datasets/letter_recognition.csv',
+                      'datasets/oilspill_train.csv', 'datasets/shuttle_train.csv',
+                      'datasets/ecoli_train.csv', 'datasets/vehicle.csv']
+              options:
+                num_targets: 3
+                passes: 10
+                range: 20
+                seed: 42
+
+            - files: ['datasets/letter_recognition.csv',
+                      'datasets/shuttle_train.csv', 'datasets/isolet_train.csv',
+                      'datasets/covtype.csv', 'datasets/optdigits_train.csv',
+                      'datasets/mnist_all.csv', 'datasets/Twitter.csv']
+              options:
+                num_targets: 3
+                passes: 3
+                range: 100
+                seed: 42
+
+            - files: ['datasets/iris_train.csv',
+                      'datasets/ecoli_train.csv', 'datasets/vehicle.csv',
+                      'datasets/balance_scale.csv', 'datasets/ionosphere.csv']
+              options:
+                num_targets: 3
+                passes: 5
+                optimizer: bbsgd
+                seed: 42
+
+            - files: ['datasets/iris_train.csv',
+                      'datasets/satellite_train.csv', 'datasets/ionosphere.csv',
+                      'datasets/ecoli_train.csv', 'datasets/vehicle.csv',
+                      'datasets/balance_scale.csv', 'datasets/letter_recognition.csv']
+              options:
+                num_targets: 3
+                passes: 5
+                optimizer: sgd
+                range: 50
+                step_size: 1e-07
+                seed: 42
+
+            - files: ['datasets/iris_train.csv',
+                      'datasets/satellite_train.csv', 'datasets/ionosphere.csv',
+                      'datasets/ecoli_train.csv', 'datasets/vehicle.csv',
+                      'datasets/balance_scale.csv', 'datasets/letter_recognition.csv']
+              options:
+                num_targets: 3
+                max_iterations: 2000
+                optimizer: lbfgs
+                seed: 42
+                range: 50
+
+            - files: ['datasets/covtype.csv',
+                      'datasets/shuttle_train.csv', 'datasets/isolet_train.csv',
+                      'datasets/mnist_all.csv', 'datasets/letter_recognition.csv']
+              options:
+                num_targets: 3
+                max_iterations: 2000
+                optimizer: lbfgs
+                seed: 42
+                range: 100
+
     HMMTRAIN:
         run: ['metric']
         script: methods/mlpack/hmm_train.py
@@ -883,6 +951,21 @@ methods:
               options:
                 new_dimensionality: 2
                 scaling: True
+
+    LMNN:
+        run: ['metric']
+        script: methods/matlab/lmnn.py
+        format: [csv, txt]
+        datasets:
+            - files: ['datasets/iris_train.csv',
+                      'datasets/satellite_train.csv', 'datasets/ionosphere.csv',
+                      'datasets/balance_scale.csv', 'datasets/vehicle.csv',
+                      'datasets/oilspill_train.csv', 'datasets/ecoli_train.csv',
+                      'datasets/letter_recognition.csv', 'datasets/shuttle_train.csv',
+                      'datasets/isolet_train.csv', 'datasets/optdigits_train.csv',
+                      'datasets/covtype.csv', 'datasets/mnist_all.csv']
+              options:
+                k: 3
 
     PERCEPTRON:
         run: ['metric']
@@ -2165,6 +2248,26 @@ methods:
                        ['datasets/madelon_X.csv', 'datasets/madelon_y.csv']]
               options:
                 lambda1: 0.01
+
+    LMNN:
+        run: ['metric']
+        script: methods/shogun/lmnn.py
+        format: [csv, txt]
+        datasets:
+            - files: [ ['datasets/iris_train.csv'],
+                       ['datasets/ecoli_train.csv'],
+                       ['datasets/vehicle.csv'],
+                       ['datasets/ionosphere.csv'],
+                       ['datasets/shuttle_train.csv'],
+                       ['datasets/letter_recognition.csv'],
+                       ['datasets/balance_scale.csv'],
+                       ['datasets/oilspill_train.csv'],
+                       ['datasets/mnist_all.csv'],
+                       ['datasets/Twitter.csv'],
+                       ['datasets/isolet_train.csv'],
+                       ['datasets/covtype.csv']]
+              options:
+                k: 3
 
     QDA:
             run: ['metric','metric']

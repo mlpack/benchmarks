@@ -9,6 +9,10 @@ import sys
 import numpy as np
 import math
 
+from modshogun import RealFeatures
+from modshogun import MulticlassLabels
+from modshogun import KNN, EuclideanDistance
+
 class Metrics(object):
 
   '''
@@ -466,3 +470,50 @@ class Metrics(object):
       simplemse += difference * difference
     simplemse /= n
     return simplemse
+
+  '''
+  @param distance - Matrix containing learned distance.
+  @param data - List containing data & true labels.
+  @param k - Number of targets used calculation.
+  @param flag - Switch to control whether to use distance weighted KNN or not.
+  This method computes the accuracy based on the true labels and
+  predicted labels from knn classifier.
+  '''
+  @staticmethod
+  def KNNAccuracy(distance, data, k, flag):
+    transformedData = np.dot(data[0], distance.T)
+    feat  = RealFeatures(transformedData.T)
+    labels = MulticlassLabels(data[1].astype(np.float64))
+    dist = EuclideanDistance(feat, feat)
+    knn = KNN(k + 1, dist, labels)
+    knn.train(feat)
+    # Get nearest neighbors.
+    nn = knn.nearest_neighbors()
+    nn = np.delete(nn, 0, 0)
+    # Compute unique labels.
+    uniqueLabels = np.unique(labels)
+    # Keep count correct predictions.
+    count = 0
+    # Normalize labels
+    for i in range(data[0].shape[0]):
+      for j in range(len(uniqueLabels)):
+        if (labels[i] == uniqueLabels[j]):
+          labels[i] = j
+          break
+
+    for i in range(nn.shape[1]):
+      mapLabels = [0 for x in range(len(uniqueLabels))]
+      for j in range(nn.shape[0]):
+        if (flag):
+          distPoints = np.linalg.norm(data[0][nn[j][i],:] - data[0][i,:])
+          # Add constant factor of 1 incase two points overlap
+          mapLabels[int(labels[nn[j, i]])] += 1 / (distPoints + 1)**2
+        else:
+          # Subtract a variable factor to avoid draw condition without
+          # affecting actual result.
+          mapLabels[int(labels[nn[j, i]])] += 1 - j * 1e-8
+      maxInd = np.argmax(mapLabels)
+      if (maxInd == labels[i]):
+        count += 1
+    accuracy = (count / nn.shape[1]) * 100
+    return accuracy
