@@ -5,9 +5,7 @@
   Class to benchmark the ann All K-Nearest-Neighbors method with kd-trees.
 '''
 
-import os
-import sys
-import inspect
+import os, sys, inspect, shlex, subprocess
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -16,120 +14,51 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from profiler import *
-
-import shlex
-import subprocess
-import re
-import collections
+from util import *
 
 '''
 This class implements the All K-Nearest-Neighbor Search benchmark.
 '''
-class ALLKNN(object):
+class ANN_ALLKNN(object):
+  def __init__(self, method_param, run_param):
+    # Assemble run command.
+    self.cmd = run_param["ann_path"] + "allknn"
+    if "datasets" in method_param:
+      # If the dataset contains two files then the second file is the query
+      # file.
+      dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
+      if len(dataset) == 2:
+        self.cmd += " -r " + dataset[0] + " -q " + dataset[1]
+      elif len(dataset) == 1:
+        self.cmd += " -r " + dataset[0]
+    if "k" in method_param:
+      self.cmd += " -k " + str(method_param["k"])
+    if "seed" in method_param:
+      self.cmd += " -s " + str(method_param["seed"])
+    if "epsilon" in method_param:
+      self.cmd += " -e " + str(method_param["epsilon"])
+    self.cmd += " -v"
 
-  '''
-  Create the All K-Nearest-Neighbors benchmark instance, show some informations
-  and return the instance.
+    self.info = "ANN_ALLKNN (" + self.cmd + ")"
+    self.timeout = run_param["timeout"]
 
-  @param dataset - Input dataset to perform All K-Nearest-Neighbors on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param path - Path to the ann executable.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, path=os.environ["ANN_PATH"],
-        verbose = True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.path = path
-    self.timeout = timeout
+  def __str__(self):
+    return self.info
 
-  '''
-  Perform All K-Nearest-Neighbors. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform ALLKNN.", self.verbose)
-
-    # Convert options dict to string to use.
-    optionsStr = ""
-    if "k" in options:
-      optionsStr = "-k " + str(options.pop("k"))
-    if "seed" in options:
-      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
-    if "epsilon" in options:
-      optionsStr = optionsStr + " -e " + str(options.pop("epsilon"))
-    if len(options) > 0:
-      Log.Fatal("Unknown options: " + str(options))
-      raise Exception("unknown options")
-
-    # If the dataset contains two files then the second file is the query file.
-    # In this case we add this to the command line.
-    if len(self.dataset) == 2:
-      cmd = shlex.split(self.path + "allknn -r " + self.dataset[0] + " -q " +
-          self.dataset[1] + " -v " + optionsStr)
-    else:
-      cmd = shlex.split(self.path + "allknn -r " + self.dataset +
-          " -v " + optionsStr)
-
-    # Run command with the nessecary arguments and return its output as a byte
-    # string. We have untrusted input so we disable all shell based features.
+  def metric(self):
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
-          timeout=self.timeout)
+      output = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT,
+        shell=True, timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
-      Log.Warn(str(e))
-      return -2
+      raise Exception("method timeout")
     except Exception as e:
-      Log.Fatal("Could not execute command: " + str(cmd))
-      return -1
+      raise Exception(str(e))
 
-    # Datastructure to store the results.
-    metrics = {}
+    metric = {}
+    timer = parse_timer(output)
+    if timer:
+      metric["runtime"] = timer["tree_building"] + timer["computing_neighbors"]
+      metric["tree_building"] = timer["tree_building"]
+      metric["computing_neighbors"] = timer["computing_neighbors"]
 
-    # Parse data: runtime.
-    timer = self.parseTimer(s)
-
-    if timer != -1:
-      metrics['Runtime'] = timer.tree_building + timer.computing_neighbors
-      metrics['TreeBuilding'] = timer.tree_building
-      metrics['ComputingNeighbors'] = timer.computing_neighbors
-
-      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
-
-    return metrics
-
-  '''
-  Parse the timer data form a given string.
-
-  @param data - String to parse timer data from.
-  @return - Namedtuple that contains the timer data or -1 in case of an error.
-  '''
-  def parseTimer(self, data):
-    # Compile the regular expression pattern into a regular expression object to
-    # parse the timer data.
-    pattern = re.compile(r"""
-        .*?computing_neighbors: (?P<computing_neighbors>.*?)s.*?
-        .*?tree_building: (?P<tree_building>.*?)s.*?
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    match = pattern.match(data.decode())
-    if not match:
-      Log.Fatal("Can't parse the data: wrong format")
-      return -1
-    else:
-      # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["tree_building",
-                                               "computing_neighbors"])
-
-      if match.group("tree_building").count(".") == 1:
-        return timer(float(match.group("tree_building")),
-                     float(match.group("computing_neighbors")))
-      else:
-        return timer(float(match.group("tree_building").replace(",", ".")),
-                     float(match.group("computing_neighbors").replace(",", ".")))
+    return metric
