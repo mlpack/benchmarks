@@ -43,7 +43,23 @@
       <input class="chart-type-radio" type="radio" name="chart-type" value="metric-multiple-parameter-comparison" id="chart-type-radio-6" onclick="chartTypeSelect()">
       <label for="chart-type-radio-6" class="chart-type-radio-label">Metric analysis with multiple parameters for an algorithm/dataset combination</label>
     </div>
-
+    <div>
+      <input class="chart-type-radio" type="radio" name="chart-type"
+value="sweep-runtime-comparison" id="chart-type-radio-7"
+onclick="chartTypeSelect()">
+      <label for="chart-type-radio-7" class="chart-type-radio-label">Runtime
+plots for parameter sweeps</label>
+    </div>
+    <div>
+      <input class="chart-type-radio" type="radio" name="chart-type" value="sweep-metric-comparison" id="chart-type-radio-8" onclick="chartTypeSelect()">
+      <label for="chart-type-radio-8" class="chart-type-radio-label">Metric
+plots for parameter sweeps</label>
+    </div>
+    <div>
+      <input class="chart-type-radio" type="radio" name="chart-type" value="all-sweep-metric-comparison" id="chart-type-radio-9" onclick="chartTypeSelect()">
+      <label for="chart-type-radio-9" class="chart-type-radio-label">All metric
+plots for parameter sweeps</label>
+    </div>
 
     <div class="selectholder" id="selectholder"></div>
     <div class="clear"></div>
@@ -67,5 +83,8 @@
   <script src='js/benchmarks/metric-comparison-view.js'></script>
   <script src='js/benchmarks/highest_metric-comparison-view.js'></script>
   <script src='js/benchmarks/metric-multiple-parameter-comparison-view.js'></script>
+  <script src='js/benchmarks/sweep-comparison-view.js'></script>
+  <script src='js/benchmarks/sweep-metric-comparison-view.js'></script>
+  <script src='js/benchmarks/all-params-metric-comparison-view.js'></script>
 </body>
 </html>

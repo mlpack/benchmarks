@@ -74,7 +74,8 @@ var color = d3.scale.ordinal().range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b"
  */
 function mapRuntime(runtime, max)
 {
-  if (runtime == ">9000") { return max; }
+  if (String(runtime).indexOf(">") != -1) { return max; }
+  else if (runtime == "timeout") { return max; }
   else if (runtime == "failure") { return 0; }
   else { return runtime; }
 }
@@ -140,6 +141,9 @@ function chartTypeSelect()
   else if (chartType == "dataset-comparison") { activeChartType = dc; }
   else if (chartType == "metric-comparison") { activeChartType = mc; }
   else if (chartType == "highest-metric-comparison") { activeChartType = hmc; }
+  else if (chartType == "sweep-runtime-comparison") { activeChartType = sc; }
+  else if (chartType == "sweep-metric-comparison") { activeChartType = smc; }
+  else if (chartType == "all-sweep-metric-comparison") { activeChartType = apmc; }
 
   activeChartType.onTypeSelect();
 }

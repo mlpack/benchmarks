@@ -100,7 +100,7 @@ hc.paramSelect = function()
   var param_select_box = document.getElementById("param_select");
   var param_name_full = param_select_box.options[param_select_box.selectedIndex].text;
   // Parse out actual parameters.
-  hc.param_name = param_name_full.split("(")[0].replace(/^\s+|\s+$/g, ''); // At higher scope.
+  hc.param_name = param_name_full.split("(").slice(0, -1).join("(").replace(/^\s+|\s+$/g, ''); // At higher scope.
   if (hc.param_name == "[no parameters]") { hc.param_name = ""; }
 
   // Given a method name and parameters, query the SQLite database for all of

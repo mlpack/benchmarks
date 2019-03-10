@@ -25,8 +25,9 @@ fill: steelblue;
 
 .d3-tip {
   line-height: 1;
-  font-weight: bold;
-  padding: 12px;
+  border: 2px solid;
+  font-size: 12px;
+  padding: 6px;
   background: rgba(0, 0, 0, 0.9);
   color: #fff;
   border-radius: 2px;
@@ -35,7 +36,7 @@ fill: steelblue;
 .d3-tip:after {
   box-sizing: border-box;
   display: inline;
-  font-size: 10px;
+  font-size: 8px;
   width: 100%;
   line-height: 1;
   color: rgba(0, 0, 0, 0.9);
@@ -69,6 +70,7 @@ svg text {
 }
 
 .library-select-div {
+  clear: both;
   min-width: 140px;
   float: left;
   height: 20px;
@@ -156,14 +158,15 @@ svg text {
   padding: 10px;
 }
 
-.method-select-label, .param-select-label, .main-dataset-select-label {
+.method-select-label, .param-select-label, .main-dataset-select-label,
+.sweep-select-label, .metric-select-label {
   float: left;
   font-size: 75%;
   color: #ffffff;
   margin-right: 8px;
 }
 
-#method_select, #param_select, #main_dataset_select,
+#method_select, #param_select, #sweep_select, #main_dataset_select,
 #metric_select, #option_select {
   float: left;
   margin-right: 20px;
