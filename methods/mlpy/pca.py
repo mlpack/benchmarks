@@ -5,10 +5,7 @@
   Principal Components Analysis with mlpy.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,94 +14,36 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 import mlpy
 
 '''
 This class implements the Principal Components Analysis benchmark.
 '''
-class PCA(object):
+class MLPY_PCA(object):
+  def __init__(self, method_param, run_param):
+    self.info = "MLPY_PCA ("  + str(method_param) +  ")"
 
-  '''
-  Create the Principal Components Analysis benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.build_opts = {}
+    if "whiten" in method_param:
+      self.build_opts["whiten"] = True
+    if "new_dimensionality" in method_param:
+      self.k = int(method_param["new_dimensionality"])
+    else:
+      self.k = self.data[0].shape[1]
 
-  @param dataset - Input dataset to perform PCA on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+  def __str__(self):
+    return self.info
 
-  '''
-  Use the mlpy libary to implement Principal Components Analysis.
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = mlpy.PCA(**self.build_opts)
+      model.learn(self.data[0])
+      out = model.transform(self.data[0], self.k)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def PCAMlpy(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunPCAMlpy():
-      totalTimer = Timer()
-
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset, delimiter=',')
-
-      try:
-        with totalTimer:
-          # Find out what dimension we want.
-          if "new_dimensionality" in options:
-            k = int(options.pop("new_dimensionality"))
-            if (k > data.shape[1]):
-              Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater "
-                  + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-              return -1
-          else:
-            k = data.shape[1]
-
-          build_opts = {}
-          if "whiten" in options:
-            build_opts["whiten"] = True
-            options.pop("whiten")
-
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
-
-          # Perform PCA.
-          prep = mlpy.PCA(**build_opts)
-          prep.learn(data)
-          out = prep.transform(data, k)
-      except Exception as e:
-        Log.Fatal("Exception: " + str(e))
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunPCAMlpy()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Principal Components Analysis. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform PCA.", self.verbose)
-
-    results = self.PCAMlpy(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    return metric

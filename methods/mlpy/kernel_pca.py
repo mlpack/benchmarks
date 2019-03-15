@@ -5,10 +5,7 @@
   Kernel Principal Components Analysis with mlpy.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,114 +14,52 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 import mlpy
 
 '''
 This class implements the Kernel Principal Components Analysis benchmark.
 '''
-class KPCA(object):
+class MLPY_KPCA(object):
+  def __init__(self, method_param, run_param):
+    self.info = "MLPY_KPCA ("  + str(method_param) +  ")"
 
-  '''
-  Create the Kernel Principal Components Analysis benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    if len(self.data) == 1:
+      self.data = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform KPCA on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.build_opts = {}
+    self.build_opts["k"] = self.data[0].shape[1]
+    if "new_dimensionality" in method_param:
+      self.build_opts["k"] = int(method_param["new_dimensionality"])
 
-  '''
-  Use the mlpy libary to implement Kernel Principal Components Analysis.
+    self.method_param = method_param
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def KPCAMlpy(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunKPCAMlpy():
-      totalTimer = Timer()
+  def __str__(self):
+    return self.info
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset, delimiter=',')
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      if self.method_param["kernel"] == "polynomial":
+        if "degree" in self.method_param:
+          degree = int(self.method_param["degree"])
+        else:
+          degree = 1
 
-      try:
-        with totalTimer:
-          # Get the new dimensionality, if it is necessary.
-          if "new_dimensionality" in options:
-            d = int(options.pop("new_dimensionality"))
-            if (d > data.shape[1]):
-              Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
-                + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-              return -1
-          else:
-            d = data.shape[0]
+        kernel = mlpy.kernel_polynomial(self.data[0], self.data[0], d=degree)
+      elif self.method_param["kernel"] == "gaussian":
+        kernel = mlpy.kernel_gaussian(self.data[0], self.data[0], sigma=2)
+      elif self.method_param["kernel"] == "linear":
+        kernel = mlpy.kernel_linear(self.data[0], self.data[0])
+      elif self.method_param["kernel"] == "hyptan":
+        kernel = mlpy.kernel_sigmoid(self.data[0], self.data[0])
 
-          # Get the kernel type and make sure it is valid.
-          if not "kernel" in options:
-            Log.Fatal("Choose kernel type, valid choices are 'polynomial', " +
-                  "'gaussian', 'linear' and 'hyptan'.")
-            return -1
+      model = mlpy.KPCA()
+      model.learn(kernel)
+      out = model.transform(kernel, **self.build_opts)
 
-          if options["kernel"] == "polynomial":
-            if "degree" in options:
-              degree = int(options.pop("degree"))
-            else:
-              degree = 1
-
-            kernel = mlpy.kernel_polynomial(data, data, d=degree)
-          elif options["kernel"] == "gaussian":
-            kernel = mlpy.kernel_gaussian(data, data, sigma=2)
-          elif options["kernel"] == "linear":
-            kernel = mlpy.kernel_linear(data, data)
-          elif options["kernel"] == "hyptan":
-            kernel = mlpy.kernel_sigmoid(data, data)
-          else:
-            Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
-                    "choices are 'polynomial', 'gaussian', 'linear' and 'hyptan'.")
-            return -1
-
-          options.pop("kernel")
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
-
-          # Perform Kernel Principal Components Analysis.
-          model = mlpy.KPCA()
-          model.learn(kernel)
-          out = model.transform(kernel, k=d)
-      except Exception as e:
-        Log.Fatal("Exception: " + str(e))
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunKPCAMlpy()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Kernel Principal Components Analysis. If the method has been
-  successfully completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform KPCA.", self.verbose)
-
-    results = self.KPCAMlpy(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    return metric
