@@ -5,10 +5,7 @@
   Least Angle Regression with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,94 +14,44 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from shogun import RegressionLabels, RealFeatures
 from shogun import LeastAngleRegression
 
 '''
 This class implements the Least Angle Regression benchmark.
 '''
-class LARS(object):
+class SHOGUN_LARS(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_LARS ("  + str(method_param) +  ")"
 
-  '''
-  Create the Least Angle Regression benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.method_param = method_param
 
-  @param dataset - Input dataset to perform Least Angle Regression on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.lambda1 = None
+    if "lambda1" in method_param:
+      self.lambda1 = float(method_param["lambda1"])
 
-  '''
-  Use the shogun libary to implement Least Angle Regression.
+  def __str__(self):
+    return self.info
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def LARSShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunLARSShogun():
-      totalTimer = Timer()
+  def metric(self):
+    input_feat = RealFeatures(self.data[0].T)
+    responses_feat = RealFeatures(self.data[1].T)
 
-      # Load input dataset.
-      try:
-        Log.Info("Loading dataset", self.verbose)
-        inputData = np.genfromtxt(self.dataset[0], delimiter=',')
-        responsesData = np.genfromtxt(self.dataset[1], delimiter=',')
-        inputFeat = RealFeatures(inputData.T)
-        responsesFeat = RegressionLabels(responsesData)
+    totalTimer = Timer()
+    with totalTimer:
+      model = LeastAngleRegression(False)
 
-        # Get all the parameters.
-        lambda1 = None
-        if "lambda1" in options:
-          lambda1 = float(options.pop("lambda1"))
+      if self.lambda1:
+        model.set_max_l1_norm(self.lambda1)
 
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
+      model.set_labels(responses_feat)
+      model.train(input_feat)
+      model.get_w_for_var(model.get_path_size() - 1)
 
-        with totalTimer:
-          # Perform LARS.
-          model = LeastAngleRegression(False)
-          if lambda1:
-            model.set_max_l1_norm(lambda1)
-          model.set_labels(responsesFeat)
-          model.train(inputFeat)
-          model.get_w_for_var(model.get_path_size() - 1)
-      except Exception as e:
-        return -1
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunLARSShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Least Angle Regression. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform LARS.", self.verbose)
-
-    if len(self.dataset) != 2:
-      Log.Fatal("This method requires two datasets.")
-      return -1
-
-    results = self.LARSShogun(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

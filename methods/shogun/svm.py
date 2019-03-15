@@ -5,10 +5,7 @@
   Support vector machines with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,159 +14,72 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from shogun import RealFeatures, MulticlassLabels, LibSVM
 from shogun import GaussianKernel, PolyKernel, LinearKernel, SigmoidKernel
 
 '''
 This class implements the Support vector machines benchmark.
 '''
-class SVM(object):
+class SHOGUN_SVM(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_SVM ("  + str(method_param) +  ")"
 
-  '''
-  Create the Support vector machines benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform SVM on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.model = None
-    self.kernel = None
-    self.C = 1.0
-    self.gamma = 0.0
+    self.method_param = method_param
 
-  '''
-  Build the model for the Support vector machines.
+    self.train_feat = RealFeatures(self.data_split[0].T)
+    self.train_labels = MulticlassLabels(self.data_split[1])
 
-  @param data - The train data.
-  @param labels - The labels for the train set.
-  @return The created model.
-  '''
-  def BuildModel(self, data, labels, options):
-    if "kernel" in options:
-      k = str(options.pop("kernel"))
-    else:
-      Log.Fatal("Required parameter 'kernel' not specified!")
-      raise Exception("missing parameter")
+    if len(self.data) >= 3:
+      self.test_feat = RealFeatures(self.data[1].T)
 
-    if "c" in options:
-      self.C = float(options.pop("c"))
-    if "gamma" in options:
-      self.gamma = float(options.pop("gamma"))
+  def __str__(self):
+    return self.info
 
-
-    if k == "gaussian":
-      self.kernel = GaussianKernel(data, data, 1)
-    elif k == "polynomial":
-      if "degree" in options:
-        d = int(options.pop("degree"))
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      if "kernel" in self.method_param:
+        k = str(self.method_param["kernel"])
+      if "c" in self.method_param:
+        C = float(self.method_param["c"])
+      if "gamma" in self.method_param:
+        gamma = float(self.method_param["gamma"])
+      if k == "gaussian":
+        kernel = GaussianKernel(self.train_feat, self.train_feat, 1)
+      elif k == "polynomial":
+        if "degree" in self.method_param:
+          d = int(self.method_param["degree"])
+        else:
+          d = 1
+        self.kernel = PolyKernel(self.train_feat, self.train_feat, d, True)
+      elif k == "linear":
+        self.kernel = LinearKernel(self.train_feat, self.train_feat)
+      elif k == "hyptan":
+        self.kernel = SigmoidKernel(
+          self.train_feat, self.train_feat, 2, 1.0, 1.0)
       else:
-        d = 1
+        self.kernel = GaussianKernel(self.train_feat, self.train_feat, 1)
 
-      self.kernel = PolyKernel(data, data, d, True)
-    elif k == "linear":
-      self.kernel = LinearKernel(data, data)
-    elif k == "hyptan":
-      self.kernel = SigmoidKernel(data, data, 2, 1.0, 1.0)
-    else:
-      self.kernel = GaussianKernel(data, data, 1)
+      model = LibSvm(C, kernel, self.train_labels)
+      model.train()
 
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameters")
+      if len(self.data) >= 3:
+        predictions = model.apply_multiclass(self.test_feat).get_labels()
 
-    # Create and train the classifier.
-    svm = LibSvm(self.C, self.kernel, labels)
-    svm.train()
-    return svm
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-  '''
-  Use the shogun libary to implement the Support vector machines.
+    if len(self.data) == 3:
+      confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def SVMShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunSVMShogun():
-      totalTimer = Timer()
-
-      Log.Info("Loading dataset", self.verbose)
-      trainData, labels = SplitTrainData(self.dataset)
-      trainData = RealFeatures(trainData.T)
-      labels = MulticlassLabels(labels)
-      testData = RealFeatures(LoadDataset(self.dataset[1]).T)
-
-      try:
-        with totalTimer:
-          self.model = self.BuildModel(trainData, labels, options)
-          # Run Support vector machines on the test dataset.
-          self.model.apply(testData).get_labels()
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunSVMShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform the Support vector machines. If the method has been
-  successfully completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform SVM.", self.verbose)
-
-    results = None
-    if len(self.dataset) >= 2:
-      results = self.SVMShogun(options)
-
-      if results < 0:
-        return results
-    else:
-      Log.Fatal("This method requires two datasets.")
-
-    # Datastructure to store the results.
-    metrics = {'Runtime' : results}
-
-    if len(self.dataset) >= 3:
-
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, labels = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, labels, options)
-
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-      predictedlabels = self.model.apply(RealFeatures(testData.T)).get_labels()
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictedlabels)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-
-    return metrics
+    return metric

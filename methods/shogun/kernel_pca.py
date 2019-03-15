@@ -5,10 +5,7 @@
   Kernel Principal Components Analysis with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,115 +14,55 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from shogun import RealFeatures, KernelPCA
 from shogun import GaussianKernel, PolyKernel, LinearKernel, SigmoidKernel
 
 '''
 This class implements the Kernel Principal Components Analysis benchmark.
 '''
-class KPCA(object):
+class SHOGUN_KPCA(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_KPCA ("  + str(method_param) +  ")"
 
-  '''
-  Create the Kernel Principal Components Analysis benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.method_param = method_param
 
-  @param dataset - Input dataset to perform KPCA on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+  def __str__(self):
+    return self.info
 
-  '''
-  Use the shogun libary to implement Kernel Principal Components Analysis.
+  def metric(self):
+    data_feat = RealFeatures(self.data[0].T)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def KPCAShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunKPCAShogun():
-      totalTimer = Timer()
+    totalTimer = Timer()
+    with totalTimer:
+      d = self.data[0].shape[1]
+      if "new_dimensionality" in self.method_param:
+        d = int(self.method_param["new_dimensionality"])
 
-      try:
-        # Load input dataset.
-        Log.Info("Loading dataset", self.verbose)
-        data = np.genfromtxt(self.dataset, delimiter=',')
-        dataFeat = RealFeatures(data.T)
+      # Get the kernel type and make sure it is valid.
+      if "kernel" in self.method_param:
+        kernel = str(self.method_param["kernel"])
 
-        with totalTimer:
-          # Get the new dimensionality, if it is necessary.
-          if "new_dimensionality" in options:
-            d = int(options.pop("new_dimensionality"))
-            if (d > data.shape[1]):
-              Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
-                + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-              return -1
-          else:
-            d = data.shape[1]
+      if "degree" in self.method_param:
+        degree = int(self.method_param["degree"])
 
-          # Get the kernel type and make sure it is valid.
-          if "kernel" in options:
-            kernel = str(options.pop("kernel"))
-          else:
-            Log.Fatal("Choose kernel type, valid choices are 'linear'," +
-                  " 'hyptan', 'polynomial' and 'gaussian'.")
-            return -1
+      if kernel == "polynomial":
+        kernel = PolyKernel(data_feat, data_feat, degree, True)
+      elif kernel == "gaussian":
+        kernel = GaussianKernel(data_feat, data_feat, 2.0)
+      elif kernel == "linear":
+        kernel = LinearKernel(data_feat, data_feat)
+      elif kernel == "hyptan":
+        kernel = SigmoidKernel(data_feat, data_feat, 2, 1.0, 1.0)
 
-          if "degree" in options:
-            degree = int(options.pop("degree"))
+      model = KernelPCA(kernel)
+      model.set_target_dim(d)
+      model.init(data_feat)
+      model.apply_to_feature_matrix(data_feat)
 
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-          if kernel == "polynomial":
-            kernel = PolyKernel(dataFeat, dataFeat, degree, True)
-          elif kernel == "gaussian":
-            kernel = GaussianKernel(dataFeat, dataFeat, 2.0)
-          elif kernel == "linear":
-            kernel = LinearKernel(dataFeat, dataFeat)
-          elif kernel == "hyptan":
-            kernel = SigmoidKernel(dataFeat, dataFeat, 2, 1.0, 1.0)
-          else:
-            Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid "
-              + "choices are 'linear', 'hyptan', 'polynomial' and 'gaussian'.")
-            return -1
-
-          # Perform Kernel Principal Components Analysis.
-          model = KernelPCA(kernel)
-          model.set_target_dim(d)
-          model.init(dataFeat)
-          model.apply_to_feature_matrix(dataFeat)
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunKPCAShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Kernel Principal Components Analysis. If the method has been
-  successfully completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform KPCA.", self.verbose)
-
-    results = self.KPCAShogun(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

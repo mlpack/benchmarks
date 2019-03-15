@@ -5,10 +5,7 @@
   Gaussian Mixture Model with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,92 +14,39 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from shogun import RealFeatures
 from shogun import GMM as SGMM
 
 '''
 This class implements the Gaussian Mixture Model benchmark.
 '''
-class GMM(object):
+class SHOGUN_GMM(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_GMM ("  + str(method_param) +  ")"
 
-  '''
-  Create the Gaussian Mixture Model benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
 
-  @param dataset - Input dataset to perform Gaussian Mixture Model on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    if "gaussians" in method_param:
+      self.g = int(method_param["gaussians"])
+    self.n = 0
+    if "max_iterations" in method_param:
+      self.n = int(method_param["max_iterations"])
 
-  '''
-  Use the shogun libary to implement Gaussian Mixture Model.
+  def __str__(self):
+    return self.info
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def GMMShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunGMMShogun():
-      totalTimer = Timer()
+  def metric(self):
+    data_feat = RealFeatures(self.data[0].T)
+    model = SGMM(self.g)
+    model.set_features(data_feat)
 
-      try:
-        # Load input dataset.
-        Log.Info("Loading dataset", self.verbose)
-        dataPoints = np.genfromtxt(self.dataset, delimiter=',')
-        dataFeat = RealFeatures(dataPoints.T)
+    totalTimer = Timer()
+    with totalTimer:
+      model.train_em(1e-9, self.n, 1e-9)
 
-        # Get all the parameters.
-        if "gaussians" in options:
-          g = int(options.pop("gaussians"))
-        else:
-          Log.Fatal("Required parameter 'gaussians' not specified!")
-          raise Exception("missing parameter")
-        if "max_iterations" in options:
-          n = int(options.pop("max_iterations"))
-        else:
-          n = 0
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
-
-        # Create the Gaussian Mixture Model.
-        model = SGMM(g)
-        model.set_features(dataFeat)
-        with totalTimer:
-          model.train_em(1e-9, n, 1e-9)
-      except Exception as e:
-        Log.Info("Exception: " + str(e))
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunGMMShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Gaussian Mixture Model. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform GMM.", self.verbose)
-
-    results = self.GMMShogun(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

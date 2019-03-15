@@ -5,10 +5,7 @@
   All K-Nearest-Neighbors with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,108 +14,47 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from shogun import RealFeatures, MulticlassLabels, EuclideanDistance
 from shogun import KNN as SKNN
 
 '''
 This class implements the All K-Nearest-Neighbors benchmark.
 '''
-class ALLKNN(object):
+class SHOGUN_ALLKNN(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_ALLKNN ("  + str(method_param) +  ")"
 
-  '''
-  Create the All K-Nearest-Neighbors benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform All K-Nearest-Neighbors on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.train_feat = RealFeatures(self.data_split[0].T)
+    self.train_labels = MulticlassLabels(self.data_split[1])
 
-  '''
-  Use the shogun libary to implement All K-Nearest-Neighbors.
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def AllKnnShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunAllKnnShogun():
-      totalTimer = Timer()
+    if "k" in method_param:
+      self.k = int(method_param["k"])
 
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the query
-      # file.
-      try:
-        Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
-          referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
-          queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-          queryFeat = RealFeatures(queryFeat.T)
-        else:
-          referenceData = np.genfromtxt(self.dataset, delimiter=',')
+  def __str__(self):
+    return self.info
 
-        # Labels are the last row of the dataset.
-        labels = MulticlassLabels(referenceData[:, (referenceData.shape[1] - 1)])
-        referenceData = referenceData[:,:-1]
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      distance = EuclideanDistance(self.train_feat, self.train_feat)
 
-        with totalTimer:
-          # Get all the parameters.
-          if "k" in options:
-            k = int(options.pop("k"))
-            if (k < 1 or k > referenceData.shape[0]):
-              Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
-                + " and less or equal than " + str(referenceData.shape[0]))
-              return -1
-          else:
-            Log.Fatal("Required option: Number of furthest neighbors to find.")
-            return -1
+      model = SKNN(self.k, distance, self.train_labels)
+      model.train()
 
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
+      if len(self.data) >= 2:
+        out = model.apply(self.test_feat).get_labels()
+      else:
+        out = model.apply(self.train_feat).get_labels()
 
-          referenceFeat = RealFeatures(referenceData.T)
-          distance = EuclideanDistance(referenceFeat, referenceFeat)
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-          # Perform All K-Nearest-Neighbors.
-          model = SKNN(k, distance, labels)
-          model.train()
-
-          if len(self.dataset) == 2:
-            out = model.apply(queryFeat).get_labels()
-          else:
-            out = model.apply(referenceFeat).get_labels()
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunAllKnnShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform All K-Nearest-Neighbors. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negativ value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform ALLKNN.", self.verbose)
-
-    results = self.AllKnnShogun(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

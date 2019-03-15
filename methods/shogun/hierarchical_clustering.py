@@ -5,11 +5,7 @@
   Hierarchical Clustering with shogun.
 '''
 
-import sys
-import os
-import inspect
-import timeout_decorator
-import numpy as np
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to modules.
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
@@ -17,108 +13,57 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-from shogun import Hierarchical, EuclideanDistance, RealFeatures, ManhattanMetric, CosineDistance, ChebyshewMetric
+from util import *
+from shogun import Hierarchical, EuclideanDistance, RealFeatures
+from shogun import ManhattanMetric, CosineDistance, ChebyshewMetric
 
 '''
 This class implements the Hierarchical Clustering benchmark.
 '''
-class HierarchicalClustering(object):
+class SHOGUN_HIERARCHICALCLUSTERING(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_HIERARCHICALCLUSTERING ("  + str(method_param) +  ")"
 
-  '''
-  Create the Hierarchical Clustering benchmark instance.
-  
-  @param dataset - Input dataset to perform Hierarchical Clustering on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.method_param = method_param
 
-  '''
-  Use the shogun libary to implement Hierarchical Clustering.
-  @param options - Options for the model
-  @return - Elapsed time in seconds or a negative value if the method was not successful. 
+  def __str__(self):
+    return self.info
 
-  '''
-  def HierarchicalShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunHierarchicalShogun():
-      totalTimer = Timer()
+  def metric(self):
+    data_feat = RealFeatures(self.data[0].T)
 
-      try:
-        # Load input dataset.
-        Log.Info("Loading dataset", self.verbose)
-        dataPoints = np.genfromtxt(self.dataset, delimiter=',')
-        dataFeat = RealFeatures(dataPoints.T)
+    # Gather all the parameters.
+    if "merges" in self.method_param:
+      merges = int(self.method_param["merges"])
 
-        # Gather all the parameters.
-        if "merges" in options:
-          merges = int(options.pop("merges"))
-        else:
-          Log.Fatal("Missing parameter: number of merges to be done while clustering bottom up")
-          raise Exception("missing parameter")
+    if "distance" in self.method_param:
+      distance = str(self.method_param["distance"])
+      distance = distance.lower()
+      if distance == "euclidean":
+        distance = EuclideanDistance(data_feat, data_feat)
+      elif distance == "manhattan":
+        distance = ManhattanMetric(data_feat, data_feat)
+      elif distance == "cosine":
+        distance = CosineDistance(data_feat, data_feat)
+      elif distance == "chebyshev":
+        distance = ChebyshewMetric(data_feat, data_feat)
+    else:
+      # distance option not specified, default to Euclidean distance
+      distance = EuclideanDistance(dataFeat, dataFeat)
 
-        # if distance metric specified, select it, otherwise Euclidean distance by default
-        if "distance" in options:
-          distance = str(options.pop("distance"))
-          distance = distance.lower()
-          if distance not in ["euclidean", "cosine", "manhattan", "chebyshev"]:
-            Log.Fatal("Distance option should be one of Euclidean, Manhattan, Cosine or Chebyshev only")
-            raise Exception("unknown distance metric")
-          if distance == "euclidean":
-            distance = EuclideanDistance(dataFeat, dataFeat)
-          elif distance == "manhattan":
-            distance = ManhattanMetric(dataFeat, dataFeat)
-          elif distance == "cosine":
-            distance = CosineDistance(dataFeat, dataFeat)
-          elif distance == "chebyshev":
-            distance = ChebyshewMetric(dataFeat, dataFeat)
-        else:
-          # distance option not specified, default to Euclidean distance
-          distance = EuclideanDistance(dataFeat, dataFeat)
+    totalTimer = Timer()
+    with totalTimer:
+      model = Hierarchical(merges, distance)
+      model.train()
 
-        if(len(options) > 0):
-          Log.Fatal("Unknown options: " + str(options))
-          raise Exception("unknown options")
+    merge_distances = model.get_merge_distances()
+    cluster_pairs = model.get_cluster_pairs()
 
-        # Create the Hierarchical object and perform Hierarchical clustering.
-        with totalTimer:
-          model = Hierarchical(merges, distance)
-          model.train()
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    metric["Merge distances between clusters"] = str(merge_distances)
+    metric["Cluster pairings"] = str(cluster_pairs)
 
-        merge_distances = model.get_merge_distances()
-        cluster_pairs = model.get_cluster_pairs()
-
-      except Exception as e:
-        Log.Info("Exception: " + str(e))
-        return [-1]
-
-      return [totalTimer.ElapsedTime(), merge_distances, cluster_pairs]
-
-    try:
-      return RunHierarchicalShogun()
-    except timeout_decorator.TimeoutError:
-      Log.Info("Timeout error")
-      return [-1]
-
-  '''
-  Perform Hierarchical clustering. If the method has been successfully completed return the elapsed time in seconds
-  and clustering metrics
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds and clustering metrics or a negative value if the method was not successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Hierarchical clustering.", self.verbose)
-    results = self.HierarchicalShogun(options)
-    if results[0] < 0:
-      return {"Runtime" : -1}
-
-    return {"Runtime" : results[0],
-            "Merge distances between clusters" : results[1],
-            "Cluster pairings" : results[2]}
+    return metric

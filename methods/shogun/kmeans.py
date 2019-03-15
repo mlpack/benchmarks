@@ -5,10 +5,7 @@
   K-Means Clustering with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,126 +14,54 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import shlex
-import subprocess
-import re
-import collections
-
-import numpy as np
+from util import *
 from shogun import EuclideanDistance, RealFeatures, KMeans, Math_init_random
 
 '''
 This class implements the K-Means Clustering benchmark.
 '''
-class KMEANS(object):
+class SHOGUN_KMEANS(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_KMEANS ("  + str(method_param) +  ")"
 
-  '''
-  Create the K-Means Clustering benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.method_param = method_param
 
-  @param dataset - Input dataset to perform K-Means Clustering on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+  def __str__(self):
+    return self.info
 
-  '''
-  Use the shogun libary to implement K-Means Clustering.
+  def metric(self):
+    if "clusters" in self.method_param:
+      clusters = int(self.method_param["clusters"])
+    maxIterations = None
+    if "max_iterations" in self.method_param:
+      maxIterations = int(self.method_param["max_iterations"])
+    seed = None
+    if "seed" in self.method_param:
+      seed = int(self.method_param["seed"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def KMeansShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunKMeansShogun():
-      totalTimer = Timer()
+    if seed:
+      Math_init_random(seed)
 
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the centroids
-      # file.
-      Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) == 2:
-        data = np.genfromtxt(self.dataset[0], delimiter=',')
-        centroids = np.genfromtxt(self.dataset[1], delimiter=',')
+    data_feat = RealFeatures(self.data[0].T)
+    distance = EuclideanDistance(data_feat, data_feat)
+
+    totalTimer = Timer()
+    with totalTimer:
+      if len(self.data) == 2:
+        model = KMeans(clusters, distance, self.data[1].T)
       else:
-        data = np.genfromtxt(self.dataset[0], delimiter=',')
+        model = KMeans(clusters, distance)
 
-      # Gather parameters.
-      if "clusters" in options:
-        clusters = int(options.pop("clusters"))
-      elif len(self.dataset) != 2:
-        Log.Fatal("Required option: Number of clusters or cluster locations.")
-        return -1
-      if "max_iterations" in options:
-        maxIterations = int(options.pop("max_iterations"))
-      else:
-        maxIterations = None
-      seed = None
-      if "seed" in options:
-        seed = int(options.pop("seed"))
+      if maxIterations:
+        model.set_max_iter(maxIterations)
+      model.train()
 
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
+      labels = model.apply().get_labels()
+      centers = model.get_cluster_centers()
 
-      if seed:
-        Math_init_random(seed)
-      try:
-        dataFeat = RealFeatures(data.T)
-        distance = EuclideanDistance(dataFeat, dataFeat)
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-        # Create the K-Means object and perform K-Means clustering.
-        with totalTimer:
-          if len(self.dataset) == 2:
-            model = KMeans(clusters, distance, centroids.T)
-          else:
-            model = KMeans(clusters, distance)
-         
-          if maxIterations:
-            model.set_max_iter(maxIterations)
-          
-          model.train()
-
-          labels = model.apply().get_labels()
-          centers = model.get_cluster_centers()
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunKMeansShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform K-Means Clustering. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform K-Means.", self.verbose)
-
-    results = self.KMeansShogun(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
-
-  '''
-  Return the elapsed time in seconds.
-
-  @param timer - Namedtuple that contains the timer data.
-  @return Elapsed time in seconds.
-  '''
-  def GetTime(self, timer):
-    return timer.total_time
+    return metric

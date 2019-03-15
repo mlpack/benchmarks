@@ -5,10 +5,7 @@
   Linear Regression with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,127 +14,50 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from shogun import RegressionLabels, RealFeatures
 from shogun import LeastSquaresRegression
 
 '''
 This class implements the Linear Regression benchmark.
 '''
-class LinearRegression(object):
+class SHOGUN_LINEARREGRESSION(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_LINEARREGRESSION ("  + str(method_param) +  ")"
 
-  '''
-  Create the Linear Regression benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform Linear Regression on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.predictions = None
+    self.train_feat = RealFeatures(self.data_split[0].T)
+    self.train_labels = RegressionLabels(self.data_split[1])
 
-  '''
-  Use the shogun libary to implement Linear Regression.
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def LinearRegressionShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunLinearRegressionShogun():
-      totalTimer = Timer()
+  def __str__(self):
+    return self.info
 
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the responses
-      # file.
-      try:
-        Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
-          testSet = np.genfromtxt(self.dataset[1], delimiter=',')
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = LeastSquaresRegression(self.train_feat, self.train_labels)
+      model.train()
+      b = model.get_w()
 
-        # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset)
+      if len(self.data) >= 2:
+        predictions = classifier.apply(self.test_feat)
+        predictions = predictions.get_labels()
 
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-        with totalTimer:
-          # Perform linear regression.
-          model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))
-          model.train()
-          b = model.get_w()
+    if len(self.data) == 3:
+      confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 
-          if len(self.dataset) == 2:
-            pred = classifier.apply(RealFeatures(testSet.T))
-            self.predictions = pred.get_labels()
-
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunLinearRegressionShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Linear Regression. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Linear Regression.", self.verbose)
-
-    results = self.LinearRegressionShogun(options)
-    if results < 0:
-      return results
-
-    metrics = {'Runtime' : results}
-
-    if self.predictions != None:
-      self.RunMetrics(options)
-
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-
-      metrics['Avg Accuracy'] = AvgAcc
-      metrics['MultiClass Precision'] = AvgPrec
-      metrics['MultiClass Recall'] = AvgRec
-      metrics['MultiClass FMeasure'] = AvgF
-      metrics['MultiClass Lift'] = AvgLift
-      metrics['MultiClass MCC'] = AvgMCC
-      metrics['MultiClass Information'] = AvgInformation
-      metrics['Simple MSE'] = SimpleMSE
-
-    return metrics
+    return metric

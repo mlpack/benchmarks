@@ -5,10 +5,7 @@
   Lasso Regression with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,129 +14,42 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from shogun import RegressionLabels, RealFeatures
 from shogun import LeastAngleRegression
 
 '''
 This class implements the Lasso Regression benchmark.
 '''
-class LASSO(object):
+class SHOGUN_LASSO(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_LASSO ("  + str(method_param) +  ")"
 
-  '''
-  Create the Lasso Regression benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform Lasso Regression on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.predictions = None
+    self.method_param = method_param
 
-  '''
-  Use the shogun libary to implement Linear Regression.
+    self.lambda1 = None
+    if "lambda1" in method_param:
+      self.lambda1 = float(method_param["lambda1"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def LASSOShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunLASSOShogun():
-      totalTimer = Timer()
+  def __str__(self):
+    return self.info
 
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the responses
-      # file.
-      try:
-        Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) >= 2:
-          testSet = np.genfromtxt(self.dataset[1], delimiter=',')
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = LeastAngleRegression(lasso=True)
 
-        # Get all the parameters.
-        lambda1 = None
-        if "lambda1" in options:
-          lambda1 = float(options.pop("lambda1"))
+      if self.lambda1:
+        model.set_max_l1_norm(self.lambda1)
 
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
+      model.set_labels(RegressionLabels(self.data_split[1]))
+      model.train(RealFeatures(self.data_split[0].T))
 
-        # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset)
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-        with totalTimer:
-          model = LeastAngleRegression(lasso=True)
-          if lambda1:
-            model.set_max_l1_norm(lambda1)
-          model.set_labels(RegressionLabels(y))
-          model.train(RealFeatures(X.T))
-
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunLASSOShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Lasso Regression. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Lasso Regression.", self.verbose)
-
-    results = self.LASSOShogun(options)
-    if results < 0:
-      return results
-
-    metrics = {'Runtime' : results}
-
-    if self.predictions != None:
-      self.RunTiming(options)
-
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
-
-      metrics['Avg Accuracy'] = AvgAcc
-      metrics['MultiClass Precision'] = AvgPrec
-      metrics['MultiClass Recall'] = AvgRec
-      metrics['MultiClass FMeasure'] = AvgF
-      metrics['MultiClass Lift'] = AvgLift
-      metrics['MultiClass MCC'] = AvgMCC
-      metrics['MultiClass Information'] = AvgInformation
-      metrics['Simple MSE'] = SimpleMSE
-
-    return metrics
+    return metric

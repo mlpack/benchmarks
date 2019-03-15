@@ -5,10 +5,7 @@
   Principal Components Analysis with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,100 +14,44 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from shogun import RealFeatures
 from shogun import PCA as ShogunPCA
 
 '''
 This class implements the Principal Components Analysis benchmark.
 '''
-class PCA(object):
+class SHOGUN_PCA(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_PCA ("  + str(method_param) +  ")"
 
-  '''
-  Create the Principal Components Analysis benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
 
-  @param dataset - Input dataset to perform PCA on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.k = self.data[0].shape[1]
+    if "new_dimensionality" in method_param:
+      self.k = int(method_param["new_dimensionality"])
 
-    # Load input dataset.
-    Log.Info("Loading dataset", verbose)
-    self.data = np.genfromtxt(dataset, delimiter=',')
+    self.s = False
+    if "whiten" in method_param:
+      self.s = True
 
-  '''
-  Use the shogun libary to implement Principal Components Analysis.
+    self.data_feat = RealFeatures(self.data[0].T)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def PCAShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunPCAShogun():
-      totalTimer = Timer()
+  def __str__(self):
+    return self.info
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      try:
-        feat = RealFeatures(self.data.T)
+  def metric(self):
+    data_feat = RealFeatures(self.data[0].T)
 
-        with totalTimer:
-          # Get the options for running PCA.
-          if "new_dimensionality" in options:
-            k = int(options.pop("new_dimensionality"))
-            if (k > self.data.shape[1]):
-              Log.Fatal("New dimensionality (" + str(k) + ") cannot be greater than"
-                  + "existing dimensionality (" + str(self.data.shape[1]) + ")!")
-              return -1
-          else:
-            k = self.data.shape[1]
+    totalTimer = Timer()
+    with totalTimer:
+      prep = ShogunPCA(self.s)
+      prep.set_target_dim(self.k)
+      prep.init(self.data_feat)
+      prep.apply_to_feature_matrix(self.data_feat)
 
-          if "whiten" in options:
-            s = True
-            options.pop("whiten")
-          else:
-            s = False
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
-
-          # Perform PCA.
-          prep = ShogunPCA(s)
-          prep.set_target_dim(k)
-          prep.init(feat)
-          prep.apply_to_feature_matrix(feat)
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunPCAShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Principal Components Analysis. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform PCA.", self.verbose)
-
-    results = self.PCAShogun(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric
