@@ -4,10 +4,7 @@
   Class to benchmark the Nearpy Approximate Nearest Neighbors method.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -16,86 +13,39 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-from misc import *
-
-import numpy as np
+from util import *
 from nearpy import Engine
 from nearpy.hashes import RandomBinaryProjections
 
 '''
 This class implements the Approximate K-Nearest-Neighbors benchmark.
 '''
-class ANN(object):
+class NEARPY_ANN(object):
+  def __init__(self, method_param, run_param):
+    self.info = "NEARPY_ANN ("  + str(method_param) +  ")"
 
-  '''
-  Create the Approximate K-Nearest-Neighbors benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform Approximate K-Nearest-Neighbors on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-  '''
-  Use the Nearpy libary to implement Approximate Nearest-Neighbors.
+    self.build_opts = {}
+    if "k" in method_param:
+      self.build_opts["k"] = int(method_param["k"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def AnnNearpy(self, options):
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameters")
+  def __str__(self):
+    return self.info
 
-    @timeout_decorator.timeout(self.timeout)
-    def RunAnnNearpy():
-      totalTimer = Timer()
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      dimension = self.data_split[0].shape[1]
+      rbp = RandomBinaryProjections('rbp', 10)
+      engine = Engine(dimension, lshashes=[rbp])
+      for i in range(len(self.data_split[0])):
+          engine.store_vector(self.data_split[0][i], 'data_%d' % i)
+      for i in range(len(self.data[1])):
+          v = engine.neighbours(self.data[1][i])
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      train, label = SplitTrainData(self.dataset)
-
-      with totalTimer:
-        # Get all the parameters.
-        try:
-          # Perform Approximate Nearest-Neighbors
-          dimension = train.shape[1]
-          rbp = RandomBinaryProjections('rbp', 10)
-          engine = Engine(dimension, lshashes=[rbp])
-          for i in range(len(train)):
-              engine.store_vector(train[i],'data_%d' % i)
-          for i in range(len(queryData)):
-              v = engine.neighbours(queryData[i])
-        except Exception as e:
-          return -1
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunAnnNearpy()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform All K-Nearest-Neighbors. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
-    results = None
-    if len(self.dataset) >= 2:
-      results = self.AnnNearpy(options)
-
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    return metric
