@@ -5,9 +5,7 @@
   Class to benchmark the matlab All K-Nearest-Neighbors method.
 '''
 
-import os
-import sys
-import inspect
+import os, sys, inspect, shlex, subprocess
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -16,122 +14,55 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from profiler import *
-
-import shlex
-import subprocess
-import re
-import collections
+from util import *
 
 '''
 This class implements the All K-Nearest-Neighbors benchmark.
 '''
-class ALLKNN(object):
+class MATLAB_ALLKNN(object):
+  def __init__(self, method_param, run_param):
+    # Assemble run command.
+    dataset = check_dataset(method_param["datasets"], ["csv", "txt"])
 
-  '''
-  Create the All K-Nearest-Neighbors benchmark instance.
+    self.cmd = ""
+    if "k" in method_param:
+      self.cmd += " -k " + str(method_param["k"])
+    if "seed" in method_param:
+      self.cmd += " -s " + str(method_param["seed"])
+    if "naive_mode" in method_param:
+      self.cmd += " -N"
+    if "leaf_size" in method_param:
+      self.cmd += " -l " + str(method_param["leaf_size"])
 
-  @param dataset - Input dataset to perform ALLKNN on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param path - Path to the matlab binary.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, path=os.environ["MATLAB_BIN"],
-      verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.path = path
-    self.timeout = timeout
-
-  '''
-  All K-Nearest-Neighbors. If the method has been successfully completed return
-  the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform ALLKNN.", self.verbose)
-
-    # Convert options dict to string.
-    optionsStr = ""
-    if "k" in options:
-      optionsStr = "-k " + str(options.pop("k"))
+    if len(dataset) == 2:
+      self.cmd = "-r " + dataset[0] + " -q " + dataset[1] + " " \
+          + self.cmd
     else:
-      Log.Fatal("Number of neighbors to search for (k) required!")
-      raise Exception("missing option in YAML configuration")
-    if "seed" in options:
-      optionsStr = optionsStr + " -s " + str(options.pop("seed"))
-    if "naive_mode" in options:
-      optionsStr = optionsStr + " -N"
-      options.pop("naive_mode")
-    if "leaf_size" in options:
-      optionsStr = optionsStr + " -l " + str(options.pop("leaf_size"))
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameters")
+      self.cmd = "-r " + dataset[0] + " " + self.cmd
 
-    # If the dataset contains two files then the second file is the query file.
-    # In this case we add this to the command line.
-    if len(self.dataset) == 2:
-      inputCmd = "-r " + self.dataset[0] + " -q " + self.dataset[1] + " " \
-          + optionsStr
-    else:
-      inputCmd = "-r " + self.dataset + " " + optionsStr
+    self.cmd = shlex.split(run_param["matlab_path"] +
+      "matlab -nodisplay -nosplash -r \"try, " + "ALLKNN('"  +
+      self.cmd + "'), catch, exit(1), end, exit(0)\"")
 
-    # Split the command using shell-like syntax.
-    cmd = shlex.split(self.path + "matlab -nodisplay -nosplash -r \"try, " +
-        "ALLKNN('"  + inputCmd + "'), catch, exit(1), end, exit(0)\"")
+    self.info = "MATLAB_ALLKNN (" + str(self.cmd) + ")"
+    self.timeout = run_param["timeout"]
+    self.output = None
 
-    # Run command with the nessecary arguments and return its output as a byte
-    # string. We have untrusted input so we disable all shell based features.
+  def __str__(self):
+    return self.info
+
+  def metric(self):
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
-          timeout=self.timeout)
+      self.output = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT,
+        shell=False, timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
-      Log.Warn(str(e))
-      return -2
+      raise Exception("method timeout")
     except Exception as e:
-      Log.Fatal("Could not execute command: " + str(cmd))
-      return -1
+      subprocess_exception(e, self.output)
 
-    # Datastructure to store the results.
-    metrics = {}
+    metric = {}
+    timer = parse_timer(self.output)
+    if timer:
+      metric["runtime"] = timer["total_time"]
 
-    # Parse data: runtime.
-    timer = self.parseTimer(s)
-
-    if timer != -1:
-      metrics['Runtime'] = timer.total_time
-
-      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
-
-    return metrics
-
-  '''
-  Parse the timer data form a given string.
-
-  @param data - String to parse timer data from.
-  @return - Namedtuple that contains the timer data or -1 in case of an error.
-  '''
-  def parseTimer(self, data):
-    # Compile the regular expression pattern into a regular expression object to
-    # parse the timer data.
-    pattern = re.compile(r"""
-        .*?total_time: (?P<total_time>.*?)s.*?
-        """, re.VERBOSE|re.MULTILINE|re.DOTALL)
-
-    match = pattern.match(data.decode())
-    if not match:
-      Log.Fatal("Can't parse the data: wrong format")
-      return -1
-    else:
-      # Create a namedtuple and return the timer data.
-      timer = collections.namedtuple("timer", ["total_time"])
-
-      if match.group("total_time").count(".") == 1:
-        return timer(float(match.group("total_time")))
-      else:
-        return timer(float(match.group("total_time").replace(",", ".")))
+    return metric
