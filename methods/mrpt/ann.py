@@ -1,13 +1,11 @@
 '''
   @file ann.py
+  @author Marcus Edel
 
   Class to benchmark the MRPT Approximate Nearest Neighbors method.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -16,115 +14,47 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-from misc import *
-import numpy as np
-
+from util import *
 import mrpt
 
 '''
 This class implements the Approximate K-Nearest-Neighbors benchmark.
 '''
-class ANN(object):
+class MRPT_ANN(object):
+  def __init__(self, method_param, run_param):
+    self.info = "MRPT_ANN ("  + str(method_param) +  ")"
 
-  '''
-  Create the Approximate K-Nearest-Neighbors benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    if len(self.data) == 1:
+      self.data = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform Approximate K-Nearest-Neighbors on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.build_dict = {}
+    self.build_dict["depth"] = 2
+    self.run_dict = {}
+    self.run_dict["votes_required"] = 1
+    if "num_trees" in method_param:
+      self.build_dict["n_trees"] = int(method_param["num_trees"])
+    if "depth" in method_param:
+      self.build_dict["depth"] = int(method_param["depth"])
+    if "votes_required" in method_param:
+      self.run_dict["votes_required"] = int(method_param["votes_required"])
+    if "k" in method_param:
+      self.k = int(method_param["k"])
 
-  '''
-  Use the MRPT libary to implement Approximate Nearest-Neighbors.
+  def __str__(self):
+    return self.info
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def AnnMrpt(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunAnnMrpt():
-      totalTimer = Timer()
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      index = mrpt.MRPTIndex(np.float32(self.data[0]))
+      index.build(**self.build_dict)
+      neighbors = np.zeros((len(self.data[1]), self.k))
+      for i in range(len(self.data[1])):
+          neighbors[i] = index.ann(np.float32(self.data[1][i]), self.k,
+          **self.run_dict)
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      referenceData = np.genfromtxt(self.dataset[0], delimiter=',')
-      queryData = np.genfromtxt(self.dataset[1], delimiter=',')
-      train, label = SplitTrainData(self.dataset)
-
-      # Get all the parameters.
-      if "k" in options:
-        k = int(options.pop("k"))
-        if (k < 1 or k > referenceData.shape[0]):
-          Log.Fatal("Invalid k: " + k.group(1) + "; must be greater than 0"
-            + " and less or equal than " + str(referenceData.shape[0]))
-          return -1
-      else:
-        Log.Fatal("Required option: Number of furthest neighbors to find.")
-        return -1
-
-      build_dict = {}
-      run_dict = {}
-      if "num_trees" in options:
-        build_dict["n_trees"] = int(options.pop("num_trees"))
-      else:
-        Log.Fatal("Required option: Number of trees to build")
-        return -1
-
-      if "depth" in options:
-        build_dict["depth"] = int(options.pop("depth"))
-      else:
-        build_dict["depth"] = 2 # Not sure... just a default...
-      if "votes_required" in options:
-        run_dict["votes_required"] = int(options.pop("votes_required"))
-      else:
-        run_dict["votes_required"] = 1
-
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-
-      with totalTimer:
-        try:
-          # Perform Approximate Nearest-Neighbors.
-          acc = 0
-          index = mrpt.MRPTIndex(np.float32(train))
-          index.build(**build_dict)
-          approximate_neighbors = np.zeros((len(queryData), k))
-          for i in range(len(queryData)):
-              approximate_neighbors[i] = index.ann(np.float32(queryData[i]), k,
-                  **run_dict)
-        except Exception as e:
-          return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunAnnMrpt()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Approximate K-Nearest-Neighbors. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Approximate Nearest Neighbours.", self.verbose)
-    results = None
-    if len(self.dataset) >= 2:
-      results = self.AnnMrpt(options)
-
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    return metric
