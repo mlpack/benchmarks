@@ -48,21 +48,22 @@ class DLIBML_SVM(object):
 
     self.info = "DLIBML_SVM (" + self.cmd + ")"
     self.timeout = run_param["timeout"]
+    self.output = None
 
   def __str__(self):
     return self.info
 
   def metric(self):
     try:
-      output = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT,
+      self.output = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT,
         shell=True, timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
       raise Exception("method timeout")
     except Exception as e:
-      raise Exception(str(e))
+      subprocess_exception(e, self.output)
 
     metric = {}
-    timer = parse_timer(output)
+    timer = parse_timer(self.output)
     if timer:
       metric["runtime"] = timer["runtime"]
 

@@ -50,7 +50,7 @@ class FLANN_ALLKNN(object):
     except subprocess.TimeoutExpired as e:
       raise Exception("method timeout")
     except Exception as e:
-      raise Exception(str(e))
+      subprocess_exception(e, self.output)
 
     metric = {}
     timer = parse_timer(self.output)
