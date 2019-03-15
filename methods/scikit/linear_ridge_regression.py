@@ -5,10 +5,7 @@
   Linear Ridge Regression with scikit.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,128 +14,40 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from sklearn.linear_model import Ridge
 
 '''
 This class implements the Linear Ridge Regression benchmark.
 '''
-class LinearRidgeRegression(object):
+class SCIKIT_LINEARRIDGEREGRESSION(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SCIKIT_LINEARRIDGEREGRESSION ("  + str(method_param) +  ")"
 
-  '''
-  Create the Linear Ridge Regression benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform Linear Ridge Regression on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.predictions = None
+    self.build_opts = {}
+    if "alpha" in method_param:
+      self.build_opts["alpha"] = float(method_param["alpha"])
 
-  '''
-  Build the model for the Linear Ridge Regression.
+  def __str__(self):
+    return self.info
 
-  @param data - The train data.
-  @param responses - The responses for the training set.
-  @return The created model.
-  '''
-  def BuildModel(self, data, responses, alpha=1.0):
-    # Create and train the classifier.
-    lrr = Ridge(alpha=alpha)
-    lrr.fit(data, responses)
-    return lrr
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = Ridge(alpha=self.build_opts["alpha"])
+      model.fit(self.data_split[0], self.data_split[1])
 
-  '''
-  Use the scikit libary to implement Linear Ridge Regression.
+      if len(self.data) >= 2:
+        predictions = model.predict(self.data[1])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def LinearRidgeRegressionScikit(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunLinearRidgeRegressionScikit():
-      totalTimer = Timer()
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the test file.
-      Log.Info("Loading dataset", self.verbose)
-      if len(self.dataset) >= 2:
-        testSet = LoadDataset(self.dataset[1])
+    if len(self.data) == 3:
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 
-      # Use the last row of the training set as the responses.
-      X, y = SplitTrainData(self.dataset)
-      opts = {}
-      if "alpha" in options:
-        opts["alpha"] = float(options.pop("alpha"))
-
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-
-      try:
-        with totalTimer:
-          # Perform linear ridge regression.
-          model = self.BuildModel(X, y, **opts)
-
-          if len(self.dataset) >= 2:
-            self.predictions = model.predict(testSet)
-
-      except Exception as e:
-        return [-1]
-
-      time = totalTimer.ElapsedTime()
-      if len(self.dataset) > 1:
-        return [time, self.predictions]
-      return [time]
-
-    try:
-      result = RunLinearRidgeRegressionScikit()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-    if len(result) > 1:
-      self.predictions = result[1]
-
-    return result[0]
-
-  '''
-  Perform Linear Ridge Regression. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Linear Ridge Regression.", self.verbose)
-
-    results = self.LinearRidgeRegressionScikit(options)
-    if results < 0:
-      return results
-
-    # Datastructure to store the results.
-    metrics = {'Runtime' : results}
-
-    if len(self.dataset) >= 3:
-
-      truelabels = LoadDataset(self.dataset[2])
-
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-      metrics['Simple MSE'] = SimpleMSE
-
-    return metrics
+    return metric

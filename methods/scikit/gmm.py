@@ -5,10 +5,7 @@
   Gaussian Mixture Model with scikit.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,90 +14,42 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from sklearn import mixture
 
 '''
 This class implements the Gaussian Mixture Model benchmark.
 '''
-class GMM(object):
+class SCIKIT_GMM(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SCIKIT_GMM ("  + str(method_param) +  ")"
 
-  '''
-  Create the Gaussian Mixture Model benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
 
-  @param dataset - Input dataset to perform Gaussian Mixture Model on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.build_opts = {}
+    if "gaussians" in method_param:
+      self.build_opts["n_components"] = int(method_param["gaussians"])
+    if "seed" in method_param:
+      self.build_opts["random_state"] = int(method_param["seed"])
+    if "num_init" in method_param:
+      self.build_opts["n_init"] = int(method_param["n_init"])
+    if "tolerance" in method_param:
+      self.build_opts["tol"] = float(method_param["tolerance"])
+    if "max_iterations" in method_param:
+      self.build_opts["max_iter"] = int(method_param["max_iterations"])
 
-  '''
-  Use the scikit libary to implement Gaussian Mixture Model.
+  def __str__(self):
+    return self.info
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def GMMScikit(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunGMMScikit():
-      totalTimer = Timer()
+  def metric(self):
+    model = mixture.GaussianMixture(**self.build_opts)
 
-      # Load input dataset.
-      dataPoints = np.genfromtxt(self.dataset, delimiter=',')
+    totalTimer = Timer()
+    with totalTimer:
+      model.fit(self.data[0])
 
-      # Get all the parameters.
-      opts = {}
-      if "gaussians" in options:
-        opts["n_components"] = int(options.pop("gaussians"))
-      if "seed" in options:
-        opts["random_state"] = int(options.pop("seed"))
-      if "num_init" in options:
-        opts["n_init"] = int(options.pop("n_init"))
-      if "tolerance" in options:
-        opts["tol"] = float(options.pop("tolerance"))
-      if "max_iterations" in options:
-        opts["max_iter"] = int(options.pop("max_iterations"))
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-
-      try:
-        # Create the Gaussian Mixture Model
-        # Some params changed to match mlpack defaults.
-        model = mixture.GaussianMixture(**opts)
-        with totalTimer:
-          model.fit(dataPoints)
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunGMMScikit()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Gaussian Mixture Model. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform GMM.", self.verbose)
-
-    results = self.GMMScikit(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

@@ -5,10 +5,7 @@
   Random Forest Classifier with scikit.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,150 +14,59 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from sklearn.ensemble import RandomForestClassifier
 
 '''
 This class implements the Random Forest Classifier benchmark.
 '''
-class RANDOMFOREST(object):
+class SCIKIT_RANDOMFOREST(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SCIKIT_RANDOMFOREST ("  + str(method_param) +  ")"
 
-  '''
-  Create the Random Forest Classifier benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform RANDOMFOREST on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.predictions = None
-    self.model = None
-    self.opts = {}
+    self.build_opts = {}
+    if "num_trees" in method_param:
+      self.build_opts["n_estimators"] = int(method_param["num_trees"])
+    if "fitness_function" in method_param:
+      self.build_opts["criterion"] = str(method_param["fitness_function"])
+    if "max_depth" in method_param:
+      self.build_opts["max_depth"] = int(method_param["max_depth"])
+    if "seed" in method_param:
+      self.build_opts["random_state"] = int(method_param["seed"])
+    if "minimum_samples_split" in method_param:
+      self.build_opts["min_samples_split"] = int(
+        method_param["minimum_samples_split"])
+    if "minimum_leaf_size" in method_param:
+      self.build_opts["min_samples_leaf"] = int(
+        method_param["minimum_leaf_size"])
+    if "num_jobs" in method_param:
+      self.build_opts["n_jobs"] = int(method_param["num_jobs"])
 
-  '''
-  Build the model for the Random Forest Classifier.
+  def __str__(self):
+    return self.info
 
-  @param data - The train data.
-  @param labels - The labels for the train set.
-  @return The created model.
-  '''
-  def BuildModel(self, data, labels):
-    # Create and train the classifier.
-    randomforest = RandomForestClassifier(**self.opts)
-    randomforest.fit(data, labels)
-    return randomforest
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = RandomForestClassifier(**self.build_opts)
+      model.fit(self.data_split[0], self.data_split[1])
 
-  '''
-  Use the scikit libary to implement the Random Forest Classifier.
+      if len(self.data) >= 2:
+        predictions = model.predict(self.data[1])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RANDOMFORESTScikit(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunRANDOMFORESTScikit():
-      totalTimer = Timer()
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-      Log.Info("Loading dataset", self.verbose)
-      trainData, labels = SplitTrainData(self.dataset)
-      testData = LoadDataset(self.dataset[1])
+    if len(self.data) == 3:
+      confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 
-      # Get all the parameters.
-      self.opts = {}
-      if "num_trees" in options:
-        self.opts["n_estimators"] = int(options.pop("num_trees"))
-      if "fitness_function" in options:
-        self.opts["criterion"] = str(options.pop("fitness_function"))
-      if "max_depth" in options:
-        self.opts["max_depth"] = int(options.pop("max_depth"))
-      if "seed" in options:
-        self.opts["random_state"] = int(options.pop("seed"))
-      if "minimum_samples_split" in options:
-        self.opts["min_samples_split"] = \
-            int(options.pop("minimum_samples_split"))
-      if "minimum_leaf_size" in options:
-        self.opts["min_samples_leaf"] = int(options.pop("minimum_leaf_size"))
-      if "num_jobs" in options:
-        self.opts["n_jobs"] = int(options.pop("num_jobs"))
-
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-
-      try:
-        with totalTimer:
-          self.model = self.BuildModel(trainData, labels)
-          # Run Random Forest Classifier on the test dataset.
-          self.predictions = self.model.predict(testData)
-      except Exception as e:
-        Log.Fatal("Exception: " + str(e))
-        return [-1]
-
-      time = totalTimer.ElapsedTime()
-      if len(self.dataset) > 1:
-        return [time, self.predictions]
-      return [time]
-
-    try:
-      result = RunRANDOMFORESTScikit()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-    # Check for error, in this case the list doesn't contain extra information.
-    if len(result) > 1:
-      self.predictions = result[1]
-
-    return result[0]
-
-  '''
-  Perform the Random Forest Classifier. If the method has been
-  successfully completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Random Forest Classifier.", self.verbose)
-
-    results = None
-    if len(self.dataset) >= 2:
-      results = self.RANDOMFORESTScikit(options)
-
-      if results < 0:
-        return results
-    else:
-      Log.Fatal("This method requires two datasets.")
-
-    # Datastructure to store the results.
-    metrics = {'Runtime' : results}
-
-    if len(self.dataset) >= 3:
-
-      
-      truelabels = LoadDataset(self.dataset[2])
-
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels,
-          self.predictions)
-
-    return metrics
+    return metric

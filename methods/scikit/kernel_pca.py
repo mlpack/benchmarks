@@ -5,10 +5,7 @@
   Kernel Principal Components Analysis with scikit.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,110 +14,50 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from sklearn.decomposition import KernelPCA
 
 '''
 This class implements the Kernel Principal Components Analysis benchmark.
 '''
-class KPCA(object):
+class SCIKIT_KPCA(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SCIKIT_KPCA ("  + str(method_param) +  ")"
 
-  '''
-  Create the Kernel Principal Components Analysis benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
 
-  @param dataset - Input dataset to perform KPCA on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.d = self.data[0].shape[1]
+    if "new_dimensionality" in method_param:
+      self.d = int(method_param["new_dimensionality"])
 
-  '''
-  Use the scikit libary to implement Kernel Principal Components Analysis.
+    self.kernel = method_param["kernel"]
+    if self.kernel == "polynomial" and "degree" in method_param:
+      self.degree = int(method_param["degree"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def KPCAScikit(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunKPCAScikit():
-      totalTimer = Timer()
+  def __str__(self):
+    return self.info
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset, delimiter=',')
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      if self.kernel == "linear":
+        model = KernelPCA(n_components=self.d, kernel="linear")
+      elif self.kernel == "hyptan":
+        model = KernelPCA(n_components=self.d, kernel="sigmoid")
+      elif self.kernel == "polynomial":
+        model = KernelPCA(n_components=self.d, kernel="poly",
+          degree=self.degree)
+      elif self.kernel == "cosine":
+        model = KernelPCA(n_components=self.d, kernel="cosine",
+          degree=self.degree)
+      elif self.kernel == "gaussian":
+        model = KernelPCA(n_components=self.d, kernel="rbf",
+          degree=self.degree)
 
-      with totalTimer:
-        # Get the new dimensionality, if it is necessary.
-        if "new_dimensionality" in options:
-          d = int(options.pop("new_dimensionality"))
-          if (d > data.shape[1]):
-            Log.Fatal("New dimensionality (" + str(d) + ") cannot be greater "
-              + "than existing dimensionality (" + str(data.shape[1]) + ")!")
-            return -1
-        else:
-          d = data.shape[1]
+      out = model.fit_transform(self.data[0])
 
-        # Get the kernel type and make sure it is valid.
-        if not "kernel" in options:
-          Log.Fatal("Choose kernel type, valid choices are 'linear'," +
-                " 'hyptan' and 'polynomial'.")
-          return -1
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-        kernel = options.pop("kernel")
-        if kernel == "polynomial" and "degree" in options:
-          degree = int(options.pop("degree"))
-
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
-
-        try:
-          if kernel == "linear":
-            model = KernelPCA(n_components=d, kernel="linear")
-          elif kernel == "hyptan":
-            model = KernelPCA(n_components=d, kernel="sigmoid")
-          elif kernel == "polynomial":
-            model = KernelPCA(n_components=d, kernel="poly", degree=degree)
-          elif kernel == "cosine":
-            model = KernelPCA(n_components=d, kernel="cosine", degree=degree)
-          elif kernel == "gaussian":
-            model = KernelPCA(n_components=d, kernel="rbf", degree=degree)
-          else:
-            Log.Fatal("Invalid kernel type (" + kernel.group(1) + "); valid " +
-                "choices are 'linear', 'hyptan' and 'polynomial'.")
-            return -1
-
-          out = model.fit_transform(data)
-        except Exception as e:
-          return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunKPCAScikit()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Kernel Principal Components Analysis. If the method has been
-  successfully completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform KPCA.", self.verbose)
-
-    results = self.KPCAScikit(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric
