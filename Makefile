@@ -37,16 +37,16 @@ endif
 endif
 
 # Specify the benchmark settings.
-CONFIG := config.yaml
+CONFIG := shogun_test.yaml
 BENCHMARKDDIR := benchmark
 LOG := False
+LIB := "shogun"
+METHODS := ""
+SAVE := ""
+LOGLEVEL := "INFO"
 BLOCK := ""
 METHODBLOCK := ""
 UPDATE := False
-FILES := ""
-COPY := False
-USER := ""
-PASSWORD := ""
 BUILD_CORES := 1
 
 # Set the environment variable for the compiled mlpack executables.
@@ -177,7 +177,7 @@ endif
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 .run:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/run_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK) --f $(FILES) --n $(COPY) -r $(USER) -p $(PASSWORD)
+	$(PYTHON_BIN) run.py -c $(CONFIG) -l $(LIB) -m $(METHODS) -s $(SAVE) -o $(LOGLEVEL)
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
