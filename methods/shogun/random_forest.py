@@ -1,5 +1,6 @@
 '''
   @file random_forest.py
+  @contributor Rukmangadh Sai Myana
 
   Classifier implementing the Random Forest classifier with shogun.
 '''
@@ -16,11 +17,41 @@ if cmd_subfolder not in sys.path:
 from util import *
 from shogun import RealFeatures, MulticlassLabels, RandomForest
 from shogun import EuclideanDistance, MajorityVote
+from shogun import PT_MULTICLASS
+from shogun import (
+  ST_AUTO,
+  ST_CPLEX,
+  ST_GLPK,
+  ST_NEWTON,
+  ST_DIRECT,
+  ST_ELASTICNET,
+  ST_BLOCK_NORM
+  )
 
 '''
-This class implements the decision trees benchmark.
+This class implements the Random Forest benchmark for multi-class
+classification.
+
+Notes
+-----
+The following are the configurable options available for this benchmark:
+* solver: "auto", "cplex", "glpk", "newton", "direct", "elasticnet", 
+"block_norm"
+* num-trees: The number of trees/bags to be used in the random forest
+* dimensions: The number of attributes chosen randomly during node split in
+candidate trees
 '''
 class SHOGUN_RANDOMFOREST(object):
+
+  '''
+  Create the Random Forest Classifier benchmark instance.
+  
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benckmark. Not used for 
+  Shogun.
+  '''
   def __init__(self, method_param, run_param):
     self.info = "SHOGUN_RANDOMFOREST ("  + str(method_param) +  ")"
 
@@ -28,28 +59,75 @@ class SHOGUN_RANDOMFOREST(object):
     self.data = load_dataset(method_param["datasets"], ["csv"])
     self.data_split = split_dataset(self.data[0])
 
-    if "num_trees" in method_param:
-      self.numTrees = int(method_param["num_trees"])
+    self.train_feat = RealFeatures(self.data_split[0].T)
+
+	  # Encode the labels into {0,1,2,3,......,num_classes-1}
+    self.train_labels, self.label_map = label_encoder(self.data_split[1])
+    self.train_labels = MulticlassLabels(self.train_labels)
+
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
+
+    self.num_trees = 50
+    if "num-trees" in method_param:
+      self.num_trees = int(method_param["num-trees"])
 
     self.form = 1
     if "dimensions" in method_param:
       self.form = int(method_param["dimensions"])
 
-    self.train_feat = RealFeatures(self.data_split[0].T)
-    self.train_labels = MulticlassLabels(self.data_split[1])
+    self.solver = "auto"
+    if "solver" in method_param:
+      self.solver = str(method_param["solver"])
 
-    if len(self.data) >= 2:
-      self.test_feat = RealFeatures(self.data[1].T)
 
+  '''
+  Return information about the benchmarking instance.
+
+  @rtype - str
+  @returns - Information as a single string.
+  '''
   def __str__(self):
     return self.info
 
+  '''
+  Calculate metrics to be used for benchmarking.
+
+  @rtype - dict
+  @returns - Evaluated metrics.
+  '''
   def metric(self):
     totalTimer = Timer()
+
     with totalTimer:
-      mVote = MajorityVote()
-      model = RandomForest(self.form, self.numTrees)
-      model.set_combination_rule(mVote)
+      model = RandomForest(self.form, self.num_trees)
+      model.set_machine_problem_type(PT_MULTICLASS)
+      model.set_combination_rule(MajorityVote())
+
+      if self.solver == "auto":
+        model.set_solver_type(ST_AUTO)
+
+      elif self.solver == "cplex":
+        model.set_solver_type(ST_CPLEX)
+
+      elif self.solver == "glpk":
+        model.set_solver_type(ST_GLPK)
+
+      elif self.solver == "newton":
+        model.set_solver_type(ST_NEWTON)
+
+      elif self.solver == "direct":
+        model.set_solver_type(ST_DIRECT)
+
+      elif self.solver == "elasticnet":
+        model.set_solver_type(ST_ELASTICNET)
+
+      elif self.solver == "block_norm":
+        model.set_solver_type(ST_BLOCK_NORM)
+
+      else:
+        raise ValueError("Provided solver not supported by current benchmark")
+
       model.set_labels(self.train_labels)
       model.train(self.train_feat)
 
@@ -58,6 +136,9 @@ class SHOGUN_RANDOMFOREST(object):
 
     metric = {}
     metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) >= 2:
+      predictions = label_decoder(predictions, self.label_map)
 
     if len(self.data) >= 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
