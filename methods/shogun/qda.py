@@ -1,6 +1,7 @@
 '''
   @file qda.py
   @author Youssef Emad El-Din
+  @contributor Rukmangadh Sai Myana
 
   QDA Classifier with shogun.
 '''
@@ -15,13 +16,40 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from util import *
-import shogun
+from shogun import QDA
 from shogun import RealFeatures, MulticlassLabels
+from shogun import (
+  ST_AUTO,
+  ST_CPLEX,
+  ST_GLPK,
+  ST_NEWTON,
+  ST_DIRECT,
+  ST_ELASTICNET,
+  ST_BLOCK_NORM
+  )
 
 '''
-This class implements the QDA Classifier benchmark.
+This class implements the QDA mulit-class classifier benchmark for multi-class
+classification
+
+Notes
+-----
+The following are the configurable options available for this benchmark:
+* solver: "auto", "cplex", "glpk", "newton", "direct", "elaticnet", 
+"block_norm"
+* tolerance: The tolerance used in training.
 '''
 class SHOGUN_QDA(object):
+
+  '''
+  Create the Quadratic Discriminant Analysis Classifier benchmark instance.
+  
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benckmark. Not used for 
+  Shogun.
+  '''
   def __init__(self, method_param, run_param):
     self.info = "SHOGUN_QDA ("  + str(method_param) +  ")"
 
@@ -29,27 +57,67 @@ class SHOGUN_QDA(object):
     self.data = load_dataset(method_param["datasets"], ["csv"])
     self.data_split = split_dataset(self.data[0])
 
-    self.build_opts = {}
-    if "algorithm" in method_param:
-      self.build_opts["solver"] = str(method_param["algorithm"])
-    if "epsilon" in method_param:
-      self.build_opts["epsilon"] = float(method_param["epsilon"])
-    if "max_iterations" in method_param:
-      self.build_opts["max_iter"] = int(method_param["max_iterations"])
-
     self.train_feat = RealFeatures(self.data_split[0].T)
-    self.train_labels = MulticlassLabels(self.data_split[1])
+
+    # Encode the labels into {0,1,2,3,......,num_classes-1}
+    self.train_labels, self.label_map = label_encoder(self.data_split[1])
+    self.train_labels = MulticlassLabels(self.train_labels)
 
     if len(self.data) >= 2:
       self.test_feat = RealFeatures(self.data[1].T)
 
+    self.solver = "auto"
+    if "solver" in method_param:
+      self.solver = str(method_param["solver"])
+
+    if "tolerance" in method_param:
+      self.tolerance = float(method_param["tolerance"])
+
+  '''
+  Return information about the benchmarking instance.
+
+  @rtype - str
+  @returns - Information as a single string.
+  '''
   def __str__(self):
     return self.info
 
+  '''
+  Calculate metrics to be used for benchmarking.
+
+  @rtype - dict
+  @returns - Evaluated metrics.
+  '''
   def metric(self):
     totalTimer = Timer()
+
     with totalTimer:
-      model = shogun.QDA(self.train_feat, self.train_labels)
+      model = QDA(self.train_feat, self.train_labels, self.tolerance)
+
+      if self.solver == "auto":
+        model.set_solver_type(ST_AUTO)
+
+      elif self.solver == "cplex":
+        model.set_solver_type(ST_CPLEX)
+
+      elif self.solver == "glpk":
+        model.set_solver_type(ST_GLPK)
+
+      elif self.solver == "newton":
+        model.set_solver_type(ST_NEWTON)
+
+      elif self.solver == "direct":
+        model.set_solver_type(ST_DIRECT)
+
+      elif self.solver == "elasticnet":
+        model.set_solver_type(ST_ELASTICNET)
+
+      elif self.solver == "block_norm":
+        model.set_solver_type(ST_BLOCK_NORM)
+
+      else:
+        raise ValueError("Provided solver not supported by current benchmark")
+
       model.train()
 
       if len(self.data) >= 2:
@@ -57,6 +125,9 @@ class SHOGUN_QDA(object):
 
     metric = {}
     metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) >= 2:
+      predictions = label_decoder(predictions, self.label_map)
 
     if len(self.data) >= 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
