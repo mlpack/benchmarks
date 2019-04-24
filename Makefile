@@ -37,11 +37,10 @@ endif
 endif
 
 # Specify the benchmark settings.
-CONFIG := shogun_test.yaml
+CONFIG := test.yaml
 BENCHMARKDDIR := benchmark
 LOG := False
 LIB := "shogun"
-METHODS := ""
 SAVE := ""
 LOGLEVEL := "INFO"
 BLOCK := ""
@@ -177,7 +176,11 @@ endif
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
 
 .run:
+ifndef METHODS
+	$(PYTHON_BIN) run.py -c $(CONFIG) -l $(LIB) -s $(SAVE) -o $(LOGLEVEL)
+else
 	$(PYTHON_BIN) run.py -c $(CONFIG) -l $(LIB) -m $(METHODS) -s $(SAVE) -o $(LOGLEVEL)
+endif
 
 .memory:
 	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
