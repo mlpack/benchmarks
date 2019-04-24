@@ -1,6 +1,7 @@
 '''
   @file logistic_regression.py
   @author Marcus Edel
+  @contributor Rukmangadh Sai Myana
 
   Logistic Regression with shogun.
 '''
@@ -19,7 +20,14 @@ from shogun import RealFeatures, MulticlassLabels
 from shogun import MulticlassLogisticRegression
 
 '''
-This class implements the Logistic Regression benchmark.
+This class implements the Logistic Regression benchmark for Multi-class
+classification.
+
+Notes
+-----
+The following configurable options are available for this benchmark:
+* max-iterations: 
+* lambda: 
 '''
 class SHOGUN_LOGISTICREGRESSION(object):
   def __init__(self, method_param, run_param):
@@ -30,21 +38,37 @@ class SHOGUN_LOGISTICREGRESSION(object):
     self.data_split = split_dataset(self.data[0])
 
     self.train_feat = RealFeatures(self.data_split[0].T)
-    self.train_labels = MulticlassLabels(self.data_split[1])
+
+	# Encode the labels into {0,1,2,3,......,num_classes-1}
+    self.train_labels, self.label_map = label_encoder(self.data_split[1])
+    self.train_labels = MulticlassLabels(self.train_labels)
 
     if len(self.data) >= 2:
       self.test_feat = RealFeatures(self.data[1].T)
 
     self.max_iter = None
-    if "max_iterations" in method_param:
-      self.max_iter = int(method_param["max_iterations"])
+    if "max-iterations" in method_param:
+      self.max_iter = int(method_param["max-iterations"])
+
     self.z = 1
     if "lambda" in method_param:
       self.z = float(method_param["lambda"])
 
+  '''
+  Return information about the benchmarking instance.
+
+  @rtype - str
+  @returns - Information as a single string.
+  '''
   def __str__(self):
     return self.info
 
+  '''
+  Calculate metrics to be used for benchmarking.
+
+  @rtype - dict
+  @returns - Evaluated metrics.
+  '''
   def metric(self):
     totalTimer = Timer()
     with totalTimer:
@@ -61,6 +85,9 @@ class SHOGUN_LOGISTICREGRESSION(object):
 
     metric = {}
     metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) >= 2:
+      predictions = label_decoder(predictions, self.label_map)
 
     if len(self.data) >= 3:
       confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
