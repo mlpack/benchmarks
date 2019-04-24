@@ -21,15 +21,16 @@ def run(config, library, methods, loglevel):
   if loglevel and loglevel.upper() == "CRITICAL":
     logginglevel = logging.CRITICAL
   elif loglevel and loglevel.upper() == "ERROR":
-    logginglevel = logging.WARNING
+    logginglevel = logging.ERROR
   elif loglevel and loglevel.upper() == "WARNING":
-    logginglevel = logging.INFO
+    logginglevel = logging.WARNING
   elif loglevel and loglevel.upper() == "DEBUG":
     logginglevel = logging.DEBUG
   else:
     logginglevel = logging.INFO
 
-  logging.basicConfig(level=logginglevel, format='[%(levelname)s] %(message)s')
+  logging.basicConfig(level=logginglevel, 
+    format='[%(levelname)s] %(message)s')
 
   stream = open("base.yaml", "r")
   base_param = list(yaml.load_all(stream))[0]
