@@ -2,6 +2,7 @@
   @file sqlite.py
   @author Marcus Edel
   @author Anand Soni
+  @contributor Rukmangadh Sai Myana
 
   Utility functions.
 '''
@@ -159,35 +160,35 @@ def parse_timer(data):
 Add arff header to the given data.s
 '''
 def add_arff_header(data, new_data):
-    # Extract the dataset name.
-    relationName = os.path.splitext(os.path.basename(data))[0].split('_')[0]
+  # Extract the dataset name.
+  relationName = os.path.splitext(os.path.basename(data))[0].split('_')[0]
 
-    # Read the first line to count the attributes.
-    fid = open(data)
-    head = [next(fid) for x in range(1)]
-    fid.close()
+  # Read the first line to count the attributes.
+  fid = open(data)
+  head = [next(fid) for x in range(1)]
+  fid.close()
 
-    # We can convert files with ' ' and ',' as seperator.
-    count = max(head[0].count(","), head[0].count(" ")) + 1
+  # We can convert files with ' ' and ',' as seperator.
+  count = max(head[0].count(","), head[0].count(" ")) + 1
 
-    # Write the arff header to the new file.
-    nfid = open(new_data, "a")
-    nfid.write("@relation " + relationName + "\n\n")
-    for i in range(count):
-      nfid.write("@attribute " + data + "_dim" + str(i) + " NUMERIC\n")
-    nfid.write("\n@data\n")
+  # Write the arff header to the new file.
+  nfid = open(new_data, "a")
+  nfid.write("@relation " + relationName + "\n\n")
+  for i in range(count):
+    nfid.write("@attribute " + data + "_dim" + str(i) + " NUMERIC\n")
+  nfid.write("\n@data\n")
 
-    # Append the data for the given file to the new arff file.
-    fid = open(data, "r")
-    while True:
-      line = fid.read(65536)
-      if line:
-        nfid.write(line)
-      else:
-        break
+  # Append the data for the given file to the new arff file.
+  fid = open(data, "r")
+  while True:
+    line = fid.read(65536)
+    if line:
+      nfid.write(line)
+    else:
+      break
 
-    fid.close()
-    nfid.close()
+  fid.close()
+  nfid.close()
 
 '''
 Pretty subprocess exception output.
@@ -210,7 +211,7 @@ def param_extension(param):
   options = []
   for option in param:
     sweep = False
-    for key, value in option.iteritems():
+    for key, value in option.items():
 
       if "sweep" in str(value):
         sweep_option = str(value)
@@ -233,21 +234,21 @@ def param_extension(param):
 Load the given datasets if supported.
 '''
 def load_dataset(datasets, support):
-    datasets = check_dataset(datasets, support)
-    # if isinstance(datasets, str):
-    #   datasets = [datasets]
+  datasets = check_dataset(datasets, support)
+  # if isinstance(datasets, str):
+  #   datasets = [datasets]
 
-    if len(datasets) == 1 and "csv" in support:
-        return (np.genfromtxt(datasets[0], delimiter=','),)
-    if len(datasets) == 2 and "csv" in support:
-        result = (np.genfromtxt(datasets[0], delimiter=','),
-                  np.genfromtxt(datasets[1], delimiter=','))
-        return result
-    if len(datasets) == 3 and "csv" in support:
-        result = (np.genfromtxt(datasets[0], delimiter=','),
-                  np.genfromtxt(datasets[1], delimiter=','),
-                  np.genfromtxt(datasets[2], delimiter=','))
-        return result
+  if len(datasets) == 1 and "csv" in support:
+      return (np.genfromtxt(datasets[0], delimiter=','),)
+  if len(datasets) == 2 and "csv" in support:
+      result = (np.genfromtxt(datasets[0], delimiter=','),
+                np.genfromtxt(datasets[1], delimiter=','))
+      return result
+  if len(datasets) == 3 and "csv" in support:
+      result = (np.genfromtxt(datasets[0], delimiter=','),
+                np.genfromtxt(datasets[1], delimiter=','),
+                np.genfromtxt(datasets[2], delimiter=','))
+      return result
 
 '''
 Check if the specified dataset exists.
@@ -290,10 +291,80 @@ def check_dataset(datasets, support):
 Split the train labels from the given train dataset.
 '''
 def split_dataset(dataset):
-    if isinstance(dataset, (list,)) or isinstance(dataset, (tuple,)):
-        dataset = dataset[0]
+  if isinstance(dataset, (list,)) or isinstance(dataset, (tuple,)):
+    dataset = dataset[0]
 
-    return (dataset[:,:-1], dataset[:, (dataset.shape[1] - 1)])
+  return (dataset[:,:-1], dataset[:, (dataset.shape[1] - 1)])
+
+'''
+Encodes the classification labels.
+
+@type train_labels - numpy.ndarray
+@param train_labels - Numpy array of labels.
+@type label_type - str
+@param label_type - The type of the label.
+@type convention - str
+@param convention - The convention to be followed while encoding.
+@rtype - tuple
+@returns - The encoded labels and the label map encoding.
+
+Notes
+-----
+This function is required by Shogun for multiclass classification because
+Shogun requires that the multiclass classifiction labels are in the format {0,
+1,....., num_classes-1} while training
+
+This function is also required by Shogun for binary classification because
+Shogun requires that the binary classification labels are in the format {-1,1}
+while training.
+'''
+def label_encoder(train_labels, label_type="multiclass", convention="Shogun"):
+  if convention == "Shogun":
+
+    if label_type == "multiclass":
+      distinct_labels = set(train_labels)
+      num_labels = len(set(train_labels))
+      classes = np.linspace(0, num_labels, num_labels, endpoint=False)
+      label_map = dict(zip(distinct_labels, classes))
+      train_labels = np.array([label_map[label] for label in train_labels])
+      return train_labels, label_map
+
+    elif label_type == "binary":
+      distinct_labels = set(train_labels)
+      num_labels = len(set(train_labels))
+      assert num_labels==2, "Provided train_labels are not binary labels"
+      classes = np.array([-1,1])
+      label_map = dict(zip(distinct_labels, classes))
+      train_labels = np.array([label_map[label] for label in train_labels])
+      return train_labels, label_map
+
+'''
+Decodes the encoded label into original labels.
+
+@type predicted_labels - numpy.ndarray
+@param predicted_labels - Numpy array of labels
+@type label_map - dict
+@param label_map - The label encoding
+@rtype - numpy.ndarray
+@returns - Original labels
+
+Notes
+-----
+This function is required by Shogun for multiclass classification because
+Shogun requires that the multiclass classifiction labels are in the format {0,
+1,....., num_classes-1} while training. This function is to be used only after 
+the label_map is generated using above function.
+
+This function is also required by Shogun for binary classification because
+Shogun requires that the binary classification labels are in the format {-1,1}
+while training. This function is to be used only after the label_map is 
+generated using above function.
+'''
+def label_decoder(predicted_labels, label_map):
+  reverse_map = {value:key for key,value in label_map.items()}
+  predicted_labels = np.array(
+    [reverse_map[label] for label in predicted_labels])
+  return predicted_labels
 
 '''
 Implementation of various metrics common to all classifiers.
