@@ -8,6 +8,8 @@ datasets/*
 !datasets/download_datasets.sh
 !datasets/dataset-urls.txt
 libraries/*.tar.gz
+libraries/*.zip
+libraries/*.jar
 libraries/*/
 methods/ann/allknn
 methods/flann/allknn
