@@ -67,6 +67,7 @@ public class Timers {
 			throw new Exception("There exists no timer with this name.");
 		}
 
+		System.out.printf("weka\n");
 		System.out.printf("[INFO ]   %s: %fs\n", timerName, (time / 1e9));
 	}
 }

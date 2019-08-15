@@ -1,14 +1,12 @@
 '''
   @file linear_regression.py
   @author Marcus Edel
+  @contributor Rukmangadh Sai Myana
 
   Linear Regression with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,127 +15,116 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from shogun import RegressionLabels, RealFeatures
 from shogun import LeastSquaresRegression
+from shogun import (
+  ST_AUTO,
+  ST_CPLEX,
+  ST_GLPK,
+  ST_NEWTON,
+  ST_DIRECT,
+  ST_ELASTICNET,
+  ST_BLOCK_NORM
+  )
 
 '''
-This class implements the Linear Regression benchmark.
-'''
-class LinearRegression(object):
+This class implements the Linear Regression benchmark for regression.
 
+Notes
+-----
+The following configurable options are available for this benchmark:
+* bias: The bias in the linear hypothesis expression.
+* solver: "auto", "cplex", "glpk", "newton", "direct", "elasticnet",
+"block_norm"
+'''
+class SHOGUN_LINEARREGRESSION(object):
   '''
   Create the Linear Regression benchmark instance.
 
-  @param dataset - Input dataset to perform Linear Regression on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benckmark. Not used for 
+  Shogun.
   '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.predictions = None
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_LINEARREGRESSION ("  + str(method_param) +  ")"
 
-  '''
-  Use the shogun libary to implement Linear Regression.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def LinearRegressionShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunLinearRegressionShogun():
-      totalTimer = Timer()
+    self.train_feat = RealFeatures(self.data_split[0].T)
+    self.train_labels = RegressionLabels(self.data_split[1])
 
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the responses
-      # file.
-      try:
-        Log.Info("Loading dataset", self.verbose)
-        if len(self.dataset) == 2:
-          testSet = np.genfromtxt(self.dataset[1], delimiter=',')
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
 
-        # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset)
+    self.bias = 0
+    if "bias" in method_param:
+      self.bias = float(method_param["bias"])
 
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
-
-        with totalTimer:
-          # Perform linear regression.
-          model = LeastSquaresRegression(RealFeatures(X.T), RegressionLabels(y))
-          model.train()
-          b = model.get_w()
-
-          if len(self.dataset) == 2:
-            pred = classifier.apply(RealFeatures(testSet.T))
-            self.predictions = pred.get_labels()
-
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunLinearRegressionShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
+    self.solver = "auto"
+    if "solver" in method_param:
+      self.solver = str(method_param["solver"])
 
   '''
-  Perform Linear Regression. If the method has been successfully completed
-  return the elapsed time in seconds.
+  Return information about the benchmarking instance.
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
+  @rtype - str
+  @returns - Information as a single string.
   '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Linear Regression.", self.verbose)
+  def __str__(self):
+    return self.info
 
-    results = self.LinearRegressionShogun(options)
-    if results < 0:
-      return results
+  '''
+  Calculate metrics to be used for benchmarking.
 
-    metrics = {'Runtime' : results}
+  @rtype - dict
+  @returns - Evaluated metrics.
+  '''
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = LeastSquaresRegression(self.train_feat, self.train_labels)
 
-    if self.predictions != None:
-      self.RunMetrics(options)
+      model.set_bias(self.bias)
 
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
+      if self.solver == "auto":
+        model.set_solver_type(ST_AUTO)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      AvgAcc = Metrics.AverageAccuracy(confusionMatrix)
-      AvgPrec = Metrics.AvgPrecision(confusionMatrix)
-      AvgRec = Metrics.AvgRecall(confusionMatrix)
-      AvgF = Metrics.AvgFMeasure(confusionMatrix)
-      AvgLift = Metrics.LiftMultiClass(confusionMatrix)
-      AvgMCC = Metrics.MCCMultiClass(confusionMatrix)
-      AvgInformation = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-      SimpleMSE = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-      metric_results = (AvgAcc, AvgPrec, AvgRec, AvgF, AvgLift, AvgMCC, AvgInformation)
+      elif self.solver == "cplex":
+        model.set_solver_type(ST_CPLEX)
 
-      metrics['Avg Accuracy'] = AvgAcc
-      metrics['MultiClass Precision'] = AvgPrec
-      metrics['MultiClass Recall'] = AvgRec
-      metrics['MultiClass FMeasure'] = AvgF
-      metrics['MultiClass Lift'] = AvgLift
-      metrics['MultiClass MCC'] = AvgMCC
-      metrics['MultiClass Information'] = AvgInformation
-      metrics['Simple MSE'] = SimpleMSE
+      elif self.solver == "glpk":
+        model.set_solver_type(ST_GLPK)
 
-    return metrics
+      elif self.solver == "newton":
+        model.set_solver_type(ST_NEWTON)
+
+      elif self.solver == "direct":
+        model.set_solver_type(ST_DIRECT)
+
+      elif self.solver == "elasticnet":
+        model.set_solver_type(ST_ELASTICNET)
+
+      elif self.solver == "block_norm":
+        model.set_solver_type(ST_BLOCK_NORM)
+
+      else:
+        raise ValueError("Provided solver not supported by current benchmark")
+
+      model.train()
+
+      if len(self.data) >= 2:
+        predictions = model.apply(self.test_feat)
+        predictions = predictions.get_labels()
+
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) == 3:
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
+
+    return metric

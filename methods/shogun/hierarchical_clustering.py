@@ -1,15 +1,12 @@
 '''
   @file hierarchical_clustering.py
   @author Chirag Pabbaraju
+  @contributor Rukmangadh Sai Myana
 
   Hierarchical Clustering with shogun.
 '''
 
-import sys
-import os
-import inspect
-import timeout_decorator
-import numpy as np
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to modules.
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
@@ -17,108 +14,122 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-from shogun import Hierarchical, EuclideanDistance, RealFeatures, ManhattanMetric, CosineDistance, ChebyshewMetric
+from util import *
+from shogun import Hierarchical, RealFeatures
+from shogun import (
+  EuclideanDistance,
+  ChiSquareDistance,
+  CosineDistance,
+  TanimotoDistance,
+  MinkowskiMetric,
+  ManhattanMetric,
+  JensenMetric,
+  CanberraMetric,
+  ChebyshewMetric,
+  GeodesicMetric
+  )
 
 '''
-This class implements the Hierarchical Clustering benchmark.
+This class implements the Hierarchical Clustering benchmark for Clustering.
+
+Notes
+-----
+The following are the configurable options available for this benchmark:
+* merges: Number of merges to take place
+* distance: "Euclidean", "Chi-Square", "Cosine", "Tanimoto", "Minkowski",
+"Manhattan", "Jensen", "Canberra", "Chebyshev", "Geodesic"
 '''
-class HierarchicalClustering(object):
+class SHOGUN_HIERARCHICALCLUSTERING(object):
+  '''
+  Create the Hierarchical Clustering benchmarking instance.
+
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benchmark. Not used for
+  Shougn.
+  '''
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_HIERARCHICALCLUSTERING ("  + str(method_param) +  ")"
+
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+
+    self.merges = 4
+    if "merges" in method_param:
+      self.merges = int(method_param["merges"])
+
+    self.distance = "Euclidean"
+    if "distance" in method_param:
+      self.distance = str(method_param["distance"])
+
+    self.minkowski_k = 3
+    if "k" in method_param:
+      self.minkowski_k = float(method_param["k"])
 
   '''
-  Create the Hierarchical Clustering benchmark instance.
-  
-  @param dataset - Input dataset to perform Hierarchical Clustering on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
+  Return information about the benchmarking instance.
+
+  @rtype - str
+  @returns - Information as a single string.
   '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+  def __str__(self):
+    return self.info
 
   '''
-  Use the shogun libary to implement Hierarchical Clustering.
-  @param options - Options for the model
-  @return - Elapsed time in seconds or a negative value if the method was not successful. 
+  Calculate metrics to be used for benchmarking
 
+  @rtype - dict
+  @returns - Evaluated metrics
   '''
-  def HierarchicalShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunHierarchicalShogun():
-      totalTimer = Timer()
+  def metric(self):
+    totalTimer = Timer()
 
-      try:
-        # Load input dataset.
-        Log.Info("Loading dataset", self.verbose)
-        dataPoints = np.genfromtxt(self.dataset, delimiter=',')
-        dataFeat = RealFeatures(dataPoints.T)
+    with totalTimer:
+      data_feat = RealFeatures(self.data[0].T)
 
-        # Gather all the parameters.
-        if "merges" in options:
-          merges = int(options.pop("merges"))
-        else:
-          Log.Fatal("Missing parameter: number of merges to be done while clustering bottom up")
-          raise Exception("missing parameter")
+      if self.distance == "Euclidean":
+        distanceMethod = EuclideanDistance(data_feat, data_feat)
 
-        # if distance metric specified, select it, otherwise Euclidean distance by default
-        if "distance" in options:
-          distance = str(options.pop("distance"))
-          distance = distance.lower()
-          if distance not in ["euclidean", "cosine", "manhattan", "chebyshev"]:
-            Log.Fatal("Distance option should be one of Euclidean, Manhattan, Cosine or Chebyshev only")
-            raise Exception("unknown distance metric")
-          if distance == "euclidean":
-            distance = EuclideanDistance(dataFeat, dataFeat)
-          elif distance == "manhattan":
-            distance = ManhattanMetric(dataFeat, dataFeat)
-          elif distance == "cosine":
-            distance = CosineDistance(dataFeat, dataFeat)
-          elif distance == "chebyshev":
-            distance = ChebyshewMetric(dataFeat, dataFeat)
-        else:
-          # distance option not specified, default to Euclidean distance
-          distance = EuclideanDistance(dataFeat, dataFeat)
+      elif self.distance == "Manhattan":
+        distanceMethod = ManhattanMetric(data_feat, data_feat)
 
-        if(len(options) > 0):
-          Log.Fatal("Unknown options: " + str(options))
-          raise Exception("unknown options")
+      elif self.distance == "Cosine":
+        distanceMethod = CosineDistance(data_feat, data_feat)
 
-        # Create the Hierarchical object and perform Hierarchical clustering.
-        with totalTimer:
-          model = Hierarchical(merges, distance)
-          model.train()
+      elif self.distance == "Chebyshev":
+        distanceMethod = ChebyshewMetric(data_feat, data_feat)
 
-        merge_distances = model.get_merge_distances()
-        cluster_pairs = model.get_cluster_pairs()
+      elif self.distance == "Chi-Square":
+        distanceMethod = ChiSquareDistance(data_feat, data_feat)
 
-      except Exception as e:
-        Log.Info("Exception: " + str(e))
-        return [-1]
+      elif self.distance == "Tanimoto":
+        distanceMethod = TanimotoDistance(data_feat, data_feat)
 
-      return [totalTimer.ElapsedTime(), merge_distances, cluster_pairs]
+      elif self.distance == "Minkowski":
+        distanceMethod = MinkowskiMetric(data_feat, data_feat, self.minkowski_k)
 
-    try:
-      return RunHierarchicalShogun()
-    except timeout_decorator.TimeoutError:
-      Log.Info("Timeout error")
-      return [-1]
+      elif self.distance == "Jensen":
+        distanceMethod = JensenMetric(data_feat, data_feat)
 
-  '''
-  Perform Hierarchical clustering. If the method has been successfully completed return the elapsed time in seconds
-  and clustering metrics
+      elif self.distance == "Canberra":
+        distanceMethod = CanberraMetric(data_feat, data_feat)
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds and clustering metrics or a negative value if the method was not successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Hierarchical clustering.", self.verbose)
-    results = self.HierarchicalShogun(options)
-    if results[0] < 0:
-      return {"Runtime" : -1}
+      elif self.distance == "Geodesic":
+        distanceMethod = GeodesicMetric(data_feat, data_feat)
 
-    return {"Runtime" : results[0],
-            "Merge distances between clusters" : results[1],
-            "Cluster pairings" : results[2]}
+      else:
+        raise ValueError("Provided distance not supported by the benchmark")
+
+      model = Hierarchical(self.merges, distanceMethod)
+      model.train()
+
+    merge_distances = model.get_merge_distances()
+    cluster_pairs = model.get_cluster_pairs()
+
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    metric["Merge distances between clusters"] = str(merge_distances)
+    metric["Cluster pairings"] = str(cluster_pairs)
+
+    return metric

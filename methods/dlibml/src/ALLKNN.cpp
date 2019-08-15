@@ -20,7 +20,7 @@ PARAM_INT_IN("k", "Value of K", "k", 0);
 
 struct euclidean_distance
 {
-  euclidean_distance () : 
+  euclidean_distance () :
       lower(0),
       upper(std::numeric_limits<double>::infinity())
   {}
@@ -34,9 +34,9 @@ struct euclidean_distance
    const double upper;
 
    template <typename sample_type>
-   double operator() ( const sample_type& a, const sample_type& b ) 
+   double operator() ( const sample_type& a, const sample_type& b )
    const
-         { 
+         {
             const double len = std::sqrt(length_squared(a-b));
             if (lower <= len && len <= upper)
               return len;
@@ -56,12 +56,12 @@ void mlpackMain()
 
   Log::Info << "Loaded reference data from '" << referenceFile << "' ("
       << referenceData.n_rows << " x " << referenceData.n_cols << ")." << endl;
-  
- 
-  typedef matrix<double, 0, 1> sample_typ; 
+
+
+  typedef matrix<double, 0, 1> sample_typ;
   std::vector<sample_typ> samples_train;
   std::vector<sample_pair> out;
-  
+
   sample_typ m;
   m.set_size(referenceData.n_rows);
   for (size_t i = 0; i < referenceData.n_cols; ++i)
@@ -73,8 +73,8 @@ void mlpackMain()
   }
 
   Timer::Start("Nearest_Neighbors");
-  
+
   find_k_nearest_neighbors(samples_train, euclidean_distance(), k, out);
-  
+
   Timer::Stop("Nearest_Neighbors");
 }

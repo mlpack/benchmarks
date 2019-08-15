@@ -1,13 +1,12 @@
 '''
   @file nbc.py
   @author Marcus Edel
+  @contributor Rukmangadh Sai Myana
+
   Naive Bayes Classifier with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -16,131 +15,121 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-
-import numpy as np
-from shogun import RealFeatures, MulticlassLabels, GaussianNaiveBayes
+from util import *
+from shogun import RealFeatures, MulticlassLabels
+from shogun import GaussianNaiveBayes as GNB
+from shogun import (
+  ST_AUTO,
+  ST_CPLEX,
+  ST_GLPK,
+  ST_NEWTON,
+  ST_DIRECT,
+  ST_ELASTICNET,
+  ST_BLOCK_NORM
+  )
 
 '''
-This class implements the Naive Bayes Classifier benchmark.
-'''
-class NBC(object):
+This class implements the Naive Bayes Classifier benchmark for Multi-class
+classification
 
+Notes
+-----
+The following are the configurable options available for this benchmark:
+* solver: "auto", "cplex", "glpk", "newton", "direct", "elaticnet", 
+"block_norm"
+'''
+class SHOGUN_NBC(object):
 
   '''
   Create the Naive Bayes Classifier benchmark instance.
-  @param dataset - Input dataset to perform NBC on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
+  
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benckmark. Not used for 
+  Shogun.
   '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.predictions = None
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_NBC ("  + str(method_param) +  ")"
 
-  '''
-  Build the model for the NBC Classifier.
-  @param data - The train data.
-  @param labels - The labels for the train set.
-  @return The created model.
-  '''
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  def BuildModel(self, data, labels, options):
-    nbc = GaussianNaiveBayes(data, labels)
-    nbc.train()
-    return nbc
+    self.train_feat = RealFeatures(self.data_split[0].T)
 
-  '''
-  Use the shogun libary to implement Naive Bayes Classifier.
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def NBCShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunNBCShogun():
-      totalTimer = Timer()
-      self.predictions = None
-      Log.Info("Loading dataset", self.verbose)
-      try:
-        # Load train and test dataset.
-        trainData = np.genfromtxt(self.dataset[0], delimiter=',')
-        testData = np.genfromtxt(self.dataset[1], delimiter=',')
+	# Encode the labels into {0,1,2,3,......,num_classes-1}
+    self.train_labels, self.label_map = label_encoder(self.data_split[1])
+    self.train_labels = MulticlassLabels(self.train_labels)
 
-        # Labels are the last row of the training set.
-        labels = MulticlassLabels(trainData[:, (trainData.shape[1] - 1)])
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
 
-        with totalTimer:
-          # Transform into features.
-          trainFeat = RealFeatures(trainData[:,:-1].T)
-          testFeat = RealFeatures(testData.T)
-
-          # Create and train the classifier.
-          self.model = self.BuildModel(trainFeat, labels, options)
-
-          # Run Naive Bayes Classifier on the test dataset.
-          self.predictions = self.model.apply_multiclass(testFeat).get_labels()
-
-      except Exception as e:
-        return [-1]
-
-      time = totalTimer.ElapsedTime()
-      if len(self.dataset) > 1:
-        return [time, self.predictions]
-
-      return [time]
-
-    try:
-      result = RunNBCShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-    # Check for error, in this case the tuple doesn't contain extra information.
-    if len(result) > 1:
-       self.predictions = result[1]
-       return result[0]
-
-    return result[0]
+    self.solver = "auto"
+    if "solver" in method_param:
+      self.solver = str(method_param["solver"])
 
   '''
-  Perform Naive Bayes Classifier. If the method has been successfully completed
-  return the elapsed time in seconds.
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
+  Return information about the benchmarking instance.
+
+  @rtype - str
+  @returns - Information as a single string.
   '''
-  def RunMetrics(self, options):
-    Log.Info("Perform NBC.", self.verbose)
-    
-    results = self.NBCShogun(options)
-    if results < 0:
-      return results
+  def __str__(self):
+    return self.info
 
-    metrics = {'Runtime' : results}
+  '''
+  Calculate metrics to be used for benchmarking.
 
-    if len(self.dataset) >= 3:
-     
-      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
-      
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      
-      metrics['Avg Accuracy'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MultiClass Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['MultiClass Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MultiClass FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
-      metrics['MultiClass Lift'] = Metrics.LiftMultiClass(confusionMatrix)
-      metrics['MultiClass MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['MultiClass Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-      metrics['Simple MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
+  @rtype - dict
+  @returns - Evaluated metrics.
+  '''
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = GNB(self.train_feat, self.train_labels)
 
+      if self.solver == "auto":
+        model.set_solver_type(ST_AUTO)
 
-    return metrics
+      elif self.solver == "cplex":
+        model.set_solver_type(ST_CPLEX)
+
+      elif self.solver == "glpk":
+        model.set_solver_type(ST_GLPK)
+
+      elif self.solver == "newton":
+        model.set_solver_type(ST_NEWTON)
+
+      elif self.solver == "direct":
+        model.set_solver_type(ST_DIRECT)
+
+      elif self.solver == "elasticnet":
+        model.set_solver_type(ST_ELASTICNET)
+
+      elif self.solver == "block_norm":
+        model.set_solver_type(ST_BLOCK_NORM)
+
+      else:
+        raise ValueError("Provided solver not supported by current benchmark")
+
+      model.train()
+
+      if len(self.data) >= 2:
+        predictions = model.apply_multiclass(self.test_feat).get_labels()
+
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) >= 2:
+      predictions = label_decoder(predictions, self.label_map)
+
+    if len(self.data) >= 3:
+      confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
+
+    return metric

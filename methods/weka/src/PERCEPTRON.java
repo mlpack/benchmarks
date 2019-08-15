@@ -38,7 +38,7 @@ public class PERCEPTRON {
       // Get the data set path.
       String trainFile = Utils.getOption('t', args);
       String testFile = Utils.getOption('T', args);
-      String iterations = Utils.getOption('N', args);             
+      String iterations = Utils.getOption('N', args);
       if (trainFile.length() == 0 || testFile.length() == 0)
         throw new IllegalArgumentException();
 

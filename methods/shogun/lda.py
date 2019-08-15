@@ -1,15 +1,12 @@
 '''
   @file lda.py
   @author Chirag Pabbaraju
+  @contributor Rukmangadh Sai Myana
 
   Linear Discriminant Analysis for Multiclass classification with shogun.
 '''
 
-import sys
-import os
-import inspect
-import timeout_decorator
-import numpy as np
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to modules.
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
@@ -17,133 +14,132 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-# Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
+from util import *
 from shogun import MCLDA, RealFeatures, MulticlassLabels
+from shogun import (
+  ST_AUTO,
+  ST_CPLEX,
+  ST_GLPK,
+  ST_NEWTON,
+  ST_DIRECT,
+  ST_ELASTICNET,
+  ST_BLOCK_NORM
+  )
 
 '''
-This class implements the Linear Discriminant Analysis benchmark.
+This class implements the Linear Discriminant Analysis benchmark for multiclass
+classification.
+
+Notes
+-----
+The following are the configurable options available for this benchmark:
+* tolerance: Tolerance used in training.
+* store-covar: Whether to store the class covariances.
+* solver: "auto", "cplex", "glpk", "newton", "direct", "elasticnet", 
+"block_norm"
 '''
-class LDA(object):
-  
-  '''
-  Create the Linear Discriminant Analysis benchmark instance.
-
-  @param dataset - Input dataset to perform Linear Discriminant Analysis on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.model = None
-    self.predictions = None
-    self.tolerance = 0.0001
-    self.store = True
+class SHOGUN_LDA(object):
 
   '''
-  Use the shogun library to implement Linear Discriminant Analysis.
+  Create the Linear Discriminant Analysis instance.
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not successful.
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benchmark. Not used for
+  Shogun.
   '''
-  def LDAShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunLDAShogun():
-      totalTimer = Timer()
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_LDA ("  + str(method_param) +  ")"
+
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
+
+    self.train_feat = RealFeatures(self.data_split[0].T)
+
+	# Encode the labels into {0,1,2,3,......,num_classes-1}
+    self.train_labels, self.label_map = label_encoder(self.data_split[1])
+    self.train_labels = MulticlassLabels(self.train_labels)
+
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
+
+    self.tolerance = 1e-4
+    if "tolerance" in method_param:
+      self.tolerance = float(method_param["tolerance"])
+
+    self.store_cov = False
+    if "store-covar" in method_param:
+      self.store_cov = bool(method_param["store-covar"])
+
+    self.solver = "auto"
+    if "solver" in method_param:
+      self.solver = str(method_param["solver"])
+
+  '''
+  Return information about the benchmarking system.
+
+  @rtype - str
+  @returns = Information as a single string.
+  '''
+  def __str__(self):
+    return self.info
+
+  '''
+  Calculate metrics to be used for benchmarking.
+
+  @rtype - dict
+  @returns = Evaluated metrics.
+  '''
+  def metric(self):
+    totalTimer = Timer()
+
+    with totalTimer:
+      model = MCLDA(self.train_feat, self.train_labels, self.tolerance,
+        self.store_cov)
       
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the test file.
-      try:
-        if len(self.dataset) > 1:
-          testSet = LoadDataset(self.dataset[1])
+      if self.solver == "auto":
+        model.set_solver_type(ST_AUTO)
 
-        # Use the last row of the training set as the responses.
-        trainSet, trainLabels = SplitTrainData(self.dataset)
-        # if the labels are not in {0,1,2,...,num_classes-1}, map them to this set and store the mapping
-        # shogun's MCLDA class requires the labels to be in {0,1,2,...,num_classes-1}
-        distinctLabels = list(set(trainLabels))
-        mapping = {}
-        reverseMapping = {}
-        idx = 0
-        for label in distinctLabels:
-          mapping[label] = idx
-          reverseMapping[idx] = label
-          idx += 1
-        for i in range(len(trainLabels)):
-          trainLabels[i] = mapping[trainLabels[i]]
+      elif self.solver == "cplex":
+        model.set_solver_type(ST_CPLEX)
 
-        trainFeat = RealFeatures(trainSet.T)
-        trainLabels = MulticlassLabels(trainLabels)
-        # Gather optional parameters.
-        if "tolerance" in options:
-          self.tolerance = float(options.pop("tolerance"))
+      elif self.solver == "glpk":
+        model.set_solver_type(ST_GLPK)
 
-        if "store" in options:
-          self.store = bool(options.pop("store"))
+      elif self.solver == "newton":
+        model.set_solver_type(ST_NEWTON)
 
-        if (len(options) > 0):
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
+      elif self.solver == "direct":
+        model.set_solver_type(ST_DIRECT)
 
-        with totalTimer:
-          self.model = MCLDA(trainFeat, trainLabels, self.tolerance, self.store)
-          self.model.train()
+      elif self.solver == "elasticnet":
+        model.set_solver_type(ST_ELASTICNET)
 
-        if (len(self.dataset) > 0):
-          self.predictions = self.model.apply_multiclass(RealFeatures(testSet.T))
-          self.predictions = self.predictions.get_labels()
-          # reverse map the predicted labels to actual labels
-          for i in range(len(self.predictions)):
-            self.predictions[i] = reverseMapping[self.predictions[i]]
+      elif self.solver == "block_norm":
+        model.set_solver_type(ST_BLOCK_NORM)
 
-      except Exception as e:
-        Log.Info("Exception: " + str(e))
-        return -1
+      else:
+        raise ValueError("Provided solver not supported by current benchmark")
 
-      time = totalTimer.ElapsedTime() 
-      return time
+      model.train()
 
-    try:
-      return RunLDAShogun()
-    except timeout_decorator.TimeoutError:
-      Log.Info("Timeout error")
-      return -1
+      if len(self.data) >= 2:
+        predictions = model.apply_multiclass(self.test_feat).get_labels()
 
-  '''
-  Perform LDA. If the method has been successfully completed return the elapsed time in seconds.
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform LDA.", self.verbose)
+    if len(self.data) >= 2:
+      predictions = label_decoder(predictions, self.label_map)
 
-    results = self.LDAShogun(options)
-    if results < 0:
-      return {"Runtime" : -1}
+    if len(self.data) >= 3:
+      confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
 
-    metrics = {"Runtime" : results}
-    if len(self.dataset) >= 3:
-      truelabels = LoadDataset(self.dataset[2])
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
-      metrics['Lift'] = Metrics.LiftMultiClass(confusionMatrix)
-      metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, self.predictions)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, self.predictions)
-
-    return metrics
+    return metric

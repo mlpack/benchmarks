@@ -5,10 +5,7 @@
   Non-negative Matrix Factorization with scikit.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,96 +14,42 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from sklearn.decomposition import NMF as ScikitNMF
 
 '''
 This class implements the Non-negative Matrix Factorization benchmark.
 '''
-class NMF(object):
+class SCIKIT_NMF(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SCIKIT_NMF ("  + str(method_param) +  ")"
 
-  '''
-  Create the Non-negative Matrix Factorization benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
 
-  @param dataset - Input dataset to perform NMF on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.build_opts = {}
+    if "rank" in method_param:
+      self.build_opts["n_components"] = int(method_param["rank"])
+    if "max_iterations" in method_param:
+      self.build_opts["max_iter"] = int(method_param["max_iterations"])
+    if "tolerance" in method_param:
+      self.build_opts["tol"] = float(method_param["tolerance"])
+    self.build_opts["init"] = "nndsvdar"
+    if "seed" in method_param:
+      self.build_opts["init"] = "random"
+      self.build_opts["random_state"] = int(method_param["seed"])
 
-  '''
-  Use the scikit libary to implement Non-negative Matrix Factorization.
+  def __str__(self):
+    return self.info
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def NMFScikit(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunNMFScikit():
-      totalTimer = Timer()
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = ScikitNMF(**self.build_opts)
+      W = model.fit_transform(self.data[0])
+      H = model.components_
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset, delimiter=',')
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-      try:
-        with totalTimer:
-          # Gather parameters.
-          opts = {}
-          if "rank" in options:
-            opts["n_components"] = int(options.pop("rank"))
-          else:
-            Log.Fatal("Required parameter 'rank' not specified!")
-            raise Exception("missing parameter")
-          if "max_iterations" in options:
-            opts["max_iter"] = int(options.pop("max_iterations"))
-          if "tolerance" in options:
-            opts["tol"] = float(options.pop("tolerance"))
-          if "seed" in options:
-            opts["init"] = "random"
-            opts["random_state"] = int(options.pop("seed"))
-          else:
-            opts["init"] = "nndsvdar"
-
-          if len(options) > 0:
-            Log.Fatal("Unknown parameters: " + str(options))
-            raise Exception("unknown parameters")
-
-          # Perform NMF with the specified update rules.
-          model = ScikitNMF(**opts)
-
-          W = model.fit_transform(data)
-          H = model.components_
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunNMFScikit()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform Non-negative Matrix Factorization. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform NMF.", self.verbose)
-
-    results = self.NMFScikit(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

@@ -1,14 +1,12 @@
 '''
   @file perceptron.py
   @author Anand Soni
+  @contributor Rukmangadh Sai Myana
 
   Perceptron Classification with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,138 +15,153 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
+from util import *
 from shogun import Perceptron
-from shogun import RealFeatures, MulticlassLabels
+from shogun import RealFeatures, BinaryLabels
+from shogun import (
+  ST_AUTO,
+  ST_CPLEX,
+  ST_GLPK,
+  ST_NEWTON,
+  ST_DIRECT,
+  ST_ELASTICNET,
+  ST_BLOCK_NORM
+  )
 
 '''
-This class implements the Perceptron benchmark.
+This class implements the Perceptron benchmark for binary classification.
+
+Notes
+-----
+The following are the configurable options available for this benchmark:
+* max-iterations: The maximum number of iterations.
+* learing-rate: The learning rate.
+* bias: The bias in the linear decision boundary expression
+* initialize-hyperplane: whether to initialize hyperplane or not
+* solver: "auto", "cplex", "glpk", "newton", "direct", "elasticnet", 
+"block_norm"
 '''
-class PERCEPTRON(object):
+class SHOGUN_PERCEPTRON(object):
 
   '''
-  Create the Perceptron benchmark instance.
-
-  @param dataset - Input dataset to perform Perceptron on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
+  Create the Perceptron Classification benchmark instance.
+  
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benckmark. Not used for 
+  Shogun.
   '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.model = None
-    self.iterations = 1000
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_PERCEPTRON ("  + str(method_param) +  ")"
 
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
+
+    self.train_feat = RealFeatures(self.data_split[0].T)
+
+	# Encode the labels into {-1 , +1}
+    self.train_labels, self.label_map = label_encoder(
+      self.data_split[1], "binary")
+    self.train_labels = BinaryLabels(self.train_labels)
+
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
+
+    self.max_iter = None
+    if "max-iterations" in method_param:
+      self.max_iter = int(method_param["max-iterations"])
+
+    self.learn_rate = None
+    if "learning-rate" in method_param:
+      self.learn_rate = float(method_param["learning-rate"])
+
+    self.bias = None
+    if "bias" in method_param:
+      self.bias = float(method_param["bias"])
+
+    self.init_hyperplane = None
+    if "initialize-hyperplane" in method_param:
+      self.init_hyperplane = bool(method_param["initialize-hyperplane"])
+
+    self.solver = "auto"
+    if "solver" in method_param:
+      self.solver = str(method_param["solver"])
   '''
-  Build the model for the Perceptron.
+  Return information about the benchmarking instance.
 
-  @param data - The train data.
-  @param responses - The responses for the train set.
-  @return The created model.
+  @rtype - str
+  @returns - Information as a single string.
   '''
-  def BuildModel(self, data, responses):
-    # Create and train the classifier.
-    model = Perceptron(RealFeatures(data.T), MulticlassLabels(responses))
-    if self.iterations:
-      model.set_max_iter(self.iterations)
-    model.train()
-    return model
-
-  '''
-  Use the shogun libary to implement Perceptron.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def PerceptronShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunPerceptronShogun():
-      totalTimer = Timer()
-      # Load input dataset.
-      # If the dataset contains two files then the second file is the test file.
-      Log.Info("Loading dataset", self.verbose)
-      try:
-        if len(self.dataset) >= 2:
-          testSet = LoadDataset(self.dataset[1])
-        else:
-          Log.Fatal("This method requires atleast two datasets.")
-
-        # Use the last row of the training set as the responses.
-        X, y = SplitTrainData(self.dataset)
-
-        # Gather all parameters.
-        self.iterations = None
-        if "max_iterations" in options:
-          self.iterations = int(options.pop("max_iterations"))
-
-        if len(options) > 0:
-          Log.Fatal("Unknown parameters: " + str(options))
-          raise Exception("unknown parameters")
-
-        with totalTimer:
-          # Perform perceptron classification.
-          self.model = BuildModel(X, y)
-
-          if len(self.dataset) == 2:
-            pred = self.model.apply(RealFeatures(testSet.T))
-            self.predictions = pred.get_labels()
-        return totalTimer.ElapsedTime()
-      except Exception as e:
-        return -1
-
-    try:
-      return RunPerceptronShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
+  def __str__(self):
+    return self.info
 
   '''
-  Perform Perceptron classification. If the method has been successfully completed
-  return the elapsed time in seconds.
+  Calculate metrics to be used for benchmarking.
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
+  @rtype - dict
+  @returns - Evaluated metrics.
   '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Perceptron classification.", self.verbose)
+  def metric(self):
+    totalTimer = Timer()
 
-    results = self.PerceptronShogun(options)
-    if results < 0:
-      return results
+    with totalTimer:
+      model = Perceptron(self.train_feat, self.train_labels)
 
-    metrics = {'Runtime' : results}
+      if self.solver == "auto":
+        model.set_solver_type(ST_AUTO)
 
-    if len(self.dataset) >= 3:
+      elif self.solver == "cplex":
+        model.set_solver_type(ST_CPLEX)
 
-      # Check if we need to create a model.
-      if not self.model:
-        trainData, responses = SplitTrainData(self.dataset)
-        self.model = self.BuildModel(trainData, responses)
+      elif self.solver == "glpk":
+        model.set_solver_type(ST_GLPK)
 
-      testData = LoadDataset(self.dataset[1])
-      truelabels = LoadDataset(self.dataset[2])
+      elif self.solver == "newton":
+        model.set_solver_type(ST_NEWTON)
 
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, self.predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['LFT'] = Metrics.LiftMultiClass(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['FMeasure'] = Metrics.AvgFMeasure(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictedlabels)
-      metrics['Information'] = Metrics.AvgMPIArray(confusionMatrix, truelabels, predictedlabels)
+      elif self.solver == "direct":
+        model.set_solver_type(ST_DIRECT)
 
-    return metrics
+      elif self.solver == "elasticnet":
+        model.set_solver_type(ST_ELASTICNET)
+
+      elif self.solver == "block_norm":
+        model.set_solver_type(ST_BLOCK_NORM)
+
+      else:
+        raise ValueError("Provided solver not supported by current benchmark")
+
+      if self.max_iter:
+        model.set_max_iter(self.max_iter)
+
+      if self.learn_rate:
+        model.set_learn_rate(self.learn_rate)
+
+      if self.bias:
+        model.set_bias(self.bias)
+
+      if self.init_hyperplane:
+        model.set_initialize_hyperplane(self.init_hyperplane)
+
+      model.train()
+
+      if len(self.data) >= 2:
+        predictions = model.apply(self.test_feat).get_labels()
+
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) >= 2:
+      predictions = label_decoder(predictions, self.label_map)
+
+    if len(self.data) >= 3:
+      confusionMatrix = Metrics.ConfusionMatrix(self.data[2], predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
+
+    return metric

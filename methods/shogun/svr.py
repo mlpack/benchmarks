@@ -1,14 +1,12 @@
 '''
   @file SVR.py
   @author Saurabh Mahindre
+  @contributor Rukmangadh Sai Myana
 
   SVR Regression with shogun.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,98 +15,219 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-from misc import *
-
-import numpy as np
+from util import *
 from shogun import RegressionLabels, RealFeatures
 from shogun import LibSVR
-from shogun import GaussianKernel
+from shogun import (
+  GaussianKernel, 
+  PolyKernel, 
+  LinearKernel, 
+  SigmoidKernel,
+  PowerKernel,
+  LogKernel,
+  CauchyKernel,
+  ConstKernel,
+  DiagKernel,
+  )
+
+from shogun import (
+  EuclideanDistance,
+  BrayCurtisDistance,
+  ChiSquareDistance,
+  MahalanobisDistance,
+  CosineDistance,
+  TanimotoDistance,
+  MinkowskiMetric,
+  JensenMetric,
+  ChebyshewMetric,
+  CanberraMetric,
+  GeodesicMetric
+  )
+
+from shogun import LIBSVR_EPSILON_SVR, LIBSVR_NU_SVR
 
 '''
-This class implements the SVR Regression benchmark.
+This class implements the Support Vector Regression benchmark for regression.
+
+Notes
+-----
+
 '''
-class SVR(object):
+class SHOGUN_SVR(object):
 
   '''
-  Create the SVR Regression benchmark instance.
-
-  @param dataset - Input dataset to perform SVR Regression on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
+  Create the Support Vector Machine benchmark instance.
+  
+  @type method_param - dict
+  @param method_param - Extra options for the benchmarking method.
+  @type run_param - dict
+  @param run_param - Path option for executing the benckmark. Not used for 
+  Shogun.
   '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+  def __init__(self, method_param, run_param):
+    self.info = "SHOGUN_SVR ("  + str(method_param) +  ")"
+
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
+
+    self.train_feat = RealFeatures(self.data_split[0].T)
+    self.train_labels = RegressionLabels(self.data_split[1])
+
+    if len(self.data) >= 2:
+      self.test_feat = RealFeatures(self.data[1].T)
+
+    self.solver_type = "epsilon"
+    if "libsvr-solver" in method_param:
+      self.solver_type = str(method_param["libsvr-solver"])
+
     self.C = 1.0
-    self.epsilon=1.0
-    self.width = 10.0
+    if "C" in method_param:
+      self.C = float(method_param["C"])
 
-  '''
-  Use the shogun libary to implement Linear Regression.
+    self.svr_param = 1.0
+    if "svr-paramter" in method_param:
+      self.svr_param = float(method_param["svr-parameter"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def SVRShogun(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunSVRShogun():
-      totalTimer = Timer()
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      # Use the last row of the training set as the responses.
-      X, y = SplitTrainData(self.dataset)
+    self.kernel = "Gaussian"
+    if "kernel" in method_param:
+      self.kernel = str(method_param["kernel"])
 
-      # Get all the parameters.
-      self.C = 1.0
-      self.epsilon = 1.0
-      self.width = 0.1
-      if "c" in options:
-        self.C = float(options.pop("c"))
-      if "epsilon" in options:
-        self.epsilon = float(options.pop("epsilon"))
-      if "gamma" in options:
-        self.width = np.true_divide(1, float(options.pop("gamma")))
+    self.degree = 3
+    if "degree" in method_param:
+      self.degree = int(method_param["degree"])
 
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
+    self.gamma = 2.0
+    if "gamma" in method_param:
+      self.gamma = float(method_param["gamma"])
 
-      data = RealFeatures(X.T)
-      labels_train = RegressionLabels(y)
-      self.kernel = GaussianKernel(data, data, self.width)
+    self.distance = "Euclidean"
+    if "distance" in method_param:
+      self.distance = str(method_param["distance"])
 
-      try:
-        with totalTimer:
-          # Perform SVR.
-          model = LibSVR(self.C, self.epsilon, self.kernel, labels_train)
-          model.train()
-      except Exception as e:
-        return -1
+    self.cache_size = 10
+    if "cache-size" in method_param:
+      cache_size = int(method_param["cache-size"])
 
-      return totalTimer.ElapsedTime()
+    self.coef0 = 1.0
+    if "coef0" in method_param:
+      self.coef0 = float(method_param["coef0"])
 
-    try:
-      return RunSVRShogun()
-    except timeout_decorator.TimeoutError:
-      return -1
+    self.order = 2.0
+    if "order" in method_param:
+      self.order = float(method_param["order"])
 
-  '''
-  Perform SVR Regression. If the method has been successfully completed
-  return the elapsed time in seconds.
+    self.width = 2.0
+    if "width" in method_param:
+      self.width = float(method_param["width"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform SVR Regression.", self.verbose)
+    self.sigma = 1.5
+    if "sigma" in method_param:
+      self.sigma = float(method_param["sigma"])
 
-    results = self.SVRShogun(options)
-    if results < 0:
-      return results
+    self.const = 2.0
+    if "constant" in method_param:
+      const = float(method_param["constant"])
 
-    return {'Runtime' : results}
+  def __str__(self):
+    return self.info
+
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+
+      if self.distance == "Euclidean":
+        distanceMethod = EuclideanDistance()
+
+      elif self.distance == "Bray-Curtis":
+        distanceMethod = BrayCurtisDistance()
+
+      elif self.distance == "Chi-Square":
+        distanceMethod = ChiSquareDistance()
+
+      elif self.distance == "MahalanobisDistance":
+        distanceMethod = MahalanobisDistance()
+
+      elif self.distance == "Cosine":
+        distanceMethod = CosineDistance()
+
+      elif self.distance == "Tanimoto":
+        distanceMethod = TanimotoDistance()
+
+      elif self.distance == "Minkowski":
+        distanceMethod = MinkowskiMetric()
+
+      elif self.distance == "Jensen":
+        distanceMethod = JensenMetric()
+
+      elif self.distance == "Chebyshev":
+        distanceMethod = ChebyshewMetric()
+
+      elif self.distance == "Canberra":
+        distanceMethod = CanberraMetric()
+
+      elif self.distance == "Geodesic":
+        distanceMethod = GeodesicMetric()
+
+      else:
+        raise ValueError("Provided distance is not supported by benchmark")
+
+      if self.kernel == "Polynomial":
+        kernelMethod = PolyKernel(self.train_feat, self.train_feat, self.degree, 
+          True, self.cache_size)
+
+      elif self.kernel == "Gaussian":
+        kernelMethod = GaussianKernel(self.train_feat, self.train_feat, 
+          self.width, self.cache_size)
+
+      elif self.kernel == "Linear":
+        kernelMethod = LinearKernel(self.train_feat, self.train_feat)
+
+      elif self.kernel == "Hyptan" or self.kernel == "Sigmoid":
+        kernelMethod = SigmoidKernel(self.train_feat, self.train_feat, 
+          self.cache_size, self.gamma, self.coef0)
+
+      elif self.kernel == "Power":
+        kernelMethod = PowerKernel(self.train_feat, self.train_feat, 
+          self.degree, distanceMethod)
+
+      elif self.kernel == "Log":
+        kernelMethod = LogKernel(self.train_feat, self.train_feat, self.degree,
+          distanceMethod)
+
+      elif self.kernel == "Cauchy":
+        kernelMethod = CauchyKernel(self.train_feat, self.train_feat, 
+          self.sigma, distanceMethod)
+
+      elif self.kernel == "Constant":
+        kernelMethod = ConstKernel(self.train_feat, self.train_feat, self.const)
+
+      elif self.kernel == "Diagonal":
+        kernelMethod = DiagKernel(self.train_feat, self.train_feat, self.const)
+
+      else:
+        raise ValueError("Provided Kernel not supported by current benchmark")
+
+      if self.solver_type == "epsilon":
+        model = LibSVR(self.C, self.svr_param, kernelMethod, 
+          self.train_labels, LIBSVR_EPSILON_SVR)
+
+      elif self.solver_type == "nu":
+        model = LibSVR(self.C, self.svr_param, kernelMethod, 
+          self.train_labels, LIBSVR_NU_SVR)
+
+      else:
+        raise ValueError("Unknown solver type")
+
+      model.train()
+
+      if len(self.data) >= 2:
+        predictions = model.apply(self.test_feat).get_labels()
+
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+
+    if len(self.data) >= 3:
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(self.data[2], predictions)
+
+    return metric

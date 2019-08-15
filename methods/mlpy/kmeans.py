@@ -5,10 +5,7 @@
   K-Means Clustering with mlpy.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,92 +14,35 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 import mlpy
 
 '''
 This class implements the K-Means Clustering benchmark.
 '''
-class KMEANS(object):
+class MLPY_KMEANS(object):
+  def __init__(self, method_param, run_param):
+    self.info = "MLPY_KMEANS ("  + str(method_param) +  ")"
 
-  '''
-  Create the K-Means Clustering benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    if len(self.data) == 1:
+      self.data = split_dataset(self.data[0])
 
-  @param dataset - Input dataset to perform K-Means on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.build_opts = {}
+    if "seed" in method_param:
+      self.build_opts["seed"] = int(method_param["seed"])
+    if "clusters" in method_param:
+      self.build_opts["k"] = int(method_param["clusters"])
 
-  '''
-  Use the mlpy libary to implement K-Means Clustering.
+  def __str__(self):
+    return self.info
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def KMeansMlpy(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunKMeansMlpy():
-      totalTimer = Timer()
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = mlpy.kmeans(self.data[0], **self.build_opts)
 
-      # Load input dataset.
-      Log.Info("Loading dataset", self.verbose)
-      data = np.genfromtxt(self.dataset[0], delimiter=',')
-
-      # Gather all parameters.
-      if "clusters" in options:
-        clusters = int(options.pop("clusters"))
-
-        if clusters < 1:
-          Log.Fatal("Invalid number of clusters requested! Must be greater than or "
-              + "equal to 1.")
-          return -1
-      else:
-        Log.Fatal("Required option: Number of clusters or cluster locations.")
-        return -1
-
-      build_opts = {}
-      if "seed" in options:
-        build_opts["seed"] = int(options.pop("seed"))
-
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
-
-      try:
-        with totalTimer:
-          # Create the K-Means object and perform K-Means clustering.
-          kmeans = mlpy.kmeans(data, clusters, **build_opts)
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunKMeansMlpy()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform K-Means Clustering. If the method has been successfully completed
-  return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform K-Means.", self.verbose)
-
-    results = self.KMeansMlpy(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    return metric

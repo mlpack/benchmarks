@@ -1,0 +1,2655 @@
+MLPY_PCA:
+    library: mlpy
+    method: pca
+    run: ['metric']
+    script: methods/mlpy/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+      - 'datasets/cities.csv'
+      - 'datasets/diabetes_X.csv'
+    param:
+      - options:
+      - options:
+        new_dimensionality: 2
+      - options:
+        new_dimensionality: sweep(1,5,1)
+        whiten: True
+---
+MLPY_PERCEPTRON:
+    library: mlpy
+    method: perceptron
+    run: ['metric']
+    script: methods/mlpy/perceptron.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+        max_iterations: 10000
+---
+MLPY_SVM:
+    library: mlpy
+    method: svm
+    run: ['metric']
+    script: methods/mlpy/svm.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+MLPY_LINEARREGRESSION:
+    library: mlpy
+    method: linearregression
+    run: ['metric']
+    script: methods/mlpy/linear_regression.py
+    datasets:
+      - 'datasets/diabetes_X.csv'
+      - 'datasets/cosExp_X.csv'
+    param:
+      - options:
+---
+MLPY_LDA:
+    library: mlpy
+    method: lda
+    run: ['metric']
+    script: methods/mlpy/lda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+MLPY_LARS:
+    library: mlpy
+    method: lars
+    run: ['metric']
+    script: methods/mlpy/lars.py
+    datasets:
+      - ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+      - 'datasets/madelon_train.csv'
+    param:
+      - options:
+---
+MLPY_KNC:
+    library: mlpy
+    method: knc
+    run: ['metric']
+    script: methods/mlpy/knc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        k : 5
+---
+MLPY_KMEANS:
+    library: mlpy
+    method: kmeans
+    run: ['metric']
+    script: methods/mlpy/kmeans.py
+    datasets:
+      - ['datasets/waveform.csv', 'datasets/waveform_centroids.csv']
+    param:
+      - options:
+        clusters : 2
+---
+MLPY_KPCA:
+    library: mlpy
+    method: kpca
+    run: ['metric']
+    script: methods/mlpy/kernel_pca.py
+    datasets:
+      - 'datasets/circle_data.csv'
+      - 'datasets/stock.csv'
+      - 'datasets/abalone.csv'
+    param:
+      - options:
+        kernel : linear
+---
+MLPY_GOLUB:
+    library: mlpy
+    method: golub
+    run: ['metric']
+    script: methods/mlpy/golub.py
+    datasets:
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+MLPY_ELASTICNET:
+    library: mlpy
+    method: elastic_net
+    run: ['metric']
+    script: methods/mlpy/elastic_net.py
+    datasets:
+      - ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv']
+    param:
+      - options:
+        rho: 0.1
+        alpha: 0.01
+---
+MLPY_DECISIONTREE:
+    library: mlpy
+    method: decision_tree
+    run: ['metric']
+    script: methods/mlpy/decision_tree.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv','datasets/scene_test.csv','datasets/scene_labels.csv']
+    param:
+      - options:
+        stumps: 10
+        minimum_leaf_size: 10
+---
+MLPY_ALLKNN:
+    library: mlpy
+    method: allknn
+    run: ['metric']
+    script: methods/mlpy/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+---
+ANN_ALLKNN:
+    library: ann
+    method: allknn
+    run: ['metric']
+    script: methods/ann/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+---
+ANNOY_ANN:
+    library: annoy
+    method: ann
+    run: ['metric']
+    script: methods/annoy/ann.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+        k: 10
+        num_trees: 10
+---
+DLIBML_ALLKNN:
+    library: dlibml
+    method: allknn
+    run: ['metric']
+    script: methods/dlibml/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+---
+DLIBML_ANN:
+    library: dlibml
+    method: ann
+    run: ['metric']
+    script: methods/dlibml/ann.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+        num: 10000
+        sample_pct: 0.5
+---
+DLIBML_KMEANS:
+    library: dlibml
+    method: kmeans
+    run: ['metric']
+    script: methods/dlibml/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+      - 'datasets/USCensus1990.csv'
+    param:
+      - options:
+        clusters: 3
+---
+DLIBML_SVM:
+    library: dlibml
+    method: svm
+    run: ['metric']
+    script: methods/dlibml/svm.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv']
+    param:
+      - options:
+---
+ELKI_KMEANS:
+    library: elki
+    method: kmeans
+    run: ['metric']
+    script: methods/elki/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+      - 'datasets/USCensus1990.csv'
+    param:
+      - options:
+        clusters: 3
+---
+ELKI_PCA:
+    library: elki
+    method: pca
+    run: ['metric']
+    script: methods/elki/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+      - 'datasets/cities.csv'
+      - 'datasets/diabetes_X.csv'
+    param:
+      - options:
+        new_dimensionality: 2
+        whiten: True
+---
+FLANN_ALLKNN:
+    library: flann
+    method: pca
+    run: ['metric']
+    script: methods/flann/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+        seed: 42
+        epsilon: 0.0
+---
+MATLAB_ALLKNN:
+    library: matlab
+    method: allknn
+    run: ['metric']
+    script: methods/matlab/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+        seed: 42
+        naive_mode: True
+---
+MATLAB_DTC:
+    library: matlab
+    method: dtc
+    run: ['metric']
+    script: methods/matlab/dtc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+MATLAB_KMEANS:
+    library: matlab
+    method: kmeans
+    run: ['metric']
+    script: methods/matlab/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+    param:
+      - options:
+        clusters: 3
+---
+MATLAB_KNC:
+    library: matlab
+    method: knc
+    run: ['metric']
+    script: methods/matlab/knc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        k: 5
+---
+MATLAB_LASSO:
+    library: matlab
+    method: lasso
+    run: ['metric']
+    script: methods/matlab/lasso.py
+    datasets:
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+      - ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    param:
+      - options:
+---
+MATLAB_LDA:
+    library: matlab
+    method: lda
+    run: ['metric']
+    script: methods/matlab/lda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+---
+MATLAB_LINEARREGRESSION:
+    library: matlab
+    method: linearregression
+    run: ['metric']
+    script: methods/matlab/linear_regression.py
+    datasets:
+      - ['datasets/diabetes_X.csv']
+      - ['datasets/cosExp_X.csv']
+      - ['datasets/arcene_train.csv', 'datasets/arcene_test.csv']
+    param:
+      - options:
+---
+MATLAB_LOGISTICREGRESSION:
+    library: matlab
+    method: logistic_regression
+    run: ['metric']
+    script: methods/matlab/logistic_regression.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+MATLAB_NBC:
+    library: matlab
+    method: nbc
+    run: ['metric']
+    script: methods/matlab/nbc.py
+    datasets:
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+MATLAB_NMF:
+    library: matlab
+    method: nmf
+    run: ['metric']
+    script: methods/matlab/nmf.py
+    datasets:
+      - 'datasets/ionosphere.csv'
+      - 'datasets/piano_magnitude_spectogram.csv'
+    param:
+      - options:
+        rank: 6
+        seed: 42
+        update_rules: multdist
+---
+MATLAB_PCA:
+    library: matlab
+    method: pca
+    run: ['metric']
+    script: methods/matlab/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+      - 'datasets/cities.csv'
+      - 'datasets/diabetes_X.csv'
+    param:
+      - options:
+        new_dimensionality: 2
+        scaling: True
+---
+MATLAB_QDA:
+    library: matlab
+    method: qda
+    run: ['metric']
+    script: methods/matlab/qda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+---
+MATLAB_RANDOMFOREST:
+    library: matlab
+    method: random_forest
+    run: ['metric']
+    script: methods/matlab/random_forest.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        num_trees: 50
+---
+MATLAB_RANGESEARCH:
+    library: matlab
+    method: range_search
+    run: ['metric']
+    script: methods/matlab/range_search.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/ionosphere.csv'
+      - 'datasets/cloud.csv'
+    param:
+      - options:
+        max: 0.02
+---
+MATLAB_SVC:
+    library: matlab
+    method: svc
+    run: ['metric']
+    script: methods/matlab/svc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+MATLAB_SVR:
+    library: matlab
+    method: svr
+    run: ['metric']
+    script: methods/matlab/svr.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+MILK_ADABOOST:
+    library: milk
+    method: adaboost
+    run: ['metric']
+    script: methods/milk/adaboost.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+MILK_DTC:
+    library: milk
+    method: dtc
+    run: ['metric']
+    script: methods/milk/dtc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+MILK_KMEANS:
+    library: milk
+    method: kmeans
+    run: ['metric']
+    script: methods/milk/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+    param:
+      - options:
+        clusters: 3
+---
+MILK_LOGISTICREGRESSION:
+    library: milk
+    method: logistic_regression
+    run: ['metric']
+    script: methods/milk/logistic_regression.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+MILK_RANDOMFOREST:
+    library: milk
+    method: random_forest
+    run: ['metric']
+    script: methods/milk/random_forest.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        num_trees: 50
+---
+MRPT_ANN:
+    library: mrpt
+    method: ann
+    run: ['metric']
+    script: methods/mrpt/ann.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        k: 10
+        num_trees: 10
+---
+NEARPY_ANN:
+    library: nearpy
+    method: ann
+    run: ['metric']
+    script: methods/nearpy/ann.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        k: 10
+        num_trees: 10
+---
+R_ADABOOST:
+    library: R
+    method: adaboost
+    run: ['metric']
+    script: methods/R/adaboost.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+R_NBC:
+    library: R
+    method: nbc
+    run: ['metric']
+    script: methods/R/nbc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv']
+    param:
+      - options:
+---
+R_QDA:
+    library: R
+    method: qda
+    run: ['metric']
+    script: methods/R/qda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+---
+R_DTC:
+    library: R
+    method: dtc
+    run: ['metric']
+    script: methods/R/dtc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+R_KNC:
+    library: R
+    method: knc
+    run: ['metric']
+    script: methods/R/knc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+        k: 5
+---
+R_RANDOMFOREST:
+    library: R
+    method: random_forest
+    run: ['metric']
+    script: methods/R/random_forest.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+        num_trees: 50
+---
+R_SVC:
+    library: R
+    method: svc
+    run: ['metric']
+    script: methods/R/svc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+---
+R_LDA:
+    library: R
+    method: lda
+    run: ['metric']
+    script: methods/R/lda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+---
+R_LASSO:
+    library: R
+    method: lasso
+    run: ['metric']
+    script: methods/R/lasso.py
+    datasets:
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    param:
+      - options:
+        lambda1: 0.01
+---
+R_LINEARREGRESSION:
+    library: R
+    method: linear_regression
+    run: ['metric']
+    script: methods/R/linear_regression.py
+    datasets:
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+    param:
+      - options:
+---
+R_SVR:
+    library: R
+    method: svr
+    run: ['metric']
+    script: methods/R/svr.py
+    datasets:
+      - 'datasets/diabetes.csv'
+      - 'datasets/cosExp.csv'
+    param:
+      - options:
+        c: 1.0
+        epsilon: 1.0
+        gamma: 0.1
+---
+MLPACK_DTC:
+    library: mlpack
+    method: dtc
+    run: ['metric']
+    script: methods/mlpack/decision_tree.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+MLPACK_PCA:
+    library: mlpack
+    method: pca
+    run: ['metric']
+    script: methods/mlpack/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+      - 'datasets/cities.csv'
+      - 'datasets/diabetes_X.csv'
+    param:
+      - options:
+---
+MLPACK_PERCEPTRON:
+    library: mlpack
+    method: perceptron
+    run: ['metric']
+    script: methods/mlpack/perceptron.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+        max_iterations: 10000
+---
+MLPACK_DECISIONSTUMP:
+    library: mlpack
+    method: decision_stump
+    run: ['metric']
+    script: methods/mlpack/decision_stump.py
+    datasets:
+      - ['datasets/dexter_train.csv', 'datasets/dexter_test.csv']
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv']
+    param:
+      - options:
+---
+MLPACK_NMF:
+    library: mlpack
+    method: nmf
+    run: ['metric']
+    script: methods/mlpack/nmf.py
+    datasets:
+      - 'datasets/ionosphere.csv'
+      - 'datasets/piano_magnitude_spectogram.csv'
+    param:
+      - options:
+        rank: 6
+        seed: 42
+        update_rules: multdist
+      - options:
+        rank: 6
+        seed: 42
+        update_rules: multdiv
+      - options:
+        rank: 6
+        seed: 42
+        update_rules: als
+---
+MLPACK_NBC:
+    library: mlpack
+    method: nbc
+    run: ['metric']
+    script: methods/mlpack/nbc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv']
+      - ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv']
+    param:
+      - options:
+      - options:
+          incremental: True
+---
+MLPACK_KPCA:
+    library: mlpack
+    method: kpca
+    run: ['metric']
+    script: methods/mlpack/kernel_pca.py
+    datasets:
+      - 'datasets/circle_data.csv'
+      - 'datasets/stock.csv'
+    param:
+      - options:
+        kernel: linear
+      - options:
+        kernel: gaussian
+      - options:
+        kernel: polynomial
+      - options:
+        kernel: hyptan
+      - options:
+        kernel: laplacian
+      - options:
+        kernel: cosine
+      - options:
+        kernel: gaussian
+        nystroem: true
+        sampling_scheme: kmeans
+      - options:
+        kernel: polynomial
+        nystroem: true
+        sampling_scheme: kmeans
+      - options:
+        kernel: cosine
+        nystroem: true
+        sampling_scheme: kmeans
+      - options:
+        kernel: gaussian
+        nystroem: true
+        sampling_scheme: random
+      - options:
+        kernel: polynomial
+        nystroem: true
+        sampling_scheme: random
+      - options:
+        kernel: cosine
+        nystroem: true
+        sampling_scheme: random
+---
+MLPACK_LARS:
+    library: mlpack
+    method: lars
+    run: ['metric']
+    script: methods/mlpack/lars.py
+    datasets:
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+      - ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    param:
+      - options:
+        lambda1: 0.01
+      - options:
+          lambda1: 0.01
+          lambda2: 0.005
+          use_cholesky: True
+---
+MLPACK_LSH:
+    library: mlpack
+    method: lars
+    run: ['metric']
+    script: methods/mlpack/lsh.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+    param:
+      - options:
+        k: 3
+        seed: 42
+---
+MLPACK_KMEANS:
+    library: mlpack
+    method: kmeans
+    run: ['metric']
+    script: methods/mlpack/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+    param:
+      - options:
+        clusters: 3
+---
+MLPACK_ALLKNN:
+    library: mlpack
+    method: allknn
+    run: ['metric']
+    script: methods/mlpack/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+---
+MLPACK_ALLKFN:
+    library: mlpack
+    method: allkfn
+    run: ['metric']
+    script: methods/mlpack/allkfn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+---
+MLPACK_ALLKRANN:
+    library: mlpack
+    method: allkrann
+    run: ['metric']
+    script: methods/mlpack/allkrann.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+        tau: 10
+---
+MLPACK_RANGESEARCH:
+    library: mlpack
+    method: rangesearch
+    run: ['metric']
+    script: methods/mlpack/range_search.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/ionosphere.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/vehicle.csv'
+    param:
+      - options:
+        max: 0.02
+---
+MLPACK_DET:
+    library: mlpack
+    method: det
+    run: ['metric']
+    script: methods/mlpack/det.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/cloud.csv'
+      - ['datasets/madelon_train.csv', 'datasets/madelon_test.csv']
+    param:
+      - options:
+---
+MLPACK_EMST:
+    library: mlpack
+    method: emst
+    run: ['metric']
+    script: methods/mlpack/emst.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/vehicle.csv'
+      - 'datasets/waveform.csv'
+    param:
+      - options:
+---
+MLPACK_LINEARREGRESSION:
+    library: mlpack
+    method: linear_regression
+    run: ['metric']
+    script: methods/mlpack/linear_regression.py
+    datasets:
+      - 'datasets/diabetes_X.csv'
+      - 'datasets/cosExp_X.csv'
+    param:
+      - options:
+---
+MLPACK_LOCALCOORDINATECODING:
+    library: mlpack
+    method: local_coordinate_coding
+    run: ['metric']
+    script: methods/mlpack/local_coordinate_coding.py
+    datasets:
+      - 'datasets/pendigits.csv'
+    param:
+      - options:
+        atoms: 12
+        seed: 42
+---
+MLPACK_FASTMKS:
+    library: mlpack
+    method: fastmks
+    run: ['metric']
+    script: methods/mlpack/fastmks.py
+    datasets:
+      - 'datasets/optdigits.csv'
+    param:
+      - options:
+        k: 1
+        kernel: linear
+      - options:
+        k: 10
+        kernel: linear
+      - options:
+        k: 10
+        kernel: polynomial
+        degree: 10
+      - options:
+        k: 10
+        kernel: cosine
+      - options:
+        k: 10
+        kernel: gaussian
+      - options:
+        k: 10
+        kernel: epanechnikov
+      - options:
+        k: 10
+        kernel: triangular
+---
+MLPACK_NCA:
+    library: mlpack
+    method: nca
+    run: ['metric']
+    script: methods/mlpack/nca.py
+    datasets:
+      - 'datasets/iris_train.csv'
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+      - 'datasets/wine.csv'
+    param:
+      - options:
+        max_iterations: 2000
+        optimizer: sgd
+        seed: 42
+      - options:
+        max_iterations: 2000
+        optimizer: lbfgs
+        seed: 42
+      - options:
+        max_iterations: 2000
+        optimizer: lbfgs
+        seed: 42
+        wolfe: 0.5
+      - options:
+        max_iterations: 2000
+        optimizer: lbfgs
+        seed: 42
+        wolfe: 0.5
+        num_basis: 5
+      - options:
+        max_iterations: 2000
+        optimizer: lbfgs
+        seed: 42
+        num_basis: 5
+      - options:
+        max_iterations: 2000
+        normalize: True
+        seed: 42
+---
+WEKA_PCA:
+    library: weka
+    method: pca
+    run: ['metric']
+    script: methods/weka/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+      - 'datasets/cities.csv'
+    param:
+      - options:
+      - options:
+        new_dimensionality: 2
+      - options:
+        new_dimensionality: 2
+        whiten: True
+---
+WEKA_KMEANS:
+    library: weka
+    method: kmeans
+    run: ['metric']
+    script: methods/weka/kmeans.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/iris.csv'
+    param:
+      - options:
+        clusters: 3
+---
+WEKA_ALLKNN:
+    library: weka
+    method: allknn
+    run: ['metric']
+    script: methods/weka/allknn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/cloud.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+        seed: 42
+---
+WEKA_LINEARREGRESSION:
+    library: weka
+    method: linear_regression
+    run: ['metric']
+    script: methods/weka/linear_regression.py
+    datasets:
+      - 'datasets/diabetes_X.csv'
+      - 'datasets/cosExp_X.csv'
+    param:
+      - options:
+---
+WEKA_DTC:
+    library: weka
+    method: dtc
+    run: ['metric']
+    script: methods/weka/dtc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+---
+WEKA_LOGISTICREGRESSION:
+    library: weka
+    method: logistic_regression
+    run: ['metric']
+    script: methods/weka/logistic_regression.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+WEKA_NBC:
+    library: weka
+    method: nbc
+    run: ['metric']
+    script: methods/weka/nbc.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+WEKA_RANDOMFOREST:
+    library: weka
+    method: random_forest
+    run: ['metric']
+    script: methods/weka/random_forest.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+WEKA_PERCEPTRON:
+    library: weka
+    method: perceptron
+    run: ['metric']
+    script: methods/weka/perceptron.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_ICA:
+    library: scikit
+    method: ica
+    run: ['metric']
+    script: methods/scikit/ica.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+    param:
+      - options:
+---
+SCIKIT_PCA:
+    library: scikit
+    method: pca
+    run: ['metric']
+    script: methods/scikit/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+    param:
+      - options:
+      - options:
+        new_dimensionality: 2
+      - options:
+        new_dimensionality: 2
+        whiten: True
+---
+SCIKIT_PERCEPTRON:
+    library: scikit
+    method: perceptron
+    run: ['metric']
+    script: methods/scikit/perceptron.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        max_iterations: 10000
+---
+SCIKIT_ADABOOST:
+    library: scikit
+    method: adaboost
+    run: ['metric']
+    script: methods/scikit/adaboost.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_DTC:
+    library: scikit
+    method: dtc
+    run: ['metric']
+    script: methods/scikit/dtc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_ELASTICNET:
+    library: scikit
+    method: elastic_net
+    run: ['metric']
+    script: methods/scikit/elastic_net.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_KNC:
+    library: scikit
+    method: knc
+    run: ['metric']
+    script: methods/scikit/knc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        k: 5
+---
+SCIKIT_QDA:
+    library: scikit
+    method: qda
+    run: ['metric']
+    script: methods/scikit/qda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_RANDOMFOREST:
+    library: scikit
+    method: random_forest
+    run: ['metric']
+    script: methods/scikit/random_forest.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        num_trees: 50
+        max_depth: 10
+        fitness_function: entropy
+        minimum_samples_split: 4
+        minimum_leaf_size: 2
+        num_jobs: 1
+---
+SCIKIT_SVM:
+    library: scikit
+    method: svm
+    run: ['metric']
+    script: methods/scikit/svm.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_LDA:
+    library: scikit
+    method: lda
+    run: ['metric']
+    script: methods/scikit/lda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+---
+SCIKIT_NMF:
+    library: scikit
+    method: nmf
+    run: ['metric']
+    script: methods/scikit/nmf.py
+    datasets:
+      - 'datasets/piano_magnitude_spectogram.csv'
+    param:
+      - options:
+        rank: 6
+---
+SCIKIT_KMEANS:
+    library: scikit
+    method: kmeans
+    run: ['metric']
+    script: methods/scikit/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+    param:
+      - options:
+        clusters: 3
+---
+SCIKIT_NBC:
+    library: scikit
+    method: nbc
+    run: ['metric']
+    script: methods/scikit/nbc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv']
+      - ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv']
+    param:
+      - options:
+---
+SCIKIT_KPCA:
+    library: scikit
+    method: kernel_pca
+    run: ['metric']
+    script: methods/scikit/kernel_pca.py
+    datasets:
+      - 'datasets/circle_data.csv'
+      - 'datasets/stock.csv'
+    param:
+      - options:
+        kernel: linear
+      - options:
+        kernel: polynomial
+      - options:
+        kernel: hyptan
+---
+SCIKIT_LARS:
+    library: scikit
+    method: lars
+    run: ['metric']
+    script: methods/scikit/lars.py
+    datasets:
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+      - ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    param:
+      - options:
+        lambda1: 0.01
+---
+SCIKIT_LASSO:
+    library: scikit
+    method: lasso
+    run: ['metric']
+    script: methods/scikit/lasso.py
+    datasets:
+      - ['datasets/diabetes_X.csv', 'datasets/diabetes_y.csv']
+      - ['datasets/cosExp_X.csv', 'datasets/cosExp_y.csv']
+    param:
+      - options:
+---
+SCIKIT_SVR:
+    library: scikit
+    method: svr
+    run: ['metric']
+    script: methods/scikit/svr.py
+    datasets:
+      - 'datasets/diabetes.csv'
+      - 'datasets/cosExp.csv'
+    param:
+      - options:
+        c: 1.0
+        epsilon: 1.0
+        gamma: 0.1
+---
+SCIKIT_KNN:
+    library: scikit
+    method: knn
+    run: ['metric']
+    script: methods/scikit/knn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/wine_qual.csv'
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+        k: 3
+        distance: "Euclidean"
+      - options:
+        k: 5
+        distance: "Bray-Curtis"
+      - options:
+        k: 5
+        distance: "Chi-Square"
+      - options:
+        k: 5
+        distance: "Mahalanobis"
+      - options:
+        k: 5
+        distance: "Cosine"
+      - options:
+        k: 5
+        distance: "Tanimoto"
+---
+SCIKIT_GMM:
+    library: scikit
+    method: gmm
+    run: ['metric']
+    script: methods/scikit/gmm.py
+    datasets:
+      - 'datasets/artificial_2DSignal.csv'
+      - 'datasets/artificial_5DSignal.csv'
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+    param:
+      - options:
+        gaussians: 3
+---
+SCIKIT_LINEARREGRESSION:
+    library: scikit
+    method: linear_regression
+    run: ['metric']
+    script: methods/scikit/linear_regression.py
+    datasets:
+      - 'datasets/diabetes_X.csv'
+      - 'datasets/cosExp_X.csv'
+      - ['datasets/arcene_train.csv', 'datasets/arcene_test.csv']
+    param:
+      - options:
+---
+SCIKIT_LINEARRIDGEREGRESSION:
+    library: scikit
+    method: linear_ridge_regression
+    run: ['metric']
+    script: methods/scikit/linear_ridge_regression.py
+    datasets:
+      - ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv']
+    param:
+      - options:
+        alpha: 1.0
+---
+SCIKIT_LOGISTICREGRESSION:
+    library: scikit
+    method: logistic_regression
+    run: ['metric']
+    script: methods/scikit/logistic_regression.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        alpha: 1.0
+---
+SHOGUN_PCA:
+    library: shogun
+    method: pca
+    run: ['metric']
+    script: methods/shogun/pca.py
+    datasets:
+      - 'datasets/iris.csv'
+      - 'datasets/wine.csv'
+      - 'datasets/cities.csv'
+    param:
+      - options:
+        pca-mode: "fixed"
+        decompostion: "svd"
+        memory-mode: "reallocate"
+        target-dimensions: 4
+        whiten: True
+      - options:
+        pca-mode: "variance"
+        decomposition: "evd"
+        memory-mode: "in-place"
+        threshold: 1e-7
+        whiten: False
+      - options:
+        pca-mode: "threshold"
+        decomposition: "auto"
+        memory-mode: "reallocate"
+        threshold: 1e-5
+        whiten: False
+---
+SHOGUN_RANDOMFOREST:
+    library: shogun
+    method: random_forest
+    run: ['metric']
+    script: methods/shogun/random_forest.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        num-trees: 80
+        dimensions: 3
+        solver: "auto"
+      - options:
+        num-trees: 50
+        dimensions: 2
+        solver: "cplex"
+      - options:
+        num-trees: 100
+        dimensions: 2
+        solver: "glpk"
+      - options:
+        num-trees: 50
+        dimensions: 4
+        solver: "newton"
+      - options:
+        num-trees: 40
+        dimensions: 3
+        solver: "direct"
+      - options:
+        num-trees: 50
+        dimensions: 3
+        solver: "elasticnet"
+      - options:
+        num-trees: 70
+        dimensions: 2
+        solver: "block_norm"
+---
+SHOGUN_KMEANS:
+    library: shogun
+    method: kmeans
+    run: ['metric']
+    script: methods/shogun/kmeans.py
+    datasets:
+      - ['datasets/wine.csv', 'datasets/wine_centroids.csv']
+      - ['datasets/iris.csv', 'datasets/iris_centroids.csv']
+    param:
+      - options:
+        clusters: 3
+        distance: "Euclidean"
+        max-iterations: 10000
+        seed: 5
+        use-kmeanspp: False
+      - options:
+        clusters: 4
+        distance: "Bray-Curtis"
+        use-kmeanspp: True
+      - options:
+        clusters: 2
+        distance: "Chi-Square"
+        max-iterations: 1000
+        use-kmeanspp: False
+      - options:
+        clusters: 6
+        distance: "Mahalanobis"
+        max-iterations: 2000
+        seed: 203
+        use-kmeanspp: False
+      - options:
+        clusters: 4
+        distance: "Cosine"
+        seed: 12
+        use-kmeanspp: True
+      - options:
+        clusters: 6
+        distance: "Tanimoto"
+        use-kmeanspp: True
+      - options:
+        clusters: 5
+        distance: "Minkowski"
+        minkowski_k: 4
+        max-iterations: 10000
+        seed: 7
+        use-kmeanspp: False
+      - options:
+        clusters: 3
+        distance: "Manhattan"
+      - options:
+        clusters: 2
+        distance: "Jensen"
+        seed: 4
+        use-kmeanspp: False
+      - options:
+        clusters: 3
+        distance: "Chebyshev"
+        max-iterations: 20000
+        seed: 14
+        use-kmeanspp: True
+      - options:
+        clusters: 5
+        distance: "Canberra"
+        max-iterations: 15000
+        seed: 1
+        use-kmeanspp: False
+      - options:
+        clusters: 3
+        distance: "Geodesic"
+        max-iterations: 10000
+        seed: 5
+        use-kmeanspp: True
+---
+SHOGUN_KPCA:
+    library: shogun
+    method: kernel_pca
+    run: ['metric']
+    script: methods/shogun/kernel_pca.py
+    datasets:
+      - 'datasets/circle_data.csv'
+      - 'datasets/stock.csv'
+    param:
+        - options:
+          kernel: "Gaussian"
+          target-dimensions: 4
+        - options:
+          kernel: "Polynomial"
+          target-dimensions: 3
+          cache-size: 15
+          degree: 3
+        - options:
+          kernel: "Sigmoid"
+          target-dimensions: 5
+          cache-size: 15
+          gamma: 1.6
+          coef0: 1.9
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 2
+          cache-size: 15
+          order: 2.0
+          width: 5.75
+          degree: 2
+          distance: "Euclidean"
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 4
+          cache-size: 10
+          order: 3.5
+          width: 3.0
+          degree: 1
+          distance: "Chi-Square"
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 3
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Tanimoto"
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 2
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Minkowski"
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 5
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Manhattan"
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 2
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Bessel"
+          target-dimensions: 4
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Canberra"
+        - options:
+          kernel: "Power"
+          target-dimensions: 3
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+        - options:
+          kernel: "Power"
+          target-dimensions: 4
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+        - options:
+          kernel: "Power"
+          target-dimensions: 2
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+        - options:
+          kernel: "Power"
+          target-dimensions: 3
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+        - options:
+          kernel: "Power"
+          target-dimensions: 3
+          cache-size: 15
+          degree: 1
+          distance: "Manhattan"
+        - options:
+          kernel: "Power"
+          target-dimensions: 2
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Power"
+          target-dimensions: 3
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+        - options:
+          kernel: "Log"
+          target-dimensions: 5
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+        - options:
+          kernel: "Log"
+          target-dimensions: 3
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+        - options:
+          kernel: "Log"
+          target-dimensions: 2
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+        - options:
+          kernel: "Log"
+          target-dimensions: 4
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+        - options:
+          kernel: "Log"
+          target-dimensions: 4
+          cache-size: 15
+          degree: 1
+          distance: "Manhattan"
+        - options:
+          kernel: "Log"
+          target-dimensions: 2
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Log"
+          target-dimensions: 5
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 4
+          cache-size: 12
+          sigma: 3.5
+          distance: "Euclidean"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 5
+          cache-size: 10
+          sigma: 2.25
+          distance: "Chi-Square"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 4
+          cache-size: 15
+          sigma: 1.75
+          distance: "Tanimoto"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 2
+          cache-size: 15
+          sigma: 1.75
+          distance: "Minkowski"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 3
+          cache-size: 15
+          sigma: 1.75
+          distance: "Manhattan"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 3
+          cache-size: 15
+          sigma: 1.75
+          distance: "Jensen"
+        - options:
+          kernel: "Cauchy"
+          target-dimensions: 4
+          cache-size: 15
+          sigma: 1.75
+          distance: "Canberra"
+        - options:
+          kernel: "Constant"
+          target-dimensions: 4
+          constant: 10.3
+        - options:
+          kernel: "Diagonal"
+          target-dimensions: 3
+          cache-size: 10
+          constant: 1.2
+---
+SHOGUN_NBC:
+    library: shogun
+    method: nbc
+    run: ['metric']
+    script: methods/shogun/nbc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/transfusion_train.csv', 'datasets/transfusion_test.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        solver: "auto"
+      - options:
+        solver: "cplex"
+      - options:
+        solver: "glpk"
+      - options:
+        solver: "newton"
+      - options:
+        solver: "direct"
+      - options:
+        solver: "elasticnet"
+      - options:
+        solver: "block_norm"
+---
+SHOGUN_KNN:
+    library: shogun
+    method: knn
+    run: ['metric']
+    script: methods/shogun/knn.py
+    datasets:
+      - 'datasets/wine.csv'
+      - 'datasets/wine_qual.csv'
+    param:
+      - options:
+        k: 3
+        distance: "Euclidean"
+        solver: "KD-Tree"
+      - options:
+        k: 5
+        distance: "Bray-Curtis"
+        solver: "Brute"
+      - options:
+        k: 2
+        distance: "Chi-Square"
+        solver: "Cover-Tree"
+      - options:
+        k: 4
+        distance: "Mahalanobis"
+        solver: "LSH"
+      - options:
+        k: 5
+        distance: "Cosine"
+        solver: "Brute"
+      - options:
+        k: 6
+        distance: "Tanimoto"
+        solver: "Cover-Tree"
+      - options:
+        k: 9
+        distance: "Minkowski"
+        solver: "KD-Tree"
+      - options:
+        k: 10
+        distance: "Manhattan"
+        solver: "Brute"
+      - options:
+        k: 8
+        distance: "Jensen"
+        solver: "LSH"
+      - options:
+        k: 4
+        distance: "Chebyshev"
+        solver: "LSH"
+      - options:
+        k: 3
+        distance: "Canberra"
+        solver: "Brute"
+      - options:
+        k: 7
+        distance: "Geodesic"
+        solver: "KD-Tree"
+---
+SHOGUN_GMM:
+    library: shogun
+    method: gmm
+    run: ['metric']
+    script: methods/shogun/gmm.py
+    datasets:
+      - 'datasets/artificial_2DSignal.csv'
+    param:
+      - options:
+        gaussians: 3
+        estimation: "SMEM"
+        max-iterations: 1000
+        min-covariance: 1e-7
+        min-change: 1e-8
+        max-candidates: 3
+        max-EM-iterations: 1000
+      - options:
+        gaussians: 2
+        estimation: "EM"
+        max-iterations: 750
+        min-covariance: 1e-8
+        min-change: 1e-7
+---
+SHOGUN_LINEARREGRESSION:
+    library: shogun
+    method: linear_regression
+    run: ['metric']
+    script: methods/shogun/linear_regression.py
+    datasets:
+      - 'datasets/diabetes_X.csv'
+      - ['datasets/cal_housing_train.csv', 'datasets/cal_housing_test.csv', 'datasets/cal_housing_labels.csv']
+      - ['datasets/boston_housing_train.csv', 'datasets/boston_housing_test.csv', 'datasets/boston_housing_labels.csv']
+    param:
+      - options:
+      - options:
+        solver: "auto"
+        bias: 0.35
+      - options:
+        solver: "cplex"
+        bias: 0.2
+      - options:
+        solver: "glpk"
+        bias: 0.25
+      - options:
+        solver: "newton"
+        bias: 0.5
+      - options:
+        solver: "direct"
+        bias: 1
+      - options:
+        solver: "elasticnet"
+        bias: 2.5
+      - options:
+        solver: "block_norm"
+        bias: 0.001
+---
+SHOGUN_QDA:
+    library: shogun
+    method: qda
+    run: ['metric']
+    script: methods/shogun/qda.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+        tolerance: 1e-3
+        solver: "auto"
+      - options:
+        tolerance: 1e-4
+        solver: "cplex"
+      - options:
+        tolerance: 1e-5
+        solver: "glpk"
+      - options:
+        tolerance: 1e-2
+        solver: "newton"
+      - options:
+        tolerance: 1e-9
+        solver: "direct"
+      - options:
+        tolerance: 1e-3
+        solver: "elasticnet"
+      - options:
+        tolerance: 1e-6
+        solver: "block_norm"
+---
+SHOGUN_LOGISTICREGRESSION:
+    library: shogun
+    method: logistic_regression
+    run: ['metric']
+    script: methods/shogun/logistic_regression.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+---
+SHOGUN_LOGISTICREGRESSION:
+    library: shogun
+    method: logistic_regression
+    run: ['metric']
+    script: methods/shogun/logistic_regression.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+      - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+      - options:
+        max-iterations: 2000
+        lambda: 5.3
+      - options:
+        lambda: 3
+---
+SHOGUN_LINEARRIDGEREGRESSION:
+    library: shogun
+    method: linear_ridge_regression
+    run: ['metric']
+    script: methods/shogun/linear_ridge_regression.py
+    datasets:
+      - ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv']
+      - ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv']
+      - 'datasets/diabetes_X.csv'
+      - ['datasets/cal_housing_train.csv', 'datasets/cal_housing_test.csv', 'datasets/cal_housing_labels.csv']
+      - ['datasets/boston_housing_train.csv', 'datasets/boston_housing_test.csv', 'datasets/boston_housing_labels.csv']
+    param:
+      - options:
+      - options:
+        tau: 3.4
+        solver: "auto"
+        bias: 0.35
+      - options:
+        tau: 10
+        solver: "cplex"
+        bias: 0.2
+      - options:
+        tau: 1.9
+        solver: "glpk"
+        bias: 0.25
+      - options:
+        tau: 2.1
+        solver: "newton"
+        bias: 0.5
+      - options:
+        tau: 0.4
+        solver: "direct"
+        bias: 1
+      - options:
+        tau: 4
+        solver: "elasticnet"
+        bias: 2.5
+      - options:
+        tau: 1.2
+        solver: "block_norm"
+        bias: 0.001
+---
+SHOGUN_SVR:
+    library: shogun
+    method: svr
+    run: ['metric']
+    script: methods/shogun/svr.py
+    datasets:
+      - ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv']
+      - ['datasets/boston_housing_train.csv', 'datasets/boston_housing_test.csv', 'datasets/boston_housing_labels.csv']
+    param:
+        - options:
+          libsvr-solver: "epsilon"
+          kernel: "Gaussian"
+          C: 10
+        - options:
+          libsvr-solver: "epsilon"
+          kernel: "Polynomial"
+          cache-size: 15
+          degree: 3
+          C: 4
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Sigmoid"
+          cache-size: 15
+          gamma: 1.6
+          coef0: 1.9
+          C: 100
+          svr-parameter: 0.25
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Power"
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+          C: 8
+        - options:
+          kernel: "Power"
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+          C: 4
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+          C: 4
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+          C: 5
+        - options:
+          libsvr-solver: "epsilon"
+          kernel: "Power"
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Power"
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+          C: 4
+          svr-parameter: 0.9
+        - options:
+          kernel: "Log"
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+        - options:
+          kernel: "Log"
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+          C: 13
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Log"
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+          C: 4
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+          C: 17
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Log"
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+          C: 6
+          svr-parameter: 0.4
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Cauchy"
+          cache-size: 12
+          sigma: 3.5
+          distance: "Euclidean"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 10
+          sigma: 2.25
+          distance: "Chi-Square"
+          C: 4
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Tanimoto"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Minkowski"
+          C: 5
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Jensen"
+          C: 4
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Canberra"
+          C: 4
+        - options:
+          libsvr-solver: "epsilon"
+          kernel: "Constant"
+          constant: 10.3
+          C: 9
+        - options:
+          libsvr-solver: "nu"
+          kernel: "Diagonal"
+          cache-size: 10
+          constant: 1.2
+          C: 2
+---
+SHOGUN_DTC:
+    library: shogun
+    method: dtc
+    run: ['metric']
+    script: methods/shogun/dtc.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        pruning: False
+      - options:
+        pruning: True
+        k: 10
+---
+SHOGUN_LDA:
+    library: shogun
+    method: lda
+    run: ['metric']
+    script: methods/shogun/lda.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+    param:
+      - options:
+        tolerance: 1e-3
+        store-covar: True
+        solver: "auto"
+      - options:
+        tolerance: 1e-7
+        store-covar: False
+        solver: "cplex"
+      - options:
+        tolerance: 1e-5
+        store-covar: False
+        solver: "glpk"
+      - options:
+        tolerance: 1e-4
+        store-covar: True
+        solver: "newton"
+      - options:
+        tolerance: 1e-2
+        store-covar: False
+        solver: "direct"
+      - options:
+        tolerance: 1e-8
+        store-covar: True
+        solver: "elasticnet"
+      - options:
+        tolerance: 1e-9
+        store-covar: True
+        solver: "block_norm"
+---
+SHOGUN_GPC:
+    library: shogun
+    method: gpc
+    run: ['metric']
+    script: methods/shogun/gpc.py
+    datasets:
+        - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+        - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
+    param:
+        - options:
+          kernel: "Gaussian"
+        - options:
+          kernel: "Polynomial"
+          cache-size: 15
+          degree: 3
+        - options:
+          kernel: "Sigmoid"
+          cache-size: 15
+          gamma: 1.6
+          coef0: 1.9
+        - options:
+          kernel: "Bessel"
+          cache-size: 15
+          order: 2.0
+          width: 5.75
+          degree: 2
+          distance: "Euclidean"
+        - options:
+          kernel: "Bessel"
+          cache-size: 10
+          order: 3.5
+          width: 3.0
+          degree: 1
+          distance: "Chi-Square"
+        - options:
+          kernel: "Bessel"
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Tanimoto"
+        - options:
+          kernel: "Bessel"
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Minkowski"
+        - options:
+          kernel: "Bessel"
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Manhattan"
+        - options:
+          kernel: "Bessel"
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Bessel"
+          cache-size: 10
+          order: 2.25
+          width: 3.75
+          degree: 3
+          distance: "Canberra"
+        - options:
+          kernel: "Power"
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+        - options:
+          kernel: "Power"
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 1
+          distance: "Manhattan"
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+        - options:
+          kernel: "Log"
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+        - options:
+          kernel: "Log"
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 1
+          distance: "Manhattan"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 12
+          sigma: 3.5
+          distance: "Euclidean"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 10
+          sigma: 2.25
+          distance: "Chi-Square"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Tanimoto"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Minkowski"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Manhattan"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Jensen"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Canberra"
+        - options:
+          kernel: "Constant"
+          constant: 10.3
+        - options:
+          kernel: "Diagonal"
+          cache-size: 10
+          constant: 1.2
+---
+SHOGUN_DTR:
+    library: shogun
+    method: dtr
+    run: ['metric']
+    script: methods/shogun/dtr.py
+    datasets:
+      - ['datasets/diabetes.csv']
+      - ['datasets/cosExp.csv']
+      - ['datasets/arcene_train.csv', 'datasets/arcene_test.csv']
+    param:
+      - options:
+        pruning: False
+      - options:
+        pruning: True
+        k: 5
+---
+SHOGUN_LARS:
+    library: shogun
+    method: lars
+    run: ['metric']
+    script: methods/shogun/lars.py
+    datasets:
+      - ['datasets/diabetes.csv']
+      - ['datasets/cosExp.csv']
+      - ['datasets/arcene_train.csv', 'datasets/arcene_test.csv']
+    param:
+      - options:
+        lasso: True
+        solver: "auto"
+      - options:
+        lasso: False
+        solver: "cplex"
+      - options:
+        lasso: False
+        solver: "glpk"
+      - options:
+        lasso: True
+        solver: "newton"
+      - options:
+        lasso: True
+        solver: "direct"
+      - options:
+        lasso: True
+        solver: "elasticnet"
+      - options:
+        lasso: False
+        solver: "block_norm"
+---
+SHOGUN_PERCEPTRON:
+    library: shogun
+    method: perceptron
+    run: ['metric']
+    script: methods/shogun/perceptron.py
+    datasets:
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+      - options:
+        max-iterations: 2000
+        learning-rate: 0.1
+        bias: 0
+        initialize-hyperplane: False
+        solver: "auto"
+      - options:
+        learning-rate: 0.01
+        bias: 0.25
+        initialize-hyperplane: True
+        solver: "cplex"
+      - options:
+        learning-rate: 1.5
+        bias: 5
+        initialize-hyperplane: True
+        solver: "glpk"
+      - options:
+        max-iterations: 50000
+        learning-rate: 10
+        bias: 0.1
+        initialize-hyperplane: False
+        solver: "newton"
+      - options:
+        max-iterations: 15000
+        learning-rate: 3.8
+        bias: 0.5
+        initialize-hyperplane: True
+        solver: "direct"
+      - options:
+        max-iterations: 20000
+        learning-rate: 1.9
+        bias: 2.3
+        initialize-hyperplane: False
+        solver: "elasticnet"
+      - options:
+        learning-rate: 1
+        bias: 10
+        initialize-hyperplane: True
+        solver: "block_norm"
+---
+SHOGUN_LIBSVM:
+    library: shogun
+    method: libsvm
+    run: ['metric']
+    script: methods/shogun/libsvm.py
+    datasets:
+      - ['datasets/iris_train.csv', 'datasets/iris_test.csv', 'datasets/iris_labels.csv']
+      - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
+    param:
+        - options:
+          kernel: "Gaussian"
+          C: 10
+        - options:
+          kernel: "Polynomial"
+          cache-size: 15
+          degree: 3
+          C: 1
+        - options:
+          kernel: "Sigmoid"
+          cache-size: 15
+          gamma: 1.6
+          coef0: 1.9
+          C: 100
+          nu: 0.25
+        - options:
+          kernel: "Power"
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+          C: 8
+        - options:
+          kernel: "Power"
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+          C: 4
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+          C: 4
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+          C: 5
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 1
+          distance: "Manhattan"
+          C: 41
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Power"
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+          C: 4
+          nu: 0.9
+        - options:
+          kernel: "Log"
+          cache-size: 12
+          degree: 5
+          distance: "Euclidean"
+        - options:
+          kernel: "Log"
+          cache-size: 10
+          degree: 2
+          distance: "Chi-Square"
+          C: 13
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 4
+          distance: "Tanimoto"
+          C: 4
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 4
+          distance: "Minkowski"
+          C: 17
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 1
+          distance: "Manhattan"
+          C: 4
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 3
+          distance: "Jensen"
+        - options:
+          kernel: "Log"
+          cache-size: 15
+          degree: 2
+          distance: "Canberra"
+          C: 6
+          nu: 0.4
+        - options:
+          kernel: "Cauchy"
+          cache-size: 12
+          sigma: 3.5
+          distance: "Euclidean"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 10
+          sigma: 2.25
+          distance: "Chi-Square"
+          C: 4
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Tanimoto"
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Minkowski"
+          C: 5
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Manhattan"
+          C: 15
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Jensen"
+          C: 4
+        - options:
+          kernel: "Cauchy"
+          cache-size: 15
+          sigma: 1.75
+          distance: "Canberra"
+          C: 4
+        - options:
+          kernel: "Constant"
+          constant: 10.3
+          C: 9
+        - options:
+          kernel: "Diagonal"
+          cache-size: 10
+          constant: 1.2
+          C: 2

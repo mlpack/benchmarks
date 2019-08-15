@@ -1,12 +1,11 @@
 '''
   @file dtc.py
+  @author Marcus Edel
+
   Decision Tree Classifier with Milk.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -15,107 +14,35 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
+from util import *
 
-from log import *
-from timer import *
-from definitions import *
-from misc import *
-
-import numpy as np
 from milk.supervised import tree_learner
 
 '''
 This class implements the Decision Tree Classifier benchmark.
 '''
-class DTC(object):
+class MILK_DTC(object):
+  def __init__(self, method_param, run_param):
+    self.info = "MILK_DTC ("  + str(method_param) +  ")"
 
-  '''
-  Create the Decision Tree Classifier benchmark instance.
-  @param dataset - Input dataset to perform DTC on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
-    self.model = None
-    self.min_split = -1
-  '''
-  Build the model for the Decision Tree Classifier.
-  @param data - The train data.
-  @param labels - The labels for the train set.
-  @return The created model.
-  '''
-  def BuildModel(self):
-    # Create and train the classifier.
-    if self.min_split != -1:
-      dtc_learner = tree_learner(min_split=self.min_split)
-    else:
-      dtc_learner = tree_learner()
-    return dtc_learner
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
+    self.data_split = split_dataset(self.data[0])
 
-  '''
-  Use the milk libary to implement the Decision Tree Classifier.
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def DTCMilk(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunDTCMilk():
-      totalTimer = Timer()
+    self.build_opts = {}
+    if "minimum_leaf_size" in method_param:
+      self.build_opts["min_split"] = int(method_param["minimum_leaf_size"])
 
-      Log.Info("Loading dataset", self.verbose)
-      trainData, labels = SplitTrainData(self.dataset)
-      testData = LoadDataset(self.dataset[1])
+  def __str__(self):
+    return self.info
 
-      # Parse options.
-      if "minimum_leaf_size" in options:
-        self.min_split = options.pop("minimum_leaf_size")
-      if len(options) > 0:
-        Log.Fatal("Unknown parameters: " + str(options))
-        raise Exception("unknown parameters")
+  def metric(self):
+    model = tree_learner(**self.build_opts)
 
-      try:
-        self.model = self.BuildModel()
-        with totalTimer:
-          self.model = self.model.train(trainData, labels)
-      except Exception as e:
-        return -1
+    totalTimer = Timer()
+    with totalTimer:
+      model = model.train(self.data_split[0], self.data_split[1])
 
-      time = totalTimer.ElapsedTime()
-      return time
-
-    try:
-      return RunDTCMilk()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform the Decision Tree Classifier. If the method has been
-  successfully completed return the elapsed time in seconds.
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform Decision Tree Classifier.", self.verbose)
-
-    results = None
-    if len(self.dataset) >= 2:
-      results = self.DTCMilk(options)
-
-      if results < 0:
-        return results
-    else:
-      Log.Fatal("This method requires two datasets.")
-
-    # Datastructure to store the results.
-    metrics = {'Runtime' : results}
-    return metrics
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
+    return metric

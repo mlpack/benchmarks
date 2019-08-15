@@ -1,0 +1,9 @@
+timeout: 300
+flann_path: 'methods/flann/'
+ann_path: 'methods/ann/'
+dlibml_path: 'methods/dlibml/'
+r_path: 'methods/R/'
+weka_path: 'libraries/weka/'
+matlab_path: '/opt/matlab/bin/'
+java_path: 'libraries/share/'
+mlpack_path: 'libraries/bin/'

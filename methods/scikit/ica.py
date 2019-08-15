@@ -5,10 +5,7 @@
   Independent component analysis with scikit.
 '''
 
-import os
-import sys
-import inspect
-import timeout_decorator
+import os, sys, inspect
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -17,91 +14,42 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-from log import *
-from timer import *
-
-import numpy as np
+from util import *
 from sklearn.decomposition import FastICA
 
 '''
 This class implements the independent component analysis benchmark.
 '''
-class ICA(object):
+class SCIKIT_ICA(object):
+  def __init__(self, method_param, run_param):
+    self.info = "SCIKIT_ICA ("  + str(method_param) +  ")"
 
-  '''
-  Create the independent component analysis benchmark instance.
+    # Assemble run model parameter.
+    self.data = load_dataset(method_param["datasets"], ["csv"])
 
-  @param dataset - Input dataset to perform independent component analysis on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.timeout = timeout
+    self.build_opts = {}
+    if "num_components" in method_param:
+      self.build_opts["n_components"] = int(method_param["num_components"])
 
-  '''
-  Use the scikit libary to implement independent component analysis.
+    if "algorithm" in method_param:
+      self.build_opts["algorithm"] = str(method_param["algorithm"])
 
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def ICAScikit(self, options):
-    @timeout_decorator.timeout(self.timeout)
-    def RunICAScikit():
-      totalTimer = Timer()
+    if "function" in method_param:
+      self.build_opts["fun"] = str(method_param["function"])
 
-      # Load input dataset.
-      data = np.genfromtxt(self.dataset, delimiter=',')
+    if "tolerance" in method_param:
+      self.build_opts["tol"] = float(method_param["tolerance"])
 
-      opts = {}
-      if "num_components" in options:
-        opts["n_components"] = int(options.pop("num_components"))
+  def __str__(self):
+    return self.info
 
-      if "algorithm" in options:
-        opts["algorithm"] = str(options.pop("algorithm"))
-        if opts["algorithm"] not in ['parallel', 'deflation']:
-          Log.Fatal("Invalid value for algorithm: "+ str(algorithm.group(1))+" .Must be either parallel or deflation")
-          return -1
+  def metric(self):
+    totalTimer = Timer()
+    with totalTimer:
+      model = FastICA(**self.build_opts)
+      ic = model.fit(self.data[0]).transform(self.data[0])
 
-      if "function" in options:
-        opts["fun"] = str(options.pop("function"))
-        if opts["fun"] not in ['logcosh', 'exp', 'cube']:
-          Log.Fatal("Invalid value for fun: "+ str(fun.group(1))+" .Must be either logcosh,exp or cube")
-          return -1
+    metric = {}
+    metric["runtime"] = totalTimer.ElapsedTime()
 
-      if "tolerance" in options:
-        opts["tol"] = float(options.pop("tolerance"))
-
-      try:
-        # Perform ICA.
-        with totalTimer:
-          model = FastICA(**opts)
-          ic = model.fit(data).transform(data)
-      except Exception as e:
-        return -1
-
-      return totalTimer.ElapsedTime()
-
-    try:
-      return RunICAScikit()
-    except timeout_decorator.TimeoutError:
-      return -1
-
-  '''
-  Perform independent component analysis. If the method has been successfully
-  completed return the elapsed time in seconds.
-
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform ICA.", self.verbose)
-
-    results = self.ICAScikit(options)
-    if results < 0:
-      return results
-
-    return {'Runtime' : results}
+    return metric

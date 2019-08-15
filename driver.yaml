@@ -1,0 +1,20 @@
+# Driver configuration
+#
+# Text configuration
+#
+output_driver: 'util/text.py'
+text_file: 'benchmarks.txt'
+#
+# SQLite configuration
+#
+# output_driver: 'util/sqlite.py'
+# sqlite_database: 'benchmarks.db'
+#
+# MySQL configuration
+#
+# output_driver: 'util/mysql.py'
+# mysql_host: 127.0.0.1
+# mysql_port: 1234
+# mysql_user: user
+# mysql_database: database
+# mysql_password: password

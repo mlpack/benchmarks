@@ -3,9 +3,7 @@
   Class to benchmark the R Support Vector Classification method.
 '''
 
-import os
-import sys
-import inspect
+import os, sys, inspect, shlex, subprocess, re
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
@@ -14,126 +12,58 @@ cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(
 if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
-#Import the metrics definitions path.
-metrics_folder = os.path.realpath(os.path.abspath(os.path.join(
-  os.path.split(inspect.getfile(inspect.currentframe()))[0], "../metrics")))
-if metrics_folder not in sys.path:
-  sys.path.insert(0, metrics_folder)
-
-from log import *
-from profiler import *
-from definitions import *
-from misc import *
-
-import shlex
-import subprocess
-import re
-import collections
-import numpy as np
+from util import *
 
 '''
 This class implements the SVC benchmark.
 '''
-class SVC(object):
+class R_SVC(object):
+  def __init__(self, method_param, run_param):
+    # Assemble run model parameter.
+    self.dataset = method_param["datasets"]
 
-  '''
-  Create the SVC instance.
-  @param dataset - Input dataset to perform SVC on.
-  @param timeout - The time until the timeout. Default no timeout.
-  @param path - Path to the R executable.
-  @param verbose - Display informational messages.
-  '''
-  def __init__(self, dataset, timeout=0, path=os.environ["R_PATH"],
-      verbose=True):
-    self.verbose = verbose
-    self.dataset = dataset
-    self.path = path
-    self.timeout = timeout
     self.build_opts = {}
-    
-  def __del__(self):
-    Log.Info("Clean up.", self.verbose)
-    filelist = ["predictions.csv", "log.txt"]
-    for f in filelist:
-      if os.path.isfile(f):
-        os.remove(f)
+    self.build_opts["C"] = 1
+    if "c" in method_param:
+      self.build_opts["C"] = float(method_param["c"])
+    self.build_opts["epsilon"] = 0.1
+    if "epsilon" in method_param:
+      self.build_opts["epsilon"] = float(method_param["epsilon"])
 
-  '''
-  SVC. If the method has been successfully completed return
-  the elapsed time in seconds.
-  @param options - Extra options for the method.
-  @return - Elapsed time in seconds or a negative value if the method was not
-  successful.
-  '''
-  def RunMetrics(self, options):
-    Log.Info("Perform SVC.", self.verbose)
+    self.cmd = shlex.split("libraries/bin/Rscript " + run_param["r_path"] +
+      "svc.r" + " -t " + self.dataset[0] + " -T " + self.dataset[1] + " -c " +
+      str(self.build_opts["C"]) + " -e " + str(self.build_opts["epsilon"]))
 
-    # Get all the parameters.
-    self.build_opts = {}
-    if "c" in options:
-      self.build_opts["C"] = float(options.pop("c"))
-    else:
-      self.build_opts["C"] = 1
+    self.info = "R_SVC ("  + str(self.cmd) +  ")"
+    self.timeout = run_param["timeout"]
+    self.output = None
 
-    if "epsilon" in options:
-      self.build_opts["epsilon"] = float(options.pop("epsilon"))
-    else:
-      self.build_opts["epsilon"] = 0.1
+  def __str__(self):
+    return self.info
 
-
-    if len(options) > 0:
-      Log.Fatal("Unknown parameters: " + str(options))
-      raise Exception("unknown parameters")
-
-    if len(self.dataset) < 2:
-      Log.Fatal("This method requires two or more datasets.")
-      return -1
-
-    # Split the command using shell-like syntax.
-    cmd = shlex.split("libraries/bin/Rscript " + self.path + "svc.r" +
-        " -t " + self.dataset[0] + " -T " +
-        self.dataset[1] + " -c " + str(self.build_opts["C"]) + 
-	" -e " + str(self.build_opts["epsilon"]))
-
-    # Run command with the nessecary arguments and return its output as a byte
-    # string. We have untrusted input so we disable all shell based features.
+  def metric(self):
     try:
-      s = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False,
-          timeout=self.timeout)
+      self.output = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT,
+        shell=False, timeout=self.timeout)
     except subprocess.TimeoutExpired as e:
-      Log.Warn(str(e))
-      return -2
+      raise Exception("method timeout")
     except Exception as e:
-      Log.Fatal("Could not execute command: " + str(cmd))
-      return -1
+      subprocess_exception(e, self.output)
 
-    # Datastructure to store the results.
-    metrics = {}
-    # Parse data: runtime.
-    timer = self.parseTimer(str(s))
-    if timer != -1:
-      metrics['Runtime'] = timer
-      predictions = np.genfromtxt("predictions.csv", delimiter = ',')
+    metric = {}
+    metric["runtime"] = float(re.findall("(\d+\.\d+). *sec elapsed",
+      self.output.decode("utf-8"))[0])
+
+    if len(self.dataset) == 3:
+      predictions = load_dataset("predictions.csv", ["csv"])[0]
       predictions = predictions[1:]
-      truelabels = np.genfromtxt(self.dataset[2], delimiter = ',')
-      confusionMatrix = Metrics.ConfusionMatrix(truelabels, predictions)
-      metrics['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
-      metrics['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
-      metrics['Precision'] = Metrics.AvgPrecision(confusionMatrix)
-      metrics['Recall'] = Metrics.AvgRecall(confusionMatrix)
-      metrics['MSE'] = Metrics.SimpleMeanSquaredError(truelabels, predictions)
+      true_labels = load_dataset(self.dataset[2], ["csv"])[0]
 
-      Log.Info(("total time: %fs" % (metrics['Runtime'])), self.verbose)
+      confusionMatrix = Metrics.ConfusionMatrix(true_labels, predictions)
+      metric['ACC'] = Metrics.AverageAccuracy(confusionMatrix)
+      metric['MCC'] = Metrics.MCCMultiClass(confusionMatrix)
+      metric['Precision'] = Metrics.AvgPrecision(confusionMatrix)
+      metric['Recall'] = Metrics.AvgRecall(confusionMatrix)
+      metric['MSE'] = Metrics.SimpleMeanSquaredError(true_labels, predictions)
 
-    return metrics
-
-  '''
-  Parse the timer data form a given string.
-  @param data - String to parse timer data from.
-  @return - Namedtuple that contains the timer data or -1 in case of an error.
-  '''
-  def parseTimer(self, data):
-    # Compile the regular expression pattern into a regular expression object to
-    # parse the timer data.
-    pattern = re.findall("(\d+\.\d+). *sec elapsed", data)
-    return float(pattern[0])
+    return metric
