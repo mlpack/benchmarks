@@ -58,13 +58,13 @@ class SCIKIT_ALLKNN(object):
       model.fit(self.data[0])
 
       if len(self.data) == 2:
-        out = model.kneighbors(self.data[1], build_opts["n_neighbors"],
+        out = model.kneighbors(self.data[1], self.build_opts["n_neighbors"],
           return_distance=True)
       else:
         # We have to increment k by one because mlpack ignores the
         # self-neighbor, whereas scikit-learn will happily return the
         # nearest neighbor of point 0 as point 0.
-        out = model.kneighbors(self.data[0], build_opts["n_neighbors"] + 1,
+        out = model.kneighbors(self.data[0], self.build_opts["n_neighbors"] + 1,
           return_distance=True)
 
     metric = {}

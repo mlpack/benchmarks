@@ -32,6 +32,7 @@ class SCIKIT_KPCA(object):
       self.d = int(method_param["new_dimensionality"])
 
     self.kernel = method_param["kernel"]
+    self.degree = 3
     if self.kernel == "polynomial" and "degree" in method_param:
       self.degree = int(method_param["degree"])
 
@@ -49,11 +50,9 @@ class SCIKIT_KPCA(object):
         model = KernelPCA(n_components=self.d, kernel="poly",
           degree=self.degree)
       elif self.kernel == "cosine":
-        model = KernelPCA(n_components=self.d, kernel="cosine",
-          degree=self.degree)
+        model = KernelPCA(n_components=self.d, kernel="cosine")
       elif self.kernel == "gaussian":
-        model = KernelPCA(n_components=self.d, kernel="rbf",
-          degree=self.degree)
+        model = KernelPCA(n_components=self.d, kernel="rbf")
 
       out = model.fit_transform(self.data[0])
 
