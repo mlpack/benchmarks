@@ -5,7 +5,7 @@
   Class to benchmark the mlpack All K-Furthest-Neighbors method.
 '''
 
-import os, sys, inspect
+import os, sys, inspect, re
 
 # Import the util path, this method even works if the path contains symlinks to
 # modules.
