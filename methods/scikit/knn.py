@@ -1,8 +1,8 @@
 '''
-  @file allknn.py
+  @file knn.py
   @author Marcus Edel
 
-  All K-Nearest-Neighbors with scikit.
+  K-Nearest-Neighbors with scikit.
 '''
 
 import os, sys, inspect
@@ -18,11 +18,11 @@ from util import *
 from sklearn.neighbors import NearestNeighbors
 
 '''
-This class implements the All K-Nearest-Neighbors benchmark.
+This class implements the K-Nearest-Neighbors benchmark.
 '''
-class SCIKIT_ALLKNN(object):
+class SCIKIT_KNN(object):
   def __init__(self, method_param, run_param):
-    self.info = "SCIKIT_ALLKNN ("  + str(method_param) +  ")"
+    self.info = "SCIKIT_KNN ("  + str(method_param) +  ")"
 
     # Assemble run model parameter.
     self.data = load_dataset(method_param["datasets"], ["csv"])

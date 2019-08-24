@@ -1327,11 +1327,11 @@ SCIKIT_SVR:
         epsilon: 1.0
         gamma: 0.1
 ---
-SCIKIT_ALLKNN:
+SCIKIT_KNN:
     library: scikit
     method: knn
     run: ['metric']
-    script: methods/scikit/allknn.py
+    script: methods/scikit/knn.py
     datasets:
       - 'datasets/wine.csv'
       - 'datasets/wine_qual.csv'
