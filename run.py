@@ -29,8 +29,7 @@ def run(config, library, methods, loglevel):
   else:
     logginglevel = logging.INFO
 
-  logging.basicConfig(level=logginglevel, 
-    format='[%(levelname)s] %(message)s')
+  logging.basicConfig(level=logginglevel, format='[%(levelname)s] %(message)s')
 
   stream = open("base.yaml", "r")
   base_param = list(yaml.load_all(stream))[0]
@@ -49,11 +48,11 @@ def run(config, library, methods, loglevel):
     name, values = method.popitem()
 
     # Skip unspecified libraries, unless the user didn't specify any.
-    if library is not None and values["library"].lower() not in library.lower():
+    if library is not None and values["library"].lower() != library.lower():
       continue
 
     # Skip unspecified methods, unless the user didn't specify any.
-    if methods is not None and values["method"].lower() not in methods.lower():
+    if methods is not None and values["method"].lower() != methods.lower():
       continue
 
     values["param"] = param_extension(values["param"])

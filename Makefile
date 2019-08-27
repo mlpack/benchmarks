@@ -40,11 +40,9 @@ endif
 CONFIG := test.yaml
 BENCHMARKDDIR := benchmark
 LOG := False
-LIB := "shogun"
 SAVE := ""
 LOGLEVEL := "INFO"
 BLOCK := ""
-METHODBLOCK := ""
 UPDATE := False
 BUILD_CORES := 1
 
@@ -79,19 +77,12 @@ export PYTHONPATH=$(shell printenv PYTHONPATH):$(shell echo $(ROOTPATH))/librari
 # Set MATLABPATH correctly.
 export MATLABPATH=$(shell printenv MATLABPATH):$(shell pwd)/methods/matlab
 
-# Color settings.
-NO_COLOR=\033[0m
-ERROR_COLOR=\033[0;31m
-WARN_COLOR=\033[0;33m
-
 .PHONY: help test run memory scripts
 
 help: .check .help
-test: .check .test
 run: .check .run
-memory: .check .check_memory .memory
 scripts: .scripts
-setup: .check .setup
+setup: .check .setup .scripts
 datasets: .check .datasets
 checks: .check .checks
 
@@ -103,21 +94,17 @@ checks: .check .checks
 	@echo "   For example, the following will run all scripts and methods defined"
 	@echo "   in the config.yaml file and the results are shown on the console:"
 	@echo ""
-	@echo "   $$ make run CONFIG=config LOG=False"
+	@echo "   $$ make run CONFIG=config"
 	@echo ""
 	@echo "   Usage: make [option] [parameters]"
 	@echo ""
 	@echo "Parameters:"
 	@echo "  CONFIG [string]        The path to the configuration file to perform the benchmark on."
 	@echo "                         Default '$(CONFIG)'."
-	@echo "  BLOCK [string]         Run only the specified blocks defined in the configuration file."
-	@echo "                         Default run all blocks."
-	@echo "  LOG [boolean]          If set, the reports will be saved in the database."
-	@echo "                         Default '$(LOG)'."
-	@echo "  UPDATE [boolean]       If set, the latest reports in the database are updated."
-	@echo "                         Default '$(UPDATE)'."
-	@echo "  METHODBLOCK [string]   Run only the specified methods defined in the configuration file."
+	@echo "  METHODS [string]   Run only the specified methods defined in the configuration file."
 	@echo "                         Default run all methods."
+	@echo "  LIB [string]       Run only the benchmarks for the specified library defined in the configuration file."
+	@echo "                         Default run all libraries."
 	@echo ""
 	@echo "Options:"
 	@echo "  test [parameters]      Test the configuration file. Check for correct"
@@ -129,7 +116,6 @@ checks: .check .checks
 	@echo "  setup                  Download packages and install into libraries/."
 	@echo "  datasets               Download datasets into datasets/."
 	@echo "  help                   Show this info."
-	@echo "  checks                 Run unit tests for benchmarking scripts."
 	@echo ""
 	@echo "For further information consult the documentation found at \
 	http://www.mlpack.org"
@@ -159,31 +145,26 @@ ifndef NUMPY_INSTALLED
 	@exit 1
 endif
 
-.check_memory:
-ifndef VALGRIND_BIN
-	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The valgrind executable \
-	was not found; please install valgrind to run the memory benchmark."
-	@exit 1
-endif
-
 ifndef MS_PRINT_BIN
 	@echo "$(ERROR_COLOR)[ERROR]$(NO_COLOR) The Massif 'ms_print' command was \
 	not found; please install the massif 'ms_print' command to run the memory benchmark."
 	@exit 1
 endif
 
-.test:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/test_config.py -c $(CONFIG)
-
 .run:
 ifndef METHODS
+ifndef LIB
+	$(PYTHON_BIN) run.py -c $(CONFIG) -s $(SAVE) -o $(LOGLEVEL)
+else
 	$(PYTHON_BIN) run.py -c $(CONFIG) -l $(LIB) -s $(SAVE) -o $(LOGLEVEL)
+endif
+else
+ifndef LIB
+	$(PYTHON_BIN) run.py -c $(CONFIG) -m $(METHODS) -s $(SAVE) -o $(LOGLEVEL)
 else
 	$(PYTHON_BIN) run.py -c $(CONFIG) -l $(LIB) -m $(METHODS) -s $(SAVE) -o $(LOGLEVEL)
 endif
-
-.memory:
-	$(PYTHON_BIN) $(BENCHMARKDDIR)/memory_benchmark.py -c $(CONFIG) -b $(BLOCK) -l $(LOG) -u $(UPDATE) -m $(METHODBLOCK)
+endif
 
 .scripts:
 	# Compile the java files for the weka methods.
@@ -201,12 +182,8 @@ endif
 	g++ -O2 -std=c++11 methods/dlibml/src/ALLKNN.cpp -o methods/dlibml/dlibml_allknn -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack
 	g++ -O2 -std=c++11 methods/dlibml/src/KMEANS.cpp -o methods/dlibml/dlibml_kmeans -I"$(INCLUDEPATH)" -L"$(LIBPATH)" -ldlib -lmlpack -lboost_program_options -lblas -llapack 
 
-
 .setup:
 	cd libraries/ && ./download_packages.sh && ./install_all.sh $(BUILD_CORES)
 
 .datasets:
 	cd datasets/ && ./download_datasets.sh
-
-.checks:
-	$(PYTHON_BIN) tests/tests.py

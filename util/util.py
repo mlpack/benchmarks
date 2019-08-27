@@ -15,6 +15,7 @@ import math
 import os
 import imp
 import copy
+import shlex
 
 try:
   import subprocess32 as subprocess
@@ -259,6 +260,8 @@ def check_dataset(datasets, support):
 
   d_idx = 0
   for d in datasets:
+    if not os.path.exists(d):
+      raise Exception("file  " + str(d) + " not found.")
     extension = os.path.splitext(d)[1][1:]
 
     check = False

@@ -1016,23 +1016,6 @@ MLPACK_NCA:
         normalize: True
         seed: 42
 ---
-WEKA_PCA:
-    library: weka
-    method: pca
-    run: ['metric']
-    script: methods/weka/pca.py
-    datasets:
-      - 'datasets/iris.csv'
-      - 'datasets/wine.csv'
-      - 'datasets/cities.csv'
-    param:
-      - options:
-      - options:
-        new_dimensionality: 2
-      - options:
-        new_dimensionality: 2
-        whiten: True
----
 WEKA_KMEANS:
     library: weka
     method: kmeans
@@ -1890,8 +1873,6 @@ SHOGUN_LINEARREGRESSION:
     script: methods/shogun/linear_regression.py
     datasets:
       - 'datasets/diabetes_X.csv'
-      - ['datasets/cal_housing_train.csv', 'datasets/cal_housing_test.csv', 'datasets/cal_housing_labels.csv']
-      - ['datasets/boston_housing_train.csv', 'datasets/boston_housing_test.csv', 'datasets/boston_housing_labels.csv']
     param:
       - options:
       - options:
@@ -1982,8 +1963,6 @@ SHOGUN_LINEARRIDGEREGRESSION:
       - ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv']
       - ['datasets/webpage_train.csv', 'datasets/webpage_test.csv', 'datasets/webpage_labels.csv']
       - 'datasets/diabetes_X.csv'
-      - ['datasets/cal_housing_train.csv', 'datasets/cal_housing_test.csv', 'datasets/cal_housing_labels.csv']
-      - ['datasets/boston_housing_train.csv', 'datasets/boston_housing_test.csv', 'datasets/boston_housing_labels.csv']
     param:
       - options:
       - options:
@@ -2022,7 +2001,6 @@ SHOGUN_SVR:
     script: methods/shogun/svr.py
     datasets:
       - ['datasets/sickEuthyroid_train.csv', 'datasets/sickEuthyroid_test.csv', 'datasets/sickEuthyroid_labels.csv']
-      - ['datasets/boston_housing_train.csv', 'datasets/boston_housing_test.csv', 'datasets/boston_housing_labels.csv']
     param:
         - options:
           libsvr-solver: "epsilon"
@@ -2226,7 +2204,6 @@ SHOGUN_GPC:
     script: methods/shogun/gpc.py
     datasets:
         - ['datasets/oilspill_train.csv', 'datasets/oilspill_test.csv', 'datasets/oilspill_labels.csv']
-        - ['datasets/scene_train.csv', 'datasets/scene_test.csv', 'datasets/scene_labels.csv']
     param:
         - options:
           kernel: "Gaussian"
@@ -2240,55 +2217,6 @@ SHOGUN_GPC:
           gamma: 1.6
           coef0: 1.9
         - options:
-          kernel: "Bessel"
-          cache-size: 15
-          order: 2.0
-          width: 5.75
-          degree: 2
-          distance: "Euclidean"
-        - options:
-          kernel: "Bessel"
-          cache-size: 10
-          order: 3.5
-          width: 3.0
-          degree: 1
-          distance: "Chi-Square"
-        - options:
-          kernel: "Bessel"
-          cache-size: 10
-          order: 2.25
-          width: 3.75
-          degree: 3
-          distance: "Tanimoto"
-        - options:
-          kernel: "Bessel"
-          cache-size: 10
-          order: 2.25
-          width: 3.75
-          degree: 3
-          distance: "Minkowski"
-        - options:
-          kernel: "Bessel"
-          cache-size: 10
-          order: 2.25
-          width: 3.75
-          degree: 3
-          distance: "Manhattan"
-        - options:
-          kernel: "Bessel"
-          cache-size: 10
-          order: 2.25
-          width: 3.75
-          degree: 3
-          distance: "Jensen"
-        - options:
-          kernel: "Bessel"
-          cache-size: 10
-          order: 2.25
-          width: 3.75
-          degree: 3
-          distance: "Canberra"
-        - options:
           kernel: "Power"
           cache-size: 12
           degree: 5
@@ -2319,11 +2247,6 @@ SHOGUN_GPC:
           degree: 3
           distance: "Jensen"
         - options:
-          kernel: "Power"
-          cache-size: 15
-          degree: 2
-          distance: "Canberra"
-        - options:
           kernel: "Log"
           cache-size: 12
           degree: 5
@@ -2353,11 +2276,6 @@ SHOGUN_GPC:
           cache-size: 15
           degree: 3
           distance: "Jensen"
-        - options:
-          kernel: "Log"
-          cache-size: 15
-          degree: 2
-          distance: "Canberra"
         - options:
           kernel: "Cauchy"
           cache-size: 12
@@ -2424,7 +2342,6 @@ SHOGUN_LARS:
     script: methods/shogun/lars.py
     datasets:
       - ['datasets/diabetes.csv']
-      - ['datasets/cosExp.csv']
       - ['datasets/arcene_train.csv', 'datasets/arcene_test.csv']
     param:
       - options:
