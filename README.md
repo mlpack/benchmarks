@@ -6,9 +6,9 @@ Develop branch build status:
 
 Visit http://www.mlpack.org/benchmark.html to see our latest results.
 
-This repository contains a collection of benchmark scripts for various machine learning libraries. The scripts serves as an infrastructure for measuring and comparing the performance, of different algorithms and libraries on various datasets using visual tools and different metrics. It aims to give the machine learning community a streamlined tool to get information on those changesets that may have caused speedups or slowdowns.
+This repository contains a collection of benchmark scripts for various machine learning libraries. The scripts serve as an infrastructure for measuring and comparing the performance, of different algorithms and libraries on various datasets using visual tools and different metrics. It aims to give the machine learning community a streamlined tool to get information on those changesets that may have caused speedups or slowdowns.
 
-The system has several key attributes that lead to its highly and easily customizable nature. It makes extensive use of the Python standard library and the YAML file format to provide a very easy way to efficiently run the performance measurements on custom setups with different operating systems. The tools and metrics used for the visualization are highly flexible, e.g. with one line you can measure the size of your program’s stack, get the variance or standard deviation of the measurements. The architecture is easily maintainable since each part is a single module. with the results that the framework can be easily integrated in the main workflow.
+The system has several key attributes that lead to its highly and easily customizable nature. It makes extensive use of the Python standard library and the YAML file format to provide a very easy way to efficiently run the performance measurements on custom setups with different operating systems. The tools and metrics used for the visualization are highly flexible, e.g. with one line you can measure the size of your program’s stack, get the variance or standard deviation of the measurements. The architecture is easily maintainable since each part is a single module. with the results that the framework can be easily integrated into the main workflow.
 
 
 Quick links to this file:
@@ -46,13 +46,13 @@ Running `make` with no additional arguments except the task option will use the 
 ## Running the scripts
 
 #### Benchmarking and save the Output
-By default running the benchmarks will produce some logging to standard out. To save the results in the databse, set the `LOG` flag. If you wanted to run all scripts and save the output in the database located in the reports directory use the following command line:
+By default running the benchmarks will produce some logging to standard out. To save the results in the database, set the `LOG` flag. If you wanted to run all scripts and save the output in the database located in the reports directory use the following command line:
 
     $ make run LOG=True
 
 #### Benchmarking a Single Method
 
-If you are making changes to any of the scripts, or if you simply want to benchmark a single method, you can benchmark the method with the `METHODBLOCK` flag. For example, if you only wanted to benchmark all K-Means scripts use the following command line:
+If you are making changes to any of the scripts, or if you simply want to benchmark a single method, you can benchmark the method with the `METHODBLOCK` flag. For example, if you only want to benchmark all K-Means scripts use the following command line:
 
     $ make run METHODBLOCK=KMEANS
 
@@ -78,7 +78,7 @@ You can also combine the `BLOCK` and `METHODBLOCK` flag to benchmark single meth
 
 #### Update Benchmark Results
 
-In case of an failure you can update the last benchmark results stored in the database. You can combine the other flag to specifie the libary or method you like to update. For example, if you only wanted to update the MLPACK, HMM script use the following command line:
+In case of a failure you can update the last benchmark results stored in the database. You can combine the other flag to specify the libary or method you like to update. For example, if you only wanted to update the MLPACK, HMM script use the following command line:
 
     $ make run UPDATE=True BLOCK=mlpack METHODBLOCK=HMM
 
@@ -112,7 +112,7 @@ The benchmark script requires several parameters that specify the benchmark runs
 
 For complete details, refer the wiki page : https://github.com/zoq/benchmarks/wiki/Google-Summer-of-Code-2014-:-Improvement-of-Automatic-Benchmarking-System
 
-The benchmark script comes with a default configuration. The default configuration will run all available benchmarks. This configuration can take quite a while to run (more than two weeks), so it would be best to adjust the configuration to to suite your time constraints. You can also command line options to selectively run benchmarks the options are described below.
+The benchmark script comes with a default configuration. The default configuration will run all available benchmarks. This configuration can take quite a while to run (more than two weeks), so it would be best to adjust the configuration to suite your time constraints. You can also use command line options to selectively run benchmarks the options are described below.
 
 
 ### General Block
