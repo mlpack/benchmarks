@@ -12,14 +12,14 @@
 # HLearn doesn't work with ghc 8, so this installation is commented out.
 
 #tars=`ls HLearn.tar.gz | wc -l`;
-#if [ "$tars" -eq "0" ];
+#if [ "$tars" == "0" ];
 #then
 #  echo "No source HLearn.tar.gz found in libraries/!"
 #  exit 1
 #fi
 
 #subhasktars=`ls subhask.tar.gz | wc -l`;
-#if [ "$tars" -eq "0" ];
+#if [ "$tars" == "0" ];
 #then
 #  echo "No source subhask.tar.gz found in libraries/!"
 #  exit 1

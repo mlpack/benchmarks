@@ -15,6 +15,7 @@ if cmd_subfolder not in sys.path:
   sys.path.insert(0, cmd_subfolder)
 
 from util import *
+from memory_profiler import memory_usage
 
 def run(config, library, methods, loglevel):
   # Configure logging.
@@ -77,7 +78,13 @@ def run(config, library, methods, loglevel):
               logging.info('Run: %s' % (str(instance)))
 
               # Run the metric method.
-              result = instance.metric()
+              mem_use, result = memory_usage(instance.metric,
+                                             interval=1e-3,
+                                             include_children=True,
+                                             max_usage=True, 
+                                             retval=True,
+                                             backend="psutil")
+              result["memory"] = str(format(mem_use, ".2f")) + "MB"
               logging.info('Metric: %s' % (str(result)))
 
               # Pass the result to the driver.

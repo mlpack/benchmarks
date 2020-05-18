@@ -8,7 +8,7 @@
 # One dlibml.tar.gz file should be located in this directory.
 
 tars=`ls dlibml.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source dlibml.tar.gz found in libraries/!"
   exit 1

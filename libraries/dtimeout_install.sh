@@ -7,7 +7,7 @@
 #
 # One dtimeout.tar.gz file should be located in this directory.
 tars=`ls dtimeout.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source dtimeout.tar.gz found in libraries/!"
   exit 1

@@ -7,7 +7,7 @@
 #
 # One milk.tar.gz file should be located in this directory.
 tars=`ls milk.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source milk.tar.gz found in libraries/!"
   exit 1

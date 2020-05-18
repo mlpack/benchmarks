@@ -7,12 +7,12 @@
 #
 # One Nearpy*.tar.gz file should be located in this directory.
 tars=`ls nearpy.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No Nearpy source .tar.gz found in libraries/!"
   exit 1
 fi
-if [ "$tars" -ne "1" ];
+if [ "$tars" != "1" ];
 then
   echo "More than one Nearpy source .tar.gz found."
   echo "Ensure only one is present in libraries/!"

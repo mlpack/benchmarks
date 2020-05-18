@@ -7,7 +7,7 @@
 #
 # One weka.zip file should be located in this directory.
 tars=`ls weka.zip | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source weka.zip found in libraries/!"
   exit 1

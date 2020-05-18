@@ -7,7 +7,7 @@
 #
 # One scikit.tar.gz file should be located in this directory.
 tars=`ls scikit.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source scikit.tar.gz found in libraries/!"
   exit 1

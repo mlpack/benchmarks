@@ -12,7 +12,7 @@ do
 
   wget $url -O $name.$ext;
 
-  if [ "$?" -ne "0" ]; then
+  if [ "$?" != "0" ]; then
     echo "Failure downloading $name!";
     exit 1;
   fi

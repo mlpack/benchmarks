@@ -8,14 +8,14 @@
 # One ann.tar.gz file should be located in this directory containing the
 # source code of the desired mlpack version.  The first argument is the number
 # of cores to use for build.
-if [ "$1" -eq "" ]; then
+if [ "$1" == "" ]; then
   cores="1";
 else
   cores="$1";
 fi
 
 tars=`ls ann.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source ann.tar.gz found in libraries/!"
   exit 1

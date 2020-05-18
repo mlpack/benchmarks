@@ -12,21 +12,89 @@ The system has several key attributes that lead to its highly and easily customi
 
 
 Quick links to this file:
+* [Competing libraries](#competing-libraries)
 * [Prerequisites](#prerequisites)
 * [Running](#running)
 * [Directory Structure](#directory-structure)
 * [Getting the datasets](#getting-the-datasets)
 * [Configuration](#configuration)
-* [Competing libraries](#competing-libraries)
 * [Citation details](#citation-details)
+
+## Competing libraries
+
+Machine learning toolkits:
+* [mlpack](http://mlpack.org)
+* [Shogun-toolbox](http://shogun-toolbox.org)
+* [scikit-learn](http://scikit-learn.org)
+* [MATLAB](http://mathworks.com)
+* [Weka](http://cs.waikato.ac.nz/ml/weka/)
+* [elki](https://elki-project.github.io/)
+* [mlpy](http://mlpy.sourceforge.net)
+* [dlibml](http://dlib.net/ml.html)
+* [milk](https://github.com/luispedro/milk/)
+* [R](https://www.r-project.org/)
+
+Nearest Neighbour Algorithms:
+* [ANN](http://www.cs.umd.edu/~mount/ANN/)
+* [FLANN](http://www.cs.ubc.ca/research/flann/)
+* [nearpy](http://pixelogik.github.io/NearPy/)
+* [annoy](https://github.com/spotify/annoy)
+* [mrpt](https://github.com/vioshyvo/mrpt)
+
+Inactive toolkits:
+* [HLearn](https://github.com/mikeizbicki/HLearn)
+NOTE: `HLearn` is not currently being benchmarked by this repository.
 
 ## Prerequisites
 
 * **[Python 3.3+](http://www.python.org "Python Website")**: The main benchmark script is written with the programming language python: The benchmark script by default uses the version of Python on your path.
+* **[numpy](https://www.numpy.org/)**: Numpy provides a powerful N-dimensional array object and sophisticated (broadcasting) functions useful for handling and transforming data.
 * **[Python-yaml](http://pyyaml.org "Python-yaml Website")**: PyYAML is a YAML parser and emitter for Python. We've picked YAML as the configuration file format for specifying the structure for the project.
 * **[SQLite](http://www.sqlite.org "SQLite Website")** (**Optional**): SQLite is a lightweight disk-based database that doesn't require a separate server process. We use the python built-in SQLite database to save the benchmark results.
-* **[Valgrind](http://valgrind.org "Valgrind Website")** (**Optional**): Valgrind is a suite of tools for debugging and profiling. This package is only needed if you want to run the memory benchmarks.
 * **[python-xmlrunner](https://github.com/lamby/pkg-python-xmlrunner "python-xmlrunner github")** (**Optional**): The xmlrunner module is a unittest test runner that can save test results to XML files. This package is only needed if you want to run the tests.
+
+### Prerequisites for Setting up Competing Libraries
+All the following pre-requisite packages are needed to be installed before running `make setup` command (see the next [section](#running)):  
+**FLANN library:**  
+* [hdf5](https://www.hdfgroup.org/solutions/hdf5/): This is a high performance data software library.
+* [gtest](https://github.com/google/googletest): This package used for writing C++ tests.
+
+**mlpack:**  
+* [Armadillo](http://arma.sourceforge.net/download.html): This package is a c++ library for linear algebra and scientific computing.
+* [Boost C++](https://www.boost.org/): This package is required for compiling mlpack from source.
+
+**mlpy:**  
+* [scipy](https://www.scipy.org/): Python-based ecosystem of open-source software for mathematics, science, and engineering
+* [GSL](https://www.gnu.org/software/gsl/): The is a numerical library for C and C++ programmers.
+
+**scikit-learn:**  
+* [scipy](https://www.scipy.org/): Python-based ecosystem of open-source software for mathematics, science, and engineering
+* [joblib](https://joblib.readthedocs.io/): Joblib is a set of tools to provide lightweight pipelining in Python.
+* [Cython-0.25.2](https://cython.org/): C-extentions for python. Required for compiling the scikit from source.
+
+**Nearpy:**  
+* [scipy](https://www.scipy.org/): Python-based ecosystem of open-source software for mathematics, science, and engineering
+* [redis](https://redislabs.com/lp/python-redis/): The Python interface to the Redis key-value store.
+
+**shogun:**  
+* [swig](https://github.com/swig/swig): SWIG is a compiler that integrates C and C++ with languages including Perl, Python, Tcl, Ruby, PHP, Java, C#, D, Go, Lua, Octave, R, Scheme (Guile, MzScheme/Racket), Scilab, Ocaml. SWIG can also export its parse tree into XM
+
+**weka:**  
+* [java](https://www.java.com/en/): Java is a programming language on which weka is based.
+
+**elki:**  
+* [java](https://www.java.com/en/): Java is a programming language on which weka is based.
+
+**milk**
+* [Eigen3](http://eigen.tuxfamily.org/index.php?title=Main_Page): Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms.
+
+**R**
+* [gfortran](https://gcc.gnu.org/wiki/GFortran): A free Fortran 95/2003/2008 compiler for GCC
+* [readline](https://www.gnu.org/software/readline/): This library provides a set of functions for use by applications that allow users to edit command lines as they are typed in.
+* [libbz2-dev](https://www.sourceware.org/bzip2/): This is a freely available, patent free, high-quality data compressor. Header files of this software are required.
+* [liblzma-dev](https://tukaani.org/xz/): XZ Utils is free general-purpose data compression software with a high compression ratio. Header files of this software are required.
+* [libcurl4](https://curl.haxx.se/libcurl/): libcurl is a free and easy-to-use client-side URL transfer library
+
 
 ## Running
 
@@ -233,18 +301,6 @@ methods:
 ```
 
 In this case we benchmark the pca method located in methods/mlpack/pca.py with the isolet and the cities dataset. The pca method scales the data before running the pca method. The benchmark performs twice for each dataset. Additionally the pca.py script supports the following file formats txt, csv, hdf5 and bin. If the data isn't available in this particular case the format will be generated.
-
-## Competing libraries
-
-* http://mlpack.org
-* http://mathworks.com
-* http://shogun-toolbox.org
-* http://cs.waikato.ac.nz/ml/weka/
-* https://elki-project.github.io/
-* http://scikit-learn.org
-* http://mlpy.sourceforge.net
-* http://www.cs.umd.edu/~mount/ANN/
-* http://www.cs.ubc.ca/research/flann/
 
 ## Citation details
 

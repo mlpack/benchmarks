@@ -7,7 +7,7 @@
 #
 # One annoy.tar.gz file should be located in this directory.
 tars=`ls annoy.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source annoy.tar.gz found in libraries/!"
   exit 1

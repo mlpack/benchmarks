@@ -7,7 +7,7 @@
 #
 # One R.tar.gz file should be located in this directory.
 tars=`ls R.tar.gz | wc -l`;
-if [ "$tars" -eq "0" ];
+if [ "$tars" == "0" ];
 then
   echo "No source R.tar.gz found in libraries/!"
   exit 1
