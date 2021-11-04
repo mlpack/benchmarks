@@ -8,6 +8,7 @@ export JAVAPATH := $(shell echo $(ROOTPATH))/libraries/share/
 export DEBUGBINPATH := $(shell echo $(ROOTPATH))/libraries/debug/bin/
 export DEBUGINCLUDEPATH := $(shell echo $(ROOTPATH))/libraries/debug/include/
 export DEBUGLIBPATH := $(shell echo $(ROOTPATH))/libraries/debug/lib/
+export MATLAB_BIN=/opt/matlab/bin/
 
 # Locate the python bin.
 PYTHON_BIN := $(shell which python3.3)
